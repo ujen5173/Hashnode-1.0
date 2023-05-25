@@ -1,0 +1,19 @@
+import Anouncement from "./Anouncement";
+import Drafts from "./Drafts";
+import Bookmarks from "./Bookmarks";
+import Others from "./Others";
+import Trending from "./Trending";
+
+const RightAsideMain = () => {
+  return (
+    <aside className="my-4 hidden min-h-screen flex-[1.8] lg:block">
+      <Anouncement />
+      <Trending />
+      <Drafts />
+      <Bookmarks />
+      <Others />
+    </aside>
+  );
+};
+
+export default RightAsideMain;

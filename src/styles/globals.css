@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+  font-family: "Inter", "Poppins";
+}
+
+.max-height-one {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* number of lines to show */
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.max-height-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* number of lines to show */
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+.max-height-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.anouncement {
+  background-image: url("/anouncment-bg-light.png");
+  background-size: cover;
+  -webkit-background-position: center;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+body.dark .anouncement {
+  background-image: url("/anouncment-bg.png");
+  background-size: cover;
+  -webkit-background-position: center;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.btn-outline {
+  @apply rounded-full border border-border-light bg-transparent px-4 py-2 font-medium text-black hover:bg-gray-200 dark:border-border dark:text-secondary hover:dark:bg-primary-light;
+}
+.btn-outline-small {
+  @apply rounded-full border border-border-light bg-transparent px-3 py-1 text-sm font-medium text-black hover:bg-gray-200 dark:border-border dark:text-white hover:dark:bg-primary-light;
+}
+.btn-tertiary {
+  @apply rounded-full border border-black bg-black px-4 py-2 text-sm font-medium text-white transition duration-150 hover:border-primary-light hover:bg-primary-light dark:hover:bg-primary-light;
+}
+.btn-filled {
+  @apply rounded-full border border-secondary bg-secondary px-4 py-2 text-sm font-medium text-white transition duration-150 hover:border-blue-500 hover:bg-blue-500 hover:shadow-md;
+}
+.btn-follow {
+  @apply flex items-center justify-center rounded-full border border-border-light bg-white px-4 py-2 text-sm font-medium text-secondary hover:bg-gray-100 dark:border-border;
+}
+.btn-subtle {
+  @apply rounded-full border border-transparent bg-primary bg-transparent px-4 py-2 font-medium text-black hover:bg-gray-200 dark:text-white hover:dark:bg-primary-light;
+}
+.btn-icon {
+  @apply items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
+}
+
+.btn-icon-small {
+  @apply h-8 w-8 items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
+}
+.btn-tab {
+  @apply flex items-center gap-2 rounded-t bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-primary dark:text-text-secondary dark:hover:bg-primary-light;
+}
+
+.input-primary {
+  @apply rounded-full border border-border-light bg-light-bg px-10 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border;
+}
+
+button:focus-visible {
+  outline: 1px solid #e2e8f0 !important;
+  background: #e2e8f0 !important;
+}
+button.btn-filled:focus {
+  background: #2563eb;
+}
+
+body.dark button:focus-visible {
+  outline: 1px solid #334155 !important;
+  background: #1e293b !important;
+}
+body.dark button.btn-filled:focus {
+  background: #2563eb;
+}
+
+/* Light theme */
+body .article {
+  color: #111111;
+  width: 70%;
+  margin: auto;
+}
+body .article p {
+  font-size: 20px;
+  line-height: 36px;
+  margin: 24px 0;
+}
+body .article h1 {
+  font-size: 36px;
+  line-height: 40px;
+  margin: 56px 0 32px 0;
+  font-weight: bold;
+  color: #111827;
+}
+body .article ul {
+  font-size: 20px;
+  line-height: 36px;
+  margin: 24px 0;
+  list-style: disc;
+}
+body .article li {
+  font-size: 20px;
+  line-height: 36px;
+  margin: 24px;
+}
+body .article img {
+  border-radius: 7px;
+  object-fit: cover;
+}
+body .article a {
+  font-weight: 700;
+  text-decoration: underline;
+}
+body .article pre {
+  padding: 32px 24px;
+  font-size: 18px;
+  line-height: 32px;
+  border-radius: 7px;
+  overflow: auto;
+  margin: 36px 0;
+}
+body .article ul {
+  text-decoration: dotted;
+}
+body .article code {
+  background: #f0efed;
+  padding: 4px;
+  font-size: 16px;
+  color: #000000;
+  line-height: 28px;
+  border-radius: 5px;
+  border: 0;
+}
+
+/* dark theme */
+body .article {
+  color: #fafafa;
+}
+body .article h1 {
+  color: #fafafa;
+}
+body .article pre {
+  color: #fafafa;
+  background: #1e293b;
+}
+body .article code {
+  color: #eeeeee;
+  background: #24292e;
+}

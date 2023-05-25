@@ -1,0 +1,109 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+    provider     = "postgresql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String
+    username      String    @unique
+    email         String    @unique
+    emailVerified DateTime?
+    profile       String
+    tagline       String
+    cover_image   String?
+    bio           String?
+    skills        String[]
+    social        Json?
+    following     User[]    @relation("follow")
+    followers     User[]    @relation("follow")
+    accounts      Account[]
+    sessions      Session[]
+    followingTags Tag[]
+    comments      Comment[]
+    articles      Article[] @relation("author")
+    likedArticles Article[]
+}
+
+model Tag {
+    id             String    @id @default(cuid())
+    name           String    @unique
+    slug           String    @unique
+    followers      User[]
+    followersCount Int       @default(0)
+    articlesCount  Int       @default(0)
+    articles       Article[]
+    description    String?
+    logo           String?
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
+}
+
+model Comment {
+    id        String   @id @default(cuid())
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    article   Article  @relation(fields: [articleId], references: [id])
+    articleId String
+    body      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Article {
+    id          String    @id @default(cuid())
+    title       String
+    cover_image String?
+    user        User      @relation("author", fields: [userId], references: [id])
+    userId      String
+    content     String
+    read_time   String
+    tags        Tag[]
+    subtitle    String?
+    likes       User[]
+    slug        String
+    comments    Comment[]
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
