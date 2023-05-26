@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Hamburger from "./../svgs/Hamburger";
-import Logo from "./../svgs/Logo";
+import Hamburger from "~/svgs/Hamburger";
+import Logo from "~/svgs/Logo";
 
 const LeftArea = () => {
   return (

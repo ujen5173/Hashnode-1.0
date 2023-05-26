@@ -1,8 +1,8 @@
-import People from "./../svgs/People";
-import Magic from "./../svgs/Magic";
-import Star from "./../svgs/Star";
-import Filter from "./../svgs/Filter";
-import Gridclassic from "./../svgs/Gridclassic";
+import People from "~/svgs/People";
+import Magic from "~/svgs/Magic";
+import Star from "~/svgs/Star";
+import Filter from "~/svgs/Filter";
+import Gridclassic from "~/svgs/Gridclassic";
 
 const MainBodyHeader = () => {
   return (

@@ -1,11 +1,11 @@
 import Document from "~/svgs/Document";
-import User from "./../svgs/User";
+import User from "~/svgs/User";
 import React from "react";
-import Exit from "./../svgs/Exit";
+import Exit from "~/svgs/Exit";
 import Divider from "./Divider";
 import Pen from "~/svgs/Pen";
-import LogonoText from "./../svgs/LogonoText";
-import Explore from "./../svgs/Explore";
+import LogonoText from "~/svgs/LogonoText";
+import Explore from "~/svgs/Explore";
 
 const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
   return (

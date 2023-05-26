@@ -2,15 +2,12 @@ import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 import Book from "~/svgs/Book";
-import Heart from "./../svgs/Heart";
-import Comment from "./../svgs/Comment";
-import BookmarkArticle from "./../svgs/BookmarkArticle";
-import Share from "./../svgs/Share";
-import Dots from "./../svgs/Dots";
+import ArticleActions from "./ArticleActions";
+import Follow from "~/svgs/Follow";
 
 const ArticleBody = () => {
   return (
-    <main className="min-h-screen bg-primary px-4 pb-28">
+    <main className="min-h-screen bg-primary px-4 pb-12">
       <div className="mx-auto max-w-[1200px]">
         <Image
           src={
@@ -19,7 +16,7 @@ const ArticleBody = () => {
           alt=""
           width={1200}
           height={800}
-          className="mb-8 w-full object-cover"
+          className="mb-16 w-full object-cover"
         />
 
         <section>
@@ -60,7 +57,7 @@ const ArticleBody = () => {
               </span>
             </div>
           </div>
-          <div className="article w-full">
+          <div className="article mb-10 w-full">
             <p>
               As the number of APIs that need to be integrated increases,
               managing the complexity of API interactions becomes increasingly
@@ -174,55 +171,12 @@ const ArticleBody = () => {
               API endpoints.
             </p>
           </div>
-          <div className="sticky bottom-10 left-1/2 flex w-max -translate-x-1/2 items-center gap-2 rounded-full border border-border-light bg-primary-light px-4 py-1 dark:border-border">
-            <button
-              aria-label="icon"
-              role="button"
-              className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-border dark:text-text-secondary"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <Heart className="h-7 w-7 fill-none stroke-white" />
-              </div>
-              <span>1.2k</span>
-            </button>
-            <button
-              aria-label="icon"
-              role="button"
-              className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-border dark:text-text-secondary"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <Comment className="h-7 w-7 fill-none stroke-white" />
-              </div>
-              <span>1.2k</span>
-            </button>
-            <button
-              aria-label="icon"
-              role="button"
-              className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-border dark:text-text-secondary"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <BookmarkArticle className="h-5 w-5 fill-none stroke-white" />
-              </div>
-            </button>
-            <button
-              aria-label="icon"
-              role="button"
-              className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-border dark:text-text-secondary"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <Share className="h-6 w-6 fill-white" />
-              </div>
-            </button>
-            <button
-              aria-label="icon"
-              role="button"
-              className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-border dark:text-text-secondary"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <Dots className="h-7 w-7 stroke-white" />
-              </div>
-            </button>
-          </div>
+          <ArticleActions />
+
+          <ArticleTags
+            tags={["react", "nextjs", "docker", "programming", "cloud"]}
+          />
+          <ArticleAuthor />
         </section>
       </div>
     </main>
@@ -230,3 +184,51 @@ const ArticleBody = () => {
 };
 
 export default ArticleBody;
+
+const ArticleTags = ({ tags }: { tags: string[] }) => {
+  return (
+    <div className="mx-auto my-20 flex w-8/12 flex-wrap items-center justify-center gap-2">
+      {tags.map((tag, index) => (
+        <Link href={`/tag/${tag}`} key={index}>
+          <span className="rounded-md border border-border-light bg-primary-light px-4 py-2 text-base text-gray-700 hover:bg-border dark:border-border dark:text-text-secondary">
+            {tag}
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
+};
+
+const ArticleAuthor = () => {
+  return (
+    <div className="mx-auto my-10 flex w-8/12 items-start border-y border-border border-border-light py-6">
+      <div className="flex flex-1 items-start gap-4">
+        <Image
+          src={
+            "https://cdn.hashnode.com/res/hashnode/image/upload/v1671031219768/PPvbNBGkF.jpeg?w=256&h=256&fit=crop&crop=entropy&auto=compress,format&format=webp"
+          }
+          alt=""
+          width={100}
+          height={100}
+          className="obejct-cover h-12 w-12 overflow-hidden rounded-full"
+        />
+        <div className="flex-1">
+          <h2 className="text-uppercase mb-2 text-base font-medium text-gray-600 dark:text-text-primary">
+            WRITTEN BY
+          </h2>
+          <h1 className="text-uppercase mb-6 text-xl font-semibold text-gray-800 dark:text-text-secondary">
+            Hoh Shen Yien
+          </h1>
+          <p className="text-gray-600 dark:text-text-primary">
+            My name is Hoh Shen Yien, I&apos;m a Malaysian fullstack developer
+            who likes to read and write sometimes 🤩
+          </p>
+        </div>
+      </div>
+      <button className="btn-follow gap-2">
+        <Follow className="h-4 w-4 fill-none stroke-secondary" />
+        <span>Follow</span>
+      </button>
+    </div>
+  );
+};

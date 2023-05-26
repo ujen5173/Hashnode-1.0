@@ -1,9 +1,9 @@
 import Explore from "../svgs/Explore";
-import Drafts from "./../svgs/Drafts";
-import Bookmark from "./../svgs/Bookmark";
-import Hackathon from "./../svgs/Hackathon";
-import Team from "./../svgs/Team";
-import More from "./../svgs/More";
+import Drafts from "~/svgs/Drafts";
+import Bookmark from "~/svgs/Bookmark";
+import Hackathon from "~/svgs/Hackathon";
+import Team from "~/svgs/Team";
+import More from "~/svgs/More";
 
 export const asideItems = [
   {
@@ -367,5 +367,196 @@ export const trending = [
     },
     likesCount: 642,
     commentsCount: 95,
+  },
+];
+
+export const recentActivity = [
+  {
+    activity_type: "Replied",
+    activity_content: "Dotenv-vault: The New Way to Manage .env",
+    date: "May 25",
+  },
+
+  {
+    activity_type: "Replied",
+    activity_content: "Dotenv-vault: The New Way to Manage .env",
+    date: "May 25",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Dotenv-vault: The New Way to Manage .env",
+    date: "May 23",
+  },
+  {
+    activity_type: "Replied",
+    activity_content:
+      "The Next.js 13 App Directory and Server Components: What You Need to Know",
+    date: "May 15",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content:
+      "The Next.js 13 App Directory and Server Components: What You Need to Know",
+    date: "May 13",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content:
+      "Insta-Next: Sweatless React State Management with Zustand",
+    date: "Apr 24",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content:
+      "Breaking into the Software Industry as a Data Analysis Student",
+    date: "Apr 21",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "A Layman's Guide to Leetcode",
+    date: "Apr 14",
+  },
+  {
+    activity_type: "Replied",
+    activity_content: "Insta-Next: Deploying Next.js on Vercel / using Docker",
+    date: "Apr 13",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Insta-Next: Deploying Next.js on Vercel / using Docker",
+    date: "Apr 12",
+  },
+  {
+    activity_type: "Replied",
+    activity_content:
+      "Fiber (Go) vs. Nickel.rs (Rust): A Performance Showdown in 'Hello World'",
+    date: "Apr 11",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Insta-Next: Likes and Followers",
+    date: "Apr 11",
+  },
+  {
+    activity_type: "Commented",
+    activity_content:
+      "Fiber (Go) vs. Nickel.rs (Rust): A Performance Showdown in 'Hello World'",
+    date: "Apr 11",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content:
+      "Insta-Next: Creating Posts and Stories with POST Requests",
+    date: "Apr 8",
+  },
+  {
+    activity_type: "Replied",
+    activity_content: "Insta-Next: Constructing Database with Prisma",
+    date: "Apr 7",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Insta-Next: Authentication with NextAuth",
+    date: "Apr 6",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Insta-Next: More UI with Mantine",
+    date: "Apr 6",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Insta-Next: Improving UI with Mantine and Tailwind",
+    date: "Apr 6",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Insta-Next: Exploring APIs with React Queries",
+    date: "Apr 6",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Insta-Next: Constructing Database with Prisma",
+    date: "Apr 6",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Insta-Next: Introduction & Designs",
+    date: "Apr 6",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Reminiscing High School: SMK Seri Bintang Utara",
+    date: "Mar 18",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Conditions? More like Polymorphism",
+    date: "Mar 16",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Visibility and Stability: A Hidden Relationship",
+    date: "Mar 15",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Keep it Simple, Stupid with React Components",
+    date: "Jan 26",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Two Sum",
+    date: "Jan 7",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Ultimate Guide to Python One-Liners",
+    date: "Jan 1",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Container With Most Water",
+    date: "Dec 29 2022",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Longest Palindromic Substring",
+    date: "Dec 26 2022",
+  },
+  {
+    activity_type: "Replied",
+    activity_content: "Longest Substring Without Repeating Characters",
+    date: "Dec 25 2022",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Longest Substring Without Repeating Characters",
+    date: "Dec 25 2022",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "2022 Review: Programming and Self-Discovery",
+    date: "Dec 24 2022",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Rebuilding My Portfolio Website from Scratch",
+    date: "Dec 18 2022",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Juggling with Life",
+    date: "Dec 17 2022",
+  },
+  {
+    activity_type: "Wrote an article",
+    activity_content: "Hello, Hashnode",
+    date: "Dec 15 2022",
+  },
+  {
+    activity_type: "Joined Hashnode",
+    activity_content: null,
+    date: "May 25 2004",
   },
 ];

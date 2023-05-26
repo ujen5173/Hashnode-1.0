@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { Footer, Header, MainBody } from "~/components";
+import { Header, MainBody } from "~/components";
 import HomeSEO from "~/SEO/Home.seo";
 import { api } from "~/utils/api";
 

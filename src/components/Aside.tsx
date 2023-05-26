@@ -1,11 +1,11 @@
 import Link from "next/link";
 import React from "react";
 import { asideItems, trendingItems } from "~/utils/constants";
-import Trending from "./../svgs/Trending";
-import Twitter from "./../svgs/Twitter";
-import Discord from "./../svgs/Discord";
-import Linkedin from "./../svgs/Linkedin";
-import Instagram from "./../svgs/Instagram";
+import Trending from "~/svgs/Trending";
+import Twitter from "~/svgs/Twitter";
+import Discord from "~/svgs/Discord";
+import Linkedin from "~/svgs/Linkedin";
+import Instagram from "~/svgs/Instagram";
 import Navigation from "./Cards/Navigation";
 import TrendingNavigation from "./Cards/TrendingNavigation";
 import Divider from "./Divider";
@@ -54,7 +54,7 @@ const TrendingComponent = () => {
           Trending tags
         </h1>
         <span>
-          <Trending className="h-4 w-4 dark:text-text-primary" />
+          <Trending className="h-4 w-4 fill-black dark:fill-text-primary" />
         </span>
       </div>
       {trendingItems.map((item, index) => (

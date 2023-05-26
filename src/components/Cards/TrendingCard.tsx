@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { type FC } from "react";
-import Like from "./../../svgs/Like";
-import Multicomment from "./../../svgs/Multicomment";
+import Like from "~/svgs/Like";
+import Multicomment from "~/svgs/Multicomment";
 
 interface TrendingCardProps {
   article: {

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Hamburger from "./../svgs/Hamburger";
-import Angleleft from "./../svgs/Angleleft";
+import Hamburger from "~/svgs/Hamburger";
+import Angleleft from "~/svgs/Angleleft";
 import Image from "next/image";
 
 const ArticleLeftArea = () => {

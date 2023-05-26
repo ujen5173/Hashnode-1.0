@@ -61,6 +61,9 @@ body.dark .anouncement {
 .btn-follow {
   @apply flex items-center justify-center rounded-full border border-border-light bg-white px-4 py-2 text-sm font-medium text-secondary hover:bg-gray-100 dark:border-border;
 }
+.btn-follow-filled {
+  @apply flex items-center justify-center rounded-full border border-border-light bg-secondary px-4 py-2 text-base font-medium text-white transition duration-150 hover:bg-blue-500 dark:border-border;
+}
 .btn-subtle {
   @apply rounded-full border border-transparent bg-primary bg-transparent px-4 py-2 font-medium text-black hover:bg-gray-200 dark:text-white hover:dark:bg-primary-light;
 }
@@ -68,8 +71,14 @@ body.dark .anouncement {
   @apply items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
 }
 
+.btn-icon-outline {
+  @apply flex h-11 w-11 items-center justify-center rounded-full border hover:bg-gray-200 dark:border-border dark:hover:bg-primary-light;
+}
 .btn-icon-small {
   @apply h-8 w-8 items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
+}
+.btn-icon-large {
+  @apply h-10 w-10 items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
 }
 .btn-tab {
   @apply flex items-center gap-2 rounded-t bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-primary dark:text-text-secondary dark:hover:bg-primary-light;
@@ -99,7 +108,8 @@ body.dark button.btn-filled:focus {
 body .article {
   color: #111111;
   width: 70%;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 body .article p {
   font-size: 20px;
@@ -167,4 +177,32 @@ body .article pre {
 body .article code {
   color: #eeeeee;
   background: #24292e;
+}
+
+
+/* This code is just copied from the dev tools of hashnode 😅🤪*/
+.activity_date {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  flex-direction: column;
+  display: flex;
+  width: 6rem;
+  --tw-text-opacity: 1;
+  color: rgb(226 232 240 / var(--tw-text-opacity));
+}
+
+.activity_date_dots {
+  margin-top: 0.5rem;
+  width: 1px;
+  -webkit-flex: 1 1 0%;
+  flex: 1 1 0%;
+  border-width: 1px;
+  border-style: dashed;
+  --tw-border-opacity: 1;
+  border-color: rgb(147 197 253 / var(--tw-border-opacity));
 }

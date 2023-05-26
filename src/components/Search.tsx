@@ -1,5 +1,5 @@
 import Search from "~/svgs/Search";
-import Ai from "./../svgs/Ai";
+import Ai from "~/svgs/Ai";
 
 const SearchArea = () => {
   return (

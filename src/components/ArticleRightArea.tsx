@@ -4,7 +4,7 @@ import Search from "~/svgs/Search";
 import Sun from "~/svgs/Sun";
 import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import { useClickOutside } from "@mantine/hooks";
-import Follow from "./../svgs/Follow";
+import Follow from "~/svgs/Follow";
 
 const ArticleRightArea = () => {
   const [opened, setOpened] = useState(false);

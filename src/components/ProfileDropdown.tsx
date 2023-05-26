@@ -1,10 +1,10 @@
 import Document from "~/svgs/Document";
-import Bookmarkalt from "./../svgs/Bookmarkalt";
-import User from "./../svgs/User";
-import Tab from "./../svgs/Tab";
+import Bookmarkalt from "~/svgs/Bookmarkalt";
+import User from "~/svgs/User";
+import Tab from "~/svgs/Tab";
 import Image from "next/image";
 import React from "react";
-import Exit from "./../svgs/Exit";
+import Exit from "~/svgs/Exit";
 import Divider from "./Divider";
 
 type ProfileDropdownProps = {

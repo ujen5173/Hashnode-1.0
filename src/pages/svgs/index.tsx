@@ -2,9 +2,9 @@ import Image from "next/image";
 import path from "path";
 import fs from "fs";
 import { useState } from "react";
-import Ai from "./../../svgs/Ai";
-import Search from "./../../svgs/Search";
-import Hamburger from "./../../svgs/Hamburger";
+import Ai from "~/svgs/Ai";
+import Search from "~/svgs/Search";
+import Hamburger from "~/svgs/Hamburger";
 
 const Svg = ({ svgs }: { svgs: string[] }) => {
   const [copied, setCopied] = useState(false);

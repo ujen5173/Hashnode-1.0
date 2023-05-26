@@ -1,8 +1,8 @@
 import { type FC } from "react";
-import Pen from "./../svgs/Pen";
-import Updates from "./../svgs/Updates";
-import Sun from "./../svgs/Sun";
-import Notification from "./../svgs/Notification";
+import Pen from "~/svgs/Pen";
+import Updates from "~/svgs/Updates";
+import Sun from "~/svgs/Sun";
+import Notification from "~/svgs/Notification";
 
 interface RightAreaProps {
   handleTheme: () => void;
