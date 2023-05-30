@@ -5,6 +5,7 @@ import ActivityCard from "./Cards/ActivityCard";
 
 export interface Activity {
   date: string;
+  slug: string;
   activity_type: string;
   activity_content: string | null;
 }
@@ -15,6 +16,7 @@ const UserRecentActivities = () => {
   >([]);
 
   function refactorActivity(activity: Activity[]): void {
+    // @desc This function refactor or places the activity array according to date
     const res = refactorActivityHelper(activity);
     setRefactoredActivity(Array.from(res));
   }
@@ -30,6 +32,7 @@ const UserRecentActivities = () => {
           Recent Activity
         </h1>
       </header>
+
       <section>
         {refactoredActivity.map((activity, index) => (
           <div
@@ -41,9 +44,10 @@ const UserRecentActivities = () => {
                 {activity[0]}
               </span>
               {activity[1][0]?.activity_type !== "Joined Hashnode" && (
-                <div className="lg:activity_date_dots hidden"></div>
+                <div className="activity_date_dots hidden lg:block"></div>
               )}
             </div>
+
             <div className="flex-1">
               {activity[1].map((item, i) => {
                 return (

@@ -7,6 +7,7 @@ const ArticleLeftArea = () => {
   return (
     <div className="flex items-center justify-center gap-2">
       <button
+        onClick={() => history.back()}
         aria-label="icon"
         role="button"
         className="btn-icon flex h-10 w-10"
@@ -34,7 +35,7 @@ const ArticleLeftArea = () => {
           height={70}
           className="h-8 w-8 rounded-full"
         />
-        <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
+        <h1 className="hidden text-lg font-semibold text-gray-700 dark:text-text-secondary md:block md:text-xl">
           Danijel Maksimovic&rsquo;s Blog
         </h1>
       </Link>

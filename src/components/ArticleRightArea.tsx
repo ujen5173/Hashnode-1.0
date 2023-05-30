@@ -1,37 +1,43 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Search from "~/svgs/Search";
 import Sun from "~/svgs/Sun";
 import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import { useClickOutside } from "@mantine/hooks";
 import Follow from "~/svgs/Follow";
+import { C } from "~/utils/context";
 
 const ArticleRightArea = () => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+  const { handleTheme } = useContext(C);
 
   return (
     <div className="flex items-center justify-center gap-2">
       <button
         aria-label="icon"
         role="button"
-        className="btn-icon flex h-10 w-10"
+        className="btn-icon hidden h-10 w-10 lg:flex"
       >
-        <Search className="h-7 w-7 fill-none stroke-gray-700 dark:stroke-white" />
+        <Search className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-white" />
       </button>
       <button
         aria-label="icon"
         role="button"
         className="btn-icon flex h-10 w-10"
+        onClick={handleTheme}
       >
-        <Sun className="h-7 w-7 fill-none stroke-gray-700 dark:stroke-white" />
+        <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-white" />
       </button>
-      <button aria-label="icon" role="button" className="btn-follow gap-2">
-        <span>
-          <Follow className="h-4 w-4 fill-none stroke-secondary" />
-        </span>
-        <span>Follow</span>
-      </button>
+      <div className="hidden md:block">
+        <button aria-label="icon" role="button" className="btn-follow gap-2">
+          <span>
+            <Follow className="h-5 w-5 fill-none stroke-secondary" />
+          </span>
+          <span>Follow</span>
+        </button>
+      </div>
+
       <button
         aria-label="profile"
         role="button"

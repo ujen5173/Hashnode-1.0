@@ -1,4 +1,4 @@
-import React, { useState, useContext, type FC } from "react";
+import React, { useState } from "react";
 import { useClickOutside } from "@mantine/hooks";
 import { C } from "~/utils/context";
 import Image from "next/image";
@@ -11,8 +11,6 @@ const Header: React.FC = () => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
 
-  const { handleTheme } = useContext(C);
-
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto flex max-w-[1550px] items-center justify-between gap-4 px-4 py-4">
@@ -22,7 +20,7 @@ const Header: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <RightArea handleTheme={handleTheme} />
+          <RightArea />
           <button
             aria-label="icon"
             role="button"

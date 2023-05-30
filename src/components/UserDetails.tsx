@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const UserDetails = () => {
@@ -25,12 +26,11 @@ const UserDetails = () => {
             "Tailwindcss",
             "trpc",
           ].map((tech, index) => (
-            <span
-              key={index}
-              className="rounded-md border border-border-light bg-primary-light px-3 py-1 text-base text-gray-700 dark:border-border dark:text-text-secondary"
-            >
-              {tech}
-            </span>
+            <Link href={"/tag/" + tech.toLowerCase()} key={index}>
+              <span className="block rounded-md border border-border-light bg-light-bg px-3 py-1 text-base text-gray-700 hover:shadow-sm dark:border-border dark:bg-primary-light dark:text-text-secondary">
+                {tech}
+              </span>
+            </Link>
           ))}
         </div>
       </div>

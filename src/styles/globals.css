@@ -107,7 +107,6 @@ body.dark button.btn-filled:focus {
 /* Light theme */
 body .article {
   color: #111111;
-  width: 70%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -148,6 +147,8 @@ body .article pre {
   line-height: 32px;
   border-radius: 7px;
   overflow: auto;
+  color: #fafafa;
+  background: #1e293b;
   margin: 36px 0;
 }
 body .article ul {
@@ -156,6 +157,7 @@ body .article ul {
 body .article code {
   background: #f0efed;
   padding: 4px;
+  margin: auto 4px;
   font-size: 16px;
   color: #000000;
   line-height: 28px;
@@ -164,21 +166,16 @@ body .article code {
 }
 
 /* dark theme */
-body .article {
+body.dark .article {
   color: #fafafa;
 }
-body .article h1 {
+body.dark .article h1 {
   color: #fafafa;
 }
-body .article pre {
-  color: #fafafa;
-  background: #1e293b;
-}
-body .article code {
+body.dark .article code {
   color: #eeeeee;
   background: #24292e;
 }
-
 
 /* This code is just copied from the dev tools of hashnode 😅🤪*/
 .activity_date {

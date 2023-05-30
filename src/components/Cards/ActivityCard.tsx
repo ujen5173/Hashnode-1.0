@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import LogonoText from "~/svgs/LogonoText";
 import Pen from "~/svgs/Pen";
@@ -37,12 +38,15 @@ const ActivityCard = ({
           {item.activity_type}
         </span>
       </div>
+      
       {item.activity_content && (
-        <div className="mb-2" key={i}>
-          <span className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
-            {item.activity_content}
-          </span>
-        </div>
+        <Link href={item.slug} className="mb-2" key={i}>
+          <div>
+            <span className="text-lg font-semibold text-gray-700 hover:text-gray-500 dark:text-text-secondary dark:hover:text-text-primary">
+              {item.activity_content}
+            </span>
+          </div>
+        </Link>
       )}
     </div>
   );

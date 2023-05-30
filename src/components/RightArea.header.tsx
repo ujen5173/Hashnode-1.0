@@ -1,14 +1,13 @@
-import { type FC } from "react";
+import { useContext, type FC } from "react";
 import Pen from "~/svgs/Pen";
 import Updates from "~/svgs/Updates";
 import Sun from "~/svgs/Sun";
 import Notification from "~/svgs/Notification";
+import { C } from "~/utils/context";
 
-interface RightAreaProps {
-  handleTheme: () => void;
-}
+const RightArea: FC = () => {
+  const { handleTheme } = useContext(C);
 
-const RightArea: FC<RightAreaProps> = ({ handleTheme }) => {
   return (
     <>
       <button
