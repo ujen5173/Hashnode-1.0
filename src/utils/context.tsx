@@ -11,7 +11,15 @@ export const C = createContext({
       localStorage.setItem("theme", "dark");
     }
   },
-  handleChange: () => {},
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setState: React.Dispatch<React.SetStateAction<any>>
+  ) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { value, name } = e.target;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    setState((prev: any) => ({ ...prev, [name]: value }));
+  },
 } as {
   handleTheme: () => void;
   handleChange: (
