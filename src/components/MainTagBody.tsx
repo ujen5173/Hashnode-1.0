@@ -9,6 +9,7 @@ import {
   Twitter,
   Fire,
   Clock,
+  Check,
 } from "~/svgs";
 import { tagArticles } from "~/utils/constants";
 import ArticleCard from "./Cards/ArticleCard";
@@ -17,6 +18,7 @@ import Select from "./Select";
 import Tags from "./Tags";
 
 const MainTagBody = () => {
+  const [following, setFollowing] = useState<boolean>(false);
   const [filter, setFilter] = useState<FilterData>({
     status: false,
     data: {
@@ -41,6 +43,11 @@ const MainTagBody = () => {
       status: false,
     });
   };
+
+  const followTag = (id: string) => {
+    setFollowing((prev) => !prev);
+  };
+
   return (
     <section className="my-4 min-h-screen w-full flex-[5]">
       <header className="mb-4 flex flex-col items-center justify-center rounded-md border border-border-light bg-white px-6 py-11 dark:border-border dark:bg-primary">
@@ -51,9 +58,21 @@ const MainTagBody = () => {
           #programming-blogs
         </p>
         <div className="mb-8 flex flex-col items-center gap-4 md:flex-row">
-          <button className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max">
-            <Add className="h-5 w-5 fill-secondary" />
-            Follow Tag
+          <button
+            onClick={() => void followTag("asf54-6w8e4f6s-d4654sd6")}
+            className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+          >
+            {following ? (
+              <>
+                <Check className="h-5 w-5 fill-secondary" />
+                Following
+              </>
+            ) : (
+              <>
+                <Add className="h-5 w-5 fill-secondary" />
+                Follow Tag
+              </>
+            )}
           </button>
           <button className="btn-filled flex w-full items-center gap-2 text-white md:w-max">
             <Pen className="h-5 w-5 fill-white" />

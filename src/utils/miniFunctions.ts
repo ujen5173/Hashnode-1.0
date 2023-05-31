@@ -1,7 +1,4 @@
 export const limitTags = (tags: string[], limit: number) => {
-  // character limit: 12;
-  // tagslimit: 3;
-
   const newTags = tags.slice(0, 3).map((tag) => {
     if (tag.length > limit) {
       return tag.slice(0, limit) + "...";
@@ -15,3 +12,6 @@ export const limitTags = (tags: string[], limit: number) => {
 
   return newTags;
 };
+
+export const wait = (time: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(() => resolve(), time * 1000));

@@ -67,3 +67,4 @@ export { default as Multicomment } from "./Multicomment";
 export { default as ProfileShare } from "./ProfileShare";
 export { default as Starsolid } from "./Starsolid";
 export { default as Trending } from "./Trending";
+export { default as Cloud } from "./Cloud";

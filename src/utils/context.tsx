@@ -11,11 +11,26 @@ export const C = createContext({
       localStorage.setItem("theme", "dark");
     }
   },
+  handleChange: () => {},
 } as {
   handleTheme: () => void;
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setState: React.Dispatch<React.SetStateAction<any>>
+  ) => void;
 });
 
 const Context = ({ children }: { children: React.ReactNode }) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setState: React.Dispatch<React.SetStateAction<any>>
+  ) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { value, name } = e.target;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    setState((prev: any) => ({ ...prev, [name]: value }));
+  };
+
   const handleTheme = () => {
     const body = document.querySelector("body");
     if (body?.classList.contains("dark")) {
@@ -40,7 +55,9 @@ const Context = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  return <C.Provider value={{ handleTheme }}>{children}</C.Provider>;
+  return (
+    <C.Provider value={{ handleTheme, handleChange }}>{children}</C.Provider>
+  );
 };
 
 export default Context;

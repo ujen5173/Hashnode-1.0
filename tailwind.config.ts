@@ -11,7 +11,7 @@ export default {
         primary: "#0f172a",
         "light-bg": "#f8fafc",
         "primary-light": "#1e293b",
-        green: "#14532d",
+        green: "#22C55E",
         secondary: "#2563eb",
         yellow: "#facc15",
         border: "#2c3646",
