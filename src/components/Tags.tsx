@@ -14,20 +14,23 @@ const Tags: FC<Props> = ({ filter, setFilter }) => {
 
     if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
-      setFilter({
-        ...filter,
+      const inputValue = (e.target as HTMLInputElement).value;
+
+      setFilter((prevFilter) => ({
+        ...prevFilter,
         data: {
-          ...filter.data,
+          ...prevFilter.data,
           tags: [
-            ...filter.data.tags,
+            ...prevFilter.data.tags,
             {
               id: uuid(),
-              name: e.target.value,
+              name: inputValue,
             },
           ],
         },
-      });
-      e.target.value = "";
+      }));
+
+      (e.target as HTMLInputElement).value = "";
     }
   };
 
