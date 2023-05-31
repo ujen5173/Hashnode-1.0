@@ -1,8 +1,7 @@
 import Link from "next/link";
 import React from "react";
-import LogonoText from "~/svgs/LogonoText";
-import Pen from "~/svgs/Pen";
 import type { Activity } from "../UserRecentActivities";
+import { LogonoText, Pen } from "~/svgs";
 
 const ActivityCard = ({
   index,
@@ -38,7 +37,7 @@ const ActivityCard = ({
           {item.activity_type}
         </span>
       </div>
-      
+
       {item.activity_content && (
         <Link href={item.slug} className="mb-2" key={i}>
           <div>

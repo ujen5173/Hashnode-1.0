@@ -1,5 +1,5 @@
 import React from "react";
-import Topright from "~/svgs/Topright";
+import { Topright } from "~/svgs";
 
 const UserBlogingArea = () => {
   return (

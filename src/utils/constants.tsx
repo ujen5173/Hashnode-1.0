@@ -1,9 +1,4 @@
-import Explore from "../svgs/Explore";
-import Drafts from "~/svgs/Drafts";
-import Bookmark from "~/svgs/Bookmark";
-import Hackathon from "~/svgs/Hackathon";
-import Team from "~/svgs/Team";
-import More from "~/svgs/More";
+import { Explore, Drafts, Bookmark, Hackathon, Team, More } from "~/svgs";
 
 export const asideItems = [
   {
@@ -227,6 +222,10 @@ export const articles = [
     updatedAt: new Date("2021-08-24T15:30:00.000Z"),
   },
 ];
+
+export const tagArticles = articles.filter(
+  (e) => e.tags.includes("coding") || e.tags.includes("coding")
+);
 
 export const drafts = [
   { id: "123123f24312", title: "Untitle", updatedAt: new Date() },

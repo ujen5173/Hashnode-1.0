@@ -1,5 +1,4 @@
-import Search from "~/svgs/Search";
-import Ai from "~/svgs/Ai";
+import { Search, Ai } from "~/svgs";
 
 const SearchArea = () => {
   return (

@@ -1,8 +1,7 @@
 import Image from "next/image";
 import React, { type FC } from "react";
-import Book from "~/svgs/Book";
+import { Bookmarkplus, Book } from "~/svgs";
 import { limitTags } from "~/utils/miniFunctions";
-import Bookmarkplus from "~/svgs/Bookmarkplus";
 import Link from "next/link";
 
 interface Card {
@@ -33,25 +32,25 @@ const ArticleCard: FC<Card> = ({ card }) => {
     <div className="border-b border-border-light bg-white p-4 last:border-0 dark:border-border dark:bg-primary">
       <div className="">
         <header className="mb-4 flex items-center gap-2">
-          <Link href={`/@${card.user.username}`}>
-            <div className="h-10 w-10">
+          <Link href={`/u/@${card.user.username}`}>
+            <div>
               <Image
                 src={card.user.profile || ""}
-                width={40}
-                height={40}
+                width={60}
+                height={60}
                 alt="User Profile"
-                className="h-10 w-10 rounded-full object-cover"
+                className="h-12 w-12 rounded-full object-cover"
               />
             </div>
           </Link>
           <div className="flex-1">
-            <Link href={`/@${card.user.username}`}>
-              <h1 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <Link href={`/u/@${card.user.username}`}>
+              <h1 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                 {card.user.name}
               </h1>
             </Link>
-            <p className="text-sm font-normal text-gray-500 dark:text-text-primary">
-              <Link href={`/@${card.user.username}`}>
+            <p className="text-base font-normal text-gray-500 dark:text-text-primary">
+              <Link href={`/u/@${card.user.username}`}>
                 {card.user.username}.hashnode.dev ·{" "}
               </Link>
               {new Date(card.createdAt).toDateString()}
@@ -61,13 +60,13 @@ const ArticleCard: FC<Card> = ({ card }) => {
 
         <main className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-[2]">
-            <Link href={`/@${card.user.username}/${card.slug}`}>
+            <Link href={`/u/@${card.user.username}/${card.slug}`}>
               <h1 className="mb-2 text-xl font-semibold text-gray-700 dark:text-text-secondary">
                 {card.title}
               </h1>
             </Link>
 
-            <Link href={`/@${card.user.username}`}>
+            <Link href={`/u/@${card.user.username}`}>
               <div className="mb-2 flex items-center gap-2">
                 <Book className="h-4 w-4 fill-secondary" />
                 <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
@@ -76,7 +75,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
               </div>
             </Link>
 
-            <Link href={`/@${card.user.username}/${card.slug}`}>
+            <Link href={`/u/@${card.user.username}/${card.slug}`}>
               <p
                 className={`${
                   card.cover_image ? "max-height-4" : "max-height-3 w-11/12"
@@ -96,14 +95,16 @@ const ArticleCard: FC<Card> = ({ card }) => {
               </button>
 
               <div className="flex flex-wrap items-center gap-2">
-                {limitTags(card.tags, 13).map((tag) => (
-                  <button
-                    aria-label="tag"
-                    key={tag}
-                    className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 dark:border-border dark:text-text-primary"
-                  >
-                    {tag}
-                  </button>
+                {limitTags(card.tags, 13).map((tag, index) => (
+                  <Link href={`/tag/${tag}`} key={index}>
+                    <button
+                      aria-label="tag"
+                      key={tag}
+                      className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 dark:border-border dark:text-text-primary"
+                    >
+                      {tag}
+                    </button>
+                  </Link>
                 ))}
               </div>
             </div>

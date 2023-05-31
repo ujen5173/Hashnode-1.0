@@ -1,8 +1,4 @@
-import Heart from "~/svgs/Heart";
-import Comment from "~/svgs/Comment";
-import BookmarkArticle from "~/svgs/BookmarkArticle";
-import Share from "~/svgs/Share";
-import Dots from "~/svgs/Dots";
+import { Heart, Comment, BookmarkArticle, Share, Dots } from "~/svgs";
 
 const ArticleActions = () => {
   return (

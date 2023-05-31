@@ -1,4 +1,4 @@
-import Rocket from "~/svgs/Rocket";
+import { Rocket } from "~/svgs";
 
 const Anouncement = () => {
   return (

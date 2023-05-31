@@ -1,8 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import Add from "~/svgs/Add";
-import Angledown from "~/svgs/Angledown";
-import ProfileShare from "~/svgs/ProfileShare";
+import { Add, Angledown, ProfileShare } from "~/svgs";
 
 const UserProfileArea = () => {
   return (

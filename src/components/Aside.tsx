@@ -1,14 +1,11 @@
 import Link from "next/link";
 import React from "react";
 import { asideItems, trendingItems } from "~/utils/constants";
-import Trending from "~/svgs/Trending";
-import Twitter from "~/svgs/Twitter";
-import Discord from "~/svgs/Discord";
-import Linkedin from "~/svgs/Linkedin";
-import Instagram from "~/svgs/Instagram";
+
 import Navigation from "./Cards/Navigation";
 import TrendingNavigation from "./Cards/TrendingNavigation";
 import Divider from "./Divider";
+import { Trending, Twitter, Discord, Linkedin, Instagram } from "~/svgs";
 
 const Aside = () => {
   return (

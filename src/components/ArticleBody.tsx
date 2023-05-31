@@ -1,9 +1,8 @@
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
-import Book from "~/svgs/Book";
+import { Book, Follow } from "~/svgs";
 import ArticleActions from "./ArticleActions";
-import Follow from "~/svgs/Follow";
 
 const ArticleBody = () => {
   return (

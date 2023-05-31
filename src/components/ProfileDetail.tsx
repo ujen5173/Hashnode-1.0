@@ -1,9 +1,5 @@
 import React from "react";
-import DateSVG from "~/svgs/Date";
-import Instagram from "~/svgs/Instagram";
-import Linkedin from "~/svgs/Linkedin";
-import Location from "~/svgs/Location";
-import Twitter from "~/svgs/Twitter";
+import { DateSVG, Instagram, Linkedin, Location, Twitter } from "~/svgs";
 
 const ProfileDetail = () => {
   return (

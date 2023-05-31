@@ -1,11 +1,9 @@
 import Image from "next/image";
 import React, { useContext, useState } from "react";
-import Search from "~/svgs/Search";
-import Sun from "~/svgs/Sun";
 import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import { useClickOutside } from "@mantine/hooks";
-import Follow from "~/svgs/Follow";
 import { C } from "~/utils/context";
+import { Search, Sun, Follow } from "~/svgs";
 
 const ArticleRightArea = () => {
   const [opened, setOpened] = useState(false);

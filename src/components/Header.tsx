@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useClickOutside } from "@mantine/hooks";
-import { C } from "~/utils/context";
 import Image from "next/image";
 import ProfileDropdown from "./ProfileDropdown";
-import RightArea from "./RightArea.header";
+import RightArea from "./RightAreaHeader";
 import SearchArea from "./Search";
 import LeftArea from "./LeftArea";
 
