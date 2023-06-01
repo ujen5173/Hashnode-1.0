@@ -83,6 +83,9 @@ body.dark .anouncement {
 .btn-tab {
   @apply flex items-center gap-2 rounded-t bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-primary dark:text-text-secondary dark:hover:bg-primary-light;
 }
+.btn-tab-secondary {
+  @apply flex items-center gap-2 rounded-t bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-transparent dark:text-text-secondary dark:hover:bg-primary-light;
+}
 
 .input-primary {
   @apply rounded-full border border-border-light bg-light-bg px-10 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border;

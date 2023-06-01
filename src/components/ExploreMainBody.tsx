@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { trendingArticles, trendingTags } from "~/utils/constants";
 import Aside from "./Aside";
@@ -25,7 +26,7 @@ const ExploreMainBody = () => {
 
           <div className="rounded-md border border-border-light bg-white pt-2 dark:border-border dark:bg-primary">
             <header className="scroll-area overflow-auto border-b border-border-light px-4 dark:border-border">
-              <div className="flex w-max items-end justify-center gap-2">
+              <div className="mx-auto flex w-max items-end justify-center gap-2">
                 <button className="btn-tab">Trending</button>
                 <button className="btn-tab">Tags</button>
                 <button className="btn-tab">Blogs</button>
@@ -46,26 +47,29 @@ const ExploreMainBody = () => {
 
               <div className="flex flex-wrap gap-4">
                 {trendingTags.map((tag) => (
-                  <div
-                    className="flex w-full gap-2 rounded-md border border-border-light bg-primary-light p-2 dark:border-border sm:w-[calc(100%/2-1rem)]"
+                  <Link
+                    href={`/tag/${tag.name}`}
                     key={tag.id}
+                    className="w-full sm:w-[calc(100%/2-1rem)]"
                   >
-                    <Image
-                      src={tag.image}
-                      alt={tag.name}
-                      width={70}
-                      height={70}
-                      className="h-12 w-12 rounded-md object-cover"
-                    />
-                    <div>
-                      <h1 className="text-base font-medium text-gray-700 dark:text-text-secondary">
-                        {tag.name}
-                      </h1>
-                      <p className="text-sm font-normal text-gray-700 dark:text-text-primary">
-                        {tag.articlesCount} articles this week
-                      </p>
+                    <div className="flex gap-2 rounded-md border border-border-light bg-primary-light p-2 dark:border-border ">
+                      <Image
+                        src={tag.image}
+                        alt={tag.name}
+                        width={70}
+                        height={70}
+                        className="h-12 w-12 rounded-md object-cover"
+                      />
+                      <div>
+                        <h1 className="text-base font-medium text-gray-700 dark:text-text-secondary">
+                          {tag.name}
+                        </h1>
+                        <p className="text-sm font-normal text-gray-700 dark:text-text-primary">
+                          {tag.articlesCount} articles this week
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </section>

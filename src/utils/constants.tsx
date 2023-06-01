@@ -663,4 +663,5 @@ export const trendingTags = [
   },
 ];
 
-export const trendingArticles = articles.splice(0, 5);
+export const trendingArticles = [...articles].splice(0, 5);
+export const bookmarksArticles = [...articles].splice(0, 3);

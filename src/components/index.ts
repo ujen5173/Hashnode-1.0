@@ -8,3 +8,5 @@ export { default as UserProfileBody } from "./UserProfileBody";
 export { default as NewArticleHeader } from "./NewArticleHeader";
 export { default as NewArticleBody } from "./NewArticleBody";
 export { default as NewArticleModal } from "./NewArticleModal";
+export { default as BookmarkMainBody } from "./BookmarkMainBody";
+export { default as Notification } from "./Notification";

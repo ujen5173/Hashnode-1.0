@@ -13,7 +13,7 @@ const TrendingNavigation: FC<Props> = ({ item }) => {
   return (
     <Link
       aria-label="Read more on this article"
-      href={item.href}
+      href={`/tag/${item.name}`}
       title={item.name}
     >
       <div className="flex cursor-pointer select-none items-center justify-between rounded-md p-1 text-sm hover:bg-border-light dark:bg-primary dark:hover:bg-primary-light">
