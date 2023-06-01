@@ -1,6 +1,6 @@
 const Divider = () => {
   return (
-    <div className="mx-auto my-1 h-[1px] w-10/12 bg-border-light dark:bg-border"></div>
+    <div className="mx-auto my-1 h-[1.3px] w-10/12 bg-border-light dark:bg-border"></div>
   );
 };
 

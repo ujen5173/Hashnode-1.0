@@ -14,8 +14,15 @@ const Aside = () => {
         <Navigations />
         <Divider />
         <TrendingComponent />
-        <Divider />
         <SocialHandles />
+        <div className="w-4/12 px-4">
+          <Divider />
+        </div>
+        <div className="p-4">
+          <span className="text-sm text-gray-700 dark:text-text-primary">
+            @ {new Date().getFullYear()} Hashnode Clone
+          </span>
+        </div>
       </aside>
     </div>
   );
@@ -63,35 +70,43 @@ const TrendingComponent = () => {
 
 const SocialHandles = () => {
   return (
-    <div className="flex flex-wrap gap-4 p-2">
-      <button
-        aria-label="social links"
-        role="button"
-        className="btn-icon flex h-10 w-10 items-center justify-center"
-      >
-        <Twitter className="h-6 w-6 fill-text-primary" />
-      </button>
-      <button
-        aria-label="social links"
-        role="button"
-        className="btn-icon flex h-10 w-10 items-center justify-center"
-      >
-        <Discord className="h-6 w-6 fill-text-primary" />
-      </button>
-      <button
-        aria-label="social links"
-        role="button"
-        className="btn-icon flex h-10 w-10 items-center justify-center"
-      >
-        <Linkedin className="h-6 w-6 fill-text-primary" />
-      </button>
-      <button
-        aria-label="social links"
-        role="button"
-        className="btn-icon flex h-10 w-10 items-center justify-center"
-      >
-        <Instagram className="h-6 w-6 fill-text-primary" />
-      </button>
+    <div className="flex flex-wrap p-4">
+      <a href="https://twitter.com">
+        <button
+          aria-label="social links"
+          role="button"
+          className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-twitterColor"
+        >
+          <Twitter className="h-6 w-6 fill-text-primary" />
+        </button>
+      </a>
+      <a href="https://discord.com/app">
+        <button
+          aria-label="social links"
+          role="button"
+          className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-discordColor"
+        >
+          <Discord className="h-6 w-6 fill-text-primary" />
+        </button>
+      </a>
+      <a href="https://linkedin.com">
+        <button
+          aria-label="social links"
+          role="button"
+          className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-linkedinColor"
+        >
+          <Linkedin className="h-6 w-6 fill-text-primary" />
+        </button>
+      </a>
+      <a href="https://instagram.com">
+        <button
+          aria-label="social links"
+          role="button"
+          className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-instaColor"
+        >
+          <Instagram className="h-6 w-6 fill-text-primary" />
+        </button>
+      </a>
     </div>
   );
 };

@@ -94,6 +94,14 @@ body.dark .anouncement {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
 
+.btn-social-icon:hover svg,
+.btn-social-icon:hover path {
+  fill: white;
+}
+.btn-social-icon {
+  @apply flex h-10 w-10 items-center justify-center rounded-md;
+}
+
 button:focus-visible {
   outline: 1px solid #e2e8f0 !important;
   background: #e2e8f0 !important;

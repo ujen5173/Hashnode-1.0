@@ -2,7 +2,7 @@ import React from "react";
 
 const Notification = () => {
   return (
-    <div className="w-[35rem] rounded-md bg-white p-4 shadow-md dark:bg-black">
+    <div className="w-full rounded-md border border-border-light bg-white p-4 shadow-lg dark:border-border dark:bg-black md:w-[35rem]">
       <h1 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">
         Notification
       </h1>
