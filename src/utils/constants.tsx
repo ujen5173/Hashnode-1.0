@@ -595,3 +595,72 @@ export const recentActivity = [
     date: "May 25 2004",
   },
 ];
+
+/*
+  Data:
+AWS
+169 articles this week
+
+JavaScript
+287 articles this week
+
+Python
+166 articles this week
+
+Web Development
+256 articles this week
+
+React
+144 articles this week
+
+Devops
+289 articles this week
+
+add unique id to each tag
+*/
+export const trendingTags = [
+  {
+    id: "12345",
+    name: "AWS",
+    image:
+      "https://cdn.hashnode.com/res/hashnode/image/upload/v1607508501076/CYQAUOwqq.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp",
+    articlesCount: 169,
+  },
+  {
+    id: "23456",
+    name: "JavaScript",
+    image:
+      "https://cdn.hashnode.com/res/hashnode/image/upload/v1607082785538/EryuLRriM.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp",
+    articlesCount: 287,
+  },
+  {
+    id: "34567",
+    name: "Python",
+    image:
+      "https://cdn.hashnode.com/res/hashnode/image/upload/v1607321670861/lG265gIUp.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp",
+    articlesCount: 166,
+  },
+  {
+    id: "45678",
+    name: "Web Development",
+    image:
+      "https://cdn.hashnode.com/res/hashnode/image/upload/vdxecajl3uwbprclsctm/1450469658.jpg?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp&auto=compress,format&format=webp",
+    articlesCount: 256,
+  },
+  {
+    id: "56789",
+    name: "React",
+    image:
+      "https://cdn.hashnode.com/res/hashnode/image/upload/v1513321478077/ByCWNxZMf.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp",
+    articlesCount: 144,
+  },
+  {
+    id: "67890",
+    name: "Devops",
+    image:
+      "https://cdn.hashnode.com/res/hashnode/image/upload/cnvm0znfqcrwelhgtblb/1496913014.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp&auto=compress,format&format=webp",
+    articlesCount: 289,
+  },
+];
+
+export const trendingArticles = articles.splice(0, 5);
