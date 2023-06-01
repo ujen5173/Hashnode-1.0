@@ -1,3 +1,4 @@
+import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
 import React, { useContext, useEffect, useState } from "react";
 import slugify from "slugify";
@@ -42,8 +43,9 @@ const NewArticleBody = ({
   });
 
   const [file, setFile] = React.useState<string | null>(null);
-  const [uploading, setUploading] = React.useState(false);
-  const [fileModal, setFileModal] = React.useState(false);
+  const [uploading, setUploading] = React.useState<boolean>(false); // upload loading
+  const [fileModal, setFileModal] = React.useState<boolean>(false); // open and close file upload modal
+  const ref = useClickOutside<HTMLDivElement>(() => setFileModal(false));
 
   useEffect(() => {
     if (file) {
@@ -87,8 +89,12 @@ const NewArticleBody = ({
             <ImagePreview className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
             <span>{uploading ? "Uploading..." : "Add Cover"}</span>
           </button>
+
           {fileModal && (
-            <div className="absolute left-0 top-full mt-2 w-96">
+            <div
+              ref={ref}
+              className="absolute left-0 top-full mt-2 w-full sm:w-96"
+            >
               <ImagePlaceholder
                 file={file}
                 minHeight={"10rem"}
@@ -99,6 +105,7 @@ const NewArticleBody = ({
             </div>
           )}
         </div>
+
         {file && !uploading && (
           <>
             <div className="mb-5 w-full rounded-md border border-border-light dark:border-border">
@@ -118,6 +125,8 @@ const NewArticleBody = ({
             type="text"
             id="title"
             name="title"
+            autoComplete="off"
+            autoCorrect="off"
             value={data.title}
             onChange={(e) => {
               handleChange(e, setData);
@@ -143,6 +152,8 @@ const NewArticleBody = ({
             value={data.subtitle}
             onChange={(e) => handleChange(e, setData)}
             placeholder="Article Subtitle..."
+            autoComplete="off"
+            autoCorrect="off"
             className="mb-4 w-full bg-transparent py-2 text-xl font-semibold text-gray-700 outline-none dark:text-text-secondary"
           />
 
@@ -152,6 +163,8 @@ const NewArticleBody = ({
             value={data.content}
             onChange={(e) => handleChange(e, setData)}
             placeholder="Start writing your story..."
+            autoComplete="off"
+            autoCorrect="off"
             className="min-h-[70vh] w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
           />
         </section>

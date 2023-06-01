@@ -206,3 +206,18 @@ body.dark .article code {
   --tw-border-opacity: 1;
   border-color: rgb(147 197 253 / var(--tw-border-opacity));
 }
+
+.scroll-area::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+.scroll-area::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+/* Handle */
+.scroll-area::-webkit-scrollbar-thumb {
+  background: #6b7a8f;
+  border-radius: 10px;
+}

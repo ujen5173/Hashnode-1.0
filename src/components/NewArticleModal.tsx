@@ -48,14 +48,14 @@ const NewArticleModal = ({
       }));
     }
   }, [file]);
-  
+
   return (
     <section
       className={`${
         !publishModal ? "translate-x-full" : "translate-x-0"
-      } transition-ease fixed right-0 top-0 h-screen w-full min-w-[350px] max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light`}
+      } transition-ease scroll-area fixed right-0 top-0 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
     >
-      <div className="h-max">
+      <div className="h-max ">
         <header className="sticky left-0 top-0 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
           <button
             onClick={() => void setPublishModal(false)}
