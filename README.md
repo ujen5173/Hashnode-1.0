@@ -1,28 +1,55 @@
-# Create T3 App
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+# Hashnode Clone
+This is a **full-stack application** that serves as a clone of the popular blogging website, _Hashnode_. The purpose of this project is to showcase my skills in web development and serve as a learning experience. I have utilized Next.js, Clerk, Tailwind CSS, and the T3 stack with PostgreSQL as the technology stack for this project. With a plethora of exciting features, this intermediate-level project replicates approximately 80% of the functionalities found on the original Hashnode website. Furthermore, I have designed the user interface entirely from scratch.  
+  
+> **STATUS: UNDER CONSTRUCTION**
+  
+## Table of Contents
+- Features
+- Installation
+- Usage
+- TODO
 
-## What's next? How do I make an app with this?
+## Features
+1. Authentication
+2. User Profiles
+3. Comments
+4. Tags
+5. Search Functionality
+6. Likes and Bookmarks
+7. Follow System
+8. Notifications
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Installation
+Clone the repository
+```
+ git clone https://github.com/ujen5173/hashnode.git  
+```
+Navigate to the project directory:
+```
+  cd hashnode
+```
+Install the dependencies: 
+```
+  npm install
+```  
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Usage
+- Set up the required environment variables. Refer to the .env.example file for the necessary variables.
+- Start the development server: `npm run dev`
+- Open your web browser and visit **http://localhost:3000**
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Contributing
+Contributions are welcome! If you would like to contribute to this project, please follow these steps:
+- Fork this repository.
+- Create a new branch for your contribution: `git checkout -b feature/your-feature`
+- Make your changes and commit them: `git commit -m "Add your message here"`
+- Push the changes to your branch: `git push origin feature/your-feature`
 
-## Learn More
+## TODO
+- [ ] Implement user notifications system.
+- [ ] Implement Authentication.
+- [ ] Develop Backend.
+- [ ] Implement Chatgpt.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Cheers 🍻.
