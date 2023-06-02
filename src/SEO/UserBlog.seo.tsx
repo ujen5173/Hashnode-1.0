@@ -4,24 +4,18 @@ import Head from "next/head";
 const UserBlogSEO = () => {
   return (
     <Head>
-      <title>Hashnode Clone</title>
-      <meta property="og:title" content="Hashnode Clone" />
-      <meta
-        name="description"
-        content="Hashnode - Blogging community for developers, and people in tech"
-      />
+      <title>A Chapter Lead&apos;s blog</title>
+      <meta property="og:title" content="A Chapter Lead's blog" />
+      <meta name="description" content="A Chapter Lead's blog" />
 
       {/* Open Graph tags for social media banner */}
-      <meta property="og:title" content="Hashnode Clone" />
-      <meta
-        property="og:description"
-        content="Hashnode - Blogging community for developers, and people in tech"
-      />
+      <meta property="og:title" content="A Chapter Lead's blog" />
+      <meta property="og:description" content="A Chapter Lead's blog" />
       <meta property="og:image" content="/hashnode-social-banner.png" />
       <meta property="og:url" content="https://hashnode.vercel.app" />
 
       {/* Twitter card tags for Twitter banner */}
-      <meta name="twitter:title" content="Hashnode Clone" />
+      <meta name="twitter:title" content="A Chapter Lead's blog" />
       <meta name="twitter:description" content="Your page description" />
       <meta property="twitter:image" content="/hashnode-social-banner.png" />
       <meta name="twitter:card" content="summary_large_image" />

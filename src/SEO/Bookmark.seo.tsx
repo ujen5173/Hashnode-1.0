@@ -1,27 +1,21 @@
 import React from "react";
 import Head from "next/head";
 
-const ArticleSEO = () => {
+const BookmarkSEO = () => {
   return (
     <Head>
-      <title>Hyrum&apos;s law in modern frontend</title>
-      <meta property="og:title" content="Hashnode Clone" />
-      <meta
-        name="description"
-        content="Or the philosophy behind access modifiers, taking the shape of Private class features in modern JavaScript"
-      />
+      <title>Bookmarks - Hashnode Clone</title>
+      <meta property="og:title" content="Bookmarks - Hashnode Clone" />
+      <meta name="description" content="Bookmarks - Hashnode Clone" />
 
       {/* Open Graph tags for social media banner */}
-      <meta property="og:title" content="Hashnode Clone" />
-      <meta
-        property="og:description"
-        content="Or the philosophy behind access modifiers, taking the shape of Private class features in modern JavaScript"
-      />
+      <meta property="og:title" content="Bookmarks - Hashnode Clone" />
+      <meta property="og:description" content="Bookmarks - Hashnode Clone" />
       <meta property="og:image" content="/hashnode-social-banner.png" />
       <meta property="og:url" content="https://hashnode.vercel.app" />
 
       {/* Twitter card tags for Twitter banner */}
-      <meta name="twitter:title" content="Hashnode Clone" />
+      <meta name="twitter:title" content="Bookmarks - Hashnode Clone" />
       <meta name="twitter:description" content="Your page description" />
       <meta property="twitter:image" content="/hashnode-social-banner.png" />
       <meta name="twitter:card" content="summary_large_image" />
@@ -37,4 +31,4 @@ const ArticleSEO = () => {
   );
 };
 
-export default ArticleSEO;
+export default BookmarkSEO;
