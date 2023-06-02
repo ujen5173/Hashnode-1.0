@@ -6,7 +6,7 @@ import Trending from "./Trending";
 
 const RightAsideMain = () => {
   return (
-    <aside className="my-4 hidden min-h-screen flex-[1.8] lg:block">
+    <aside className="container-right-aside my-4 hidden min-h-screen lg:block">
       <Anouncement />
       <Trending />
       <Drafts />

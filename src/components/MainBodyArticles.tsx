@@ -4,7 +4,7 @@ import MainBodyHeader from "./MainBodyHeader";
 
 const MainBodyArticles = () => {
   return (
-    <section className="my-4 min-h-screen w-full flex-[5] rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
+    <section className="container-main my-4 min-h-screen w-full rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
       <MainBodyHeader />
 
       <div>

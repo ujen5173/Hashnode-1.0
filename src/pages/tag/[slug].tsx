@@ -9,7 +9,7 @@ const SingleTag = () => {
     <>
       <Header />
       <main className="min-h-screen w-full bg-light-bg dark:bg-black">
-        <div className="mx-auto flex max-w-[1550px] justify-between gap-4 px-4">
+        <div className="container-body mx-auto max-w-[1550px] gap-4 px-4">
           <Aside />
           <MainTagBody />
           <RightAsideMain />

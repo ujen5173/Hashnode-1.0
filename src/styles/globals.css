@@ -233,3 +233,27 @@ body.dark .article code {
   background: #6b7a8f;
   border-radius: 10px;
 }
+
+.container-body {
+  display: grid;
+}
+.container-aside {
+  grid-column: span 2 / span 2;
+}
+.container-main {
+  grid-column: span 7 / span 7;
+}
+.container-right-aside {
+  grid-column: span 3 / span 3;
+}
+
+@media screen and (max-width: 768px) {
+  .container-main {
+    min-width: 0;
+  }
+}
+@media screen and (min-width: 1024px) {
+  .container-body {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}

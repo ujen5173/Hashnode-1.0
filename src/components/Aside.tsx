@@ -9,7 +9,7 @@ import { Trending, Twitter, Discord, Linkedin, Instagram } from "~/svgs";
 
 const Aside = () => {
   return (
-    <div className="relative hidden min-h-screen flex-[1.30] py-4 lg:block">
+    <div className="container-aside relative hidden min-h-screen py-4 lg:block">
       <aside className="sticky left-0 top-4 h-fit w-full rounded-md border border-border-light bg-white py-2 dark:border-border dark:bg-primary">
         <Navigations />
         <Divider />

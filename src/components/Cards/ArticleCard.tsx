@@ -58,7 +58,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
           </div>
         </header>
 
-        <main className="flex flex-col gap-6 lg:flex-row">
+        <main className="flex flex-col gap-6 md:flex-row">
           <div className="flex-[2]">
             <Link href={`/u/@${card.user.username}/${card.slug}`}>
               <h1 className="mb-2 text-xl font-semibold text-gray-700 dark:text-text-secondary">
@@ -100,7 +100,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                     <button
                       aria-label="tag"
                       key={tag}
-                      className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 dark:border-border dark:text-text-primary"
+                      className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-primary-light dark:border-border dark:text-text-primary"
                     >
                       {tag}
                     </button>
