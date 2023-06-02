@@ -58,6 +58,12 @@ body.dark .anouncement {
 .btn-filled {
   @apply rounded-full border border-secondary bg-secondary px-4 py-2 text-sm font-medium text-white transition duration-150 hover:border-blue-500 hover:bg-blue-500 hover:shadow-md;
 }
+.btn-filled-large {
+  @apply rounded-full border border-secondary bg-secondary px-6 py-3 text-lg font-medium tracking-wider text-white transition duration-150 hover:border-blue-500 hover:bg-blue-500 hover:shadow-md;
+}
+.btn-oauth {
+  @apply flex items-center justify-center gap-2 rounded-full border border-border-light bg-transparent px-6 py-3 text-base font-medium tracking-wider text-gray-700 transition duration-150 hover:border-border-light hover:bg-light-bg hover:shadow-md dark:border-primary-light dark:bg-primary-light dark:text-white dark:hover:bg-border;
+}
 .btn-follow {
   @apply flex items-center justify-center rounded-full border border-border-light bg-white px-4 py-2 text-sm font-medium text-secondary hover:bg-gray-100 dark:border-border;
 }
@@ -92,6 +98,9 @@ body.dark .anouncement {
 }
 .input-secondary {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
+}
+.input-oauth {
+  @apply w-full rounded-full border border-border-light bg-light-bg px-6 py-3 text-lg font-semibold text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
 
 .btn-social-icon:hover svg,

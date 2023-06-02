@@ -4,7 +4,8 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
+import GithubProvider, { type GithubProfile } from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
@@ -53,7 +54,7 @@ export const authOptions: NextAuthOptions = {
       ...session,
       user: {
         ...session.user,
-        id: user.id,
+        ...user,
       },
     }),
   },
@@ -62,8 +63,34 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+      profile(profile: GoogleProfile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          profile: profile.picture,
+          username: profile.email.split("@")[0],
+        };
+      },
+    }),
+
+    GithubProvider({
+      clientId: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET,
+      profile(profile: GithubProfile) {
+        return {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          profile: profile.avatar_url,
+          username: profile.login,
+        };
+      },
     }),
   ],
+  pages: {
+    signIn: "/onboard",
+  },
 };
 
 /**

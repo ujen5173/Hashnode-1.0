@@ -4,9 +4,8 @@ generator client {
 }
 
 datasource db {
-    provider     = "postgresql"
-    url          = env("DATABASE_URL")
-    relationMode = "prisma"
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 // Necessary for Next auth
@@ -43,7 +42,7 @@ model User {
     email         String    @unique
     emailVerified DateTime?
     profile       String
-    tagline       String
+    tagline       String?
     cover_image   String?
     bio           String?
     skills        String[]

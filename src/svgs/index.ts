@@ -68,3 +68,5 @@ export { default as ProfileShare } from "./ProfileShare";
 export { default as Starsolid } from "./Starsolid";
 export { default as Trending } from "./Trending";
 export { default as Cloud } from "./Cloud";
+export { default as Google } from "./Google";
+export { default as Github } from "./Github";
