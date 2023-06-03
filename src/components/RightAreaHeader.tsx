@@ -6,21 +6,24 @@ import { C, type ContextValue } from "~/utils/context";
 import Notification from "./Notification";
 
 const RightArea: FC = () => {
-  const { handleTheme } = useContext(C) as ContextValue;
+  const { user, handleTheme } = useContext(C) as ContextValue;
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+
   return (
     <>
-      <Link href={"/new"}>
-        <button
-          aria-label="icon"
-          role="button"
-          className="btn-filled hidden items-center justify-center gap-2 hover:bg-blue-500 sm:flex"
-        >
-          <Pen className="h-4 w-4 fill-white" />
-          <span>Write</span>
-        </button>
-      </Link>
+      {!!user && (
+        <Link href={"/new"}>
+          <button
+            aria-label="icon"
+            role="button"
+            className="btn-filled hidden items-center justify-center gap-2 hover:bg-blue-500 sm:flex"
+          >
+            <Pen className="h-4 w-4 fill-white" />
+            <span>Write</span>
+          </button>
+        </Link>
+      )}
       <button
         aria-label="icon"
         role="button"

@@ -11,3 +11,4 @@ export { default as NewArticleModal } from "./NewArticleModal";
 export { default as BookmarkMainBody } from "./BookmarkMainBody";
 export { default as Notification } from "./Notification";
 export { default as NotAuthenticatedProfileDropdown } from "./NotAuthenticatedProfileDropdown";
+export { default as AuthCheck } from "./AuthCheck";

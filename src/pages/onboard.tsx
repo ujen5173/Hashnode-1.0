@@ -6,7 +6,6 @@ import Divider from "~/components/Divider";
 import { Github, Google, Logo } from "~/svgs";
 
 const Onboard = () => {
-  console.log(process.env.NEXTAUTH_URL);
   return (
     <>
       <header className="flex items-center justify-center border-b border-border-light bg-white p-4 dark:border-border dark:bg-primary">
@@ -26,7 +25,7 @@ const Onboard = () => {
               <button
                 onClick={() =>
                   void signIn("google", {
-                    callbackUrl: "http://localhost:3000/",
+                    callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
                   })
                 }
                 className="btn-oauth w-full md:w-[calc(100%/2-1rem)]"
@@ -37,7 +36,7 @@ const Onboard = () => {
               <button
                 onClick={() =>
                   void signIn("github", {
-                    callbackUrl: "http://localhost:3000/",
+                    callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
                   })
                 }
                 className="btn-oauth w-full md:w-[calc(100%/2-1rem)]"
