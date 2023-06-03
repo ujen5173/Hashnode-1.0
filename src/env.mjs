@@ -13,12 +13,10 @@ export const env = createEnv({
       process.env.NODE_ENV === "production"
         ? z.string().min(1)
         : z.string().min(1).optional(),
-    NEXTAUTH_URL: z.preprocess(
-      (str) => process.env.VERCEL_URL ?? str,
+    NEXTAUTH_URL:
       process.env.NODE_ENV === "production"
-        ?  z.string().url().default("https://hashnode-t3.vercel.app")
-        : z.string().url().default("http://localhost:3000")
-    ),
+        ? z.string().url().default("https://hashnode-t3.vercel.app")
+        : z.string().url().default("http://localhost:3000"),
 
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
