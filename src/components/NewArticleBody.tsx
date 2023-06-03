@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import slugify from "slugify";
 import ImagePreview from "~/svgs/ImagePreview";
 import { C, type ContextValue } from "~/utils/context";
-import { wait } from "~/utils/miniFunctions";
+import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import NewArticleModal from "./NewArticleModal";
 
@@ -12,34 +12,38 @@ export interface ArticleData {
   title: string;
   subtitle?: string;
   content: string;
-  cover?: string;
+  cover_image?: string;
   tags: string[];
   slug: string;
   seoTitle?: string;
   seoDescription?: string;
   seoOgImage?: string;
-  disableComment: boolean;
+  disabledComments: boolean;
 }
 
 const NewArticleBody = ({
   setPublishModal,
   publishModal,
+  publishing,
+  setPublishing,
 }: {
   publishModal: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
+  publishing: boolean;
+  setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { handleChange } = useContext(C) as ContextValue;
   const [data, setData] = useState<ArticleData>({
     title: "",
     subtitle: "",
     content: "",
-    cover: "",
+    cover_image: undefined,
     tags: [],
     slug: "",
     seoTitle: "",
     seoDescription: "",
     seoOgImage: "",
-    disableComment: false,
+    disabledComments: false,
   });
 
   const [file, setFile] = React.useState<string | null>(null);
@@ -56,25 +60,23 @@ const NewArticleBody = ({
     }
   }, [file]);
 
-  console.log(data);
-
-  const handleImageChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
+  const handleImage = async (
+    event: React.ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
-    setUploading(true);
-    const { files } = e.target;
-    if (files) {
-      const file = files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        setFile(URL.createObjectURL(file) || "");
-      };
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const fileData = await handleImageChange(file);
+      setFile(fileData);
+      setFileModal(false);
+    } catch (error) {
+      // Handle any errors that occurred during the handling of the image
+    } finally {
+      setUploading(false);
     }
-    await wait(2); // api testing
-    setUploading(false);
-    setFileModal(false);
   };
 
   return (
@@ -99,7 +101,7 @@ const NewArticleBody = ({
                 file={file}
                 minHeight={"10rem"}
                 uploading={uploading}
-                handleChange={handleImageChange}
+                handleChange={async (event) => await handleImage(event)}
                 recommendedText="Recommended dimension is 1600 x 840"
               />
             </div>
@@ -182,6 +184,8 @@ const NewArticleBody = ({
         setPublishModal={setPublishModal}
         data={data}
         setData={setData}
+        publishing={publishing}
+        setPublishing={setPublishing}
       />
     </main>
   );

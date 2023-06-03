@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect } from "react";
 import { Times } from "~/svgs";
+import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
-import { wait } from "~/utils/miniFunctions";
+import { handleImageChange, wait } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import type { ArticleData } from "./NewArticleBody";
 
@@ -11,33 +13,39 @@ const NewArticleModal = ({
   setPublishModal,
   data,
   setData,
+  publishing,
+  setPublishing,
 }: {
   publishModal: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
   data: ArticleData;
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
+
+  publishing: boolean;
+  setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { handleChange } = useContext(C) as ContextValue;
+  const { user, handleChange } = useContext(C) as ContextValue;
 
   const [file, setFile] = React.useState<string | null>(null);
-  const [uploading, setUploading] = React.useState(false);
+  const [uploading, setUploading] = React.useState<boolean>(false);
+  const router = useRouter();
 
-  const handleImageChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
+  const handleImage = async (
+    event: React.ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
-    setUploading(true);
-    const { files } = e.target;
-    if (files) {
-      const file = files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        setFile(URL.createObjectURL(file) || "");
-      };
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const fileData = await handleImageChange(file);
+      setFile(fileData);
+    } catch (error) {
+      // Handle any errors that occurred during the handling of the image
+    } finally {
+      setUploading(false);
     }
-    await wait(2); // api testing
-    setUploading(false);
   };
 
   useEffect(() => {
@@ -48,6 +56,25 @@ const NewArticleModal = ({
       }));
     }
   }, [file]);
+
+  const { mutateAsync } = api.posts.new.useMutation();
+
+  const handlePublish = async () => {
+    try {
+      setPublishing(true);
+      const response = await mutateAsync({
+        title: data.title,
+        content: data.content,
+        subtitle: data.subtitle || "Default Subtitle",
+        tags: ["react", "node", "javascript"],
+      });
+
+      if (response.success) {
+        await router.push(response.newArticleLink);
+      }
+    } catch (err) {}
+    setPublishing(false);
+  };
 
   return (
     <section
@@ -64,7 +91,13 @@ const NewArticleModal = ({
             <Times className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
             <span className="text-gray-700 dark:text-white">Close</span>
           </button>
-          <button className="btn-filled">Publish</button>
+          <button
+            disabled={publishing}
+            onClick={() => void handlePublish()}
+            className="btn-filled"
+          >
+            {publishing ? "Publishing..." : "Publish"}
+          </button>
         </header>
 
         <main className="px-2 py-4 pt-4">
@@ -120,7 +153,7 @@ const NewArticleModal = ({
                 description="Upload an image to display when your article is embedded online or on social network feeds. Recommended dimensions: 1200px X 630px. If you don't have one, your cover image will be used instead."
                 file={file}
                 uploading={uploading}
-                handleChange={handleImageChange}
+                handleChange={async (event) => await handleImage(event)}
                 recommendedText="Recommended dimension is 1600 x 840"
               />
             </div>
@@ -186,7 +219,7 @@ const NewArticleModal = ({
                   onChange={(e) => {
                     setData((prev) => ({
                       ...prev,
-                      disableComment: e.target.checked,
+                      disabledComments: e.target.checked,
                     }));
                   }}
                   id="disableComment"

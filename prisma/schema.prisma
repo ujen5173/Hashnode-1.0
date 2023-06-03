@@ -83,20 +83,21 @@ model Comment {
 }
 
 model Article {
-    id          String    @id @default(cuid())
-    title       String
-    cover_image String?
-    user        User      @relation("author", fields: [userId], references: [id])
-    userId      String
-    content     String
-    read_time   String
-    tags        Tag[]
-    subtitle    String?
-    likes       User[]
-    slug        String
-    comments    Comment[]
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    id               String    @id @default(cuid())
+    title            String
+    cover_image      String?
+    user             User      @relation("author", fields: [userId], references: [id])
+    userId           String
+    content          String
+    read_time        String
+    tags             Tag[]
+    subtitle         String?
+    disabledComments Boolean   @default(true)
+    likes            User[]
+    slug             String
+    comments         Comment[]
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
 }
 
 model VerificationToken {

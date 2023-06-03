@@ -5,10 +5,14 @@ import { C, type ContextValue } from "~/utils/context";
 
 const NewArticleHeader = ({
   setPublishModal,
+  publishing,
 }: {
+  publishing: boolean;
+
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { handleTheme } = useContext(C) as ContextValue;
+
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto flex w-full max-w-[1000px] items-center justify-between p-4">
@@ -48,10 +52,11 @@ const NewArticleHeader = ({
             </button>
 
             <button
+              disabled={publishing}
               onClick={() => void setPublishModal(true)}
               className="btn-filled"
             >
-              Publish
+              {publishing ? "Publishing..." : "Publish"}
             </button>
           </div>
         </div>

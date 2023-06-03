@@ -15,3 +15,20 @@ export const limitTags = (tags: string[], limit: number) => {
 
 export const wait = (time: number): Promise<void> =>
   new Promise((resolve) => setTimeout(() => resolve(), time * 1000));
+
+export const handleImageChange = (file: File): Promise<string | null> => {
+  return new Promise<string | null>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const fileData = reader.result as string;
+      resolve(fileData);
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Failed to read the file."));
+    };
+
+    reader.readAsDataURL(file);
+  });
+};
