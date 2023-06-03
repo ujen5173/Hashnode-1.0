@@ -27,11 +27,7 @@ const AuthCheck = () => {
             </button>
             <button
               className="btn-outline"
-              onClick={() =>
-                void signIn("google", {
-                  callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
-                })
-              }
+              onClick={() => void signIn("google")}
             >
               Continue with Google
             </button>
