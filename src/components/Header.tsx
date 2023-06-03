@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
 import ProfileDropdown from "./ProfileDropdown";
 import RightArea from "./RightAreaHeader";
 import SearchArea from "./Search";
 import LeftArea from "./LeftArea";
+import { C, type ContextValue } from "~/utils/context";
+import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
 
 const Header: React.FC = () => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+  const { user } = useContext(C) as ContextValue;
 
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
@@ -26,14 +29,20 @@ const Header: React.FC = () => {
             className="relative rounded-full"
           >
             <Image
-              src={"/default_user.avif"}
-              alt=""
+              src={user?.user.profile || "/default_user.avif"}
+              alt={user?.user.name || "user"}
               width={100}
               height={100}
-              className="h-9 w-9 overflow-hidden rounded-full"
+              className="h-9 w-9 select-none overflow-hidden rounded-full"
               onClick={() => setOpened(true)}
+              draggable={false}
             />
-            {opened && <ProfileDropdown setOpened={setOpened} ref={ref} />}
+            {opened &&
+              (!!user ? (
+                <ProfileDropdown user={user} ref={ref} />
+              ) : (
+                <NotAuthenticatedProfileDropdown ref={ref} />
+              ))}
           </button>
         </div>
       </div>

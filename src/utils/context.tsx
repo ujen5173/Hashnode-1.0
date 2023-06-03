@@ -1,70 +1,69 @@
-import React, { createContext, useEffect } from "react";
+import { type Session } from "next-auth";
+import React, {
+  useState,
+  useEffect,
+  type ChangeEvent,
+  type Dispatch,
+  type SetStateAction,
+  createContext,
+} from "react";
 
-export const C = createContext({
-  handleTheme: () => {
-    const html = document.querySelector("body");
-    if (html?.classList.contains("dark")) {
-      html?.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    } else {
-      html?.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    }
-  },
-  handleChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setState: React.Dispatch<React.SetStateAction<any>>
-  ) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { value, name } = e.target;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    setState((prev: any) => ({ ...prev, [name]: value }));
-  },
-} as {
+export interface ContextValue {
   handleTheme: () => void;
   handleChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setState: React.Dispatch<React.SetStateAction<any>>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setState: Dispatch<SetStateAction<any>>
   ) => void;
-});
+  user: Session | null;
+  setUser: Dispatch<SetStateAction<Session | null>>;
+}
 
-const Context = ({ children }: { children: React.ReactNode }) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+export const C = createContext<ContextValue | undefined>(undefined);
+
+const Context = ({ children }: Props) => {
+  const [user, setUser] = useState<Session | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setState: React.Dispatch<React.SetStateAction<any>>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setState: Dispatch<SetStateAction<{ [key: string]: string }>> // Specify the type of state properties
   ) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { value, name } = e.target;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    setState((prev: any) => ({ ...prev, [name]: value }));
+    setState((prev) => ({ ...prev, [name]: value })); // Remove the unnecessary type annotation
   };
 
   const handleTheme = () => {
-    const body = document.querySelector("body");
-    if (body?.classList.contains("dark")) {
-      body?.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    } else {
-      body?.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    }
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
   };
 
   useEffect(() => {
-    // theme init
     const body = document.querySelector("body");
-    const theme = localStorage.getItem("theme");
-    if (theme === "dark") {
-      body?.classList.add("dark");
-      body?.classList.remove("light");
-    } else {
-      body?.classList.add("light");
-      body?.classList.remove("dark");
-    }
+
+    // theme init
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark";
+    const newTheme = savedTheme || "light";
+    setTheme(newTheme);
+    body?.classList.add(newTheme);
+    body?.classList.remove(newTheme === "light" ? "dark" : "light");
   }, []);
 
+  useEffect(() => {
+    const body = document.querySelector("body");
+
+    body?.classList.add(theme);
+    body?.classList.remove(theme === "light" ? "dark" : "light");
+  }, [theme]);
+
   return (
-    <C.Provider value={{ handleTheme, handleChange }}>{children}</C.Provider>
+    <C.Provider value={{ handleTheme, handleChange, user, setUser }}>
+      {children}
+    </C.Provider>
   );
 };
 

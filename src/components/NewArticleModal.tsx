@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { useContext, useEffect } from "react";
 import { Times } from "~/svgs";
-import { C } from "~/utils/context";
+import { C, type ContextValue } from "~/utils/context";
 import { wait } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import type { ArticleData } from "./NewArticleBody";
@@ -17,7 +17,7 @@ const NewArticleModal = ({
   data: ArticleData;
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
 }) => {
-  const { handleChange } = useContext(C);
+  const { handleChange } = useContext(C) as ContextValue;
 
   const [file, setFile] = React.useState<string | null>(null);
   const [uploading, setUploading] = React.useState(false);

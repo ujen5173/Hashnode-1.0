@@ -2,13 +2,14 @@ import Image from "next/image";
 import React, { useContext, useState } from "react";
 import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import { useClickOutside } from "@mantine/hooks";
-import { C } from "~/utils/context";
+import { C, type ContextValue } from "~/utils/context";
 import { Search, Sun, Follow } from "~/svgs";
+import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
 
 const ArticleRightArea = () => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
-  const { handleTheme } = useContext(C);
+  const { handleTheme, user } = useContext(C) as ContextValue;
 
   return (
     <div className="flex items-center justify-center gap-2">
@@ -49,7 +50,12 @@ const ArticleRightArea = () => {
           className="h-9 w-9 overflow-hidden rounded-full"
           onClick={() => setOpened(true)}
         />
-        {opened && <ArticleProfileDropdown ref={ref} />}
+        {opened &&
+          (!!user ? (
+            <ArticleProfileDropdown ref={ref} />
+          ) : (
+            <NotAuthenticatedProfileDropdown ref={ref} />
+          ))}
       </button>
     </div>
   );

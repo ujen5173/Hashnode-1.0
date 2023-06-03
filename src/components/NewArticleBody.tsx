@@ -28,7 +28,7 @@ const NewArticleBody = ({
   publishModal: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { handleChange } = useContext(C);
+  const { handleChange } = useContext(C) as ContextValue;
   const [data, setData] = useState<ArticleData>({
     title: "",
     subtitle: "",

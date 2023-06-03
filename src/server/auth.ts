@@ -3,13 +3,14 @@ import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
+  type User,
 } from "next-auth";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import GithubProvider, { type GithubProfile } from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
-import type { Article, Comment, Tag } from "@prisma/client";
+import slugify from "slugify";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -27,19 +28,8 @@ declare module "next-auth" {
     name: string;
     username: string;
     email: string;
-    emailVerified: Date;
     profile: string;
-    tagline?: string;
-    cover_image?: string;
-    bio?: string;
-    skills: string[];
-    social: any;
-    following: User[];
-    followers: User[];
-    followingTags: Tag[];
-    comments: Comment[];
-    articles: Article[];
-    likedArticles: Article[];
+    emailVerified: Date | null;
   }
 }
 
@@ -58,18 +48,27 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
+  // session: {
+  //   strategy: "jwt",
+  // },
+  // secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      profile(profile: GoogleProfile) {
+      profile(profile: GoogleProfile): User {
         return {
           id: profile.sub,
           name: profile.name,
+          username: slugify(profile.name, {
+            lower: true,
+            replacement: "_",
+            trim: true,
+          }),
           email: profile.email,
           profile: profile.picture,
-          username: profile.email.split("@")[0],
+          emailVerified: profile.email_verified ? new Date() : null,
         };
       },
     }),
@@ -77,13 +76,14 @@ export const authOptions: NextAuthOptions = {
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
-      profile(profile: GithubProfile) {
+      profile(profile: GithubProfile): User {
         return {
-          id: profile.id,
-          name: profile.name,
-          email: profile.email,
-          profile: profile.avatar_url,
+          id: profile.id.toString() || "",
+          name: profile.name || "",
           username: profile.login,
+          email: profile.email || "",
+          profile: profile.avatar_url,
+          emailVerified: profile.email ? new Date() : null,
         };
       },
     }),

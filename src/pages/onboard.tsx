@@ -5,7 +5,7 @@ import React from "react";
 import Divider from "~/components/Divider";
 import { Github, Google, Logo } from "~/svgs";
 
-const onboard = () => {
+const Onboard = () => {
   return (
     <>
       <header className="flex items-center justify-center border-b border-border-light bg-white p-4 dark:border-border dark:bg-primary">
@@ -25,7 +25,7 @@ const onboard = () => {
               <button
                 onClick={() =>
                   void signIn("google", {
-                    callbackUrl: process.env.NEXTAUTH_URL,
+                    callbackUrl: "http://localhost:3000/",
                   })
                 }
                 className="btn-oauth w-full md:w-[calc(100%/2-1rem)]"
@@ -36,13 +36,13 @@ const onboard = () => {
               <button
                 onClick={() =>
                   void signIn("github", {
-                    callbackUrl: process.env.NEXTAUTH_URL,
+                    callbackUrl: "http://localhost:3000/",
                   })
                 }
                 className="btn-oauth w-full md:w-[calc(100%/2-1rem)]"
               >
                 <Github className="h-5 w-5 fill-gray-700 dark:fill-white" />
-                <span>Continue with Discord</span>
+                <span>Continue with Github</span>
               </button>
             </div>
 
@@ -99,4 +99,4 @@ const onboard = () => {
   );
 };
 
-export default onboard;
+export default Onboard;

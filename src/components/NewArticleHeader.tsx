@@ -1,14 +1,14 @@
 import Link from "next/link";
 import React, { useContext } from "react";
 import { Angleleft, Cloud, LogonoText, Sun } from "~/svgs";
-import { C } from "~/utils/context";
+import { C, type ContextValue } from "~/utils/context";
 
 const NewArticleHeader = ({
   setPublishModal,
 }: {
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { handleTheme } = useContext(C);
+  const { handleTheme } = useContext(C) as ContextValue;
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto flex w-full max-w-[1000px] items-center justify-between p-4">

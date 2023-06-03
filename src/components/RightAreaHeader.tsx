@@ -2,11 +2,11 @@ import { useClickOutside } from "@mantine/hooks";
 import Link from "next/link";
 import { useContext, useState, type FC } from "react";
 import { Pen, Updates, Sun, Notification as NotificationSVG } from "~/svgs";
-import { C } from "~/utils/context";
+import { C, type ContextValue } from "~/utils/context";
 import Notification from "./Notification";
 
 const RightArea: FC = () => {
-  const { handleTheme } = useContext(C);
+  const { handleTheme } = useContext(C) as ContextValue;
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   return (
