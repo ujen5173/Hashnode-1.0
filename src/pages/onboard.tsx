@@ -6,6 +6,7 @@ import Divider from "~/components/Divider";
 import { Github, Google, Logo } from "~/svgs";
 
 const Onboard = () => {
+  console.log(process.env.NEXTAUTH_URL);
   return (
     <>
       <header className="flex items-center justify-center border-b border-border-light bg-white p-4 dark:border-border dark:bg-primary">

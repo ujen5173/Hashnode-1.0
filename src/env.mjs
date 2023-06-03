@@ -16,16 +16,7 @@ export const env = createEnv({
     NEXTAUTH_URL: z.preprocess(
       (str) => process.env.VERCEL_URL ?? str,
       process.env.NODE_ENV === "production"
-        ? z
-            .string()
-            .url()
-            .refine((url) =>
-              [
-                "https://hashnode-t3.vercel.app",
-                "https://hashnode-git-main-ujen5173.vercel.app",
-                "https://hashnode-7isleobld-ujen5173.vercel.app",
-              ].includes(url)
-            )
+        ?  z.string().url().default("https://hashnode-t3.vercel.app")
         : z.string().url().default("http://localhost:3000")
     ),
 
