@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useContext, useEffect, useState } from "react";
 import slugify from "slugify";
 import ImagePreview from "~/svgs/ImagePreview";
-import { C } from "~/utils/context";
+import { C, type ContextValue } from "~/utils/context";
 import { wait } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import NewArticleModal from "./NewArticleModal";
