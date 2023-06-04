@@ -47,15 +47,15 @@ const NewArticleBody = ({
   });
 
   const [file, setFile] = React.useState<string | null>(null);
-  const [uploading, setUploading] = React.useState<boolean>(false); // upload loading
   const [fileModal, setFileModal] = React.useState<boolean>(false); // open and close file upload modal
   const ref = useClickOutside<HTMLDivElement>(() => setFileModal(false));
 
   useEffect(() => {
+    // useEffect to fill up the cover image
     if (file) {
       setData((prev) => ({
         ...prev,
-        cover: file,
+        cover_image: file,
       }));
     }
   }, [file]);
@@ -68,14 +68,12 @@ const NewArticleBody = ({
     if (!file) return;
 
     try {
-      setUploading(true);
       const fileData = await handleImageChange(file);
+      console.log({ fileData });
       setFile(fileData);
       setFileModal(false);
     } catch (error) {
       // Handle any errors that occurred during the handling of the image
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -85,11 +83,10 @@ const NewArticleBody = ({
         <div className="relative mb-5 flex items-center gap-2">
           <button
             onClick={() => setFileModal((prev) => !prev)}
-            disabled={uploading}
             className="btn-subtle flex items-center justify-center gap-2"
           >
             <ImagePreview className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
-            <span>{uploading ? "Uploading..." : "Add Cover"}</span>
+            <span>{"Add Cover"}</span>
           </button>
 
           {fileModal && (
@@ -100,7 +97,6 @@ const NewArticleBody = ({
               <ImagePlaceholder
                 file={file}
                 minHeight={"10rem"}
-                uploading={uploading}
                 handleChange={async (event) => await handleImage(event)}
                 recommendedText="Recommended dimension is 1600 x 840"
               />
@@ -108,7 +104,7 @@ const NewArticleBody = ({
           )}
         </div>
 
-        {file && !uploading && (
+        {file && (
           <>
             <div className="mb-5 w-full rounded-md border border-border-light dark:border-border">
               <Image
@@ -123,30 +119,32 @@ const NewArticleBody = ({
         )}
 
         <section className="px-2">
-          <input
-            type="text"
-            id="title"
-            name="title"
-            autoComplete="off"
-            autoCorrect="off"
-            value={data.title}
-            onChange={(e) => {
-              handleChange(e, setData);
-              setData((prev) => ({
-                ...prev,
-                slug: slugify(e.target.value, {
-                  replacement: "-",
-                  remove: undefined,
-                  lower: true,
-                  strict: true,
-                  locale: "vi",
-                  trim: true,
-                }),
-              }));
-            }}
-            placeholder="Article Title..."
-            className="mb-4 w-full bg-transparent py-2 text-4xl font-bold text-gray-700 outline-none dark:text-text-secondary"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              id="title"
+              name="title"
+              autoComplete="off"
+              autoCorrect="off"
+              value={data.title}
+              onChange={(e) => {
+                handleChange(e, setData);
+                setData((prev) => ({
+                  ...prev,
+                  slug: slugify(e.target.value, {
+                    replacement: "-",
+                    remove: undefined,
+                    lower: true,
+                    strict: true,
+                    locale: "vi",
+                    trim: true,
+                  }),
+                }));
+              }}
+              placeholder="Article Title..."
+              className="mb-4 w-full bg-transparent py-2 text-4xl font-bold text-gray-700 outline-none dark:text-text-secondary"
+            />
+          </div>
           <input
             type="text"
             id="subtitle"
@@ -158,17 +156,20 @@ const NewArticleBody = ({
             autoCorrect="off"
             className="mb-4 w-full bg-transparent py-2 text-xl font-semibold text-gray-700 outline-none dark:text-text-secondary"
           />
-
-          <textarea
-            id="content"
-            name="content"
-            value={data.content}
-            onChange={(e) => handleChange(e, setData)}
-            placeholder="Start writing your story..."
-            autoComplete="off"
-            autoCorrect="off"
-            className="min-h-[70vh] w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
-          />
+          <div className="relative">
+            <textarea
+              id="content"
+              name="content"
+              value={data.content}
+              onChange={(e) => {
+                handleChange(e, setData);
+              }}
+              placeholder="Start writing your story..."
+              autoComplete="off"
+              autoCorrect="off"
+              className="min-h-[70vh] w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
+            />
+          </div>
         </section>
       </div>
 

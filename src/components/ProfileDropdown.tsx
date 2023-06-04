@@ -28,10 +28,10 @@ const ProfileDropdown = React.forwardRef<
           draggable={false}
         />
         <div>
-          <h1 className="text-sm font-semibold dark:text-text-primary">
+          <h1 className="text-sm font-semibold dark:text-text-secondary">
             {user?.user.name}
           </h1>
-          <h2 className="text-sm font-semibold text-gray-600 dark:text-white">
+          <h2 className="text-sm text-gray-600 dark:text-text-primary">
             @{user?.user.username}
           </h2>
         </div>

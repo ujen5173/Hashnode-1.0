@@ -1,10 +1,19 @@
 import Link from "next/link";
-import { Hamburger, Angleleft } from "~/svgs";
+import { Hamburger, Angleleft, Home } from "~/svgs";
 import Image from "next/image";
 
 const ArticleLeftArea = () => {
   return (
     <div className="flex items-center justify-center gap-2">
+      <Link href="/">
+        <button
+          aria-label="icon"
+          role="button"
+          className="btn-icon flex h-10 w-10"
+        >
+          <Home className="h-5 w-5 fill-black dark:fill-white" />
+        </button>
+      </Link>
       <button
         onClick={() => history.back()}
         aria-label="icon"

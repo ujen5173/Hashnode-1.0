@@ -49,24 +49,60 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  // session: {
-  //   strategy: "jwt",
-  // },
-  // secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      profile(profile: GoogleProfile): User {
+      async profile(profile: GoogleProfile): Promise<User> {
+        // Get all the usernames that starts with the name of the new user
+        const usernameOccurance = await prisma.user.findMany({
+          where: {
+            username: {
+              startsWith: slugify(profile.name, {
+                lower: true,
+                replacement: "_",
+                trim: true,
+              }),
+            },
+          },
+          select: {
+            username: true,
+          },
+        });
+
+        const isUsernameExists = (username: string): boolean => {
+          return usernameOccurance.some((user) => user.username === username);
+        };
+
+        // Function to generate a random number
+        const generateRandomNumber = () => {
+          return Math.floor(Math.random() * 10);
+        };
+
+        // Function to generate a unique username
+        const generateUniqueUsername = (desiredUsername: string): string => {
+          let username = desiredUsername;
+          let suffix = 1;
+
+          while (isUsernameExists(username)) {
+            username = `${desiredUsername}${generateRandomNumber()}${suffix}`;
+            suffix++;
+          }
+
+          return username;
+        };
+
         return {
           id: profile.sub,
           name: profile.name,
-          username: slugify(profile.name, {
-            lower: true,
-            replacement: "_",
-            trim: true,
-          }),
+          username: generateUniqueUsername(
+            slugify(profile.name, {
+              lower: true,
+              replacement: "_",
+              trim: true,
+            })
+          ),
           email: profile.email,
           profile: profile.picture,
           emailVerified: profile.email_verified ? new Date() : null,
@@ -94,6 +130,10 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/onboard",
   },
+  // session: {
+  //   strategy: "jwt",
+  // },
+  // secret: process.env.NEXTAUTH_SECRET,
 };
 
 /**

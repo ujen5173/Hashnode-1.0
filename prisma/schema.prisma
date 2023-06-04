@@ -91,6 +91,9 @@ model Article {
     content          String
     read_time        String
     tags             Tag[]
+    seoTitle         String?
+    seoDescription   String?
+    seoOgImage       String?
     subtitle         String?
     disabledComments Boolean   @default(true)
     likes            User[]

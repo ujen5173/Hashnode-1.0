@@ -5,7 +5,6 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { posts } from "../types.api";
 import slugify from "slugify";
 import readingTime from "reading-time";
 
@@ -15,27 +14,20 @@ export const postsRouter = createTRPCRouter({
   }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.article.findMany({
-      select: {
-        id: true,
-        title: true,
-        subtitle: true,
-        slug: true,
-      },
-    });
+    return await ctx.prisma.article.findMany({});
   }),
 
   new: protectedProcedure
     .input(
       z.object({
-        title: z.string(),
-        subtitle: z.string(),
-        content: z.string(),
-        tags: z.array(z.string()).optional().default([]),
-        seoTitle: z.string().optional().nullable(),
-        seoDescription: z.string().optional().nullable(),
-        seoOgImage: z.string().optional().nullable(),
-        cover_image: z.string().optional().nullable(),
+        title: z.string().min(5).trim(),
+        subtitle: z.string().trim().optional(),
+        content: z.string().min(25).trim(),
+        tags: z.array(z.string().trim()).optional().default([]),
+        seoTitle: z.string().trim().optional().nullable(),
+        seoDescription: z.string().trim().optional().nullable(),
+        seoOgImage: z.string().trim().optional().nullable(),
+        cover_image: z.string().trim().optional().nullable(),
         disabledComments: z.boolean().optional().default(false),
       })
     )
@@ -48,36 +40,6 @@ export const postsRouter = createTRPCRouter({
           trim: true,
           locale: "vi",
         });
-
-        // const existingTags = await ctx.prisma.tag.findMany({
-        //   select: {
-        //     name: true,
-        //   },
-        // });
-
-        // const nonExistingTags = tags.filter((tag) => {
-        //   return !existingTags.find((existingTag) => existingTag.name === tag);
-        // });
-
-        // await ctx.prisma.tag.createMany({
-        //   data: nonExistingTags.map((tag) => ({
-        //     name: tag,
-        //     slug: slugify(tag, {
-        //       lower: true,
-        //       strict: true,
-        //       trim: true,
-        //       locale: "vi",
-        //     }),
-        //   })),
-        //   skipDuplicates: true,
-        // });
-
-        // console.log({
-        //   ...input,
-        //   userId: ctx.session.user.id,
-        //   read_time: readingTime(input.content).text,
-        //   slug,
-        // });
 
         const newArticle = await ctx.prisma.article.create({
           data: {
@@ -105,6 +67,12 @@ export const postsRouter = createTRPCRouter({
             },
             read_time: readingTime(input.content).text,
             slug,
+            seoTitle: input.seoTitle || title,
+            seoDescription:
+              input.seoDescription ||
+              input.subtitle ||
+              input.content.slice(0, 40),
+            seoOgImage: input.seoOgImage || input.cover_image,
           },
         });
 

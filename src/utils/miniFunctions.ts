@@ -18,17 +18,7 @@ export const wait = (time: number): Promise<void> =>
 
 export const handleImageChange = (file: File): Promise<string | null> => {
   return new Promise<string | null>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      const fileData = reader.result as string;
-      resolve(fileData);
-    };
-
-    reader.onerror = () => {
-      reject(new Error("Failed to read the file."));
-    };
-
-    reader.readAsDataURL(file);
+    if (!file) reject("No file uploaded");
+    resolve(URL.createObjectURL(file) || "");
   });
 };

@@ -5,16 +5,11 @@ import { useContext, useEffect } from "react";
 import { AuthCheck, Header, MainBody } from "~/components";
 import HomeSEO from "~/SEO/Home.seo";
 import { authOptions } from "~/server/auth";
-import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
-
-  const { data } = api.posts.getAll.useQuery();
-
-  console.log({ data });
 
   useEffect(() => {
     setUser(session);

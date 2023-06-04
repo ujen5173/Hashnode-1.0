@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect } from "react";
+import React, { type KeyboardEvent, useContext, useEffect } from "react";
 import { Times } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
-import { handleImageChange, wait } from "~/utils/miniFunctions";
+import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import type { ArticleData } from "./NewArticleBody";
 
@@ -27,7 +27,6 @@ const NewArticleModal = ({
   const { user, handleChange } = useContext(C) as ContextValue;
 
   const [file, setFile] = React.useState<string | null>(null);
-  const [uploading, setUploading] = React.useState<boolean>(false);
   const router = useRouter();
 
   const handleImage = async (
@@ -38,17 +37,17 @@ const NewArticleModal = ({
     if (!file) return;
 
     try {
-      setUploading(true);
       const fileData = await handleImageChange(file);
       setFile(fileData);
     } catch (error) {
       // Handle any errors that occurred during the handling of the image
     } finally {
-      setUploading(false);
     }
   };
 
   useEffect(() => {
+    // useEffect to fill up the Seo OG Image
+
     if (file) {
       setData((prev) => ({
         ...prev,
@@ -60,20 +59,40 @@ const NewArticleModal = ({
   const { mutateAsync } = api.posts.new.useMutation();
 
   const handlePublish = async () => {
-    try {
-      setPublishing(true);
-      const response = await mutateAsync({
-        title: data.title,
-        content: data.content,
-        subtitle: data.subtitle || "Default Subtitle",
-        tags: ["react", "node", "javascript"],
-      });
+    if (!data.title || !data.content) {
+      alert("Please fill up the title and content");
+      return;
+    }
 
-      if (response.success) {
+    if (data.content.length < 25) {
+      alert("Content should be at least 25 characters long");
+      return;
+    }
+
+    setPublishing(true);
+    try {
+      const response = await mutateAsync(data);
+      if (response.success) { 
         await router.push(response.newArticleLink);
       }
     } catch (err) {}
     setPublishing(false);
+  };
+
+  const handleTagChange = (e: KeyboardEvent<HTMLInputElement>) => {
+    if ((e.target as HTMLInputElement).value.trim() === "") return;
+
+    if (e.key === "Enter" || e.key === "Tab") {
+      e.preventDefault();
+      const inputValue = (e.target as HTMLInputElement).value;
+
+      setData({
+        ...data,
+        tags: [...data.tags, inputValue],
+      });
+
+      (e.target as HTMLInputElement).value = "";
+    }
   };
 
   return (
@@ -83,7 +102,7 @@ const NewArticleModal = ({
       } transition-ease scroll-area fixed right-0 top-0 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
     >
       <div className="h-max ">
-        <header className="sticky left-0 top-0 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
+        <header className="sticky left-0 top-0 z-50 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
           <button
             onClick={() => void setPublishModal(false)}
             className="btn-subtle flex items-center justify-center gap-2"
@@ -94,7 +113,7 @@ const NewArticleModal = ({
           <button
             disabled={publishing}
             onClick={() => void handlePublish()}
-            className="btn-filled"
+            className={`${publishing ? "opacity-50" : ""} btn-filled`}
           >
             {publishing ? "Publishing..." : "Publish"}
           </button>
@@ -120,15 +139,25 @@ const NewArticleModal = ({
               >
                 Article Slug
               </label>
-              <input
-                type="text"
-                className="input-secondary"
-                placeholder="article-slug"
-                id="slug"
-                name="slug"
-                value={data.slug}
-                onChange={(e) => handleChange(e, setData)}
-              />
+              <div className="relative flex items-stretch gap-2 rounded-md border border-border-light px-4 dark:border-border ">
+                <div className="flex select-none items-center justify-center border-r border-border-light pr-3 dark:border-border">
+                  <span className="text-gray-500 dark:text-text-primary">
+                    /u/@{user?.user.username}/
+                  </span>
+                </div>
+                <input
+                  autoComplete="off"
+                  autoCorrect="off"
+                  type="text"
+                  className="w-full bg-transparent p-2 text-lg text-gray-700 outline-none dark:text-text-secondary"
+                  style={{ border: "0" }}
+                  placeholder="article-slug"
+                  id="slug"
+                  name="slug"
+                  value={data.slug}
+                  onChange={(e) => handleChange(e, setData)}
+                />
+              </div>
             </div>
             <div className="mb-8">
               <label
@@ -138,21 +167,42 @@ const NewArticleModal = ({
                 Article Tags
               </label>
               <input
+                autoComplete="off"
+                autoCorrect="off"
                 type="text"
                 className="input-secondary"
                 placeholder="Seperate tags with commas"
                 id="tags"
                 name="tags"
-                value={data.tags}
-                onChange={(e) => handleChange(e, setData)}
+                onKeyDownCapture={handleTagChange}
               />
+
+              <div className="mt-2 flex gap-2">
+                {data.tags.map((tag, index) => (
+                  <div
+                    className="flex items-center gap-2 rounded-md border border-border-light bg-primary-light px-2 py-1 text-lg text-gray-500 dark:border-border dark:text-text-primary"
+                    key={index}
+                  >
+                    <span>{tag}</span>
+                    <div
+                      onClick={() => {
+                        setData((prev) => ({
+                          ...prev,
+                          tags: prev.tags.filter((t) => t !== tag),
+                        }));
+                      }}
+                    >
+                      <Times className="h-5 w-5 fill-red" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="mb-8">
               <ImagePlaceholder
                 title="CUSTOM OG IMAGE"
                 description="Upload an image to display when your article is embedded online or on social network feeds. Recommended dimensions: 1200px X 630px. If you don't have one, your cover image will be used instead."
                 file={file}
-                uploading={uploading}
                 handleChange={async (event) => await handleImage(event)}
                 recommendedText="Recommended dimension is 1600 x 840"
               />
@@ -171,6 +221,8 @@ const NewArticleModal = ({
                 have the best click-through-rates.
               </p>
               <input
+                autoComplete="off"
+                autoCorrect="off"
                 type="text"
                 className="input-secondary"
                 placeholder="Enter meta title"
@@ -216,6 +268,8 @@ const NewArticleModal = ({
 
               <div className="flex items-center gap-2">
                 <input
+                  autoComplete="off"
+                  autoCorrect="off"
                   onChange={(e) => {
                     setData((prev) => ({
                       ...prev,

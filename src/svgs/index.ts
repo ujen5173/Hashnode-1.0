@@ -70,3 +70,4 @@ export { default as Trending } from "./Trending";
 export { default as Cloud } from "./Cloud";
 export { default as Google } from "./Google";
 export { default as Github } from "./Github";
+export { default as Home } from "./Home";
