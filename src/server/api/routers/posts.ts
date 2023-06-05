@@ -14,7 +14,25 @@ export const postsRouter = createTRPCRouter({
   }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.article.findMany({});
+    return await ctx.prisma.article.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile: true,
+          },
+        },
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
   }),
 
   new: protectedProcedure

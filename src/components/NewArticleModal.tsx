@@ -72,7 +72,7 @@ const NewArticleModal = ({
     setPublishing(true);
     try {
       const response = await mutateAsync(data);
-      if (response.success) { 
+      if (response.success) {
         await router.push(response.newArticleLink);
       }
     } catch (err) {}
@@ -177,7 +177,7 @@ const NewArticleModal = ({
                 onKeyDownCapture={handleTagChange}
               />
 
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2 flex flex-wrap gap-2">
                 {data.tags.map((tag, index) => (
                   <div
                     className="flex items-center gap-2 rounded-md border border-border-light bg-primary-light px-2 py-1 text-lg text-gray-500 dark:border-border dark:text-text-primary"

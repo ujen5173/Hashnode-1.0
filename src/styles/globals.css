@@ -267,3 +267,17 @@ body.dark .article code {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 }
+
+.loading {
+  animation: animate-loading 1500ms linear infinite;
+}
+
+@keyframes animate-loading {
+  from,
+  to {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}

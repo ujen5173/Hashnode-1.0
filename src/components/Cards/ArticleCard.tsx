@@ -1,29 +1,23 @@
 import Image from "next/image";
 import React, { type FC } from "react";
 import { Bookmarkplus, Book } from "~/svgs";
-import { limitTags } from "~/utils/miniFunctions";
+import { formatDate, limitTags } from "~/utils/miniFunctions";
 import Link from "next/link";
+import type { Article } from "@prisma/client";
 
 interface Card {
-  card: {
-    id: string;
-    title: string;
-    slug: string;
-    cover_image?: string;
+  card: Article & {
     user: {
       id: string;
       name: string;
       username: string;
-      profile?: string;
+      profile: string;
     };
-    content: string;
-    read_time: number;
-    tags: string[];
-    subtitle?: string;
-    likes: string[];
-    commentsCount: number;
-    createdAt: Date;
-    updatedAt: Date;
+    tags: {
+      id: string;
+      name: string;
+      slug: string;
+    }[];
   };
 }
 
@@ -39,7 +33,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                 width={60}
                 height={60}
                 alt="User Profile"
-                className="h-12 w-12 rounded-full object-cover"
+                className="h-10 w-10 rounded-full object-cover"
               />
             </div>
           </Link>
@@ -49,11 +43,11 @@ const ArticleCard: FC<Card> = ({ card }) => {
                 {card.user.name}
               </h1>
             </Link>
-            <p className="text-base font-normal text-gray-500 dark:text-text-primary">
+            <p className="text-sm font-normal text-gray-500 dark:text-text-primary">
               <Link href={`/u/@${card.user.username}`}>
                 {card.user.username}.hashnode.dev ·{" "}
               </Link>
-              {new Date(card.createdAt).toDateString()}
+              <span>{formatDate(card.createdAt)}</span>
             </p>
           </div>
         </header>
@@ -95,17 +89,27 @@ const ArticleCard: FC<Card> = ({ card }) => {
               </button>
 
               <div className="flex flex-wrap items-center gap-2">
-                {limitTags(card.tags, 13).map((tag, index) => (
-                  <Link href={`/tag/${tag}`} key={index}>
+                {limitTags(card.tags, 13).map((tag, index) =>
+                  tag.id ? (
+                    <Link href={`/tag/${tag.slug}`} key={index}>
+                      <button
+                        aria-label="tag"
+                        key={tag.id}
+                        className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-primary-light dark:border-border dark:text-text-primary"
+                      >
+                        {tag.name}
+                      </button>
+                    </Link>
+                  ) : (
                     <button
                       aria-label="tag"
-                      key={tag}
+                      key={index}
                       className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-primary-light dark:border-border dark:text-text-primary"
                     >
-                      {tag}
+                      {tag.name}
                     </button>
-                  </Link>
-                ))}
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -118,10 +122,10 @@ const ArticleCard: FC<Card> = ({ card }) => {
               <div>
                 <Image
                   src={card.cover_image}
-                  alt=""
+                  alt={`${card.title} image not found!`}
                   width={500}
                   height={300}
-                  className="w-full rounded-md object-cover"
+                  className="w-full rounded-md object-cover text-gray-700 dark:text-text-secondary"
                 />
               </div>
             </Link>

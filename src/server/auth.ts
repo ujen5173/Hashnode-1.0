@@ -61,7 +61,7 @@ export const authOptions: NextAuthOptions = {
             username: {
               startsWith: slugify(profile.name, {
                 lower: true,
-                replacement: "_",
+                replacement: "",
                 trim: true,
               }),
             },
