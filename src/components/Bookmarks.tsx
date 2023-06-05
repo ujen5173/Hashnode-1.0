@@ -1,3 +1,4 @@
+import { ArticleCard } from "~/types";
 import { bookmarks } from "~/utils/constants";
 import BookmarkCard from "./Cards/BookmarkCard";
 
@@ -25,7 +26,7 @@ const Bookmarks = () => {
       </header>
 
       <div>
-        {bookmarks.map((bookmark: BookmarkInterface) => (
+        {bookmarks.map((bookmark: ArticleCard) => (
           <BookmarkCard key={bookmark.id} bookmark={bookmark} />
         ))}
       </div>

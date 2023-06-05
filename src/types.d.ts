@@ -2,7 +2,7 @@ export interface ArticleCard {
   id: string;
   title: string;
   slug: string;
-  cover_image?: string;
+  cover_image?: string | null;
   user: {
     id: string;
     name: string;
@@ -10,7 +10,7 @@ export interface ArticleCard {
     profile: string;
   };
   content: string;
-  read_time: number;
+  read_time: number | string;
   tags: {
     id?: string;
     name: string;

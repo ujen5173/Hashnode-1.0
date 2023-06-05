@@ -1,8 +1,9 @@
 import Link from "next/link";
 import React from "react";
+import { ArticleCard } from "~/types";
 import type { BookmarkInterface } from "../Bookmarks";
 
-const BookmarkCard = ({ bookmark }: { bookmark: BookmarkInterface }) => {
+const BookmarkCard = ({ bookmark }: { bookmark: ArticleCard }) => {
   return (
     <div className="border-b border-border-light py-2 last:border-0 dark:border-border">
       <Link href={`/u/@user/article`}>
@@ -12,7 +13,7 @@ const BookmarkCard = ({ bookmark }: { bookmark: BookmarkInterface }) => {
       </Link>
       <div className="flex gap-2 text-sm text-gray-500 dark:text-text-secondary">
         <Link href={`/u/@user`}>
-          <span>{bookmark.user}</span>
+          <span>{bookmark.user.name}</span>
         </Link>
 
         <span>-</span>
