@@ -16,6 +16,8 @@ export interface ContextValue {
   ) => void;
   user: Session | null;
   setUser: Dispatch<SetStateAction<Session | null>>;
+  bookmarks: { id: string }[];
+  updateBookmark: (id: string) => void;
 }
 
 interface Props {
@@ -27,6 +29,28 @@ export const C = createContext<ContextValue | undefined>(undefined);
 const Context = ({ children }: Props) => {
   const [user, setUser] = useState<Session | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
+
+  useEffect(() => {
+    const savedBookmarks = localStorage.getItem("bookmarks");
+    const newBookmarks = savedBookmarks
+      ? (JSON.parse(savedBookmarks) as { id: string }[])
+      : [];
+    setBookmarks(newBookmarks);
+  }, []);
+
+  const updateBookmark = (id: string) => {
+    const newBookmark = bookmarks.find((bookmark) => bookmark.id === id);
+    if (newBookmark) {
+      const newBookmarks = bookmarks.filter((bookmark) => bookmark.id !== id);
+      setBookmarks(newBookmarks);
+      localStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
+    } else {
+      const newBookmarks = [...bookmarks, { id }];
+      setBookmarks(newBookmarks);
+      localStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
+    }
+  };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -61,7 +85,16 @@ const Context = ({ children }: Props) => {
   }, [theme]);
 
   return (
-    <C.Provider value={{ handleTheme, handleChange, user, setUser }}>
+    <C.Provider
+      value={{
+        bookmarks,
+        updateBookmark,
+        handleTheme,
+        handleChange,
+        user,
+        setUser,
+      }}
+    >
       {children}
     </C.Provider>
   );

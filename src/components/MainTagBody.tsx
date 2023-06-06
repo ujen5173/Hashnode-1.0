@@ -50,7 +50,7 @@ const MainTagBody = () => {
 
   return (
     <section className="container-main my-4 min-h-screen w-full">
-      <header className="mb-4 flex flex-col items-center justify-center rounded-md border border-border-light bg-white px-6 py-11 dark:border-border dark:bg-primary">
+      <header className="mb-4 flex flex-col items-center justify-center rounded-md border border-border-light bg-white px-6 py-11 text-center dark:border-border dark:bg-primary">
         <h1 className="mb-2 text-3xl font-semibold text-gray-700 dark:text-text-secondary">
           Programming Blogs
         </h1>

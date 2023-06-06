@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 
 import {
   createTRPCRouter,
@@ -32,8 +32,103 @@ export const postsRouter = createTRPCRouter({
           },
         },
       },
+      take: 15,
     });
   }),
+
+  getMany: publicProcedure
+    .input(
+      z.object({
+        ids: z
+          .array(z.object({ id: z.string().trim() }))
+          .optional()
+          .default([]),
+      })
+    )
+    .query(async ({ ctx }) => {
+      return await ctx.prisma.article.findMany({
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile: true,
+            },
+          },
+          tags: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+        take: 15,
+      });
+    }),
+
+  getBookmarks: publicProcedure
+    .input(
+      z.object({
+        ids: z
+          .array(z.object({ id: z.string().trim() }))
+          .optional()
+          .default([]),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.article.findMany({
+        where: {
+          id: {
+            in: input.ids.map((id) => id.id),
+          },
+        },
+        select: {
+          id: true,
+          read_time: true,
+          title: true,
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        take: 4,
+      });
+    }),
+
+  getSingleArticle: publicProcedure
+    .input(
+      z.object({
+        slug: z.string().trim(),
+        username: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.article.findUnique({
+        where: {
+          slug: input.slug,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile: true,
+            },
+          },
+          tags: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      });
+    }),
 
   new: protectedProcedure
     .input(

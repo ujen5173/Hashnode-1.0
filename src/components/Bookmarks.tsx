@@ -1,15 +1,24 @@
-import { ArticleCard } from "~/types";
-import { bookmarks } from "~/utils/constants";
+import { useContext } from "react";
+import { api } from "~/utils/api";
+import { C, type ContextValue } from "~/utils/context";
 import BookmarkCard from "./Cards/BookmarkCard";
 
 export interface BookmarkInterface {
   id: string;
   title: string;
-  read_time: number;
-  user: string;
+  read_time: string;
+  user: {
+    name: string;
+  };
 }
 
 const Bookmarks = () => {
+  const { bookmarks } = useContext(C) as ContextValue;
+  const { data: bookmarksData } = api.posts.getBookmarks.useQuery({
+    ids: bookmarks,
+  });
+  console.log({ bookmarks });
+
   return (
     <div className="my-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <header className="flex items-center justify-between border-b border-border-light py-2 dark:border-border">
@@ -26,7 +35,7 @@ const Bookmarks = () => {
       </header>
 
       <div>
-        {bookmarks.map((bookmark: ArticleCard) => (
+        {bookmarksData?.map((bookmark) => (
           <BookmarkCard key={bookmark.id} bookmark={bookmark} />
         ))}
       </div>

@@ -43,10 +43,11 @@ const ArticleRightArea = () => {
         className="relative rounded-full"
       >
         <Image
-          src={"/default_user.avif"}
-          alt=""
+          src={user?.user.profile || "/default_user.avif"}
+          alt={user?.user.name || "Guest User"}
           width={100}
           height={100}
+          draggable={false}
           className="h-9 w-9 overflow-hidden rounded-full"
           onClick={() => setOpened(true)}
         />

@@ -25,6 +25,7 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -33,6 +34,8 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model User {
@@ -55,6 +58,8 @@ model User {
     comments      Comment[]
     articles      Article[] @relation("author")
     likedArticles Article[]
+
+    @@index([email, username])
 }
 
 model Tag {
@@ -69,6 +74,9 @@ model Tag {
     logo           String?
     createdAt      DateTime  @default(now())
     updatedAt      DateTime  @updatedAt
+
+    @@index([name])
+    @@index([slug])
 }
 
 model Comment {
@@ -80,6 +88,9 @@ model Comment {
     body      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([userId])
+    @@index([articleId])
 }
 
 model Article {
@@ -97,10 +108,13 @@ model Article {
     subtitle         String?
     disabledComments Boolean   @default(true)
     likes            User[]
-    slug             String
+    slug             String    @unique
     comments         Comment[]
     createdAt        DateTime  @default(now())
     updatedAt        DateTime  @updatedAt
+
+    @@index([userId])
+    @@index([slug])
 }
 
 model VerificationToken {
@@ -109,4 +123,5 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+    @@index([expires])
 }

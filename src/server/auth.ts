@@ -71,6 +71,8 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
+        console.log({ usernameOccurance });
+
         const isUsernameExists = (username: string): boolean => {
           return usernameOccurance.some((user) => user.username === username);
         };
@@ -99,7 +101,7 @@ export const authOptions: NextAuthOptions = {
           username: generateUniqueUsername(
             slugify(profile.name, {
               lower: true,
-              replacement: "_",
+              replacement: "",
               trim: true,
             })
           ),

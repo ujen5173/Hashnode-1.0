@@ -1,9 +1,8 @@
 import Link from "next/link";
 import React from "react";
-import { ArticleCard } from "~/types";
 import type { BookmarkInterface } from "../Bookmarks";
 
-const BookmarkCard = ({ bookmark }: { bookmark: ArticleCard }) => {
+const BookmarkCard = ({ bookmark }: { bookmark: BookmarkInterface }) => {
   return (
     <div className="border-b border-border-light py-2 last:border-0 dark:border-border">
       <Link href={`/u/@user/article`}>

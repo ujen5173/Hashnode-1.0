@@ -1,9 +1,10 @@
 import Image from "next/image";
-import React, { type FC } from "react";
-import { Bookmarkplus, Book } from "~/svgs";
-import { formatDate, limitTags } from "~/utils/miniFunctions";
+import React, { useContext, type FC } from "react";
+import { Bookmarkplus, Book, BookmarkArticle } from "~/svgs";
+import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 import Link from "next/link";
 import type { Article } from "@prisma/client";
+import { C, type ContextValue } from "~/utils/context";
 
 interface Card {
   card: Article & {
@@ -22,6 +23,8 @@ interface Card {
 }
 
 const ArticleCard: FC<Card> = ({ card }) => {
+  const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
+
   return (
     <div className="border-b border-border-light bg-white p-4 last:border-0 dark:border-border dark:bg-primary">
       <div className="">
@@ -73,19 +76,24 @@ const ArticleCard: FC<Card> = ({ card }) => {
               <p
                 className={`${
                   card.cover_image ? "max-height-4" : "max-height-3 w-11/12"
-                } mb-5 text-sm text-gray-500 dark:text-text-primary`}
+                } mb-5 break-all text-sm text-gray-500 dark:text-text-primary`}
               >
-                {card.content}
+                {limitText(card.content, 350)}
               </p>
             </Link>
 
             <div className="mt-2 flex gap-2">
               <button
                 aria-label="icon"
+                onClick={() => updateBookmark(card.id)}
                 role="button"
                 className="btn-icon-small flex items-center justify-center"
               >
-                <Bookmarkplus className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
+                  <BookmarkArticle className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                ) : (
+                  <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                )}
               </button>
 
               <div className="flex flex-wrap items-center gap-2">
@@ -95,7 +103,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                       <button
                         aria-label="tag"
                         key={tag.id}
-                        className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-primary-light dark:border-border dark:text-text-primary"
+                        className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-light-bg dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
                       >
                         {tag.name}
                       </button>

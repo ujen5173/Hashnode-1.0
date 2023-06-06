@@ -1,7 +1,16 @@
-import { bookmarksArticles } from "~/utils/constants";
+import { useContext } from "react";
+import { api } from "~/utils/api";
+import { C,type  ContextValue } from "~/utils/context";
 import ArticleCard from "./Cards/ArticleCard";
+import ArticleLoading from "./Loading/ArticleLoading";
 
 const BookmarkMainComponent = () => {
+  const { bookmarks } = useContext(C) as ContextValue;
+
+  const { data: bookmarksData, isLoading } = api.posts.getMany.useQuery({
+    ids: bookmarks,
+  });
+
   return (
     <section className="container-main my-4 min-h-screen w-full">
       <div className="mb-4 rounded-md border border-border-light bg-white px-6 py-12 dark:border-border dark:bg-primary">
@@ -14,9 +23,19 @@ const BookmarkMainComponent = () => {
       </div>
 
       <div className="rounded-md border border-border-light bg-white pt-2 dark:border-border dark:bg-primary">
-        {bookmarksArticles.map((article) => (
-          <ArticleCard card={article} key={article.id} />
-        ))}
+        {isLoading ? (
+          <>
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+          </>
+        ) : (
+          bookmarksData?.map((article) => (
+            <ArticleCard card={article} key={article.id} />
+          ))
+        )}
       </div>
     </section>
   );

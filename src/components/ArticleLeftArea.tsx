@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Hamburger, Angleleft, Home } from "~/svgs";
 import Image from "next/image";
+import type { User } from "./ArticleHeader";
+import type { FC } from "react";
 
-const ArticleLeftArea = () => {
+const ArticleLeftArea: FC<{ user: User }> = ({ user }) => {
   return (
     <div className="flex items-center justify-center gap-2">
       <Link href="/">
@@ -32,19 +34,18 @@ const ArticleLeftArea = () => {
       <Link
         aria-label="Visit Profile"
         className="flex items-center gap-2"
-        href="/@test"
+        href="/u/@test"
       >
         <Image
-          src={
-            "https://cdn.hashnode.com/res/hashnode/image/upload/v1664920854781/pxV1rFkj-.png?w=400&h=400&fit=crop&crop=faces&auto=compress,format&format=webp"
-          }
-          alt=""
+          src={user?.profile || ""}
+          alt={user?.name}
           width={70}
           height={70}
+          draggable={false}
           className="h-8 w-8 rounded-full"
         />
         <h1 className="hidden text-lg font-semibold text-gray-700 dark:text-text-secondary md:block md:text-xl">
-          Danijel Maksimovic&rsquo;s Blog
+          {user?.name}&rsquo;s Blog
         </h1>
       </Link>
     </div>

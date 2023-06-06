@@ -4,6 +4,7 @@ import React from "react";
 import Divider from "./Divider";
 import { signOut } from "next-auth/react";
 import type { Session } from "next-auth";
+import Link from "next/link";
 
 const ProfileDropdown = React.forwardRef<
   HTMLDivElement,
@@ -43,12 +44,14 @@ const ProfileDropdown = React.forwardRef<
         </span>
         <span className="text-sm font-medium">My Drafts</span>
       </div>
-      <div className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-gray-200 dark:text-text-primary dark:hover:bg-primary-light">
-        <span>
-          <Bookmarkalt className="h-4 w-4 fill-gray-900 dark:fill-text-primary" />
-        </span>
-        <span className="text-sm font-medium">My Bookmarks</span>
-      </div>
+      <Link href="/bookmarks">
+        <div className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-gray-200 dark:text-text-primary dark:hover:bg-primary-light">
+          <span>
+            <Bookmarkalt className="h-4 w-4 fill-gray-900 dark:fill-text-primary" />
+          </span>
+          <span className="text-sm font-medium">My Bookmarks</span>
+        </div>
+      </Link>
       <div className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-gray-200 dark:text-text-primary dark:hover:bg-primary-light">
         <span>
           <UserSVG className="h-4 w-4 fill-gray-900 dark:fill-text-primary" />

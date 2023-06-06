@@ -20,6 +20,13 @@ export const limitTags = (
   return newTags;
 };
 
+export const limitText = (text: string, limit: number) => {
+  if (text.length > limit) {
+    return text.slice(0, limit) + "...";
+  }
+  return text;
+};
+
 export const wait = (time: number): Promise<void> =>
   new Promise((resolve) => setTimeout(() => resolve(), time * 1000));
 
