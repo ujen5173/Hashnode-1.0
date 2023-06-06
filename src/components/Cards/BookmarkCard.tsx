@@ -5,7 +5,7 @@ import type { BookmarkInterface } from "../Bookmarks";
 const BookmarkCard = ({ bookmark }: { bookmark: BookmarkInterface }) => {
   return (
     <div className="border-b border-border-light py-2 last:border-0 dark:border-border">
-      <Link href={`/u/@user/article`}>
+      <Link href={`/u/@${bookmark.user.name}/${bookmark.slug}`}>
         <h1 className="mb-2 text-base font-semibold text-gray-600 dark:text-white">
           {bookmark.title}
         </h1>

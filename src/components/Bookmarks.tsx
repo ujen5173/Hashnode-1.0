@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useContext } from "react";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -6,6 +7,7 @@ import BookmarkCard from "./Cards/BookmarkCard";
 export interface BookmarkInterface {
   id: string;
   title: string;
+  slug: string;
   read_time: string;
   user: {
     name: string;
@@ -17,7 +19,6 @@ const Bookmarks = () => {
   const { data: bookmarksData } = api.posts.getBookmarks.useQuery({
     ids: bookmarks,
   });
-  console.log({ bookmarks });
 
   return (
     <div className="my-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
@@ -25,13 +26,15 @@ const Bookmarks = () => {
         <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
           Bookmarks ({bookmarks.length})
         </h1>
-        <button
-          aria-label="view all the saved bookmarks"
-          role="button"
-          className="btn-outline-small"
-        >
-          See all
-        </button>
+        <Link href={`/bookmarks`}>
+          <button
+            aria-label="view all the saved bookmarks"
+            role="button"
+            className="btn-outline-small"
+          >
+            See all
+          </button>
+        </Link>
       </header>
 
       <div>

@@ -88,6 +88,7 @@ export const postsRouter = createTRPCRouter({
           id: true,
           read_time: true,
           title: true,
+          slug: true,
           user: {
             select: {
               name: true,
