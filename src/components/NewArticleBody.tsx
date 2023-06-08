@@ -46,6 +46,17 @@ const NewArticleBody = ({
     disabledComments: false,
   });
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tag = params.get("tag");
+    if (tag) {
+      setData((prev) => ({
+        ...prev,
+        tags: [tag],
+      }));
+    }
+  }, []);
+
   const [file, setFile] = React.useState<string | null>(null);
   const [fileModal, setFileModal] = React.useState<boolean>(false); // open and close file upload modal
   const ref = useClickOutside<HTMLDivElement>(() => setFileModal(false));
@@ -69,7 +80,6 @@ const NewArticleBody = ({
 
     try {
       const fileData = await handleImageChange(file);
-      console.log({ fileData });
       setFile(fileData);
       setFileModal(false);
     } catch (error) {

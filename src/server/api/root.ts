@@ -1,6 +1,8 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { exampleRouter } from "~/server/api/routers/example";
 import { postsRouter } from "./routers/posts";
+import { TagsRouter } from "./routers/tags";
+import { UsersRouter } from "./routers/users";
 
 /**
  * This is the primary router for your server.
@@ -10,6 +12,8 @@ import { postsRouter } from "./routers/posts";
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   posts: postsRouter,
+  tags: TagsRouter,
+  users: UsersRouter,
 });
 
 // export type definition of API

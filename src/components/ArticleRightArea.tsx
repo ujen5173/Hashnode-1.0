@@ -1,15 +1,45 @@
 import Image from "next/image";
-import React, { useContext, useState } from "react";
+import React, { type FC, useContext, useEffect, useState } from "react";
 import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import { useClickOutside } from "@mantine/hooks";
 import { C, type ContextValue } from "~/utils/context";
-import { Search, Sun, Follow } from "~/svgs";
+import { Search, Sun, Follow, Check } from "~/svgs";
 import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
+import { api } from "~/utils/api";
+import { type User } from "~/types";
 
-const ArticleRightArea = () => {
+const ArticleRightArea: FC<{ author: User }> = ({ author }) => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const { handleTheme, user } = useContext(C) as ContextValue;
+  const [following, setFollowing] = useState<boolean>(false);
+  const { mutateAsync: followToggle } =
+    api.users.followUserToggle.useMutation();
+  const { data: userData } = api.users.getUser.useQuery();
+
+  const followUser = async () => {
+    const url = new URL(window.location.href).pathname;
+    const res = await followToggle({
+      username: url.split("/")[2]?.replace("@", "") as string,
+    });
+    if (res.status !== 200 && !res.success) {
+      setFollowing(false);
+    }
+    console.log({ res });
+  };
+
+  useEffect(() => {
+    if (userData) {
+      const isFollowing = userData.following?.find(
+        (follower) => follower.username === author.username
+      );
+      if (isFollowing) {
+        setFollowing(true);
+      } else {
+        setFollowing(false);
+      }
+    }
+  }, [userData, author]);
 
   return (
     <div className="flex items-center justify-center gap-2">
@@ -29,11 +59,21 @@ const ArticleRightArea = () => {
         <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-white" />
       </button>
       <div className="hidden md:block">
-        <button aria-label="icon" role="button" className="btn-follow gap-2">
-          <span>
-            <Follow className="h-5 w-5 fill-none stroke-secondary" />
-          </span>
-          <span>Follow</span>
+        <button
+          onClick={() => void followUser()}
+          className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+        >
+          {following ? (
+            <>
+              <Check className="h-5 w-5 fill-secondary" />
+              Following
+            </>
+          ) : (
+            <>
+              <Follow className="h-5 w-5 fill-secondary" />
+              Follow Tag
+            </>
+          )}
         </button>
       </div>
 

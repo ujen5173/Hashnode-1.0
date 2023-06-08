@@ -46,8 +46,11 @@ const ArticleCard: FC<Card> = ({ card }) => {
                 {card.user.name}
               </h1>
             </Link>
-            <p className="text-sm font-normal text-gray-500 dark:text-text-primary">
-              <Link href={`/u/@${card.user.username}`}>
+            <p className="flex items-center gap-2 text-sm font-normal text-gray-500 dark:text-text-primary">
+              <Link
+                className="hidden sm:block"
+                href={`/u/@${card.user.username}`}
+              >
                 {card.user.username}.hashnode.dev ·{" "}
               </Link>
               <span>{formatDate(card.createdAt)}</span>
@@ -63,11 +66,11 @@ const ArticleCard: FC<Card> = ({ card }) => {
               </h1>
             </Link>
 
-            <Link href={`/u/@${card.user.username}`}>
-              <div className="mb-2 flex items-center gap-2">
+            <Link href={`/u/@${card.user.username}/${card.slug}`}>
+              <div className="mb-4 flex items-center gap-2">
                 <Book className="h-4 w-4 fill-secondary" />
                 <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
-                  {card.read_time} min read
+                  {card.read_time}
                 </p>
               </div>
             </Link>
@@ -87,7 +90,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                 aria-label="icon"
                 onClick={() => updateBookmark(card.id)}
                 role="button"
-                className="btn-icon-small flex items-center justify-center"
+                className="btn-icon-large flex items-center justify-center"
               >
                 {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
                   <BookmarkArticle className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />

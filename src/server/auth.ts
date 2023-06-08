@@ -44,8 +44,13 @@ export const authOptions: NextAuthOptions = {
     session: ({ session, user }) => ({
       ...session,
       user: {
-        ...session.user,
-        ...user,
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        profile: user.profile,
+        emailVerified: user.emailVerified,
+        tagline: user.tagline,
       },
     }),
   },
@@ -70,8 +75,6 @@ export const authOptions: NextAuthOptions = {
             username: true,
           },
         });
-
-        console.log({ usernameOccurance });
 
         const isUsernameExists = (username: string): boolean => {
           return usernameOccurance.some((user) => user.username === username);

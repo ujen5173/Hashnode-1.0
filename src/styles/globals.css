@@ -6,7 +6,7 @@
 *,
 *::before,
 *::after {
-  font-family: "Inter", "Poppins";
+  font-family: "Inter", "Poppins" !important;
 }
 
 .max-height-one {
@@ -139,6 +139,7 @@ body .article p {
   line-height: 36px;
   margin: 24px 0;
 }
+
 body .article h1 {
   font-size: 36px;
   line-height: 40px;
@@ -166,7 +167,7 @@ body .article a {
   text-decoration: underline;
 }
 body .article pre {
-  padding: 32px 24px;
+  padding: 28px 20px;
   font-size: 18px;
   line-height: 32px;
   border-radius: 7px;
@@ -175,13 +176,16 @@ body .article pre {
   background: #1e293b;
   margin: 36px 0;
 }
+body .article pre > code {
+  color: #fafafa;
+  background: none !important;
+}
 body .article ul {
   text-decoration: dotted;
 }
 body .article code {
   background: #f0efed;
   padding: 4px;
-  margin: auto 4px;
   font-size: 16px;
   color: #000000;
   line-height: 28px;

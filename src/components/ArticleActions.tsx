@@ -14,27 +14,29 @@ const ArticleActions: FC<{ article: ArticleCard }> = ({ article }) => {
   const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
 
   return (
-    <div className="sticky bottom-0 left-0 flex w-full items-center justify-between gap-2 rounded-md border border-border-light bg-light-bg px-4 py-1 dark:border-border dark:bg-primary-light md:bottom-10 md:left-1/2 md:w-max md:-translate-x-1/2 md:rounded-full">
+    <div className="sticky bottom-4 mx-auto flex w-11/12 max-w-[350px] items-center justify-between gap-2 rounded-full border border-border-light bg-light-bg px-4 py-1 dark:border-border dark:bg-primary-light md:left-1/2 md:-translate-x-1/2">
       <button
         aria-label="icon"
         role="button"
         className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
       >
         <div className="flex items-center justify-center gap-2">
-          <Heart className="h-7 w-7 fill-none stroke-primary-light dark:stroke-white" />
+          <Heart className="h-5 w-5 fill-none stroke-primary-light dark:stroke-white md:h-6 md:w-6" />
         </div>
         <span>{article.likes.length}</span>
       </button>
+      <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
       <button
         aria-label="icon"
         role="button"
         className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
       >
         <div className="flex items-center justify-center gap-2">
-          <Comment className="h-7 w-7 fill-none stroke-primary-light dark:stroke-white" />
+          <Comment className="h-5 w-5 fill-none stroke-primary-light dark:stroke-white md:h-6 md:w-6" />
         </div>
         <span>{article.comments.length}</span>
       </button>
+      <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
       <button
         aria-label="icon"
         onClick={() => updateBookmark(article.id)}
@@ -42,27 +44,29 @@ const ArticleActions: FC<{ article: ArticleCard }> = ({ article }) => {
         className="btn-icon-small flex items-center justify-center"
       >
         {bookmarks.find((bookmark) => bookmark.id === article.id) ? (
-          <BookmarkArticle className="h-7 w-7 fill-gray-700 dark:fill-text-primary" />
+          <BookmarkArticle className="h-5 w-5 fill-gray-700 dark:fill-text-primary md:h-6 md:w-6" />
         ) : (
-          <Bookmarkplus className="h-7 w-7 fill-gray-700 dark:fill-text-primary" />
+          <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary md:h-6 md:w-6" />
         )}
       </button>
+      <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
       <button
         aria-label="icon"
         role="button"
-        className="hidden items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border md:flex"
+        className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
       >
         <div className="flex items-center justify-center gap-2">
-          <Share className="h-6 w-6 fill-none stroke-primary-light dark:stroke-white" />
+          <Share className="h-5 w-5 fill-none stroke-primary-light dark:stroke-white md:h-6 md:w-6" />
         </div>
       </button>
+      <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
       <button
         aria-label="icon"
         role="button"
-        className="hidden items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border md:flex"
+        className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
       >
         <div className="flex items-center justify-center gap-2">
-          <Dots className="h-7 w-7 stroke-primary-light dark:stroke-white" />
+          <Dots className="h-5 w-5 stroke-primary-light dark:stroke-white md:h-6 md:w-6" />
         </div>
       </button>
     </div>

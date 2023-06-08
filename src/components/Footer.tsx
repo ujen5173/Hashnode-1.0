@@ -23,7 +23,7 @@ const Footer = () => {
         View Github
       </a>
 
-      <p className="text-gray-700 dark:text-text-secondary">
+      <p className="text-center text-gray-700 dark:text-text-secondary">
         Powered by Hashnode - Home for tech writers and readers{" "}
       </p>
     </div>

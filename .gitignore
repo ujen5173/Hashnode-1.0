@@ -46,4 +46,4 @@ yarn-error.log*
 /public/svgs
 /scrapper
 /.env.production
-/bugs.txt
+/todo.txt

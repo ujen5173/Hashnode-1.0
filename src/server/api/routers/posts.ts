@@ -36,6 +36,42 @@ export const postsRouter = createTRPCRouter({
     });
   }),
 
+  getArticlesUsingTag: publicProcedure
+    .input(
+      z.object({
+        name: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.article.findMany({
+        where: {
+          tags: {
+            some: {
+              name: input.name,
+            },
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile: true,
+            },
+          },
+          tags: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+        take: 15,
+      });
+    }),
+
   getMany: publicProcedure
     .input(
       z.object({
@@ -45,8 +81,13 @@ export const postsRouter = createTRPCRouter({
           .default([]),
       })
     )
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx, input }) => {
       return await ctx.prisma.article.findMany({
+        where: {
+          id: {
+            in: input.ids.map((id) => id.id),
+          },
+        },
         include: {
           user: {
             select: {
@@ -155,24 +196,55 @@ export const postsRouter = createTRPCRouter({
           locale: "vi",
         });
 
+        // Check if tags exist or create them if necessary
+        const tagPromises = tags.map(async (tag) => {
+          const existingTag = await ctx.prisma.tag.findFirst({
+            where: {
+              name: tag,
+            },
+          });
+
+          if (!existingTag) {
+            const createdTag = await ctx.prisma.tag.create({
+              data: {
+                name: tag,
+                slug: slugify(tag, {
+                  lower: true,
+                  strict: true,
+                  trim: true,
+                  locale: "vi",
+                  replacement: "-",
+                }),
+                articlesCount: 1,
+              },
+            });
+
+            return createdTag;
+          }
+
+          await ctx.prisma.tag.update({
+            where: {
+              name: tag,
+            },
+            data: {
+              articlesCount: {
+                increment: 1,
+              },
+            },
+          });
+
+          return existingTag;
+        });
+
+        // Wait for all tag operations to complete
+        const createdTags = await Promise.all(tagPromises);
+
+        // Create the article with the created tags
         const newArticle = await ctx.prisma.article.create({
           data: {
             ...input,
             tags: {
-              connectOrCreate: tags.map((tag) => ({
-                where: {
-                  name: tag,
-                },
-                create: {
-                  name: tag,
-                  slug: slugify(tag, {
-                    lower: true,
-                    strict: true,
-                    trim: true,
-                    locale: "vi",
-                  }),
-                },
-              })),
+              connect: createdTags.map((tag) => ({ id: tag.id })),
             },
             user: {
               connect: {
@@ -198,7 +270,7 @@ export const postsRouter = createTRPCRouter({
         };
       } catch (error) {
         console.log(error);
-        throw new Error("Somethign went wrong");
+        throw new Error("Something went wrong");
       }
     }),
 });

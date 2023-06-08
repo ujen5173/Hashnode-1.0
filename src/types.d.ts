@@ -37,3 +37,34 @@ export interface User {
   profile: string;
   bio?: string | null;
 }
+export interface DetailedUser {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  emailVerified: Date | null;
+  profile?: string | null;
+  tagline?: string | null;
+  cover_image: string;
+  bio?: string | null;
+  skills: string[];
+  social: unknown;
+  following: { username: string }[];
+  followers: { username: string }[];
+  followersCount: number;
+  followingCount: number;
+}
+
+export interface DetailedTag {
+  id: string;
+  name: string;
+  slug: string;
+  followersCount: string;
+  articlesCount: string;
+  followers: { id: string }[];
+  articles: { id: string }[];
+  description: string;
+  logo: string;
+  createdAt: string;
+  updatedAt: string;
+}

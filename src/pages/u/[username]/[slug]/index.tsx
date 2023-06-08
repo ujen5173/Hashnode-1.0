@@ -70,6 +70,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!article) {
+    return {
+      props: {
+        session: session
+          ? (JSON.parse(JSON.stringify(session)) as Session)
+          : null,
+        article: null,
+      },
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       session: session

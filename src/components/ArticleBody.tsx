@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable react/no-children-prop */
 import Image from "next/image";
-import React, { type FC } from "react";
 import Link from "next/link";
 import { Book, Follow } from "~/svgs";
 import ArticleActions from "./ArticleActions";
 import type { User, ArticleCard, Tag } from "~/types";
 import { formatDate } from "./../utils/miniFunctions";
+import ReactMarkdown from "react-markdown";
+import { type FC } from "react";
 
 const ArticleBody: FC<{ article: ArticleCard }> = ({ article }) => {
   return (
@@ -20,13 +23,13 @@ const ArticleBody: FC<{ article: ArticleCard }> = ({ article }) => {
           />
         )}
 
-        <section className={`${!article?.cover_image ? "py-16" : ""}`}>
+        <section className={`${!article?.cover_image ? "py-8 md:py-16" : ""}`}>
           <div className="px-4">
-            <h1 className="mb-8 text-center text-5xl font-bold text-gray-700 dark:text-text-secondary">
+            <h1 className="mb-8 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:w-10/12 md:text-5xl md:leading-tight">
               {article.title}{" "}
             </h1>
             {article?.subtitle && (
-              <h2 className="mx-auto mb-10 w-8/12 text-center text-3xl font-semibold text-gray-600 dark:text-text-primary">
+              <h2 className="mx-auto mb-10 w-full text-center text-xl font-normal text-gray-600 dark:text-text-primary sm:w-8/12 md:text-3xl">
                 {article?.subtitle}{" "}
               </h2>
             )}
@@ -69,7 +72,7 @@ const ArticleBody: FC<{ article: ArticleCard }> = ({ article }) => {
             </div>
 
             <div className="article mb-10 w-full break-all md:w-11/12 lg:w-10/12">
-              <pre>{article.content}</pre>
+              <ReactMarkdown children={article.content} />
             </div>
           </div>
 
@@ -91,7 +94,7 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
     <div className="mx-auto my-20 flex w-full flex-wrap items-center justify-center gap-2 lg:w-8/12">
       {tags.map((tag) => (
         <Link href={`/tag/${tag.slug}`} key={tag.id}>
-          <span className="block rounded-md border border-border-light bg-light-bg px-4 py-2 text-base text-gray-700 hover:shadow-md dark:border-border dark:bg-primary-light dark:text-text-secondary dark:hover:bg-border">
+          <span className="block rounded-md border border-border-light bg-light-bg px-4 py-2 text-sm text-gray-700 hover:shadow-md dark:border-border dark:bg-primary-light dark:text-text-secondary dark:hover:bg-border">
             {tag.name}
           </span>
         </Link>
@@ -102,38 +105,45 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
 
 const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
   return (
-    <div className="mx-auto my-10 flex w-full items-start border-y border-border-light px-4 py-6 dark:border-border md:w-8/12">
-      <div className="flex flex-1 flex-col items-start gap-4 md:flex-row">
-        <Link href={`/@test`}>
-          <Image
-            src={author?.profile || ""}
-            alt={author?.name}
-            width={100}
-            height={100}
-            className="obejct-cover h-12 w-12 overflow-hidden rounded-full"
-          />
-        </Link>
-
-        <div className="flex-1">
-          <h2 className="text-uppercase mb-2 text-base font-medium text-gray-600 dark:text-text-primary">
-            WRITTEN BY
-          </h2>
+    <div className="px-4">
+      <div className="mx-auto my-10 w-full border-y border-border-light px-4 py-6 dark:border-border md:w-8/12">
+        <div className="flex flex-1 items-start gap-4">
           <Link href={`/@test`}>
-            <h1 className="text-uppercase mb-4 text-xl font-semibold text-gray-800 dark:text-text-secondary">
-              {author?.name}
-            </h1>
+            <Image
+              src={author?.profile || ""}
+              alt={author?.name}
+              width={100}
+              height={100}
+              className="obejct-cover h-20 w-20 overflow-hidden rounded-full md:h-16 md:w-16"
+            />
           </Link>
-          {author?.bio && (
-            <p className="text-gray-600 dark:text-text-primary">
-              {author?.bio}
-            </p>
-          )}
+
+          <div className="flex-1">
+            <div className="mb-4 flex w-full flex-col items-start justify-between sm:flex-row">
+              <div className="mb-4 md:mb-0">
+                <h2 className="text-uppercase mb-2 text-base font-medium text-gray-600 dark:text-text-primary">
+                  WRITTEN BY
+                </h2>
+                <Link href={`/@test`}>
+                  <h1 className="text-uppercase text-xl font-semibold text-gray-800 dark:text-text-secondary">
+                    {author?.name}
+                  </h1>
+                </Link>
+              </div>
+              <button className="btn-follow gap-2">
+                <Follow className="h-4 w-4 fill-none stroke-secondary" />
+                <span>Follow</span>
+              </button>
+            </div>
+          </div>
         </div>
+
+        {!author?.bio && (
+          <p className="text-lg text-gray-600 dark:text-text-primary">
+            {author?.bio || "Coding is my life :)"}
+          </p>
+        )}
       </div>
-      <button className="btn-follow gap-2">
-        <Follow className="h-4 w-4 fill-none stroke-secondary" />
-        <span>Follow</span>
-      </button>
     </div>
   );
 };

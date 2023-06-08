@@ -39,25 +39,27 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String
-    username      String    @unique
-    email         String    @unique
-    emailVerified DateTime?
-    profile       String
-    tagline       String?
-    cover_image   String?
-    bio           String?
-    skills        String[]
-    social        Json?
-    following     User[]    @relation("follow")
-    followers     User[]    @relation("follow")
-    accounts      Account[]
-    sessions      Session[]
-    followingTags Tag[]
-    comments      Comment[]
-    articles      Article[] @relation("author")
-    likedArticles Article[]
+    id             String    @id @default(cuid())
+    name           String
+    username       String    @unique
+    email          String    @unique
+    emailVerified  DateTime?
+    profile        String
+    tagline        String?
+    cover_image    String?
+    bio            String?
+    skills         String[]
+    social         Json?
+    following      User[]    @relation("follow")
+    followers      User[]    @relation("follow")
+    followersCount Int       @default(0)
+    followingCount Int       @default(0)
+    accounts       Account[]
+    sessions       Session[]
+    followingTags  Tag[]
+    comments       Comment[]
+    articles       Article[] @relation("author")
+    likedArticles  Article[]
 
     @@index([email, username])
 }

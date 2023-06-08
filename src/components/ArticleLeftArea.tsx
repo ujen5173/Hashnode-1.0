@@ -33,7 +33,7 @@ const ArticleLeftArea: FC<{ user: User }> = ({ user }) => {
       </button>
       <Link
         aria-label="Visit Profile"
-        className="flex items-center gap-2"
+        className="hidden items-center gap-2 md:flex"
         href="/u/@test"
       >
         <Image
@@ -44,7 +44,7 @@ const ArticleLeftArea: FC<{ user: User }> = ({ user }) => {
           draggable={false}
           className="h-8 w-8 rounded-full"
         />
-        <h1 className="hidden text-lg font-semibold text-gray-700 dark:text-text-secondary md:block md:text-xl">
+        <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
           {user?.name}&rsquo;s Blog
         </h1>
       </Link>
