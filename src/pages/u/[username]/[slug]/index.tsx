@@ -10,6 +10,7 @@ import type { ArticleCard } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 
 const SingleArticle: NextPage<{ article: ArticleCard }> = ({ article }) => {
+  console.log(article);
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
 
@@ -30,13 +31,9 @@ const SingleArticle: NextPage<{ article: ArticleCard }> = ({ article }) => {
 export default SingleArticle;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = (await getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  )) as Session;
+  const session = getServerSession(context.req, context.res, authOptions);
 
-  const article = await prisma.article.findUnique({
+  const article = prisma.article.findUnique({
     where: {
       slug: context.params?.slug as string,
     },
@@ -70,11 +67,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  if (!article) {
+  const [sessionData, articleData] = await Promise.all([session, article]);
+
+  if (!articleData) {
     return {
       props: {
-        session: session
-          ? (JSON.parse(JSON.stringify(session)) as Session)
+        session: sessionData
+          ? (JSON.parse(JSON.stringify(sessionData)) as Session)
           : null,
         article: null,
       },
@@ -87,11 +86,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      session: session
-        ? (JSON.parse(JSON.stringify(session)) as Session)
+      session: sessionData
+        ? (JSON.parse(JSON.stringify(sessionData)) as Session)
         : null,
-      article: article
-        ? (JSON.parse(JSON.stringify(article)) as ArticleCard)
+      article: articleData
+        ? (JSON.parse(JSON.stringify(articleData)) as ArticleCard)
         : null,
     },
   };

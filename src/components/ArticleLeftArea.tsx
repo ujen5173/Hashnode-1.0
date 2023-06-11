@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Hamburger, Angleleft, Home } from "~/svgs";
+import { Hamburger, Angleleft } from "~/svgs";
 import Image from "next/image";
 import type { User } from "./ArticleHeader";
 import type { FC } from "react";
@@ -13,17 +13,10 @@ const ArticleLeftArea: FC<{ user: User }> = ({ user }) => {
           role="button"
           className="btn-icon flex h-10 w-10"
         >
-          <Home className="h-5 w-5 fill-black dark:fill-white" />
+          <Angleleft className="h-5 w-5 fill-black dark:fill-white" />
         </button>
       </Link>
-      <button
-        onClick={() => history.back()}
-        aria-label="icon"
-        role="button"
-        className="btn-icon flex h-10 w-10"
-      >
-        <Angleleft className="h-5 w-5 fill-black dark:fill-white" />
-      </button>
+
       <button
         aria-label="icon"
         role="button"

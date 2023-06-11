@@ -7,13 +7,13 @@ import type { DetailedTag } from "~/types";
 interface TagPageHeaderProps {
   tagDetails: DetailedTag;
   following: boolean;
-  followTag: (name: string) => void;
+  followTag: (name: string) => Promise<void>;
 }
 
 const TagPageHeader: FC<TagPageHeaderProps> = ({
   tagDetails,
-  followTag,
   following,
+  followTag,
 }) => {
   return (
     <header className="mb-4 flex flex-col items-center justify-center rounded-md border border-border-light bg-white px-6 py-11 text-center dark:border-border dark:bg-primary">
@@ -27,16 +27,18 @@ const TagPageHeader: FC<TagPageHeaderProps> = ({
             className="h-16 w-16 rounded-md object-cover"
           />
         )}
-        <div className={`${tagDetails.logo ? "text-left" : "text-center"}`}>
+        <div
+          className={`mb-5 ${tagDetails.logo ? "text-left" : "text-center"}`}
+        >
           <h1 className="text-2xl font-semibold text-gray-700 dark:text-text-secondary">
             {tagDetails.name}
           </h1>
-          <p className="mb-8 text-lg text-gray-500 dark:text-text-primary">
+          <p className="text-lg text-gray-500 dark:text-text-primary">
             #{tagDetails.slug}
           </p>
         </div>
       </div>
-      <div className="mb-8 flex flex-col items-center gap-4 md:flex-row">
+      <div className="mb-3 flex flex-col items-center gap-4 md:flex-row">
         <button
           onClick={() => void followTag(tagDetails.name)}
           className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
@@ -44,12 +46,12 @@ const TagPageHeader: FC<TagPageHeaderProps> = ({
           {following ? (
             <>
               <Check className="h-5 w-5 fill-secondary" />
-              Following
+              <span>Following</span>
             </>
           ) : (
             <>
               <Add className="h-5 w-5 fill-secondary" />
-              Follow Tag
+              <span>Follow Tag</span>
             </>
           )}
         </button>

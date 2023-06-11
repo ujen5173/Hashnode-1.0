@@ -1,5 +1,8 @@
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { publicProcedure } from "./../trpc";
+import { prisma } from "~/server/db";
 
 export const TagsRouter = createTRPCRouter({
   followTagToggle: protectedProcedure
@@ -20,63 +23,97 @@ export const TagsRouter = createTRPCRouter({
         });
 
         if (!tag) {
-          return {
-            success: false,
+          throw new TRPCError({
+            code: "NOT_FOUND",
             message: "Tag not found",
-            status: 404,
-          };
+          });
         }
 
         const isFollowing = tag.followers.some(
           (follower) => follower.id === ctx.session.user.id
         );
 
-        if (isFollowing) {
-          await ctx.prisma.tag.update({
-            where: {
-              name: input.name,
-            },
-            data: {
-              followers: {
-                disconnect: {
+        const data = {
+          followers: {
+            connect: isFollowing
+              ? undefined
+              : {
                   id: ctx.session.user.id,
                 },
-              },
-              followersCount: {
-                decrement: 1,
-              },
-            },
-          });
-          return {
-            success: true,
-            message: "Tag Followed",
-            status: 200,
-          };
-        } else {
-          await ctx.prisma.tag.update({
-            where: {
-              name: input.name,
-            },
-            data: {
-              followers: {
-                connect: {
+            disconnect: isFollowing
+              ? {
                   id: ctx.session.user.id,
-                },
-              },
-              followersCount: {
-                increment: 1,
-              },
+                }
+              : undefined,
+          },
+        };
+
+        await ctx.prisma.tag.update({
+          where: {
+            name: input.name,
+          },
+          data: {
+            ...data,
+            followersCount: {
+              [isFollowing ? "decrement" : "increment"]: 1,
             },
-          });
-          return {
-            success: true,
-            message: "Tag Unfollowed",
-            status: 200,
-          };
-        }
+          },
+        });
+
+        return {
+          success: true,
+          message: isFollowing ? "Tag Unfollowed" : "Tag Followed",
+          status: 200,
+        };
       } catch (err) {
         console.log(err);
-        throw new Error("Something went wrong");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
       }
     }),
+
+  getTredingTags: publicProcedure.query(async () => {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 7);
+    const endDate = new Date();
+
+    const tags = await prisma.tag.findMany({
+      where: {
+        articles: {
+          some: {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+        },
+      },
+      include: {
+        articles: true,
+      },
+    });
+
+    const tagData = tags.map((tag) => {
+      return {
+        id: tag.id,
+        name: tag.name,
+        slug: tag.slug,
+        articlesCount: tag.articles.filter(
+          (article) =>
+            article.createdAt >= startDate && article.createdAt <= endDate
+        ).length,
+      };
+    });
+
+    tagData.sort((a, b) => b.articlesCount - a.articlesCount);
+    const limitedTagData = tagData.slice(0, 6);
+
+    return {
+      success: true,
+      data: limitedTagData,
+      status: 200,
+    };
+  }),
 });

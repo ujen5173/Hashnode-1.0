@@ -16,15 +16,20 @@ export interface BookmarkInterface {
 
 const Bookmarks = () => {
   const { bookmarks } = useContext(C) as ContextValue;
-  const { data: bookmarksData } = api.posts.getBookmarks.useQuery({
-    ids: bookmarks,
-  });
+  const { data: bookmarksData } = api.posts.getBookmarks.useQuery(
+    {
+      ids: bookmarks,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <div className="my-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <header className="flex items-center justify-between border-b border-border-light py-2 dark:border-border">
         <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
-          Bookmarks ({bookmarks.length})
+          Bookmarks ({bookmarksData?.length})
         </h1>
         <Link href={`/bookmarks`}>
           <button
@@ -38,9 +43,17 @@ const Bookmarks = () => {
       </header>
 
       <div>
-        {bookmarksData?.map((bookmark) => (
-          <BookmarkCard key={bookmark.id} bookmark={bookmark} />
-        ))}
+        {bookmarksData && bookmarksData.length > 0 ? (
+          bookmarksData?.map((bookmark) => (
+            <BookmarkCard key={bookmark.id} bookmark={bookmark} />
+          ))
+        ) : (
+          <div className="py-8">
+            <p className="text-center text-gray-700 dark:text-text-secondary">
+              You don&apos;t have any bookmarks yet.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

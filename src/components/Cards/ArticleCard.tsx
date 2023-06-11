@@ -5,6 +5,7 @@ import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 import Link from "next/link";
 import type { Article } from "@prisma/client";
 import { C, type ContextValue } from "~/utils/context";
+import Bookmarked from "~/svgs/Bookmarked";
 
 interface Card {
   card: Article & {
@@ -75,11 +76,14 @@ const ArticleCard: FC<Card> = ({ card }) => {
               </div>
             </Link>
 
-            <Link href={`/u/@${card.user.username}/${card.slug}`}>
+            <Link
+              className="mb-3"
+              href={`/u/@${card.user.username}/${card.slug}`}
+            >
               <p
                 className={`${
                   card.cover_image ? "max-height-4" : "max-height-3 w-11/12"
-                } mb-5 break-all text-sm text-gray-500 dark:text-text-primary`}
+                } break-all text-sm text-gray-500 dark:text-text-primary`}
               >
                 {limitText(card.content, 350)}
               </p>
@@ -90,10 +94,14 @@ const ArticleCard: FC<Card> = ({ card }) => {
                 aria-label="icon"
                 onClick={() => updateBookmark(card.id)}
                 role="button"
-                className="btn-icon-large flex items-center justify-center"
+                className={`${
+                  bookmarks.find((bookmark) => bookmark.id === card.id)
+                    ? "bg-secondary bg-opacity-20"
+                    : ""
+                } btn-icon-large flex items-center justify-center`}
               >
                 {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
-                  <BookmarkArticle className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                  <Bookmarked className="h-5 w-5" />
                 ) : (
                   <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
                 )}
@@ -106,7 +114,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                       <button
                         aria-label="tag"
                         key={tag.id}
-                        className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-light-bg dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
+                        className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-border-light dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
                       >
                         {tag.name}
                       </button>
@@ -115,7 +123,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                     <button
                       aria-label="tag"
                       key={index}
-                      className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-primary-light dark:border-border dark:text-text-primary"
+                      className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-border-light dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
                     >
                       {tag.name}
                     </button>

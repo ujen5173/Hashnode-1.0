@@ -19,8 +19,8 @@ interface TrendingCardProps {
 
 const TrendingCard: FC<TrendingCardProps> = ({ article }) => {
   return (
-    <div className="flex gap-4 border-b border-border-light py-4 last:border-0 dark:border-border">
-      <Link href={`/u/@user`}>
+    <div className="flex items-start gap-4 border-b border-border-light py-4 last:border-0 dark:border-border">
+      <Link href={`/u/@user`} className="block">
         <Image
           src={article.user.profile}
           alt=""

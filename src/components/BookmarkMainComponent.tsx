@@ -1,15 +1,20 @@
 import { useContext } from "react";
 import { api } from "~/utils/api";
-import { C,type  ContextValue } from "~/utils/context";
+import { C, type ContextValue } from "~/utils/context";
 import ArticleCard from "./Cards/ArticleCard";
 import ArticleLoading from "./Loading/ArticleLoading";
 
 const BookmarkMainComponent = () => {
   const { bookmarks } = useContext(C) as ContextValue;
 
-  const { data: bookmarksData, isLoading } = api.posts.getMany.useQuery({
-    ids: bookmarks,
-  });
+  const { data: bookmarksData, isLoading } = api.posts.getMany.useQuery(
+    {
+      ids: bookmarks,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <section className="container-main my-4 min-h-screen w-full">

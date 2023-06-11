@@ -45,7 +45,7 @@ const ExploreMainComponent = () => {
                 key={tag.id}
                 className="w-full sm:w-[calc(100%/2-1rem)]"
               >
-                <div className="flex gap-2 rounded-md border border-border-light bg-primary-light p-2 dark:border-border ">
+                <div className="flex gap-2 rounded-md border border-border-light bg-gray-100 p-2 dark:border-border dark:bg-primary-light">
                   <Image
                     src={tag.image}
                     alt={tag.name}

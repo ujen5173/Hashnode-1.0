@@ -1,19 +1,29 @@
 import Link from "next/link";
-import React from "react";
-import { asideItems, trendingItems } from "~/utils/constants";
+import React, { type FC } from "react";
+import { asideItems } from "~/utils/constants";
 
 import Navigation from "./Cards/Navigation";
 import TrendingNavigation from "./Cards/TrendingNavigation";
 import Divider from "./Divider";
 import { Trending, Twitter, Discord, Linkedin, Instagram } from "~/svgs";
+import { api } from "~/utils/api";
 
 const Aside = () => {
+  const { data: tagsData, isLoading } = api.tags.getTredingTags.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
   return (
     <div className="container-aside relative hidden min-h-screen py-4 lg:block">
       <aside className="sticky left-0 top-4 h-fit w-full rounded-md border border-border-light bg-white py-2 dark:border-border dark:bg-primary">
         <Navigations />
         <Divider />
-        <TrendingComponent />
+        <TrendingComponent
+          trendingItems={isLoading ? null : tagsData ? tagsData.data : null}
+        />
         <SocialHandles />
         <div className="w-4/12 px-4">
           <Divider />
@@ -50,7 +60,17 @@ const Navigations = () => {
   );
 };
 
-const TrendingComponent = () => {
+const TrendingComponent: FC<{
+  trendingItems:
+    | {
+        articlesCount: number;
+        id: string;
+        name: string;
+        slug: string;
+      }[]
+    | null;
+}> = ({ trendingItems }) => {
+  console.log({ trendingItems });
   return (
     <div className="p-4">
       <div className="mb-2 flex items-center justify-between">
@@ -61,9 +81,18 @@ const TrendingComponent = () => {
           <Trending className="h-4 w-4 fill-black dark:fill-text-primary" />
         </span>
       </div>
-      {trendingItems.map((item, index) => (
-        <TrendingNavigation key={index} item={item} />
-      ))}
+
+      {trendingItems === null ? (
+        <>
+          <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
+          <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
+          <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
+        </>
+      ) : (
+        trendingItems.map((item) => (
+          <TrendingNavigation key={item.id} item={item} />
+        ))
+      )}
     </div>
   );
 };

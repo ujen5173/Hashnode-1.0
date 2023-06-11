@@ -16,7 +16,7 @@ const AuthCheck = () => {
           <p className="font-semibold text-red">NOT LOGGED IN</p>
           <div className="flex flex-col items-center gap-2 md:flex-row">
             <button
-              className="btn-filled w-full"
+              className="btn-filled w-max"
               onClick={() =>
                 void signIn("github", {
                   callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
@@ -26,7 +26,7 @@ const AuthCheck = () => {
               Continue with Github
             </button>
             <button
-              className="btn-outline w-full"
+              className="btn-outline w-max"
               onClick={() => void signIn("google")}
             >
               Continue with Google

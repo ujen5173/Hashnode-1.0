@@ -7,6 +7,7 @@ import React, {
   type SetStateAction,
   createContext,
 } from "react";
+import { Times } from "~/svgs";
 
 export interface ContextValue {
   handleTheme: () => void;

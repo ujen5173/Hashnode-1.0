@@ -7,6 +7,7 @@ import {
 } from "~/server/api/trpc";
 import slugify from "slugify";
 import readingTime from "reading-time";
+import { TRPCError } from "@trpc/server";
 
 export const postsRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -270,7 +271,10 @@ export const postsRouter = createTRPCRouter({
         };
       } catch (error) {
         console.log(error);
-        throw new Error("Something went wrong");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
       }
     }),
 });

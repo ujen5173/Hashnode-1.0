@@ -3,9 +3,11 @@ import Link from "next/link";
 
 interface Props {
   item: {
+    articlesCount: number;
+
+    id: string;
     name: string;
-    href: string;
-    latest_articles: number;
+    slug: string;
   };
 }
 
@@ -21,7 +23,7 @@ const TrendingNavigation: FC<Props> = ({ item }) => {
           {item.name}
         </span>
         <div className="rounded-full border bg-light-bg px-2 py-[3px] text-xs font-bold text-gray-500 dark:border-border dark:bg-primary-light dark:text-text-secondary">
-          {item.latest_articles}+
+          {item.articlesCount}+
         </div>
       </div>
     </Link>

@@ -14,7 +14,7 @@ const Bookmark: NextPage = () => {
   useEffect(() => {
     setUser(session);
   }, []);
-  
+
   return (
     <>
       <BookmarkSEO />

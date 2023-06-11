@@ -1,4 +1,5 @@
 import React, { type FC, useState, useEffect, useContext } from "react";
+import { toast } from "react-toastify";
 import { Filter, Fire, Clock } from "~/svgs";
 import type { DetailedTag } from "~/types";
 import { api } from "~/utils/api";
@@ -12,10 +13,15 @@ import Tags from "./Tags";
 
 const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const [following, setFollowing] = useState<boolean>(false);
-  const { data: tags, isLoading } = api.posts.getArticlesUsingTag.useQuery({
-    name: tagDetails.name,
-  });
-  const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
+  const { data: tags, isLoading } = api.posts.getArticlesUsingTag.useQuery(
+    {
+      name: tagDetails.name,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+  const { mutateAsync: followToggle } = api.tags.followTagToggle.useMutation();
   const { user } = useContext(C) as ContextValue;
 
   const [filter, setFilter] = useState<FilterData>({
@@ -43,11 +49,18 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     });
   };
 
-  const followTag = (name: string) => {
-    setFollowing((prev) => !prev);
-    followToggle({
+  const followTag = async (name: string): Promise<void> => {
+    const res = await followToggle({
       name: name,
     });
+    if (!res.success) return;
+    if (res.message === "Tag Followed") {
+      setFollowing(true);
+      toast.success(res.message);
+    } else {
+      setFollowing(false);
+      toast.success(res.message);
+    }
   };
 
   useEffect(() => {

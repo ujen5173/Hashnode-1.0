@@ -7,6 +7,7 @@ import { Search, Sun, Follow, Check } from "~/svgs";
 import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
 import { api } from "~/utils/api";
 import { type User } from "~/types";
+import { toast } from "react-toastify";
 
 const ArticleRightArea: FC<{ author: User }> = ({ author }) => {
   const [opened, setOpened] = useState(false);
@@ -15,17 +16,34 @@ const ArticleRightArea: FC<{ author: User }> = ({ author }) => {
   const [following, setFollowing] = useState<boolean>(false);
   const { mutateAsync: followToggle } =
     api.users.followUserToggle.useMutation();
-  const { data: userData } = api.users.getUser.useQuery();
+  const { data: userData } = api.users.getUser.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   const followUser = async () => {
-    const url = new URL(window.location.href).pathname;
-    const res = await followToggle({
-      username: url.split("/")[2]?.replace("@", "") as string,
-    });
-    if (res.status !== 200 && !res.success) {
-      setFollowing(false);
+    const username = new URL(window.location.href).pathname
+      .split("/")[2]
+      ?.replace("@", "") as string;
+
+    if (!user) {
+      return toast.error("You need to be logged in to follow users");
     }
-    console.log({ res });
+
+    if (user.user.username === username) {
+      return toast.error("You can't follow yourself");
+    }
+
+    const res = await followToggle({
+      username,
+    });
+
+    if (res.status !== 200 && !res.success) {
+      setFollowing(res.message === "User Unfollowed" ? false : true);
+      toast.success(res.message);
+    } else {
+      setFollowing(res.message === "User Unfollowed" ? false : true);
+      toast.success(res.message);
+    }
   };
 
   useEffect(() => {
@@ -71,12 +89,11 @@ const ArticleRightArea: FC<{ author: User }> = ({ author }) => {
           ) : (
             <>
               <Follow className="h-5 w-5 fill-secondary" />
-              Follow Tag
+              Follow User
             </>
           )}
         </button>
       </div>
-
       <button
         aria-label="profile"
         role="button"

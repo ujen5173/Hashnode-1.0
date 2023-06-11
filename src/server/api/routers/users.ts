@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -20,22 +21,18 @@ export const UsersRouter = createTRPCRouter({
           },
         });
 
-        console.log(user);
-
         if (!user) {
-          return {
-            success: false,
-            message: "user not found",
-            status: 404,
-          };
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "User not found",
+          });
         }
 
         if (user.username === ctx.session.user.username) {
-          return {
-            success: false,
+          throw new TRPCError({
+            code: "BAD_REQUEST",
             message: "You cannot follow yourself",
-            status: 404,
-          };
+          });
         }
 
         const isFollowing = user.followers.some(
@@ -60,7 +57,7 @@ export const UsersRouter = createTRPCRouter({
           });
           return {
             success: true,
-            message: "User Followed",
+            message: "User Unfollowed",
             status: 200,
           };
         } else {
@@ -81,13 +78,16 @@ export const UsersRouter = createTRPCRouter({
           });
           return {
             success: true,
-            message: "User Unfollowed",
+            message: "User Followed",
             status: 200,
           };
         }
       } catch (err) {
         console.log(err);
-        throw new Error("Something went wrong");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
       }
     }),
 

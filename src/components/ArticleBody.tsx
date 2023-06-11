@@ -25,11 +25,11 @@ const ArticleBody: FC<{ article: ArticleCard }> = ({ article }) => {
 
         <section className={`${!article?.cover_image ? "py-8 md:py-16" : ""}`}>
           <div className="px-4">
-            <h1 className="mb-8 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:w-10/12 md:text-5xl md:leading-tight">
+            <h1 className="mb-8 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:w-11/12 md:text-5xl md:leading-tight">
               {article.title}{" "}
             </h1>
             {article?.subtitle && (
-              <h2 className="mx-auto mb-10 w-full text-center text-xl font-normal text-gray-600 dark:text-text-primary sm:w-8/12 md:text-3xl">
+              <h2 className="mx-auto mb-10 w-full text-center text-xl font-normal text-gray-600 dark:text-text-primary sm:w-10/12 md:text-3xl">
                 {article?.subtitle}{" "}
               </h2>
             )}
