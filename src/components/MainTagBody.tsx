@@ -6,7 +6,7 @@ import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import ArticleCard from "./Cards/ArticleCard";
 import ArticleLoading from "./Loading/ArticleLoading";
-import type { FilterData } from "./MainBodyHeader";
+import type { FilterData } from "./MainBodyArticles";
 import Select from "./Select";
 import TagPageHeader from "./TagPageHeader";
 import Tags from "./Tags";
