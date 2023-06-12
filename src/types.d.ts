@@ -17,7 +17,8 @@ export interface ArticleCard {
     name: string;
     slug: string;
   }[];
-  likes: string[];
+  likes: { id: string }[];
+  likesCount: number;
   commentsCount: number;
   comments: string[];
   createdAt: Date;

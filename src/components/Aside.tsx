@@ -70,7 +70,6 @@ const TrendingComponent: FC<{
       }[]
     | null;
 }> = ({ trendingItems }) => {
-  console.log({ trendingItems });
   return (
     <div className="p-4">
       <div className="mb-2 flex items-center justify-between">

@@ -38,10 +38,10 @@ const TagPageHeader: FC<TagPageHeaderProps> = ({
           </p>
         </div>
       </div>
-      <div className="mb-3 flex flex-col items-center gap-4 md:flex-row">
+      <div className="mb-5 flex w-full flex-col items-center justify-center gap-4 md:flex-row">
         <button
           onClick={() => void followTag(tagDetails.name)}
-          className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+          className="btn-outline flex w-full items-center justify-center gap-2 text-secondary sm:w-max md:w-max"
         >
           {following ? (
             <>
@@ -55,8 +55,8 @@ const TagPageHeader: FC<TagPageHeaderProps> = ({
             </>
           )}
         </button>
-        <Link href={`/new?tag=${tagDetails.name}`}>
-          <button className="btn-filled flex w-full items-center gap-2 text-white md:w-max">
+        <Link href={`/new?tag=${tagDetails.name}`} className="w-full sm:w-max">
+          <button className="btn-filled flex w-full items-center justify-center gap-2 text-white md:w-max">
             <Pen className="h-5 w-5 fill-white" />
             Write An Article
           </button>

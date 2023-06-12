@@ -52,7 +52,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                 className="hidden sm:block"
                 href={`/u/@${card.user.username}`}
               >
-                {card.user.username}.hashnode.dev ·{" "}
+                @{card.user.username}
               </Link>
               <span>{formatDate(card.createdAt)}</span>
             </p>
@@ -71,7 +71,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
               <div className="mb-4 flex items-center gap-2">
                 <Book className="h-4 w-4 fill-secondary" />
                 <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
-                  {card.read_time}
+                  {card.read_time} min read
                 </p>
               </div>
             </Link>
@@ -98,7 +98,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                   bookmarks.find((bookmark) => bookmark.id === card.id)
                     ? "bg-secondary bg-opacity-20"
                     : ""
-                } btn-icon-large flex items-center justify-center`}
+                } btn-icon-large flex w-max items-center justify-center`}
               >
                 {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
                   <Bookmarked className="h-5 w-5" />

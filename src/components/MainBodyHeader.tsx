@@ -1,45 +1,28 @@
 import { People, Magic, Star, Filter } from "~/svgs";
-import { useState } from "react";
+import { type FC } from "react";
 import Select from "./Select";
 import Tags from "./Tags";
+import type { FilterData } from "./MainBodyArticles";
 
-export interface FilterData {
-  status: boolean;
-  data: {
-    read_time: number | null;
-    tags: Tag[];
-  };
+interface MainBodyHeaderProps {
+  filter: FilterData;
+  setFilter: React.Dispatch<React.SetStateAction<FilterData>>;
+  applyFilter: () => void;
 }
 
-export interface Tag {
-  id: string;
-  name: string;
-}
-
-const MainBodyHeader = () => {
-  const [filter, setFilter] = useState<FilterData>({
-    status: false,
-    data: {
-      read_time: null,
-      tags: [],
-    },
-  });
-
+const MainBodyHeader: FC<MainBodyHeaderProps> = ({
+  filter,
+  setFilter,
+  applyFilter,
+}) => {
   const clearFilter = () => {
-    setFilter({
-      ...filter,
+    setFilter((prev) => ({
+      ...prev,
       data: {
         read_time: null,
         tags: [],
       },
-    });
-  };
-
-  const applyFilter = () => {
-    setFilter({
-      ...filter,
-      status: false,
-    });
+    }));
   };
 
   return (
@@ -100,8 +83,8 @@ const MainBodyHeader = () => {
       </header>
 
       {filter.status && (
-        <section className="relative flex w-full justify-between gap-12 border-b border-border-light p-4 dark:border-border">
-          <div className="flex w-8/12 gap-4">
+        <section className="relative flex w-full flex-col justify-between gap-4 border-b border-border-light p-4 dark:border-border sm:flex-row sm:gap-12">
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row">
             <div>
               <label
                 className="mb-2 inline-block text-gray-700 dark:text-text-secondary"
@@ -124,8 +107,8 @@ const MainBodyHeader = () => {
               <Tags filter={filter} setFilter={setFilter} />
             </div>
           </div>
-          <div className="mt-8 flex items-start gap-2">
-            <button onClick={applyFilter} className="btn-outline">
+          <div className="mt-0 flex items-start gap-2 sm:mt-8">
+            <button onClick={() => void applyFilter()} className="btn-outline">
               Apply
             </button>
             <button onClick={clearFilter} className="btn-subtle">

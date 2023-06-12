@@ -19,9 +19,14 @@ import { type Session } from "next-auth";
 
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
+import { initTRPC, TRPCError } from "@trpc/server";
+import superjson from "superjson";
+import { ZodError } from "zod";
+import { NextApiResponse } from "next";
 
 type CreateContextOptions = {
   session: Session | null;
+  res: NextApiResponse;
 };
 
 /**
@@ -36,8 +41,8 @@ type CreateContextOptions = {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
-    session: opts.session,
     prisma,
+    ...opts,
   };
 };
 
@@ -47,14 +52,15 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
+
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
-  // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
   return createInnerTRPCContext({
     session,
+    res, // Pass the Response object to the context
   });
 };
 
@@ -65,9 +71,6 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
-import { initTRPC, TRPCError } from "@trpc/server";
-import superjson from "superjson";
-import { ZodError } from "zod";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,

@@ -1,5 +1,4 @@
-import { string, z } from "zod";
-
+import { z } from "zod";
 import {
   createTRPCRouter,
   publicProcedure,
@@ -14,28 +13,88 @@ export const postsRouter = createTRPCRouter({
     return `Greetings Developer`;
   }),
 
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.article.findMany({
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profile: true,
+  getAll: publicProcedure
+    .input(
+      z
+        .object({
+          filter: z
+            .object({
+              read_time: z
+                .enum(["over_5", "5", "under_5"])
+                .nullable()
+                .optional(),
+              tags: z.array(
+                z.object({
+                  id: z.string().trim(),
+                  name: z.string().trim(),
+                })
+              ),
+            })
+            .optional()
+            .nullable(),
+          type: z
+            .enum(["personalized", "following", "featured"])
+            .optional()
+            .default("personalized"),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        console.log({ filter: input?.filter });
+        const data = await ctx.prisma.article.findMany({
+          where: {
+            read_time:
+              input?.filter?.read_time === "over_5"
+                ? { gt: 5 }
+                : input?.filter?.read_time === "under_5"
+                ? { lt: 5 }
+                : input?.filter?.read_time === "5"
+                ? { equals: 5 }
+                : undefined,
+
+            tags: {
+              some: {
+                name: {
+                  in: input?.filter?.tags
+                    ? input?.filter?.tags.length > 0
+                      ? input?.filter?.tags.map((tag) => tag.name)
+                      : undefined
+                    : undefined,
+                },
+              },
+            },
           },
-        },
-        tags: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
+
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                profile: true,
+              },
+            },
+            tags: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
           },
-        },
-      },
-      take: 15,
-    });
-  }),
+          take: 15,
+        });
+
+        return data;
+      } catch (err) {
+        console.log(err);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
 
   getArticlesUsingTag: publicProcedure
     .input(
@@ -149,28 +208,44 @@ export const postsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.article.findUnique({
-        where: {
-          slug: input.slug,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              username: true,
-              profile: true,
+      try {
+        const article = await ctx.prisma.article.findUnique({
+          where: {
+            slug: input.slug,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                profile: true,
+              },
+            },
+            tags: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
             },
           },
-          tags: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-        },
-      });
+        });
+
+        if (!article) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Article not found",
+          });
+        }
+
+        return article;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
     }),
 
   new: protectedProcedure
@@ -252,7 +327,7 @@ export const postsRouter = createTRPCRouter({
                 id: ctx.session.user.id,
               },
             },
-            read_time: readingTime(input.content).text,
+            read_time: readingTime(input.content).minutes,
             slug,
             seoTitle: input.seoTitle || title,
             seoDescription:
@@ -265,9 +340,77 @@ export const postsRouter = createTRPCRouter({
 
         return {
           success: true,
-          message: "Create new post successfully",
-          status: 201,
-          newArticleLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
+          redirectLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
+
+  likeArticle: protectedProcedure
+    .input(
+      z.object({
+        articleId: z.string().trim(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { articleId } = input;
+
+        const article = await ctx.prisma.article.findUnique({
+          where: {
+            id: articleId,
+          },
+          select: {
+            likes: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        if (!article) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Article not found",
+          });
+        }
+
+        const hasLiked = article.likes.some(
+          (like) => like.id === ctx.session.user.id
+        );
+
+        const newArticle = await ctx.prisma.article.update({
+          where: {
+            id: articleId,
+          },
+          data: {
+            likes: {
+              [hasLiked ? "disconnect" : "connect"]: {
+                id: ctx.session.user.id,
+              },
+            },
+            likesCount: {
+              [hasLiked ? "decrement" : "increment"]: 1,
+            },
+          },
+          select: {
+            likes: {
+              select: { id: true },
+            },
+            likesCount: true,
+          },
+        });
+
+        return {
+          success: true,
+          message: hasLiked ? "Unliked article" : "Liked article",
+          hasLiked: !hasLiked,
+          likesCount: newArticle.likesCount,
         };
       } catch (error) {
         console.log(error);

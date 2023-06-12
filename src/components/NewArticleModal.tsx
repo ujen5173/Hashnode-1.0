@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { type KeyboardEvent, useContext, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Times } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -71,11 +72,13 @@ const NewArticleModal = ({
 
     setPublishing(true);
     try {
-      const response = await mutateAsync(data);
-      if (response.success) {
-        await router.push(response.newArticleLink);
+      const res = await mutateAsync(data);
+      if (res.success) {
+        toast.success("Article published successfully");
+        setPublishModal(false);
+        await router.push(res.redirectLink);
       }
-    } catch (err) {}
+    } catch (r) {}
     setPublishing(false);
   };
 

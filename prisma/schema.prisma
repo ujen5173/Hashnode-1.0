@@ -102,7 +102,7 @@ model Article {
     user             User      @relation("author", fields: [userId], references: [id])
     userId           String
     content          String
-    read_time        String
+    read_time        Int
     tags             Tag[]
     seoTitle         String?
     seoDescription   String?
@@ -110,6 +110,7 @@ model Article {
     subtitle         String?
     disabledComments Boolean   @default(true)
     likes            User[]
+    likesCount       Int       @default(0)
     slug             String    @unique
     comments         Comment[]
     createdAt        DateTime  @default(now())
