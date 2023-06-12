@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useContext, type FC } from "react";
-import { Bookmarkplus, Book, BookmarkArticle } from "~/svgs";
+import { Bookmarkplus, Book } from "~/svgs";
 import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 import Link from "next/link";
 import type { Article } from "@prisma/client";

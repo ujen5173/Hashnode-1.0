@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { trendingArticles, trendingTags } from "~/utils/constants";
-import ArticleCard from "./Cards/ArticleCard";
+import { trendingTags } from "~/utils/constants";
 
 const ExploreMainComponent = () => {
   return (
@@ -77,9 +76,9 @@ const ExploreMainComponent = () => {
           </div>
 
           <div className="">
-            {trendingArticles.map((card) => (
+            {/* {trendingArticles.map((card) => (
               <ArticleCard card={card} key={card.id} />
-            ))}
+            ))} */}
           </div>
         </section>
       </div>
