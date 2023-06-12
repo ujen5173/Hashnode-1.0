@@ -1,7 +1,7 @@
 import React, { type FC, type KeyboardEvent } from "react";
 import { Search, Times } from "~/svgs";
 import { v4 as uuid } from "uuid";
-import type { FilterData } from "./MainBodyHeader";
+import type { FilterData } from "./MainBodyArticles";
 
 interface Props {
   filter: FilterData;
