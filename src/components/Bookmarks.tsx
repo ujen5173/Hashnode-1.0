@@ -8,7 +8,7 @@ export interface BookmarkInterface {
   id: string;
   title: string;
   slug: string;
-  read_time: string;
+  read_time: number;
   user: {
     name: string;
   };
