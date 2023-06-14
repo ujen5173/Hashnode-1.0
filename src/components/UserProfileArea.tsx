@@ -48,14 +48,14 @@ const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
                 {Intl.NumberFormat("en-US", {
                   notation: "compact",
                   compactDisplay: "short",
-                }).format(userDetails?.followingCount || 0)}{" "}
+                }).format(+following.followersCount || 0)}{" "}
                 Follower
               </span>
               <span>
                 {Intl.NumberFormat("en-US", {
                   notation: "compact",
                   compactDisplay: "short",
-                }).format(+following.followersCount || 0)}{" "}
+                }).format(userDetails?.followingCount || 0)}{" "}
                 Following
               </span>
             </div>
