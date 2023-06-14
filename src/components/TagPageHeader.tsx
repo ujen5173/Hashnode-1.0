@@ -6,8 +6,11 @@ import type { DetailedTag } from "~/types";
 
 interface TagPageHeaderProps {
   tagDetails: DetailedTag;
-  following: boolean;
-  followTag: (name: string) => Promise<void>;
+  following: {
+    status: boolean;
+    followersCount: string;
+  };
+  followTag: (name: string) => void;
 }
 
 const TagPageHeader: FC<TagPageHeaderProps> = ({
@@ -43,7 +46,7 @@ const TagPageHeader: FC<TagPageHeaderProps> = ({
           onClick={() => void followTag(tagDetails.name)}
           className="btn-outline flex w-full items-center justify-center gap-2 text-secondary sm:w-max md:w-max"
         >
-          {following ? (
+          {following.status ? (
             <>
               <Check className="h-5 w-5 fill-secondary" />
               <span>Following</span>
@@ -70,7 +73,7 @@ const TagPageHeader: FC<TagPageHeaderProps> = ({
               {Intl.NumberFormat("en-US", {
                 notation: "compact",
                 compactDisplay: "short",
-              }).format(+tagDetails.followersCount)}
+              }).format(+following.followersCount)}
             </span>
             <span>Followers</span>
           </span>

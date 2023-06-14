@@ -1,16 +1,19 @@
+import Link from "next/link";
 import { Search, Ai } from "~/svgs";
 
 const SearchArea = () => {
   return (
     <>
       <div className="hidden items-center gap-2 xl:flex">
-        <button
-          aria-label="Go to my feed"
-          role="button"
-          className="btn-outline"
-        >
-          My Feed
-        </button>
+        <Link href="/">
+          <button
+            aria-label="Go to my feed"
+            role="button"
+            className="btn-outline"
+          >
+            My Feed
+          </button>
+        </Link>
         <button
           aria-label="Unlock the power of AI"
           role="button"

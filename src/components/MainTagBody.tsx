@@ -1,3 +1,4 @@
+import { TRPCClientError } from "@trpc/client";
 import React, { type FC, useState, useEffect, useContext } from "react";
 import { toast } from "react-toastify";
 import { Filter, Fire, Clock } from "~/svgs";
@@ -12,7 +13,15 @@ import TagPageHeader from "./TagPageHeader";
 import Tags from "./Tags";
 
 const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
-  const [following, setFollowing] = useState<boolean>(false);
+  const [following, setFollowing] = useState<{
+    status: boolean;
+    followersCount: string;
+  }>({
+    status: false,
+    followersCount: "0",
+  });
+  const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
+  const { user } = useContext(C) as ContextValue;
   const { data: tags, isLoading } = api.posts.getArticlesUsingTag.useQuery(
     {
       name: tagDetails.name,
@@ -21,9 +30,6 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       refetchOnWindowFocus: false,
     }
   );
-  const { mutateAsync: followToggle } = api.tags.followTagToggle.useMutation();
-  const { user } = useContext(C) as ContextValue;
-
   const [filter, setFilter] = useState<FilterData>({
     status: false,
     data: {
@@ -31,6 +37,24 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       tags: [],
     },
   });
+  useEffect(() => {
+    if (tagDetails && user) {
+      const isFollowing = tagDetails.followers.find(
+        (follower) => follower.id === user.user.id
+      );
+      if (isFollowing) {
+        setFollowing({
+          status: true,
+          followersCount: JSON.stringify(tagDetails.followersCount),
+        });
+      } else {
+        setFollowing({
+          status: false,
+          followersCount: JSON.stringify(tagDetails.followersCount),
+        });
+      }
+    }
+  }, [tagDetails, user]);
 
   const clearFilter = () => {
     setFilter({
@@ -49,32 +73,27 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     });
   };
 
-  const followTag = async (name: string): Promise<void> => {
-    const res = await followToggle({
-      name: name,
-    });
-    if (!res.success) return;
-    if (res.message === "Tag Followed") {
-      setFollowing(true);
-      toast.success(res.message);
-    } else {
-      setFollowing(false);
-      toast.success(res.message);
-    }
-  };
-
-  useEffect(() => {
-    if (tagDetails && user) {
-      const isFollowing = tagDetails.followers.find(
-        (follower) => follower.id === user.user.id
-      );
-      if (isFollowing) {
-        setFollowing(true);
-      } else {
-        setFollowing(false);
+  const followTag = (name: string): void => {
+    try {
+      if (!user) {
+        toast.error("You need to be logged in to follow tags");
+        return;
+      }
+      setFollowing({
+        status: !following.status,
+        followersCount: following.status
+          ? JSON.stringify(parseInt(following.followersCount) - 1)
+          : JSON.stringify(parseInt(following.followersCount) + 1),
+      });
+      followToggle({
+        name: name,
+      });
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        toast.error(error.message);
       }
     }
-  }, [tagDetails, user]);
+  };
 
   return (
     <section className="container-main my-4 min-h-screen w-full">
@@ -84,7 +103,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
         followTag={followTag}
       />
 
-      <main className="flex flex-col items-center justify-center rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
+      <main className="flex flex-col items-center justify-center overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
         <div className="flex w-full flex-col items-end justify-between gap-2 pt-2">
           <div className="flex w-full items-end justify-between border-b border-border-light px-2 dark:border-border">
             <div className="flex w-full items-center gap-2">

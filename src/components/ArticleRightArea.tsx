@@ -1,63 +1,16 @@
 import Image from "next/image";
-import React, { type FC, useContext, useEffect, useState } from "react";
+import React, { type FC, useContext, useState } from "react";
 import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import { useClickOutside } from "@mantine/hooks";
 import { C, type ContextValue } from "~/utils/context";
 import { Search, Sun, Follow, Check } from "~/svgs";
 import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
-import { api } from "~/utils/api";
-import { type User } from "~/types";
-import { toast } from "react-toastify";
 
-const ArticleRightArea: FC<{ author: User }> = ({ author }) => {
+const ArticleRightArea: FC = () => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const { handleTheme, user } = useContext(C) as ContextValue;
-  const [following, setFollowing] = useState<boolean>(false);
-  const { mutateAsync: followToggle } =
-    api.users.followUserToggle.useMutation();
-  const { data: userData } = api.users.getUser.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
-
-  const followUser = async () => {
-    const username = new URL(window.location.href).pathname
-      .split("/")[2]
-      ?.replace("@", "") as string;
-
-    if (!user) {
-      return toast.error("You need to be logged in to follow users");
-    }
-
-    if (user.user.username === username) {
-      return toast.error("You can't follow yourself");
-    }
-
-    const res = await followToggle({
-      username,
-    });
-
-    if (res.status !== 200 && !res.success) {
-      setFollowing(res.message === "User Unfollowed" ? false : true);
-      toast.success(res.message);
-    } else {
-      setFollowing(res.message === "User Unfollowed" ? false : true);
-      toast.success(res.message);
-    }
-  };
-
-  useEffect(() => {
-    if (userData) {
-      const isFollowing = userData.following?.find(
-        (follower) => follower.username === author.username
-      );
-      if (isFollowing) {
-        setFollowing(true);
-      } else {
-        setFollowing(false);
-      }
-    }
-  }, [userData, author]);
+  const { following, followUser } = useContext(C) as ContextValue;
 
   return (
     <div className="flex items-center justify-center gap-2">
@@ -81,7 +34,7 @@ const ArticleRightArea: FC<{ author: User }> = ({ author }) => {
           onClick={() => void followUser()}
           className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
         >
-          {following ? (
+          {following.status ? (
             <>
               <Check className="h-5 w-5 fill-secondary" />
               Following

@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Article } from "@prisma/client";
 import { C, type ContextValue } from "~/utils/context";
 import Bookmarked from "~/svgs/Bookmarked";
+import removeMd from "remove-markdown";
 
 interface Card {
   card: Article & {
@@ -43,7 +44,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
           </Link>
           <div className="flex-1">
             <Link href={`/u/@${card.user.username}`}>
-              <h1 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+              <h1 className="text-base font-semibold text-gray-900 dark:text-text-secondary">
                 {card.user.name}
               </h1>
             </Link>
@@ -54,6 +55,9 @@ const ArticleCard: FC<Card> = ({ card }) => {
               >
                 @{card.user.username}
               </Link>
+              <span className="hidden text-gray-900 dark:text-text-secondary lg:block">
+                ·
+              </span>
               <span>{formatDate(card.createdAt)}</span>
             </p>
           </div>
@@ -85,7 +89,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
                   card.cover_image ? "max-height-4" : "max-height-3 w-11/12"
                 } break-all text-sm text-gray-500 dark:text-text-primary`}
               >
-                {limitText(card.content, 350)}
+                {limitText(removeMd(card.content), 350)}
               </p>
             </Link>
 

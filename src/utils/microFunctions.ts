@@ -1,13 +1,18 @@
-import type { Activity } from "~/components/UserRecentActivities";
-
+export interface Activity {
+  id: string;
+  title: string;
+  slug: string;
+  activity_type: "ARTICLE" | "JOINED";
+  createdAt: Date;
+}
 export function refactorActivityHelper(
   activity: Activity[]
 ): Map<string, Activity[]> {
   const res = new Map<string, Activity[]>();
 
   for (const value of activity) {
-    const { date } = value;
-    const formatedDate = new Date(date).toLocaleDateString("en-US", {
+    const { createdAt } = value;
+    const formatedDate = new Date(createdAt).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",

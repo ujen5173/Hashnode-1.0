@@ -1,6 +1,8 @@
 import { useClickOutside } from "@mantine/hooks";
+import { TRPCClientError } from "@trpc/client";
 import Image from "next/image";
 import React, { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import slugify from "slugify";
 import ImagePreview from "~/svgs/ImagePreview";
 import { C, type ContextValue } from "~/utils/context";
@@ -83,7 +85,9 @@ const NewArticleBody = ({
       setFile(fileData);
       setFileModal(false);
     } catch (error) {
-      // Handle any errors that occurred during the handling of the image
+      if (error instanceof TRPCClientError) {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -102,7 +106,7 @@ const NewArticleBody = ({
           {fileModal && (
             <div
               ref={ref}
-              className="absolute left-0 top-full mt-2 w-full sm:w-96"
+              className="absolute left-0 top-full z-30 mt-2 w-full bg-light-bg dark:bg-primary-light sm:w-96"
             >
               <ImagePlaceholder
                 file={file}

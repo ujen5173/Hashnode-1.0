@@ -38,8 +38,10 @@ const SingleTag: NextPage<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
 export default SingleTag;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = getServerSession(context.req, context.res, authOptions);
+  const session = await getServerSession(context.req, context.res, authOptions);
   const params = context.params?.slug as string;
+
+  console.log({ params });
 
   if (!params) {
     return {
@@ -53,7 +55,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const tagDetails = prisma.tag.findUnique({
+  const tagDetails = await prisma.tag.findUnique({
     where: {
       slug: params,
     },
@@ -71,17 +73,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  const [sessionData, tagDetailsData] = await Promise.all([
-    session,
-    tagDetails,
-  ]);
-
   return {
     props: {
-      session: sessionData
-        ? (JSON.parse(JSON.stringify(sessionData)) as Session)
+      session: session
+        ? (JSON.parse(JSON.stringify(session)) as Session)
         : null,
-      tagDetails: JSON.parse(JSON.stringify(tagDetailsData)) as DetailedTag,
+      tagDetails: JSON.parse(JSON.stringify(tagDetails)) as DetailedTag,
     },
   };
 };

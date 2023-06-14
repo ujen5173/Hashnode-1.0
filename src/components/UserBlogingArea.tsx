@@ -1,7 +1,10 @@
-import React from "react";
+import { type User } from "@prisma/client";
+import React, { type FC } from "react";
 import { Topright } from "~/svgs";
 
-const UserBlogingArea = () => {
+const UserBlogingArea: FC<{ userDetails: User | undefined }> = ({
+  userDetails,
+}) => {
   return (
     <div className="my-6 w-full rounded-md border border-border-light px-6 py-3 dark:border-border md:px-12 md:py-6">
       <header className="mb-6 w-full border-b border-border-light py-3 dark:border-border">
@@ -12,10 +15,10 @@ const UserBlogingArea = () => {
       <section className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:gap-0">
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
-            Shen&apos;s Developer Diary
+            {userDetails?.username}&apos;s Developer Diary
           </h1>
           <h1 className="text-base font-normal text-gray-700 dark:text-text-primary">
-            blogs.shen.dev
+            {userDetails?.username}
           </h1>
         </div>
         <button className="btn-outline flex items-center justify-center gap-2">

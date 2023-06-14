@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import BookmarkCard from "./Cards/BookmarkCard";
+import BookmarkLoading from "./Loading/BookmarkLoading";
 
 export interface BookmarkInterface {
   id: string;
@@ -16,7 +17,7 @@ export interface BookmarkInterface {
 
 const Bookmarks = () => {
   const { bookmarks } = useContext(C) as ContextValue;
-  const { data: bookmarksData } = api.posts.getBookmarks.useQuery(
+  const { data: bookmarksData, isLoading } = api.posts.getBookmarks.useQuery(
     {
       ids: bookmarks,
     },
@@ -29,7 +30,7 @@ const Bookmarks = () => {
     <div className="my-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <header className="flex items-center justify-between border-b border-border-light py-2 dark:border-border">
         <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
-          Bookmarks ({bookmarksData?.length})
+          Bookmarks ({bookmarksData?.length || 0})
         </h1>
         <Link href={`/bookmarks`}>
           <button
@@ -43,7 +44,14 @@ const Bookmarks = () => {
       </header>
 
       <div>
-        {bookmarksData && bookmarksData.length > 0 ? (
+        {isLoading ? (
+          <>
+            <BookmarkLoading />
+            <BookmarkLoading />
+            <BookmarkLoading />
+            <BookmarkLoading />
+          </>
+        ) : bookmarksData && bookmarksData.length > 0 ? (
           bookmarksData?.map((bookmark) => (
             <BookmarkCard key={bookmark.id} bookmark={bookmark} />
           ))

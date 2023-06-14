@@ -1,53 +1,142 @@
-import React from "react";
+import React, { useContext, useState, type FC } from "react";
 import Image from "next/image";
-import { Add, Angledown, ProfileShare } from "~/svgs";
+import {
+  Angledown,
+  Check,
+  Follow,
+  Linkedin,
+  ProfileShare,
+  Report,
+  Twitter,
+} from "~/svgs";
+import { type User } from "@prisma/client";
+import { useClickOutside } from "@mantine/hooks";
+import { C, type ContextValue } from "~/utils/context";
 
-const UserProfileArea = () => {
+const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
+  userDetails,
+}) => {
+  const [opened, setOpened] = useState(false);
+  const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+  const [opened2, setOpened2] = useState(false);
+  const ref2 = useClickOutside<HTMLDivElement>(() => setOpened2(false));
+  const { following, followUser } = useContext(C) as ContextValue;
+
   return (
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
-      <Image
-        src={
-          "https://cdn.hashnode.com/res/hashnode/image/upload/v1629063104225/o7zmluXlB.png?w=500&h=500&fit=crop&crop=faces&auto=compress,format&format=webp"
-        }
-        alt=""
-        width={100}
-        className="h-44 w-44 rounded-full object-cover"
-        height={100}
-      />
+      <div className="h-40 w-40 overflow-hidden rounded-full bg-light-bg dark:bg-primary-light">
+        <Image
+          src={userDetails?.profile || ""}
+          alt={userDetails?.name || ""}
+          width={100}
+          className="h-full w-full rounded-full object-cover"
+          height={100}
+        />
+      </div>
 
       <div className="flex flex-1 flex-col items-start gap-4 lg:flex-row">
         <div className="flex w-full flex-1 items-start justify-between">
           <div>
             <h1 className="mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
-              Oviekhaye Divine
+              {userDetails?.name}
             </h1>
             <p className="mb-6 text-lg font-medium text-gray-500 dark:text-text-secondary">
-              Frontend developer and UI/UX designer
+              {userDetails?.tagline}
             </p>
             <div className="flex gap-4 text-gray-700 dark:text-text-primary">
-              <span>1 Follower</span>
-              <span>1 Following</span>
+              <span>
+                {Intl.NumberFormat("en-US", {
+                  notation: "compact",
+                  compactDisplay: "short",
+                }).format(userDetails?.followingCount || 0)}{" "}
+                Follower
+              </span>
+              <span>
+                {Intl.NumberFormat("en-US", {
+                  notation: "compact",
+                  compactDisplay: "short",
+                }).format(+following.followersCount || 0)}{" "}
+                Following
+              </span>
             </div>
           </div>
           <div className="flex gap-2">
-            <button className="btn-icon-outline">
-              <ProfileShare className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
-            </button>
-            <button className="btn-icon-outline">
-              <Angledown className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setOpened(true)}
+                className="btn-icon-outline"
+              >
+                <ProfileShare className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+              </button>
+              {opened && (
+                <div
+                  ref={ref}
+                  className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
+                >
+                  <ul className="w-40 overflow-hidden rounded-md bg-white dark:bg-black">
+                    <li className="w-full p-4 text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
+                      <button className="flex w-full items-center justify-center gap-2 text-left">
+                        <span>
+                          <Twitter className="h-6 w-6 fill-twitterColor" />
+                        </span>
+                        <span>Twitter</span>
+                      </button>
+                    </li>
+                    <li className="w-full p-4 text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
+                      <button className="flex w-full items-center justify-center gap-2 text-left">
+                        <span>
+                          <Linkedin className="h-6 w-6 fill-linkedinColor" />
+                        </span>
+                        <span>Linkedin</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <button
+                onClick={() => setOpened2(true)}
+                className="btn-icon-outline"
+              >
+                <Angledown className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+              </button>
+              {opened2 && (
+                <div
+                  ref={ref2}
+                  className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
+                >
+                  <ul className="w-max overflow-hidden rounded-md bg-white dark:bg-black">
+                    <li className="w-full p-4 text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
+                      <button className="flex w-full items-center justify-center gap-2 pr-8 text-left">
+                        <span>
+                          <Report className="h-6 w-6 fill-twitterColor" />
+                        </span>
+                        <span>Report this profile</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         <button
-          aria-label="icon"
-          role="button"
-          className="btn-follow-filled gap-2"
+          onClick={() => void followUser()}
+          className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
         >
-          <span>
-            <Add className="h-4 w-4 fill-white stroke-none" />
-          </span>
-          <span>Follow</span>
+          {following.status ? (
+            <>
+              <Check className="h-5 w-5 fill-secondary" />
+              Following
+            </>
+          ) : (
+            <>
+              <Follow className="h-5 w-5 fill-secondary" />
+              Follow User
+            </>
+          )}
         </button>
       </div>
     </div>

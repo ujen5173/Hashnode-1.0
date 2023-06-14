@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { publicProcedure } from "./../trpc";
 
 export const UsersRouter = createTRPCRouter({
   followUserToggle: protectedProcedure
@@ -9,73 +10,110 @@ export const UsersRouter = createTRPCRouter({
         username: z.string().trim(),
       })
     )
+
+    // Mutation code
     .mutation(async ({ ctx, input }) => {
       try {
-        const user = await ctx.prisma.user.findUnique({
-          where: {
-            username: input.username,
-          },
+        const { username } = input;
+
+        // Find the target user
+        const targetUser = await ctx.prisma.user.findUnique({
+          where: { username },
           select: {
             username: true,
             followers: true,
+            followersCount: true,
           },
         });
 
-        if (!user) {
+        if (!targetUser) {
           throw new TRPCError({
-            code: "BAD_REQUEST",
+            code: "NOT_FOUND",
             message: "User not found",
           });
         }
 
-        if (user.username === ctx.session.user.username) {
+        const currentUser = ctx.session.user;
+
+        if (targetUser.username === currentUser.username) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "You cannot follow yourself",
           });
         }
 
-        const isFollowing = user.followers.some(
-          (follower) => follower.id === ctx.session.user.id
+        // Check if the current user is already following the target user
+        const isFollowing = targetUser.followers.some(
+          (follower) => follower.id === currentUser.id
         );
 
         if (isFollowing) {
-          await ctx.prisma.user.update({
-            where: {
-              username: input.username,
-            },
-            data: {
-              followers: {
-                disconnect: {
-                  id: ctx.session.user.id,
+          // Unfollow the target user
+          await Promise.all([
+            ctx.prisma.user.update({
+              where: { username: currentUser.username },
+              data: {
+                following: {
+                  disconnect: {
+                    username,
+                  },
+                },
+                followingCount: {
+                  decrement: 1,
                 },
               },
-              followersCount: {
-                decrement: 1,
+            }),
+            ctx.prisma.user.update({
+              where: { username },
+              data: {
+                followers: {
+                  disconnect: {
+                    username: currentUser.username,
+                  },
+                },
+                followersCount: {
+                  decrement: 1,
+                },
               },
-            },
-          });
+            }),
+          ]);
+
           return {
             success: true,
             message: "User Unfollowed",
             status: 200,
           };
         } else {
-          await ctx.prisma.user.update({
-            where: {
-              username: input.username,
-            },
-            data: {
-              followers: {
-                connect: {
-                  id: ctx.session.user.id,
+          // Follow the target user
+          await Promise.all([
+            ctx.prisma.user.update({
+              where: { username },
+              data: {
+                followers: {
+                  connect: {
+                    id: currentUser.id,
+                  },
+                },
+                followersCount: {
+                  increment: 1,
                 },
               },
-              followersCount: {
-                increment: 1,
+            }),
+            ctx.prisma.user.update({
+              where: { username: currentUser.username },
+              data: {
+                following: {
+                  connect: {
+                    username,
+                  },
+                },
+                followingCount: {
+                  increment: 1,
+                },
               },
-            },
-          });
+            }),
+          ]);
+
           return {
             success: true,
             message: "User Followed",
@@ -83,7 +121,6 @@ export const UsersRouter = createTRPCRouter({
           };
         }
       } catch (err) {
-        console.log(err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -110,4 +147,44 @@ export const UsersRouter = createTRPCRouter({
       },
     });
   }),
+
+  getUserByUsername: publicProcedure
+    .input(
+      z.object({
+        username: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          username: input.username.slice(1, input.username.length),
+        },
+        include: {
+          followers: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      let isFollowing = false;
+
+      if (ctx.session !== null) {
+        isFollowing = user?.followers.some(
+          (follower) => follower.id === ctx?.session?.user.id
+        )
+          ? true
+          : false;
+      }
+
+      if (!user) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User not found",
+        });
+      }
+
+      return { ...user, isFollowing };
+    }),
 });

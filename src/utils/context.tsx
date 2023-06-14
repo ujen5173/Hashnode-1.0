@@ -7,7 +7,8 @@ import React, {
   type SetStateAction,
   createContext,
 } from "react";
-import { Times } from "~/svgs";
+import { toast } from "react-toastify";
+import { api } from "./api";
 
 export interface ContextValue {
   handleTheme: () => void;
@@ -19,6 +20,17 @@ export interface ContextValue {
   setUser: Dispatch<SetStateAction<Session | null>>;
   bookmarks: { id: string }[];
   updateBookmark: (id: string) => void;
+  following: {
+    status: boolean;
+    followersCount: string;
+  };
+  setFollowing: Dispatch<
+    SetStateAction<{
+      status: boolean;
+      followersCount: string;
+    }>
+  >;
+  followUser: () => void;
 }
 
 interface Props {
@@ -45,6 +57,7 @@ const Context = ({ children }: Props) => {
     if (newBookmark) {
       const newBookmarks = bookmarks.filter((bookmark) => bookmark.id !== id);
       setBookmarks(newBookmarks);
+      console.log(newBookmarks);
       localStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
     } else {
       const newBookmarks = [...bookmarks, { id }];
@@ -85,6 +98,43 @@ const Context = ({ children }: Props) => {
     body?.classList.remove(theme === "light" ? "dark" : "light");
   }, [theme]);
 
+  const [following, setFollowing] = useState<{
+    status: boolean;
+    followersCount: string;
+  }>({
+    status: false,
+    followersCount: "0",
+  });
+
+  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+
+  console.log({ following });
+
+  const followUser = () => {
+    const username = new URL(window.location.href).pathname
+      .split("/")[2]
+      ?.replace("@", "") as string;
+
+    if (!user) {
+      return toast.error("You need to be logged in to follow users");
+    }
+
+    if (user.user.username === username) {
+      return toast.error("You can't follow yourself");
+    }
+
+    setFollowing({
+      status: !following.status,
+      followersCount: following.status
+        ? JSON.stringify(parseInt(following.followersCount) - 1)
+        : JSON.stringify(parseInt(following.followersCount) + 1),
+    });
+
+    followToggle({
+      username,
+    });
+  };
+
   return (
     <C.Provider
       value={{
@@ -94,6 +144,10 @@ const Context = ({ children }: Props) => {
         handleChange,
         user,
         setUser,
+
+        following,
+        setFollowing,
+        followUser,
       }}
     >
       {children}

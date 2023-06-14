@@ -60,6 +60,8 @@ model User {
     comments       Comment[]
     articles       Article[] @relation("author")
     likedArticles  Article[]
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
 
     @@index([email, username])
 }

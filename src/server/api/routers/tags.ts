@@ -2,7 +2,6 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { publicProcedure } from "./../trpc";
-import { prisma } from "~/server/db";
 
 export const TagsRouter = createTRPCRouter({
   followTagToggle: protectedProcedure
@@ -13,14 +12,18 @@ export const TagsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const tag = await ctx.prisma.tag.findUnique({
+        const tag = (await ctx.prisma.tag.findUnique({
           where: {
             name: input.name,
           },
           select: {
-            followers: true,
+            followers: {
+              select: {
+                id: true,
+              },
+            },
           },
-        });
+        })) as { followers: { id: string }[] };
 
         if (!tag) {
           throw new TRPCError({
@@ -66,7 +69,6 @@ export const TagsRouter = createTRPCRouter({
           status: 200,
         };
       } catch (err) {
-        console.log(err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -74,46 +76,56 @@ export const TagsRouter = createTRPCRouter({
       }
     }),
 
-  getTredingTags: publicProcedure.query(async () => {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7);
-    const endDate = new Date();
+  getTredingTags: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      const endDate = new Date();
 
-    const tags = await prisma.tag.findMany({
-      where: {
-        articles: {
-          some: {
-            createdAt: {
-              gte: startDate,
-              lte: endDate,
+      const tags = await ctx.prisma.tag.findMany({
+        where: {
+          articles: {
+            some: {
+              createdAt: {
+                gte: startDate,
+                lte: endDate,
+              },
             },
           },
         },
-      },
-      include: {
-        articles: true,
-      },
-    });
+        orderBy: {
+          followersCount: "desc",
+        },
+        include: {
+          articles: true,
+        },
+      });
 
-    const tagData = tags.map((tag) => {
+      const tagData = tags.map((tag) => {
+        return {
+          id: tag.id,
+          name: tag.name,
+          slug: tag.slug,
+          articlesCount: tag.articles.filter(
+            (article) =>
+              article.createdAt >= startDate && article.createdAt <= endDate
+          ).length,
+        };
+      });
+
+      tagData.sort((a, b) => b.articlesCount - a.articlesCount);
+      const limitedTagData = tagData.slice(0, 6);
+
       return {
-        id: tag.id,
-        name: tag.name,
-        slug: tag.slug,
-        articlesCount: tag.articles.filter(
-          (article) =>
-            article.createdAt >= startDate && article.createdAt <= endDate
-        ).length,
+        success: true,
+        data: limitedTagData,
+        status: 200,
       };
-    });
-
-    tagData.sort((a, b) => b.articlesCount - a.articlesCount);
-    const limitedTagData = tagData.slice(0, 6);
-
-    return {
-      success: true,
-      data: limitedTagData,
-      status: 200,
-    };
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong, try again later",
+      });
+    }
   }),
 });

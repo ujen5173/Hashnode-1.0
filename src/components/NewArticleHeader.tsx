@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { useContext } from "react";
-import { Angleleft, Cloud, Home, LogonoText, Sun } from "~/svgs";
+import { Angleleft, Cloud,  LogonoText, Sun } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 
 const NewArticleHeader = ({
@@ -23,16 +23,10 @@ const NewArticleHeader = ({
               role="button"
               className="btn-icon flex h-10 w-10"
             >
-              <Home className="h-5 w-5 fill-black dark:fill-white" />
+          <Angleleft className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
             </button>
           </Link>
-          <button
-            onClick={() => history.back()}
-            className="btn-icon-large hidden lg:flex"
-          >
-            <Angleleft className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
-          </button>
-
+          
           <div>
             <Link href={`/u/@user`} className="flex items-center gap-2">
               <LogonoText className="h-7 w-7" />

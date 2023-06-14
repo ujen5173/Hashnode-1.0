@@ -71,3 +71,4 @@ export { default as Cloud } from "./Cloud";
 export { default as Google } from "./Google";
 export { default as Github } from "./Github";
 export { default as Home } from "./Home";
+export { default as Report } from "./Report";

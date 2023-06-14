@@ -9,13 +9,25 @@ import { prisma } from "~/server/db";
 import type { ArticleCard } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 
-const SingleArticle: NextPage<{ article: ArticleCard }> = ({ article }) => {
-  console.log(article);
+interface Props {
+  article: ArticleCard & {
+    isFollowing: boolean;
+    user: {
+      followersCount: number;
+    };
+  };
+}
+
+const SingleArticle: NextPage<Props> = ({ article }) => {
   const { data: session } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
+  const { setUser, setFollowing } = useContext(C) as ContextValue;
 
   useEffect(() => {
     setUser(session);
+    setFollowing({
+      status: article.isFollowing,
+      followersCount: article.user.followersCount.toString(),
+    });
   }, []);
 
   return (
@@ -31,6 +43,7 @@ const SingleArticle: NextPage<{ article: ArticleCard }> = ({ article }) => {
 export default SingleArticle;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  console.log("Server rendered...");
   const session = getServerSession(context.req, context.res, authOptions);
 
   const article = prisma.article.findUnique({
@@ -45,6 +58,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           username: true,
           bio: true,
           profile: true,
+          followersCount: true,
+          followers: {
+            select: {
+              id: true,
+            },
+          },
         },
       },
       tags: {
@@ -84,13 +103,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  let isFollowing = false;
+  if (sessionData) {
+    isFollowing = articleData.user.followers.some(
+      (follower) => follower.id === sessionData?.user.id
+    );
+  }
+
   return {
     props: {
       session: sessionData
         ? (JSON.parse(JSON.stringify(sessionData)) as Session)
         : null,
       article: articleData
-        ? (JSON.parse(JSON.stringify(articleData)) as ArticleCard)
+        ? (JSON.parse(
+            JSON.stringify({ ...articleData, isFollowing })
+          ) as ArticleCard & {
+            isFollowing: boolean;
+          })
         : null,
     },
   };

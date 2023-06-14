@@ -5,10 +5,11 @@ import Bookmarked from "~/svgs/Bookmarked";
 import type { ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
+import { TRPCClientError } from "@trpc/client";
 
 const ArticleActions: FC<{ article: ArticleCard }> = ({ article }) => {
   const { user, bookmarks, updateBookmark } = useContext(C) as ContextValue;
-  const { mutateAsync: LikeArticle } = api.posts.likeArticle.useMutation();
+  const { mutate: LikeArticle } = api.posts.likeArticle.useMutation();
   const [like, setLike] = useState({
     hasLiked: false,
     likesCount: article.likesCount,
@@ -32,16 +33,20 @@ const ArticleActions: FC<{ article: ArticleCard }> = ({ article }) => {
     });
   }, [user?.user.id]);
 
-  const likeFunction = async () => {
-    const res = await LikeArticle({
-      articleId: article.id,
-    });
-
-    toast.success(res.message);
-    setLike({
-      hasLiked: res.hasLiked,
-      likesCount: res.likesCount,
-    });
+  const likeFunction = () => {
+    try {
+      setLike({
+        hasLiked: !like.hasLiked,
+        likesCount: like.hasLiked ? like.likesCount - 1 : like.likesCount + 1,
+      });
+      LikeArticle({
+        articleId: article.id,
+      });
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        toast.error(error.message);
+      }
+    }
   };
 
   return (
@@ -79,12 +84,16 @@ const ArticleActions: FC<{ article: ArticleCard }> = ({ article }) => {
         aria-label="icon"
         onClick={() => updateBookmark(article.id)}
         role="button"
-        className={`btn-icon-large flex items-center justify-center`}
+        className={`${
+          bookmarks.find((bookmark) => bookmark.id === article.id)
+            ? "bg-secondary bg-opacity-20"
+            : ""
+        } btn-icon-large flex w-max items-center justify-center`}
       >
         {bookmarks.find((bookmark) => bookmark.id === article.id) ? (
-          <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
-        ) : (
           <Bookmarked className="h-5 w-5" />
+        ) : (
+          <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
         )}
       </button>
 

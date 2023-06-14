@@ -7,6 +7,11 @@ import {
 import slugify from "slugify";
 import readingTime from "reading-time";
 import { TRPCError } from "@trpc/server";
+import {
+  type Activity,
+  refactorActivityHelper,
+} from "./../../../utils/microFunctions";
+import { v4 as uuid } from "uuid";
 
 export const postsRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -41,7 +46,6 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        console.log({ filter: input?.filter });
         const data = await ctx.prisma.article.findMany({
           where: {
             read_time:
@@ -88,7 +92,6 @@ export const postsRouter = createTRPCRouter({
 
         return data;
       } catch (err) {
-        console.log(err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -276,7 +279,13 @@ export const postsRouter = createTRPCRouter({
         const tagPromises = tags.map(async (tag) => {
           const existingTag = await ctx.prisma.tag.findFirst({
             where: {
-              name: tag,
+              slug: slugify(tag, {
+                lower: true,
+                strict: true,
+                trim: true,
+                locale: "vi",
+                replacement: "-",
+              }),
             },
           });
 
@@ -343,6 +352,7 @@ export const postsRouter = createTRPCRouter({
           redirectLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
         };
       } catch (error) {
+        console.log(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -384,7 +394,7 @@ export const postsRouter = createTRPCRouter({
           (like) => like.id === ctx.session.user.id
         );
 
-        const newArticle = await ctx.prisma.article.update({
+        const newArticle = (await ctx.prisma.article.update({
           where: {
             id: articleId,
           },
@@ -404,7 +414,10 @@ export const postsRouter = createTRPCRouter({
             },
             likesCount: true,
           },
-        });
+        })) as {
+          likes: { id: string }[];
+          likesCount: number;
+        };
 
         return {
           success: true,
@@ -419,5 +432,59 @@ export const postsRouter = createTRPCRouter({
           message: "Something went wrong, try again later",
         });
       }
+    }),
+
+  getRecentActivity: publicProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          username: input.username.slice(1, input.username.length),
+        },
+        select: {
+          createdAt: true,
+        },
+      });
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+      const activities = await ctx.prisma.article.findMany({
+        where: {
+          user: {
+            username: input.username.slice(1, input.username.length),
+          },
+        },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          createdAt: true,
+        },
+        take: 10,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      // refactor using refactorActivityHelper
+      const newActivities = activities.map((e) => ({
+        ...e,
+        activity_type: "ARTICLE",
+      })) as Activity[];
+
+      const refactoredActivities = refactorActivityHelper([
+        ...newActivities,
+        {
+          id: uuid(),
+          title: "Joined Hashnode Clone",
+          slug: "",
+          createdAt: user?.createdAt,
+          activity_type: "JOINED",
+        },
+      ]);
+      return Array.from(refactoredActivities);
     }),
 });

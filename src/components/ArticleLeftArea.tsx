@@ -27,7 +27,7 @@ const ArticleLeftArea: FC<{ user: User }> = ({ user }) => {
       <Link
         aria-label="Visit Profile"
         className="hidden items-center gap-2 md:flex"
-        href="/u/@test"
+        href={`/u/@${user.username}`}
       >
         <Image
           src={user?.profile || ""}

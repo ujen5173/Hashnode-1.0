@@ -1,3 +1,4 @@
+import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { type KeyboardEvent, useContext, useEffect } from "react";
@@ -41,8 +42,9 @@ const NewArticleModal = ({
       const fileData = await handleImageChange(file);
       setFile(fileData);
     } catch (error) {
-      // Handle any errors that occurred during the handling of the image
-    } finally {
+      if (error instanceof TRPCClientError) {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -78,7 +80,11 @@ const NewArticleModal = ({
         setPublishModal(false);
         await router.push(res.redirectLink);
       }
-    } catch (r) {}
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        toast.error(error.message);
+      }
+    }
     setPublishing(false);
   };
 
@@ -183,7 +189,7 @@ const NewArticleModal = ({
               <div className="mt-2 flex flex-wrap gap-2">
                 {data.tags.map((tag, index) => (
                   <div
-                    className="flex items-center gap-2 rounded-md border border-border-light bg-primary-light px-2 py-1 text-lg text-gray-500 dark:border-border dark:text-text-primary"
+                    className="flex items-center gap-2 rounded-md border border-border-light bg-light-bg px-2 py-1 text-lg text-gray-500 dark:border-border dark:bg-primary-light dark:text-text-primary"
                     key={index}
                   >
                     <span>{tag}</span>

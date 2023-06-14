@@ -133,6 +133,7 @@ body .article {
   color: #111111;
   margin-left: auto;
   margin-right: auto;
+  word-break: break-word;
 }
 body .article p {
   font-size: 20px;
@@ -163,8 +164,9 @@ body .article img {
   object-fit: cover;
 }
 body .article a {
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: underline;
+  color: #eee;
 }
 body .article pre {
   padding: 28px 20px;
@@ -191,6 +193,10 @@ body .article code {
   line-height: 28px;
   border-radius: 5px;
   border: 0;
+}
+body .article ui,
+body .article ol {
+  list-style: auto;
 }
 
 /* dark theme */
@@ -243,8 +249,13 @@ body.dark .article code {
 }
 
 /* Handle */
-.scroll-area::-webkit-scrollbar-thumb {
+body.dark .scroll-area::-webkit-scrollbar-thumb {
   background: #6b7a8f;
+  border-radius: 10px;
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
   border-radius: 10px;
 }
 

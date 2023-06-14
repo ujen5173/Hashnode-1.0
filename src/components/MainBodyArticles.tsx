@@ -37,7 +37,7 @@ const MainBodyArticles = () => {
   };
 
   return (
-    <section className="container-main my-4 min-h-screen w-full rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
+    <section className="container-main overflow-hidden my-4 min-h-screen w-full rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
       <MainBodyHeader
         applyFilter={applyFilter}
         filter={filter}

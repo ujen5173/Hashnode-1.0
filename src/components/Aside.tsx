@@ -73,7 +73,7 @@ const TrendingComponent: FC<{
   return (
     <div className="p-4">
       <div className="mb-2 flex items-center justify-between">
-        <h1 className="text-sm font-semibold dark:text-text-primary ">
+        <h1 className="mb-2 text-sm font-semibold dark:text-text-primary ">
           Trending tags
         </h1>
         <span>
@@ -105,7 +105,7 @@ const SocialHandles = () => {
           role="button"
           className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-twitterColor"
         >
-          <Twitter className="h-6 w-6 fill-text-primary" />
+          <Twitter className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
       <a href="https://discord.com/app">
@@ -114,7 +114,7 @@ const SocialHandles = () => {
           role="button"
           className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-discordColor"
         >
-          <Discord className="h-6 w-6 fill-text-primary" />
+          <Discord className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
       <a href="https://linkedin.com">
@@ -123,7 +123,7 @@ const SocialHandles = () => {
           role="button"
           className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-linkedinColor"
         >
-          <Linkedin className="h-6 w-6 fill-text-primary" />
+          <Linkedin className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
       <a href="https://instagram.com">
@@ -132,7 +132,7 @@ const SocialHandles = () => {
           role="button"
           className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-instaColor"
         >
-          <Instagram className="h-6 w-6 fill-text-primary" />
+          <Instagram className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
     </div>

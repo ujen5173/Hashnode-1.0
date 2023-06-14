@@ -6,6 +6,7 @@ const Footer = () => {
       <p className="text-gray-700 dark:text-text-secondary">
         @{new Date().getFullYear()} Hashnode By{" "}
         <a
+          target={"_blank"}
           href="https://github.com/ujen5173"
           className="font-semibold text-secondary underline"
         >
@@ -17,7 +18,8 @@ const Footer = () => {
       </ul>
 
       <a
-        href="https://github.com/ujen5173/hashnode-clone"
+        target={"_blank"}
+        href="https://github.com/ujen5173/hashnode"
         className="my-6 rounded-md border border-border-light px-6 py-3 text-black outline-none dark:border-border dark:text-white"
       >
         View Github
