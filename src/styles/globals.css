@@ -16,6 +16,13 @@
   line-clamp: 1;
   -webkit-box-orient: vertical;
 }
+.max-height-two {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
 .max-height-4 {
   overflow: hidden;
   display: -webkit-box;
@@ -45,6 +52,14 @@ body.dark .anouncement {
   -webkit-background-position: center;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.text-limit-horizontal {
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  width: 70%;
+  text-overflow: ellipsis;
 }
 
 .btn-outline {
@@ -216,8 +231,6 @@ body.dark .article code {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
   flex-direction: column;
@@ -267,6 +280,9 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
 }
 .container-main {
   grid-column: span 7 / span 7;
+}
+.container-full-main {
+  grid-column: span 10 / span 10;
 }
 .container-right-aside {
   grid-column: span 3 / span 3;

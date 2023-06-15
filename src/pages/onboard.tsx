@@ -15,20 +15,20 @@ const Onboard = () => {
       </header>
 
       <main className="min-h-screen bg-light-bg dark:bg-black">
-        <div className="mx-auto flex max-w-[1440px] gap-28 px-4 py-28">
+        <div className="mx-auto flex max-w-[1440px] gap-0 px-4 py-28 md:gap-8 lg:gap-20 xl:gap-28">
           <div className="flex w-full flex-col justify-center">
             <h1 className="mx-auto mb-5 items-center text-3xl font-semibold text-secondary">
               Sign up / Log in
             </h1>
 
-            <div className="mb-5 flex flex-wrap gap-4">
+            <div className="mb-5 flex flex-wrap justify-center gap-4">
               <button
                 onClick={() =>
                   void signIn("google", {
                     callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
                   })
                 }
-                className="btn-oauth w-full md:w-[calc(100%/2-1rem)]"
+                className="btn-oauth w-full lg:w-auto"
               >
                 <Google className="h-5 w-5 fill-gray-700 dark:fill-white" />
                 <span>Continue with Google</span>
@@ -39,7 +39,7 @@ const Onboard = () => {
                     callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
                   })
                 }
-                className="btn-oauth w-full md:w-[calc(100%/2-1rem)]"
+                className="btn-oauth w-full lg:w-auto"
               >
                 <Github className="h-5 w-5 fill-gray-700 dark:fill-white" />
                 <span>Continue with Github</span>

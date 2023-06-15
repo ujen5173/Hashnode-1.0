@@ -6,7 +6,7 @@ const UserBlogingArea: FC<{ userDetails: User | undefined }> = ({
   userDetails,
 }) => {
   return (
-    <div className="my-6 w-full rounded-md border border-border-light px-6 py-3 dark:border-border md:px-12 md:py-6">
+    <div className="my-6 w-full rounded-md border border-border-light px-6 py-6 dark:border-border md:px-12">
       <header className="mb-6 w-full border-b border-border-light py-3 dark:border-border">
         <h1 className="text-2xl font-semibold text-gray-700 dark:text-text-secondary">
           Writes at

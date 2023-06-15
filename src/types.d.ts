@@ -38,6 +38,7 @@ export interface User {
   profile: string;
   bio?: string | null;
 }
+
 export interface DetailedUser {
   id: string;
   name: string;

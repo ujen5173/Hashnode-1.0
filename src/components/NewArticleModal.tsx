@@ -73,12 +73,13 @@ const NewArticleModal = ({
     }
 
     setPublishing(true);
+
     try {
       const res = await mutateAsync(data);
       if (res.success) {
-        toast.success("Article published successfully");
         setPublishModal(false);
         await router.push(res.redirectLink);
+        toast.success("Article published successfully");
       }
     } catch (error) {
       if (error instanceof TRPCClientError) {

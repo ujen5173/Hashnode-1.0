@@ -7,7 +7,7 @@ const UserDetails: FC<{ userDetails: User | undefined }> = ({
 }) => {
   return (
     <div className="my-6 flex w-full flex-wrap gap-6 rounded-md py-6">
-      <div className="w-full rounded-md border border-border-light p-6 dark:border-border sm:w-[calc(100%/2-1rem)] md:w-[calc(100%/3-1.5rem)]">
+      <div className="w-full rounded-md border border-border-light p-6 dark:border-border sm:w-[calc(100%/2-1rem)] md:w-[calc(100%/3-1rem)]">
         <h1 className="mb-4 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
           About Me
         </h1>
@@ -23,7 +23,7 @@ const UserDetails: FC<{ userDetails: User | undefined }> = ({
           </div>
         )}
       </div>
-      <div className="w-full rounded-md border border-border-light p-6 dark:border-border sm:w-[calc(100%/2-1rem)] md:w-[calc(100%/3-1.5rem)]">
+      <div className="w-full rounded-md border border-border-light p-6 dark:border-border sm:w-[calc(100%/2-1rem)] md:w-[calc(100%/3-1rem)]">
         <h1 className="mb-4 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
           My Tech Stack
         </h1>
@@ -45,7 +45,7 @@ const UserDetails: FC<{ userDetails: User | undefined }> = ({
           </div>
         )}
       </div>
-      <div className="w-full rounded-md border border-border-light p-6 dark:border-border sm:w-[calc(100%/2-1rem)] md:w-[calc(100%/3-1.5rem)]">
+      <div className="w-full rounded-md border border-border-light p-6 dark:border-border sm:w-[calc(100%/2-1rem)] md:w-[calc(100%/3-1rem)]">
         <h1 className="mb-4 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
           I am available for
         </h1>

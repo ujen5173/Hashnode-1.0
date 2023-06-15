@@ -34,6 +34,11 @@ const ArticleActions: FC<{ article: ArticleCard }> = ({ article }) => {
   }, [user?.user.id]);
 
   const likeFunction = () => {
+    if (!user?.user.id) {
+      toast.error("You need to login to like an article");
+      return;
+    }
+
     try {
       setLike({
         hasLiked: !like.hasLiked,
