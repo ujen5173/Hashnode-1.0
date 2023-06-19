@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useContext, type FC } from "react";
-import { Bookmarkplus, Book } from "~/svgs";
+import { Bookmarkplus, Book, Like, Multicomment } from "~/svgs";
 import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 import Link from "next/link";
 import type { Article } from "@prisma/client";
@@ -93,46 +93,63 @@ const ArticleCard: FC<Card> = ({ card }) => {
               </p>
             </Link>
 
-            <div className="mt-2 flex gap-2">
-              <button
-                aria-label="icon"
-                onClick={() => updateBookmark(card.id)}
-                role="button"
-                className={`${
-                  bookmarks.find((bookmark) => bookmark.id === card.id)
-                    ? "bg-secondary bg-opacity-20"
-                    : ""
-                } btn-icon-large flex w-max items-center justify-center`}
-              >
-                {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
-                  <Bookmarked className="h-5 w-5" />
-                ) : (
-                  <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
-                )}
-              </button>
+            <div className="mt-2 flex justify-between gap-2">
+              <div className="flex gap-2">
+                <button
+                  aria-label="icon"
+                  onClick={() => updateBookmark(card.id)}
+                  role="button"
+                  className={`${
+                    bookmarks.find((bookmark) => bookmark.id === card.id)
+                      ? "bg-secondary bg-opacity-20"
+                      : ""
+                  } btn-icon-large flex w-max items-center justify-center`}
+                >
+                  {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
+                    <Bookmarked className="h-5 w-5" />
+                  ) : (
+                    <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                  )}
+                </button>
 
-              <div className="flex flex-wrap items-center gap-2">
-                {limitTags(card.tags, 13).map((tag, index) =>
-                  tag.id ? (
-                    <Link href={`/tag/${tag.slug}`} key={index}>
+                <div className="flex flex-wrap items-center gap-2">
+                  {limitTags(card.tags, 13).map((tag, index) =>
+                    tag.id ? (
+                      <Link href={`/tag/${tag.slug}`} key={index}>
+                        <button
+                          aria-label="tag"
+                          key={tag.id}
+                          className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-border-light dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
+                        >
+                          {tag.name}
+                        </button>
+                      </Link>
+                    ) : (
                       <button
                         aria-label="tag"
-                        key={tag.id}
+                        key={index}
                         className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-border-light dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
                       >
                         {tag.name}
                       </button>
-                    </Link>
-                  ) : (
-                    <button
-                      aria-label="tag"
-                      key={index}
-                      className="rounded-md border border-border-light px-2 py-1 text-xs font-medium text-gray-700 hover:bg-border-light dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
-                    >
-                      {tag.name}
-                    </button>
-                  )
-                )}
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <button className="flex items-center gap-1">
+                  <Like className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
+                    {card.likesCount}
+                  </span>
+                </button>
+                <button className="flex items-center gap-1">
+                  <Multicomment className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
+                    {card.commentsCount}
+                  </span>
+                </button>
               </div>
             </div>
           </div>

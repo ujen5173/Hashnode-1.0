@@ -43,7 +43,6 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
 export default SingleArticle;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log("Server rendered...");
   const session = getServerSession(context.req, context.res, authOptions);
 
   const article = prisma.article.findUnique({
@@ -74,11 +73,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       },
       likes: {
-        select: {
-          id: true,
-        },
-      },
-      comments: {
         select: {
           id: true,
         },

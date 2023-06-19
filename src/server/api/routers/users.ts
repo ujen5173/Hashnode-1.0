@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { type SocialHandles } from "~/pages/settings";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
@@ -186,5 +187,65 @@ export const UsersRouter = createTRPCRouter({
       }
 
       return { ...user, isFollowing };
+    }),
+
+  updateUser: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        username: z.string(),
+        email: z.string(),
+        location: z.string(),
+        profile: z.string(),
+        tagline: z.string(),
+        available: z.string(),
+        cover_image: z.string(),
+        bio: z.string(),
+        skills: z.array(z.string()),
+        social: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const newUser = await ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          name: input.name,
+          username: input.username,
+          email: input.email,
+          location: input.location,
+          profile: input.profile,
+          tagline: input.tagline,
+          available: input.available,
+          cover_image: input.cover_image,
+          bio: input.bio,
+          skills: input.skills,
+          social: input.social,
+        },
+        select: {
+          name: true,
+          username: true,
+          email: true,
+          location: true,
+          profile: true,
+          tagline: true,
+          available: true,
+          cover_image: true,
+          bio: true,
+          skills: true,
+          social: true,
+        },
+      });
+      return {
+        success: true,
+        message: "User Updated",
+        status: 200,
+        data: {
+          ...newUser,
+          social: JSON.parse(JSON.stringify(newUser.social)) as SocialHandles,
+          skills: newUser.skills.join(","),
+        },
+      };
     }),
 });

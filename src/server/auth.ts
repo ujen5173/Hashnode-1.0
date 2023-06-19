@@ -111,7 +111,7 @@ export const authOptions: NextAuthOptions = {
           email: profile.email,
           profile: profile.picture,
           emailVerified: profile.email_verified ? new Date() : null,
-          tagline: "Coding is life 🍻",
+          tagline: "Software Devloper",
         };
       },
     }),
@@ -127,7 +127,7 @@ export const authOptions: NextAuthOptions = {
           email: profile.email || "",
           profile: profile.avatar_url,
           emailVerified: profile.email ? new Date() : null,
-          tagline: "Coding is life 🍻",
+          tagline: "Software Devloper",
         };
       },
     }),

@@ -57,7 +57,6 @@ const Context = ({ children }: Props) => {
     if (newBookmark) {
       const newBookmarks = bookmarks.filter((bookmark) => bookmark.id !== id);
       setBookmarks(newBookmarks);
-      console.log(newBookmarks);
       localStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
     } else {
       const newBookmarks = [...bookmarks, { id }];
@@ -107,8 +106,6 @@ const Context = ({ children }: Props) => {
   });
 
   const { mutate: followToggle } = api.users.followUserToggle.useMutation();
-
-  console.log({ following });
 
   const followUser = () => {
     const username = new URL(window.location.href).pathname

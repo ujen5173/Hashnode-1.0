@@ -44,11 +44,13 @@ model User {
     username       String    @unique
     email          String    @unique
     emailVerified  DateTime?
-    profile        String
-    tagline        String?
-    cover_image    String?
-    bio            String?
+    profile        String    @default("")
+    tagline        String    @default("")
+    cover_image    String    @default("")
+    bio            String    @default("")
     skills         String[]
+    location       String    @default("")
+    available      String    @default("")
     social         Json?
     following      User[]    @relation("follow")
     followers      User[]    @relation("follow")
@@ -57,11 +59,13 @@ model User {
     accounts       Account[]
     sessions       Session[]
     followingTags  Tag[]
-    comments       Comment[]
+    comments       Comment[] @relation("CommentAuthor")
     articles       Article[] @relation("author")
     likedArticles  Article[]
-    createdAt      DateTime  @default(now())
-    updatedAt      DateTime  @updatedAt
+    likedComments  Comment[] @relation("CommentToUser")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([email, username])
 }
@@ -84,17 +88,31 @@ model Tag {
 }
 
 model Comment {
-    id        String   @id @default(cuid())
-    user      User     @relation(fields: [userId], references: [id])
-    userId    String
-    article   Article  @relation(fields: [articleId], references: [id])
-    articleId String
-    body      String
+    id         String  @id @default(cuid())
+    user       User    @relation("CommentAuthor", fields: [userId], references: [id])
+    userId     String
+    article    Article @relation(fields: [articleId], references: [id])
+    articleId  String
+    body       String
+    likes      User[]  @relation("CommentToUser")
+    likesCount Int     @default(0)
+
+    type         CommentType
+    parent       Comment?    @relation("CommentToComment", fields: [parentId], references: [id])
+    parentId     String?
+    replies      Comment[]   @relation("CommentToComment")
+    repliesCount Int         @default(0)
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     @@index([userId])
     @@index([articleId])
+}
+
+enum CommentType {
+    COMMENT
+    REPLY
 }
 
 model Article {
@@ -115,6 +133,7 @@ model Article {
     likesCount       Int       @default(0)
     slug             String    @unique
     comments         Comment[]
+    commentsCount    Int       @default(0)
     createdAt        DateTime  @default(now())
     updatedAt        DateTime  @updatedAt
 

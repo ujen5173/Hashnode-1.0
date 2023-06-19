@@ -1,3 +1,5 @@
+import type { Article, CommentType } from "@prisma/client";
+
 export interface ArticleCard {
   id: string;
   title: string;
@@ -20,7 +22,7 @@ export interface ArticleCard {
   likes: { id: string }[];
   likesCount: number;
   commentsCount: number;
-  comments: string[];
+  comments: Comment[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,7 +38,7 @@ export interface User {
   name: string;
   username: string;
   profile: string;
-  bio?: string | null;
+  bio: string;
 }
 
 export interface DetailedUser {
@@ -44,11 +46,11 @@ export interface DetailedUser {
   name: string;
   username: string;
   email: string;
-  emailVerified: Date | null;
-  profile?: string | null;
-  tagline?: string | null;
+  emailVerified: Date;
+  profile: string;
+  tagline: string;
   cover_image: string;
-  bio?: string | null;
+  bio: string;
   skills: string[];
   social: unknown;
   following: { username: string }[];
@@ -69,4 +71,25 @@ export interface DetailedTag {
   logo: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Comment {
+  id: string;
+  body: string;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    profile: string;
+  };
+  likes: { id: string }[];
+  likesCount: number;
+  type: CommentType;
+  replies: Comment[];
+  repliesCount: number;
+  parentId?: string | null;
+  articleId?: string | null;
+
+  createdAt: Date;
+  updatedAt: Date;
 }

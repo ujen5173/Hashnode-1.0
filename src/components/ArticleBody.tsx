@@ -7,10 +7,21 @@ import ArticleActions from "./ArticleActions";
 import type { User, ArticleCard, Tag } from "~/types";
 import { formatDate } from "./../utils/miniFunctions";
 import ReactMarkdown from "react-markdown";
-import { useContext, type FC } from "react";
+import { useContext, useEffect, useState, type FC } from "react";
 import { C, type ContextValue } from "~/utils/context";
+import CommentsModal from "./CommentsModal";
 
 const ArticleBody: FC<{ article: ArticleCard }> = ({ article }) => {
+  const [commentsModal, setCommentsModal] = useState(false);
+
+  useEffect(() => {
+    if (commentsModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [commentsModal]);
+
   return (
     <main className="min-h-screen bg-white pb-12 dark:bg-primary">
       <div className="mx-auto max-w-[1200px]">
@@ -84,12 +95,19 @@ const ArticleBody: FC<{ article: ArticleCard }> = ({ article }) => {
               />
             </div>
           </div>
-
-          <ArticleActions article={article} />
-
+          <ArticleActions
+            article={article}
+            setCommentsModal={setCommentsModal}
+          />
           <ArticleTags tags={article.tags} />
-
           <ArticleAuthor author={article.user} />
+          {commentsModal && (
+            <CommentsModal
+              id={article.id}
+              commentsModal={commentsModal}
+              setCommentsModal={setCommentsModal}
+            />
+          )}
         </section>
       </div>
     </main>

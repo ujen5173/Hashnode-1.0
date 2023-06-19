@@ -7,7 +7,10 @@ import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { TRPCClientError } from "@trpc/client";
 
-const ArticleActions: FC<{ article: ArticleCard }> = ({ article }) => {
+const ArticleActions: FC<{
+  article: ArticleCard;
+  setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ article, setCommentsModal }) => {
   const { user, bookmarks, updateBookmark } = useContext(C) as ContextValue;
   const { mutate: LikeArticle } = api.posts.likeArticle.useMutation();
   const [like, setLike] = useState({
@@ -77,12 +80,13 @@ const ArticleActions: FC<{ article: ArticleCard }> = ({ article }) => {
       <button
         aria-label="icon"
         role="button"
+        onClick={() => setCommentsModal(true)}
         className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
       >
         <div className="flex items-center justify-center gap-2">
           <Comment className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
         </div>
-        <span>{article.comments.length}</span>
+        <span>{article.commentsCount}</span>
       </button>
       <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
       <button

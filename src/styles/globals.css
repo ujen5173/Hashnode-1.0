@@ -62,6 +62,9 @@ body.dark .anouncement {
   text-overflow: ellipsis;
 }
 
+.btn-link {
+  @apply text-base font-medium text-gray-700 hover:text-gray-500 hover:underline dark:text-text-secondary dark:hover:text-text-secondary;
+}
 .btn-outline {
   @apply rounded-full border border-border-light bg-transparent px-4 py-2 font-medium text-black hover:bg-gray-200 dark:border-border dark:text-secondary hover:dark:bg-primary-light;
 }
@@ -111,6 +114,12 @@ body.dark .anouncement {
 
 .input-primary {
   @apply rounded-full border border-border-light bg-light-bg px-10 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border;
+}
+.input-filled {
+  @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-3 text-base text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-primary;
+}
+.input-outline {
+  @apply w-full bg-transparent p-2 text-lg text-gray-700 outline-none dark:text-text-secondary;
 }
 .input-secondary {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
@@ -310,5 +319,18 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
   }
   50% {
     opacity: 1;
+  }
+}
+
+.commentsModal {
+  animation: animate-comments 300ms ease-in-out;
+}
+
+@keyframes animate-comments {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
   }
 }

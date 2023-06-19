@@ -1,4 +1,7 @@
 export { default as Header } from "./Header";
+export { default as Input } from "./Input";
+export { default as UserDetailsOptions } from "./UserDetailsOptions";
+export { default as CommentsModal } from "./CommentsModal";
 export { default as Footer } from "./Footer";
 export { default as ArticleLeftArea } from "./ArticleLeftArea";
 export { default as ArticleHeader } from "./ArticleHeader";
@@ -12,3 +15,5 @@ export { default as BookmarkMainBody } from "./BookmarkMainBody";
 export { default as Notification } from "./Notification";
 export { default as NotAuthenticatedProfileDropdown } from "./NotAuthenticatedProfileDropdown";
 export { default as AuthCheck } from "./AuthCheck";
+export { default as BasicInfo } from "./BasicInfo";
+export { default as SocialInfo } from "./SocialInfo";

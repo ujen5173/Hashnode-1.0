@@ -12,6 +12,7 @@ import {
 import { type User } from "@prisma/client";
 import { useClickOutside } from "@mantine/hooks";
 import { C, type ContextValue } from "~/utils/context";
+import Link from "next/link";
 
 const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
   userDetails,
@@ -20,7 +21,7 @@ const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [opened2, setOpened2] = useState(false);
   const ref2 = useClickOutside<HTMLDivElement>(() => setOpened2(false));
-  const { following, followUser } = useContext(C) as ContextValue;
+  const { user, following, followUser } = useContext(C) as ContextValue;
 
   return (
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
@@ -60,6 +61,7 @@ const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
               </span>
             </div>
           </div>
+
           <div className="flex gap-2">
             <div className="relative">
               <button
@@ -122,22 +124,30 @@ const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
           </div>
         </div>
 
-        <button
-          onClick={() => void followUser()}
-          className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
-        >
-          {following.status ? (
-            <>
-              <Check className="h-5 w-5 fill-secondary" />
-              Following
-            </>
-          ) : (
-            <>
-              <Follow className="h-5 w-5 fill-secondary" />
-              Follow User
-            </>
-          )}
-        </button>
+        {user?.user.username === userDetails?.username ? (
+          <Link href={"/settings"}>
+            <button className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max">
+              Edit Profile
+            </button>
+          </Link>
+        ) : (
+          <button
+            onClick={() => void followUser()}
+            className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+          >
+            {following.status ? (
+              <>
+                <Check className="h-5 w-5 fill-secondary" />
+                Following
+              </>
+            ) : (
+              <>
+                <Follow className="h-5 w-5 fill-secondary" />
+                Follow User
+              </>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );

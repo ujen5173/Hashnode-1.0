@@ -1,4 +1,4 @@
-import {type User } from "@prisma/client";
+import { type User } from "@prisma/client";
 import { type NextPage, type GetServerSideProps } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -13,10 +13,9 @@ import { C, type ContextValue } from "~/utils/context";
 const UserBlog: NextPage<{
   user: User & {
     followers: { id: string }[];
-    isFollowing: boolean
+    isFollowing: boolean;
   };
 }> = ({ user }) => {
-  console.log({ user });
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
 
