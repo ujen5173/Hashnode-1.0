@@ -702,63 +702,62 @@ export const trendingTags = [
 export const trendingArticles = [];
 export const bookmarksArticles = [...articles].splice(0, 3);
 
-export const fakeComments: Comment[] = [
-  {
-    id: "1",
-    content: "Great post!",
-    hasLiked: true,
-    likesCount: 10,
-    createdAt: new Date("2023-06-15"),
-    replies: [
-      {
-        id: "1.1",
-        content: "I agree!",
-        hasLiked: false,
-        likesCount: 5,
-        createdAt: new Date("2023-06-15"),
-        replies: [],
-        user: {
-          id: "2",
-          name: "John Doe",
-          profile:
-            "https://yt3.ggpht.com/yti/AHyvSCBbo7U8vNQ5HyqHYmiYi3pZEVEVhYSaqkc7jQ=s88-c-k-c0x00ffffff-no-rj-mo",
-        },
-      },
-      {
-        id: "1.2",
-        content: "Totally agreed!",
-        hasLiked: false,
-        likesCount: 0,
-        createdAt: new Date("2023-06-15"),
-        replies: [],
-        user: {
-          id: "21234",
-          name: "Ujen Doe",
-          profile:
-            "https://yt3.ggpht.com/yti/AHyvSCBbo7U8vNQ5HyqHYmiYi3pZEVEVhYSaqkc7jQ=s88-c-k-c0x00ffffff-no-rj-mo",
-        },
-      },
-    ],
-    user: {
-      id: "1",
-      name: "Jane Smith",
-      profile:
-        "https://yt3.ggpht.com/-xGHWnXB5JPwYMXBsCkjyRglj55rQiCUpYS0RHNIL-Vjm4zOaLooEbvBcu2gFpQlmymZh4OCbbo=s88-c-k-c0x00ffffff-no-rj",
-    },
-  },
-  {
-    id: "2",
-    content: "Nice work!",
-    hasLiked: false,
-    likesCount: 2,
-    createdAt: new Date("2023-06-14"),
-    replies: [],
-    user: {
-      id: "3",
-      name: "Bob Johnson",
-      profile:
-        "https://yt3.ggpht.com/ytc/AGIKgqNZVUQ8QIhj7XrkGtjJt_28foz9lxcxPe_132Yb=s88-c-k-c0x00ffffff-no-rj",
-    },
-  },
-];
-
+// export const fakeComments: Comment[] = [
+//   {
+//     id: "1",
+//     content: "Great post!",
+//     hasLiked: true,
+//     likesCount: 10,
+//     createdAt: new Date("2023-06-15"),
+//     replies: [
+//       {
+//         id: "1.1",
+//         content: "I agree!",
+//         hasLiked: false,
+//         likesCount: 5,
+//         createdAt: new Date("2023-06-15"),
+//         replies: [],
+//         user: {
+//           id: "2",
+//           name: "John Doe",
+//           profile:
+//             "https://yt3.ggpht.com/yti/AHyvSCBbo7U8vNQ5HyqHYmiYi3pZEVEVhYSaqkc7jQ=s88-c-k-c0x00ffffff-no-rj-mo",
+//         },
+//       },
+//       {
+//         id: "1.2",
+//         content: "Totally agreed!",
+//         hasLiked: false,
+//         likesCount: 0,
+//         createdAt: new Date("2023-06-15"),
+//         replies: [],
+//         user: {
+//           id: "21234",
+//           name: "Ujen Doe",
+//           profile:
+//             "https://yt3.ggpht.com/yti/AHyvSCBbo7U8vNQ5HyqHYmiYi3pZEVEVhYSaqkc7jQ=s88-c-k-c0x00ffffff-no-rj-mo",
+//         },
+//       },
+//     ],
+//     user: {
+//       id: "1",
+//       name: "Jane Smith",
+//       profile:
+//         "https://yt3.ggpht.com/-xGHWnXB5JPwYMXBsCkjyRglj55rQiCUpYS0RHNIL-Vjm4zOaLooEbvBcu2gFpQlmymZh4OCbbo=s88-c-k-c0x00ffffff-no-rj",
+//     },
+//   },
+//   {
+//     id: "2",
+//     content: "Nice work!",
+//     hasLiked: false,
+//     likesCount: 2,
+//     createdAt: new Date("2023-06-14"),
+//     replies: [],
+//     user: {
+//       id: "3",
+//       name: "Bob Johnson",
+//       profile:
+//         "https://yt3.ggpht.com/ytc/AGIKgqNZVUQ8QIhj7XrkGtjJt_28foz9lxcxPe_132Yb=s88-c-k-c0x00ffffff-no-rj",
+//     },
+//   },
+// ];
