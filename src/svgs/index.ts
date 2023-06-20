@@ -1,4 +1,5 @@
 export { default as Add } from "./Add";
+export { default as Web } from "./Web";
 export { default as Book } from "./Book";
 export { default as Check } from "./Check";
 export { default as Diary } from "./Diary";
@@ -72,3 +73,6 @@ export { default as Google } from "./Google";
 export { default as Github } from "./Github";
 export { default as Home } from "./Home";
 export { default as Report } from "./Report";
+export { default as Youtube } from "./Youtube";
+export { default as Facebook } from "./Facebook";
+export { default as Stackoverflow } from "./Stackoverflow";

@@ -11,6 +11,7 @@ export interface ArticleCard {
     name: string;
     username: string;
     profile: string;
+    bio: string;
   };
   content: string;
   read_time: number | string;

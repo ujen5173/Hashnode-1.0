@@ -192,17 +192,26 @@ export const UsersRouter = createTRPCRouter({
   updateUser: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
-        username: z.string(),
-        email: z.string(),
-        location: z.string(),
-        profile: z.string(),
-        tagline: z.string(),
-        available: z.string(),
-        cover_image: z.string(),
-        bio: z.string(),
-        skills: z.array(z.string()),
-        social: z.string(),
+        name: z.string().trim(),
+        username: z.string().trim(),
+        email: z.string().trim(),
+        location: z.string().trim(),
+        profile: z.string().trim(),
+        tagline: z.string().trim(),
+        available: z.string().trim(),
+        cover_image: z.string().trim(),
+        bio: z.string().trim(),
+        skills: z.array(z.string().trim()),
+        social: z.object({
+          twitter: z.string().trim().optional(),
+          instagram: z.string().trim().optional(),
+          github: z.string().trim().optional(),
+          stackoverflow: z.string().trim().optional(),
+          facebook: z.string().trim().optional(),
+          website: z.string().trim().optional(),
+          linkedin: z.string().trim().optional(),
+          youtube: z.string().trim().optional(),
+        }),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -244,7 +253,7 @@ export const UsersRouter = createTRPCRouter({
         data: {
           ...newUser,
           social: JSON.parse(JSON.stringify(newUser.social)) as SocialHandles,
-          skills: newUser.skills.join(","),
+          skills: newUser.skills.join(", "),
         },
       };
     }),

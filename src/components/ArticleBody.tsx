@@ -12,6 +12,7 @@ import { C, type ContextValue } from "~/utils/context";
 import CommentsModal from "./CommentsModal";
 
 const ArticleBody: FC<{ article: ArticleCard }> = ({ article }) => {
+  console.log({ article });
   const [commentsModal, setCommentsModal] = useState(false);
 
   useEffect(() => {
@@ -146,18 +147,19 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
             />
           </Link>
 
-          <div className="flex-1">
-            <div className="mb-4 flex w-full flex-col items-start justify-between sm:flex-row">
-              <div className="mb-4 md:mb-0">
-                <h2 className="text-uppercase mb-2 text-base font-medium text-gray-600 dark:text-text-primary">
+          <div className="mb-8 flex-1">
+            <div className="flex w-full flex-col items-start justify-between sm:flex-row">
+              <div className="mb-6 md:mb-0">
+                <h2 className="text-uppercase mb-1 text-sm font-medium text-gray-600 dark:text-text-primary">
                   WRITTEN BY
                 </h2>
                 <Link href={`/u/@${author.username}`}>
-                  <h1 className="text-uppercase text-xl font-semibold text-gray-800 dark:text-text-secondary">
+                  <h1 className="text-uppercase text-lg font-semibold text-gray-800 dark:text-text-secondary">
                     {author?.name}
                   </h1>
                 </Link>
               </div>
+
               <button
                 onClick={followUser}
                 className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
@@ -178,9 +180,9 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
           </div>
         </div>
 
-        {!author?.bio && (
-          <p className="text-lg text-gray-600 dark:text-text-primary">
-            {author?.bio || "Coding is my life :)"}
+        {author.bio && (
+          <p className="text-sm text-gray-600 dark:text-text-primary">
+            {author.bio}
           </p>
         )}
       </div>

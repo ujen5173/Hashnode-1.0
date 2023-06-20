@@ -59,6 +59,7 @@ const BasicInfo: FC<{
         disabled={false}
         required={false}
         value={data.bio}
+        max={350}
         name="bio"
         onChange={handleChange}
       />
@@ -83,6 +84,7 @@ const BasicInfo: FC<{
         disabled={false}
         required={false}
         value={data.available}
+        max={125}
         name="available"
         onChange={handleChange}
       />

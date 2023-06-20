@@ -1,10 +1,10 @@
-import { type User } from "@prisma/client";
 import React, { type FC } from "react";
+import { type UserDetailsInterface } from "~/pages/u/[username]";
 import { Topright } from "~/svgs";
 
-const UserBlogingArea: FC<{ userDetails: User | undefined }> = ({
-  userDetails,
-}) => {
+const UserBlogingArea: FC<{
+  userDetails: UserDetailsInterface | undefined;
+}> = ({ userDetails }) => {
   return (
     <div className="my-6 w-full rounded-md border border-border-light px-6 py-6 dark:border-border md:px-12">
       <header className="mb-6 w-full border-b border-border-light py-3 dark:border-border">

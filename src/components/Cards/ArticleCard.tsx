@@ -55,7 +55,7 @@ const ArticleCard: FC<Card> = ({ card }) => {
               >
                 @{card.user.username}
               </Link>
-              <span className="hidden text-gray-900 dark:text-text-secondary lg:block">
+              <span className="text-gray-900 dark:text-text-primary">
                 ·
               </span>
               <span>{formatDate(card.createdAt)}</span>

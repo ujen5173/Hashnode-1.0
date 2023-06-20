@@ -1,13 +1,10 @@
-import type { User } from "@prisma/client";
 import type { FC } from "react";
+import { type UserDetailsInterface } from "~/pages/u/[username]";
 import Aside from "./Aside";
 import ProfileArea from "./ProfileArea";
 
 const UserProfileMainBody: FC<{
-  user: User & {
-    isFollowing: boolean;
-    followers: { id: string }[];
-  };
+  user: UserDetailsInterface;
 }> = ({ user }) => {
   return (
     <main className="min-h-screen w-full bg-light-bg dark:bg-black">

@@ -9,14 +9,14 @@ import {
   Report,
   Twitter,
 } from "~/svgs";
-import { type User } from "@prisma/client";
 import { useClickOutside } from "@mantine/hooks";
 import { C, type ContextValue } from "~/utils/context";
 import Link from "next/link";
+import { type UserDetailsInterface } from "~/pages/u/[username]";
 
-const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
-  userDetails,
-}) => {
+const UserProfileArea: FC<{
+  userDetails: UserDetailsInterface | undefined;
+}> = ({ userDetails }) => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [opened2, setOpened2] = useState(false);
@@ -41,7 +41,7 @@ const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
             <h1 className="mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
               {userDetails?.name}
             </h1>
-            <p className="mb-6 text-lg font-medium text-gray-500 dark:text-text-secondary">
+            <p className="mb-6 text-base font-medium text-gray-500 dark:text-text-primary">
               {userDetails?.tagline}
             </p>
             <div className="flex gap-4 text-gray-700 dark:text-text-primary">
@@ -76,21 +76,37 @@ const UserProfileArea: FC<{ userDetails: User | undefined }> = ({
                   className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
                 >
                   <ul className="w-40 overflow-hidden rounded-md bg-white dark:bg-black">
-                    <li className="w-full p-4 text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
-                      <button className="flex w-full items-center justify-center gap-2 text-left">
-                        <span>
-                          <Twitter className="h-6 w-6 fill-twitterColor" />
-                        </span>
-                        <span>Twitter</span>
-                      </button>
+                    <li className="w-full text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`https://twitter.com/intent/tweet?text=${
+                          process.env.NEXT_PUBLIC_VERCEL_URL as string
+                        }/u/@${userDetails?.username || ""}`}
+                      >
+                        <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
+                          <span>
+                            <Twitter className="h-6 w-6 fill-twitterColor" />
+                          </span>
+                          <span>Twitter</span>
+                        </button>
+                      </a>
                     </li>
-                    <li className="w-full p-4 text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
-                      <button className="flex w-full items-center justify-center gap-2 text-left">
-                        <span>
-                          <Linkedin className="h-6 w-6 fill-linkedinColor" />
-                        </span>
-                        <span>Linkedin</span>
-                      </button>
+                    <li className="w-full text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`https://linkedin.com/post?text=${
+                          process.env.NEXT_PUBLIC_VERCEL_URL as string
+                        }/u/@${userDetails?.username || ""}`}
+                      >
+                        <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
+                          <span>
+                            <Linkedin className="h-6 w-6 fill-linkedinColor" />
+                          </span>
+                          <span>Linkedin</span>
+                        </button>
+                      </a>
                     </li>
                   </ul>
                 </div>

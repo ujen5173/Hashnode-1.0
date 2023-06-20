@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import { C, type ContextValue } from "~/utils/context";
 import { api } from "~/utils/api";
 import { toast } from "react-toastify";
+import { z } from "zod";
 
 export interface UserDetails {
   name: string;
@@ -74,10 +75,65 @@ const EditProfile: NextPage<{
   };
 
   const updateHandler = async () => {
+    const schema = z.object({
+      name: z.string().min(3, "Name must be atleast 3 characters long"),
+      username: z.string().min(3, "Username must be atleast 3 characters long"),
+      email: z.string().email("Invalid Email"),
+      location: z.string().optional(),
+      profile: z.string().optional(),
+      tagline: z.string().optional(),
+      available: z.string().optional(),
+      cover_image: z.string().optional(),
+      bio: z.string().optional(),
+      skills: z.string().optional(),
+      social: z.object({
+        twitter: z.string().optional(),
+        instagram: z.string().optional(),
+        github: z.string().optional(),
+        stackoverflow: z.string().optional(),
+        facebook: z.string().optional(),
+        website: z.string().optional(),
+        linkedin: z.string().optional(),
+        youtube: z.string().optional(),
+      }),
+    });
+
+    try {
+      schema.parse(data);
+      const socialHandles: (keyof SocialHandles)[] = [
+        "twitter",
+        "instagram",
+        "github",
+        "stackoverflow",
+        "facebook",
+        "website",
+        "linkedin",
+        "youtube",
+      ];
+
+      for (const handle of socialHandles) {
+        const url = data.social[handle];
+        if (url !== "") {
+          try {
+            z.string().url().parse(url);
+          } catch (error) {
+            if (error instanceof Error) {
+              toast.error(`Invalid URL in ${handle}`);
+              return;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError && error.errors[0]) {
+        toast.error(error.errors[0].message);
+      }
+    }
+
     const res = await mutateAsync({
       ...data,
       skills: data.skills.split(",").map((e) => e.trim()),
-      social: JSON.stringify(data.social),
+      social: data.social,
     });
 
     toast.success("Profile Updated Successfully");
@@ -185,27 +241,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)
         : null,
-      user: JSON.parse(JSON.stringify(newUser)) as {
-        name: string;
-        username: string;
-        email: string;
-        profile: string;
-        tagline: string;
-        cover_image: string;
-        bio: string;
-        available: string;
-        skills: string;
-        social: {
-          twitter: string;
-          instagram: string;
-          github: string;
-          stackoverflow: string;
-          facebook: string;
-          website: string;
-          linkedin: string;
-          youtube: string;
-        };
-      },
+      user: JSON.parse(JSON.stringify(newUser)) as UserDetails,
     },
   };
 };

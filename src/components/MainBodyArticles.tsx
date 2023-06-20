@@ -36,8 +36,6 @@ const MainBodyArticles = () => {
     // TODO: Refetch data
   };
 
-  console.log({ data });
-
   return (
     <section className="container-main my-4 min-h-screen w-full overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
       <MainBodyHeader

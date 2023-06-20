@@ -13,6 +13,8 @@ interface InputTypes {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
+  pattern?: string | undefined;
+  max?: number | undefined;
 }
 
 const Input: FC<InputTypes> = ({
@@ -26,6 +28,8 @@ const Input: FC<InputTypes> = ({
   value,
   name,
   onChange,
+  pattern = undefined,
+  max = undefined,
 }) => {
   return (
     <div className="mb-6">
@@ -47,26 +51,38 @@ const Input: FC<InputTypes> = ({
           required={required}
           autoComplete="off"
           name={name}
+          pattern={pattern}
           value={value}
+          max={max}
           onChange={onChange}
         />
       ) : type === "TEXTAREA" ? (
-        <textarea
-          className={`min-h-[16.4rem] ${
-            variant === "FILLED"
-              ? "input-filled"
-              : variant === "ROUNDED"
-              ? "input-primary"
-              : "input-outline"
-          }`}
-          placeholder={placeholder}
-          disabled={disabled}
-          required={required}
-          autoComplete="off"
-          name={name}
-          value={value}
-          onChange={onChange}
-        />
+        <>
+          <textarea
+            className={`min-h-[16.4rem] ${
+              variant === "FILLED"
+                ? "input-filled"
+                : variant === "ROUNDED"
+                ? "input-primary"
+                : "input-outline"
+            }`}
+            placeholder={placeholder}
+            disabled={disabled}
+            required={required}
+            autoComplete="off"
+            name={name}
+            maxLength={max}
+            value={value}
+            onChange={onChange}
+          />
+          {max && (
+            <span
+              className={`text-sm font-medium text-gray-500 dark:text-text-primary`}
+            >
+              {max - value.length} / {max}
+            </span>
+          )}
+        </>
       ) : null}
     </div>
   );

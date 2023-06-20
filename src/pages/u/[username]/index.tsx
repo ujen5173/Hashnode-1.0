@@ -5,16 +5,36 @@ import { useSession } from "next-auth/react";
 import React, { useContext, useEffect } from "react";
 import { Header } from "~/components";
 import UserProfileMainBody from "~/components/UserProfileBody";
+import { UserDetails, type SocialHandles } from "~/pages/settings";
 import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import { C, type ContextValue } from "~/utils/context";
 
+export interface UserDetailsInterface {
+  followers: { id: string }[];
+  isFollowing: boolean;
+  followersCount: number;
+  social: SocialHandles;
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  emailVerified: Date | null;
+  profile: string;
+  tagline: string;
+  cover_image: string;
+  bio: string;
+  skills: string[];
+  location: string;
+  available: string;
+  followingCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const UserBlog: NextPage<{
-  user: User & {
-    followers: { id: string }[];
-    isFollowing: boolean;
-  };
+  user: UserDetailsInterface;
 }> = ({ user }) => {
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
@@ -57,10 +77,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  if (user === null) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    };
+  }
+
   let isFollowing = false;
 
   if (session !== null) {
-    isFollowing = user?.followers.some(
+    isFollowing = user.followers.some(
       (follower) => follower.id === session?.user.id
     )
       ? true
@@ -72,10 +101,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)
         : null,
-      user: JSON.parse(JSON.stringify({ ...user, isFollowing })) as User & {
-        followers: { id: string }[];
-        isFollowing: boolean;
-      },
+      user: JSON.parse(
+        JSON.stringify({
+          ...user,
+          isFollowing,
+          social: JSON.parse(JSON.stringify(user?.social)) as SocialHandles,
+        })
+      ) as UserDetailsInterface,
     },
   };
 };
