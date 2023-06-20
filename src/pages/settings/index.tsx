@@ -14,6 +14,7 @@ import { C, type ContextValue } from "~/utils/context";
 import { api } from "~/utils/api";
 import { toast } from "react-toastify";
 import { z } from "zod";
+import SettingsSEO from "~/SEO/Settings.seo";
 
 export interface UserDetails {
   name: string;
@@ -142,6 +143,7 @@ const EditProfile: NextPage<{
 
   return (
     <>
+      <SettingsSEO />
       <Header />
       <main className="min-h-screen w-full bg-light-bg dark:bg-black">
         <div className="container-body mx-auto max-w-[1550px] gap-4 px-4">
