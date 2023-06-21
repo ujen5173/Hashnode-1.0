@@ -30,7 +30,7 @@ const ActivityCard = ({
           : "border-y"
       }  w-full border-border-light py-3 dark:border-border`}
     >
-      <div className="mb-2 flex items-center gap-2">
+      <div className="mb-2 flex items-center gap-2 last:mb-0">
         {item.activity_type === "JOINED" ? (
           <LogonoText className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
         ) : (

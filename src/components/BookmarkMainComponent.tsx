@@ -28,7 +28,7 @@ const BookmarkMainComponent = () => {
       </div>
 
       <div className="rounded-md border border-border-light bg-white pt-2 dark:border-border dark:bg-primary">
-        {isLoading ? (
+        {isLoading && !bookmarksData ? (
           <>
             <ArticleLoading />
             <ArticleLoading />
@@ -36,6 +36,12 @@ const BookmarkMainComponent = () => {
             <ArticleLoading />
             <ArticleLoading />
           </>
+        ) : bookmarksData?.length === 0 ? (
+          <div className="flex min-h-[18rem] w-full items-center justify-center">
+            <h1 className="text-2xl font-medium text-gray-500 dark:text-gray-400">
+              No Bookmarks Added 🙄
+            </h1>
+          </div>
         ) : (
           bookmarksData?.map((article) => (
             <ArticleCard card={article} key={article.id} />

@@ -73,7 +73,7 @@ const UserProfileArea: FC<{
               {opened && (
                 <div
                   ref={ref}
-                  className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
+                  className="absolute right-0 top-full z-50 mt-2 hidden rounded-md border border-border-light shadow-lg dark:border-border sm:block"
                 >
                   <ul className="w-40 overflow-hidden rounded-md bg-white dark:bg-black">
                     <li className="w-full text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
@@ -96,7 +96,7 @@ const UserProfileArea: FC<{
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`https://linkedin.com/post?text=${
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${
                           process.env.NEXT_PUBLIC_VERCEL_URL as string
                         }/u/@${userDetails?.username || ""}`}
                       >
@@ -122,9 +122,9 @@ const UserProfileArea: FC<{
               {opened2 && (
                 <div
                   ref={ref2}
-                  className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
+                  className="absolute right-0 top-full z-50 mt-2 hidden overflow-hidden rounded-md border border-border-light shadow-lg dark:border-border sm:block"
                 >
-                  <ul className="w-max overflow-hidden rounded-md bg-white dark:bg-black">
+                  <ul className="w-max bg-white dark:bg-black">
                     <li className="w-full p-4 text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
                       <button className="flex w-full items-center justify-center gap-2 pr-8 text-left">
                         <span>

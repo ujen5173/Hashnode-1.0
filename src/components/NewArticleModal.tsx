@@ -9,6 +9,7 @@ import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import type { ArticleData } from "./NewArticleBody";
+import { ZodError } from "zod";
 
 const NewArticleModal = ({
   publishModal,
@@ -67,8 +68,12 @@ const NewArticleModal = ({
       return;
     }
 
+    if (data.title.length < 5) {
+      toast.error("Title should be at least 5 characters long");
+      return;
+    }
     if (data.content.length < 25) {
-      alert("Content should be at least 25 characters long");
+      toast.error("Content should be at least 25 characters long");
       return;
     }
 

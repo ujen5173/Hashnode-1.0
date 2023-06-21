@@ -266,9 +266,15 @@ export const postsRouter = createTRPCRouter({
   new: protectedProcedure
     .input(
       z.object({
-        title: z.string().min(5).trim(),
+        title: z
+          .string()
+          .min(5, "Title should be atleset of 5 characters")
+          .trim(),
         subtitle: z.string().trim().optional(),
-        content: z.string().min(25).trim(),
+        content: z
+          .string()
+          .min(25, "Content should be atleast of 25 characters")
+          .trim(),
         tags: z.array(z.string().trim()).optional().default([]),
         seoTitle: z.string().trim().optional().nullable(),
         seoDescription: z.string().trim().optional().nullable(),

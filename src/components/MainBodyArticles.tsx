@@ -45,7 +45,7 @@ const MainBodyArticles = () => {
       />
 
       <div>
-        {isLoading ? (
+        {isLoading && !data ? (
           <>
             <ArticleLoading />
             <ArticleLoading />
@@ -53,6 +53,12 @@ const MainBodyArticles = () => {
             <ArticleLoading />
             <ArticleLoading />
           </>
+        ) : data?.length === 0 ? (
+          <div className="min-h-[18rem] flex w-full items-center justify-center">
+            <h1 className="text-2xl font-medium text-gray-500 dark:text-gray-400">
+              No articles found 🙄
+            </h1>
+          </div>
         ) : (
           data?.map((card) => <ArticleCard key={card.id} card={card} />)
         )}

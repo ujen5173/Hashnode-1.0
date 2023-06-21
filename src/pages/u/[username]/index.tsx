@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import React, { useContext, useEffect } from "react";
 import { Header } from "~/components";
 import UserProfileMainBody from "~/components/UserProfileBody";
-import { UserDetails, type SocialHandles } from "~/pages/settings";
+import { type SocialHandles } from "~/pages/settings";
 import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
