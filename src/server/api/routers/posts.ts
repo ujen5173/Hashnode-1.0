@@ -816,11 +816,9 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const { query, type } = input;
-      console.log({ query, type });
       let result = null;
       switch (type) {
         case "TAGS":
-          console.log("Tags code is running...");
           const tags = await ctx.prisma.tag.findMany({
             where: {
               OR: [
@@ -846,7 +844,6 @@ export const postsRouter = createTRPCRouter({
           };
           break;
         case "USERS":
-          console.log("Users code is running...");
           const users = await ctx.prisma.user.findMany({
             where: {
               OR: [
@@ -873,7 +870,6 @@ export const postsRouter = createTRPCRouter({
           break;
 
         default:
-          console.log("Default code is running...");
           const articles = await ctx.prisma.article.findMany({
             where: {
               OR: [
@@ -925,4 +921,46 @@ export const postsRouter = createTRPCRouter({
 
       return result;
     }),
+
+  trendingArticles: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.article.findMany({
+      take: 4,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        cover_image: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile: true,
+          },
+        },
+        content: true,
+        read_time: true,
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        likes: {
+          select: {
+            id: true,
+          },
+        },
+        likesCount: true,
+        commentsCount: true,
+        createdAt: true,
+      },
+      orderBy: [
+        { likesCount: "desc" },
+        { commentsCount: "desc" },
+        { createdAt: "desc" },
+      ],
+    });
+  }),
 });

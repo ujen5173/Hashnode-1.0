@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Add, Chain, Feed, Group, Pen, Twitter, Check } from "~/svgs";
+import { Add, Chain, Feed, Group, Pen, Twitter, Check, Hashtag } from "~/svgs";
 import React, { type FC } from "react";
 import type { DetailedTag } from "~/types";
 
@@ -20,8 +20,8 @@ const TagPageHeader: FC<TagPageHeaderProps> = ({
 }) => {
   return (
     <header className="mb-4 flex flex-col items-center justify-center rounded-md border border-border-light bg-white px-6 py-11 text-center dark:border-border dark:bg-primary">
-      <div className="flex gap-2">
-        {tagDetails.logo && (
+      <div className="flex gap-3">
+        {tagDetails.logo ? (
           <Image
             src={tagDetails.logo}
             alt={tagDetails.slug}
@@ -29,6 +29,10 @@ const TagPageHeader: FC<TagPageHeaderProps> = ({
             height={50}
             className="h-16 w-16 rounded-md object-cover"
           />
+        ) : (
+          <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary">
+            <Hashtag className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
+          </div>
         )}
         <div
           className={`mb-5 ${tagDetails.logo ? "text-left" : "text-center"}`}

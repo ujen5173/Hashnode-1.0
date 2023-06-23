@@ -221,26 +221,28 @@ const UserSearchCard: FC<{
   };
 }> = ({ user }) => {
   return (
-    <div className="flex items-center justify-between  p-4">
-      <div className="flex items-center gap-4">
-        <Image
-          width={50}
-          height={50}
-          src={user.profile}
-          alt={user.name}
-          className="h-12 w-12 rounded-full"
-        />
-        <div>
-          <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
-            {user.name}
-          </h3>
-          <p className="text-sm text-gray-500 dark:text-text-primary">
-            {user.username}
-          </p>
+    <Link href={`/u/@${user.username}`}>
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-4">
+          <Image
+            width={50}
+            height={50}
+            src={user.profile}
+            alt={user.name}
+            className="h-12 w-12 rounded-full"
+          />
+          <div>
+            <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
+              {user.name}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-text-primary">
+              {user.username}
+            </p>
+          </div>
         </div>
+        <button className="btn-filled">Follow</button>
       </div>
-      <button className="btn-filled">Follow</button>
-    </div>
+    </Link>
   );
 };
 

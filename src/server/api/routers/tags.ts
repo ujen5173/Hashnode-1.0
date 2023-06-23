@@ -106,6 +106,7 @@ export const TagsRouter = createTRPCRouter({
           id: tag.id,
           name: tag.name,
           slug: tag.slug,
+          logo: tag.logo,
           articlesCount: tag.articles.filter(
             (article) =>
               article.createdAt >= startDate && article.createdAt <= endDate

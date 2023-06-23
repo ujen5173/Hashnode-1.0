@@ -28,6 +28,30 @@ export interface ArticleCard {
   updatedAt: Date;
 }
 
+export interface ArticleCardMini {
+  id: string;
+  title: string;
+  slug: string;
+  cover_image: string | null;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    profile: string;
+  };
+  content: string;
+  read_time: number;
+  tags: {
+    id?: string;
+    name: string;
+    slug: string;
+  }[];
+  likes: { id: string }[];
+  likesCount: number;
+  commentsCount: number;
+  createdAt: Date;
+}
+
 export interface Tag {
   id?: string | undefined;
   name: string;

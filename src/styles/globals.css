@@ -124,10 +124,16 @@ body.dark .anouncement {
 .input-filled::-webkit-input-placeholder {
   opacity: 0.4;
 }
+.input-filled::-moz-placeholder {
+  opacity: 0.4;
+}
 .input-filled {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-3 text-base text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-primary;
 }
 .input-outline::-webkit-input-placeholder {
+  opacity: 0.4;
+}
+.input-outline::-moz-placeholder {
   opacity: 0.4;
 }
 .input-outline {
@@ -136,10 +142,16 @@ body.dark .anouncement {
 .input-secondary::-webkit-input-placeholder {
   opacity: 0.4;
 }
+.input-secondary-moz-placeholder {
+  opacity: 0.4;
+}
 .input-secondary {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
 .input-oauth::-webkit-input-placeholder {
+  opacity: 0.4;
+}
+.input-oauthed::-moz-placeholder {
   opacity: 0.4;
 }
 .input-oauth {

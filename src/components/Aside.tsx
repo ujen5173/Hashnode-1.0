@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { type FC } from "react";
+import React, { useContext, useEffect, type FC } from "react";
 import { asideItems } from "~/utils/constants";
 
 import Navigation from "./Cards/Navigation";
@@ -7,6 +7,7 @@ import TrendingNavigation from "./Cards/TrendingNavigation";
 import Divider from "./Divider";
 import { Trending, Twitter, Discord, Linkedin, Instagram } from "~/svgs";
 import { api } from "~/utils/api";
+import { C, type ContextValue } from "~/utils/context";
 
 const Aside = () => {
   const { data: tagsData, isLoading } = api.tags.getTredingTags.useQuery(
@@ -15,6 +16,17 @@ const Aside = () => {
       refetchOnWindowFocus: false,
     }
   );
+
+  const { setTrendingTags } = useContext(C) as ContextValue;
+
+  useEffect(() => {
+    if (tagsData) {
+      setTrendingTags({
+        data: tagsData.data,
+        isLoading: isLoading,
+      });
+    }
+  }, [tagsData]);
 
   return (
     <div className="container-aside relative hidden min-h-screen py-4 lg:block">
@@ -99,7 +111,7 @@ const TrendingComponent: FC<{
 const SocialHandles = () => {
   return (
     <div className="flex flex-wrap p-4">
-      <a href="https://twitter.com">
+      <a target="_blank" href="https://twitter.com">
         <button
           aria-label="social links"
           role="button"
@@ -108,7 +120,7 @@ const SocialHandles = () => {
           <Twitter className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
-      <a href="https://discord.com/app">
+      <a target="_blank" href="https://discord.com/app">
         <button
           aria-label="social links"
           role="button"
@@ -117,7 +129,7 @@ const SocialHandles = () => {
           <Discord className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
-      <a href="https://linkedin.com">
+      <a target="_blank" href="https://linkedin.com">
         <button
           aria-label="social links"
           role="button"
@@ -126,7 +138,7 @@ const SocialHandles = () => {
           <Linkedin className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
-      <a href="https://instagram.com">
+      <a target="_blank" href="https://instagram.com">
         <button
           aria-label="social links"
           role="button"

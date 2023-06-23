@@ -7,10 +7,11 @@ interface TrendingCardProps {
   article: {
     id: string;
     title: string;
+    slug: string;
     user: {
-      name: string;
-      profile: string;
+      profile: string | null;
       id: string;
+      name: string;
     };
     likesCount: number;
     commentsCount: number;
@@ -22,16 +23,16 @@ const TrendingCard: FC<TrendingCardProps> = ({ article }) => {
     <div className="flex items-start gap-4 border-b border-border-light py-4 last:border-0 dark:border-border">
       <Link href={`/u/@user`} className="block">
         <Image
-          src={article.user.profile}
+          src={article.user.profile || ""}
           alt=""
           width={70}
           height={70}
-          className="mt-2 h-8 w-8 overflow-hidden rounded-full object-cover"
+          className="mt-2 h-10 w-10 overflow-hidden rounded-full object-cover"
         />
       </Link>
       <div className="flex-1">
         <Link href={`/u/@user/article`}>
-          <h1 className="mb-1 text-base font-bold leading-tight text-gray-800 dark:text-text-secondary">
+          <h1 className="max-height-two mb-1 text-base font-bold leading-tight text-gray-800 dark:text-text-secondary">
             {article.title}
           </h1>
         </Link>

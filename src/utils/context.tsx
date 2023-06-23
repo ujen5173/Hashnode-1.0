@@ -10,6 +10,40 @@ import React, {
 import { toast } from "react-toastify";
 import { api } from "./api";
 
+interface Props {
+  children: React.ReactNode;
+}
+
+interface TrendingTagsTypes {
+  data:
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        logo: string | null;
+        articlesCount: number;
+      }[]
+    | undefined;
+  isLoading: boolean;
+}
+interface TrendingArticleTypes {
+  data:
+    | {
+        id: string;
+        title: string;
+        slug: string;
+        user: {
+          profile: string | null;
+          id: string;
+          name: string;
+        };
+        likesCount: number;
+        commentsCount: number;
+      }[]
+    | undefined;
+  isLoading: boolean;
+}
+
 export interface ContextValue {
   handleTheme: () => void;
   handleChange: (
@@ -31,10 +65,11 @@ export interface ContextValue {
     }>
   >;
   followUser: () => void;
-}
 
-interface Props {
-  children: React.ReactNode;
+  trendingTags: TrendingTagsTypes;
+  setTrendingTags: Dispatch<SetStateAction<TrendingTagsTypes>>;
+  trendingArticles: TrendingArticleTypes;
+  setTrendingArticles: Dispatch<SetStateAction<TrendingArticleTypes>>;
 }
 
 export const C = createContext<ContextValue | undefined>(undefined);
@@ -43,6 +78,15 @@ const Context = ({ children }: Props) => {
   const [user, setUser] = useState<Session | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
+  const [trendingTags, setTrendingTags] = useState<TrendingTagsTypes>({
+    data: undefined,
+    isLoading: true,
+  });
+  const [trendingArticles, setTrendingArticles] =
+    useState<TrendingArticleTypes>({
+      data: undefined,
+      isLoading: true,
+    });
 
   useEffect(() => {
     const savedBookmarks = localStorage.getItem("bookmarks");
@@ -145,6 +189,12 @@ const Context = ({ children }: Props) => {
         following,
         setFollowing,
         followUser,
+
+        trendingTags,
+        setTrendingTags,
+
+        trendingArticles,
+        setTrendingArticles,
       }}
     >
       {children}

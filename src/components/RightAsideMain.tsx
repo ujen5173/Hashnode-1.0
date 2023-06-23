@@ -17,7 +17,7 @@ const RightAsideMain: FC<{ tagDetails?: DetailedTag }> = ({ tagDetails }) => {
             </h1>
           </header>
 
-          <p className="text-base text-gray-700 dark:text-text-secondary">
+          <p className="text-base text-gray-500 dark:text-text-primary">
             {tagDetails.description || "No description provided."}
           </p>
         </div>

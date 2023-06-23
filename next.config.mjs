@@ -45,6 +45,11 @@ const config = {
         hostname: "yt3.ggpht.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        port: "",
+      },
     ],
   },
 };

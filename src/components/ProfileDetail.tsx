@@ -29,7 +29,7 @@ const ProfileDetail: FC<{
 
             if (value === "") return null;
             return (
-              <a href={value} key={index}>
+              <a href={value} target="_blank" key={index}>
                 <button className="btn-icon-large flex">
                   {key === "twitter" ? (
                     <Twitter className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
@@ -54,14 +54,13 @@ const ProfileDetail: FC<{
           })}
       </div>
       {userDetails?.location && (
-
         <div className="flex items-center gap-2">
-        <Location className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
-        <span className="text-base text-gray-700 dark:text-text-primary">
-          {userDetails?.location}
-        </span>
-      </div>
-        )}
+          <Location className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+          <span className="text-base text-gray-700 dark:text-text-primary">
+            {userDetails?.location}
+          </span>
+        </div>
+      )}
       <div className="flex items-center gap-2">
         <DateSVG className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
         <span className="text-base text-gray-700 dark:text-text-primary">

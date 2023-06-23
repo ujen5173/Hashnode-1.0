@@ -1,8 +1,9 @@
-import React from "react";
-import { trending } from "~/utils/constants";
+import React, { useContext } from "react";
 import TrendingCard from "./Cards/TrendingCard";
+import { C, type ContextValue } from "~/utils/context";
 
 const Trending = () => {
+  const { trendingArticles } = useContext(C) as ContextValue;
   return (
     <div className="my-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <header className="flex items-center justify-between border-b border-border-light py-2 dark:border-border">
@@ -18,7 +19,7 @@ const Trending = () => {
         </button>
       </header>
       <div>
-        {trending.map((article) => {
+        {trendingArticles.data?.map((article) => {
           return <TrendingCard article={article} key={article.id} />;
         })}
       </div>
