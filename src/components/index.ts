@@ -17,3 +17,4 @@ export { default as NotAuthenticatedProfileDropdown } from "./NotAuthenticatedPr
 export { default as AuthCheck } from "./AuthCheck";
 export { default as BasicInfo } from "./BasicInfo";
 export { default as SocialInfo } from "./SocialInfo";
+export { default as SearchBody } from "./SearchBody";

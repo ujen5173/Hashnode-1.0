@@ -17,11 +17,12 @@ export interface BookmarkInterface {
 
 const Bookmarks = () => {
   const { bookmarks } = useContext(C) as ContextValue;
-  const { data: bookmarksData, isLoading } = api.posts.getBookmarks.useQuery(
+  const { data: bookmarksData, isFetching } = api.posts.getBookmarks.useQuery(
     {
       ids: bookmarks,
     },
     {
+      enabled: bookmarks && bookmarks.length > 0,
       refetchOnWindowFocus: false,
     }
   );
@@ -44,14 +45,14 @@ const Bookmarks = () => {
       </header>
 
       <div>
-        {isLoading ? (
+        {isFetching ? (
           <>
             <BookmarkLoading />
             <BookmarkLoading />
             <BookmarkLoading />
             <BookmarkLoading />
           </>
-        ) : bookmarksData && bookmarksData.length > 0 ? (
+        ) : bookmarks.length > 0 ? (
           bookmarksData?.map((bookmark) => (
             <BookmarkCard key={bookmark.id} bookmark={bookmark} />
           ))

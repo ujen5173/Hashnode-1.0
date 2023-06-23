@@ -94,3 +94,43 @@ export interface Comment {
   createdAt: Date;
   updatedAt: Date;
 }
+
+interface SearchResults {
+  users:
+    | {
+        id: string;
+        name: string;
+        username: string;
+        profile: string;
+        followersCount: number;
+      }[]
+    | null;
+  tags:
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        followersCount: number;
+        articlesCount: number;
+      }[]
+    | null;
+  articles:
+    | {
+        id: string;
+        title: string;
+        user: {
+          name: string;
+          username: string;
+          profile: string;
+          id: string;
+        };
+        cover_image: string;
+        slug: string;
+        read_time: number;
+        likesCount: number;
+        commentsCount: number;
+        createdAt: Date;
+        updatedAt: Date;
+      }[]
+    | null;
+}

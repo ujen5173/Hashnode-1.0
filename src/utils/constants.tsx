@@ -702,6 +702,48 @@ export const trendingTags = [
 export const trendingArticles = [];
 export const bookmarksArticles = [...articles].splice(0, 3);
 
+export const fakeSeach: {
+  id: string;
+  title: string;
+  slug: string;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+  };
+  createdAt: Date;
+  likesCount: number;
+  cover_image: string | null;
+}[] = [
+  // {
+  //   id: "1234675245",
+  //   title: "Tick-Tock, Hackers! Are You Ready to Hack with 1Password?",
+  //   slug: "1password-hackathon",
+  //   user: {
+  //     id: "12312345",
+  //     name: "Jane Smith",
+  //     username: "testing-username",
+  //   },
+  //   createdAt: new Date("2021-08-24T15:30:00.000Z"),
+  //   likesCount: 10,
+  //   cover_image:
+  //     "https://cdn.hashnode.com/res/hashnode/image/upload/v1687338197226/fcaec3fd-a3fc-4bff-8cb6-89e60055b3bf.png?w=800&h=420&fit=crop&crop=entropy&auto=compress,format&format=webp",
+  // },
+  // {
+  //   id: "12312345123",
+  //   title: "Reflections from shadowing GitLab's Development Director",
+  //   slug: "reflections-from-shadowing-gitLab-development-director",
+  //   user: {
+  //     id: "1241251",
+  //     name: "Ujen Basi",
+  //     username: "ujenbasi",
+  //   },
+  //   createdAt: new Date("2022-08-24T15:30:00.000Z"),
+  //   likesCount: 10,
+  //   cover_image: null,
+  // },
+];
+
 // export const fakeComments: Comment[] = [
 //   {
 //     id: "1",

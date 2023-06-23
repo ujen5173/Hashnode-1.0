@@ -9,7 +9,6 @@ import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import type { ArticleData } from "./NewArticleBody";
-import { ZodError } from "zod";
 
 const NewArticleModal = ({
   publishModal,
@@ -50,8 +49,6 @@ const NewArticleModal = ({
   };
 
   useEffect(() => {
-    // useEffect to fill up the Seo OG Image
-
     if (file) {
       setData((prev) => ({
         ...prev,

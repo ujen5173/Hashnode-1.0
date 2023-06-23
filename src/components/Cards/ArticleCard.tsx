@@ -48,16 +48,14 @@ const ArticleCard: FC<Card> = ({ card }) => {
                 {card.user.name}
               </h1>
             </Link>
-            <p className="flex items-center gap-2 text-sm font-normal text-gray-500 dark:text-text-primary">
+            <p className="flex items-center gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
               <Link
                 className="hidden sm:block"
                 href={`/u/@${card.user.username}`}
               >
                 @{card.user.username}
               </Link>
-              <span className="text-gray-900 dark:text-text-primary">
-                ·
-              </span>
+              <span className="text-gray-900 dark:text-text-primary">·</span>
               <span>{formatDate(card.createdAt)}</span>
             </p>
           </div>

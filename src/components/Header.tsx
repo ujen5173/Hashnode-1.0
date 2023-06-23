@@ -3,10 +3,10 @@ import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
 import ProfileDropdown from "./ProfileDropdown";
 import RightArea from "./RightAreaHeader";
-import SearchArea from "./Search";
 import LeftArea from "./LeftArea";
 import { C, type ContextValue } from "~/utils/context";
 import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
+import SearchArea from "./Search";
 
 const Header: React.FC = () => {
   const [opened, setOpened] = useState(false);

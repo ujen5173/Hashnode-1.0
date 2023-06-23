@@ -106,7 +106,10 @@ body.dark .anouncement {
   @apply h-10 w-10 items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
 }
 .btn-tab {
-  @apply flex items-center gap-2 rounded-t bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-primary dark:text-text-secondary dark:hover:bg-primary-light;
+  @apply flex items-center gap-2 rounded-t border-b border-transparent bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-primary dark:text-text-secondary dark:hover:bg-primary-light;
+}
+.btn-tab-active {
+  @apply flex items-center gap-2 rounded-t border-b border-secondary bg-white px-2 py-3 text-secondary hover:bg-border-light dark:bg-primary dark:hover:bg-primary-light;
 }
 .btn-tab-secondary {
   @apply flex items-center gap-2 rounded-t bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-transparent dark:text-text-secondary dark:hover:bg-primary-light;

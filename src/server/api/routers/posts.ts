@@ -12,7 +12,7 @@ import {
   refactorActivityHelper,
 } from "./../../../utils/microFunctions";
 import { v4 as uuid } from "uuid";
-import { Prisma } from "@prisma/client";
+import { Article, Prisma } from "@prisma/client";
 
 interface CommentWithChildren extends Comment {
   level: number;
@@ -60,26 +60,32 @@ export const postsRouter = createTRPCRouter({
       try {
         const data = await ctx.prisma.article.findMany({
           where: {
-            read_time:
-              input?.filter?.read_time === "over_5"
-                ? { gt: 5 }
-                : input?.filter?.read_time === "under_5"
-                ? { lt: 5 }
-                : input?.filter?.read_time === "5"
-                ? { equals: 5 }
-                : undefined,
-
-            tags: {
-              some: {
-                name: {
-                  in: input?.filter?.tags
-                    ? input?.filter?.tags.length > 0
-                      ? input?.filter?.tags.map((tag) => tag.name)
-                      : undefined
+            ...((input?.filter?.tags || input?.filter?.read_time) && {
+              ...(input?.filter?.read_time && {
+                read_time:
+                  input?.filter?.read_time === "over_5"
+                    ? { gt: 5 }
+                    : input?.filter?.read_time === "under_5"
+                    ? { lt: 5 }
+                    : input?.filter?.read_time === "5"
+                    ? { equals: 5 }
                     : undefined,
-                },
-              },
-            },
+              }),
+              ...(input?.filter?.tags &&
+                input.filter.tags.length > 0 && {
+                  tags: {
+                    some: {
+                      name: {
+                        in: input?.filter?.tags
+                          ? input?.filter?.tags.length > 0
+                            ? input?.filter?.tags.map((tag) => tag.name)
+                            : undefined
+                          : undefined,
+                      },
+                    },
+                  },
+                }),
+            }),
           },
 
           include: {
@@ -799,5 +805,124 @@ export const postsRouter = createTRPCRouter({
       });
 
       return comments;
+    }),
+
+  search: publicProcedure
+    .input(
+      z.object({
+        type: z.enum(["TOP", "ARTICLES", "TAGS", "USERS", "LATEST"]),
+        query: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { query, type } = input;
+      console.log({ query, type });
+      let result = null;
+      switch (type) {
+        case "TAGS":
+          console.log("Tags code is running...");
+          const tags = await ctx.prisma.tag.findMany({
+            where: {
+              OR: [
+                { name: { contains: query } },
+                { slug: { contains: query } },
+                { description: { contains: query } },
+              ],
+            },
+            take: 6,
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              followersCount: true,
+              articlesCount: true,
+            },
+          });
+
+          result = {
+            users: null,
+            tags,
+            articles: null,
+          };
+          break;
+        case "USERS":
+          console.log("Users code is running...");
+          const users = await ctx.prisma.user.findMany({
+            where: {
+              OR: [
+                { name: { contains: query, mode: "insensitive" } },
+                { username: { contains: query, mode: "insensitive" } },
+                // { bio: { contains: query, mode: "insensitive" } },
+              ],
+            },
+            take: 6,
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile: true,
+              followersCount: true,
+            },
+          });
+
+          result = {
+            users,
+            tags: null,
+            articles: null,
+          };
+          break;
+
+        default:
+          console.log("Default code is running...");
+          const articles = await ctx.prisma.article.findMany({
+            where: {
+              OR: [
+                { title: { contains: query, mode: "insensitive" } },
+                { slug: { contains: query, mode: "insensitive" } },
+                {
+                  tags: {
+                    some: { name: { contains: query, mode: "insensitive" } },
+                  },
+                },
+                {
+                  user: {
+                    OR: [
+                      { username: { contains: query, mode: "insensitive" } },
+                      { name: { contains: query, mode: "insensitive" } },
+                    ],
+                  },
+                },
+              ],
+            },
+            take: 6,
+            select: {
+              id: true,
+              title: true,
+              user: {
+                select: { name: true, username: true, profile: true, id: true },
+              },
+              cover_image: true,
+              slug: true,
+              createdAt: true,
+              read_time: true,
+              updatedAt: true,
+              likesCount: true,
+              commentsCount: true,
+            },
+            orderBy: [
+              type === "LATEST"
+                ? { createdAt: "desc" }
+                : { likesCount: "desc" },
+            ],
+          });
+
+          result = {
+            users: null,
+            tags: null,
+            articles,
+          };
+      }
+
+      return result;
     }),
 });
