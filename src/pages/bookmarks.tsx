@@ -13,7 +13,7 @@ const Bookmark: NextPage = () => {
 
   useEffect(() => {
     setUser(session);
-  }, []);
+  }, [session]);
 
   return (
     <>

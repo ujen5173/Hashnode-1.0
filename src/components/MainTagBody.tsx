@@ -166,8 +166,24 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                     Read Time
                   </label>
                   <Select
+                    onChange={(value) => {
+                      setFilter({
+                        ...filter,
+                        data: {
+                          ...filter.data,
+                          read_time: value as "under_5" | "5" | "over_5",
+                        },
+                      });
+                    }}
                     defaultText={"Select read time"}
-                    options={["Under 5 min", "5 min", "Over 5 min"]}
+                    options={[
+                      {
+                        label: "Under 5 min",
+                        value: "under_5",
+                      },
+                      { label: "5 min", value: "5" },
+                      { label: "Over 5 min", value: "over_5" },
+                    ]}
                   />
                 </div>
                 <div className="w-full md:w-auto">

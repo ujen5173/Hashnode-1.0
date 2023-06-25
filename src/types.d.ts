@@ -1,11 +1,12 @@
-import type { Article, CommentType } from "@prisma/client";
+import type { CommentType } from "@prisma/client";
 
-export interface ArticleCard {
+export interface Article {
   id: string;
   title: string;
   subtitle?: string | undefined;
   slug: string;
   cover_image?: string | null;
+  disabledComments: boolean;
   user: {
     id: string;
     name: string;
@@ -14,27 +15,26 @@ export interface ArticleCard {
     bio: string;
   };
   content: string;
-  read_time: number | string;
+  read_time: number;
   tags: {
     id?: string;
     name: string;
     slug: string;
   }[];
   likes: { id: string }[];
+  comments: Comment[];
   likesCount: number;
   commentsCount: number;
-  comments: Comment[];
   createdAt: Date;
-  updatedAt: Date;
 }
 
-export interface ArticleCardMini {
+export interface ArticleCard {
   id: string;
   title: string;
   slug: string;
-  cover_image: string | null;
+  cover_image?: string | null;
+  disabledComments: boolean;
   user: {
-    id: string;
     name: string;
     username: string;
     profile: string;
@@ -42,7 +42,7 @@ export interface ArticleCardMini {
   content: string;
   read_time: number;
   tags: {
-    id?: string;
+    id: string;
     name: string;
     slug: string;
   }[];

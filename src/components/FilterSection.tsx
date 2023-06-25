@@ -21,7 +21,17 @@ const FilterSection: FC<{
           </label>
           <Select
             defaultText={"Select read time"}
-            options={["Under 5 min", "5 min", "Over 5 min"]}
+            options={[
+              { label: "Under 5 min", value: "under_5" },
+              { label: "5 min", value: "5" },
+              { label: "Over 5 min", value: "over_5" },
+            ]}
+            onChange={(value) =>
+              console.log(
+                "filtering data process is pending... :) value: ",
+                value
+              )
+            }
           />
         </div>
         <div className="flex-1">

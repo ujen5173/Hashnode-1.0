@@ -7,11 +7,14 @@ import TrendingNavigation from "./Cards/TrendingNavigation";
 import Divider from "./Divider";
 import { Trending, Twitter, Discord, Linkedin, Instagram } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C, type TrendingTagsTypes, type ContextValue } from "~/utils/context";
 
 const Aside = () => {
   const { data: tagsData, isLoading } = api.tags.getTredingTags.useQuery(
-    undefined,
+    {
+      variant: "week",
+      limit: 6,
+    },
     {
       refetchOnWindowFocus: false,
     }
@@ -22,11 +25,11 @@ const Aside = () => {
   useEffect(() => {
     if (tagsData) {
       setTrendingTags({
-        data: tagsData.data,
+        data: tagsData,
         isLoading: isLoading,
       });
     }
-  }, [tagsData]);
+  }, [tagsData, isLoading]);
 
   return (
     <div className="container-aside relative hidden min-h-screen py-4 lg:block">
@@ -34,7 +37,7 @@ const Aside = () => {
         <Navigations />
         <Divider />
         <TrendingComponent
-          trendingItems={isLoading ? null : tagsData ? tagsData.data : null}
+          trendingItems={{ data: tagsData, isLoading: isLoading }}
         />
         <SocialHandles />
         <div className="w-4/12 px-4">
@@ -73,14 +76,7 @@ const Navigations = () => {
 };
 
 const TrendingComponent: FC<{
-  trendingItems:
-    | {
-        articlesCount: number;
-        id: string;
-        name: string;
-        slug: string;
-      }[]
-    | null;
+  trendingItems: TrendingTagsTypes;
 }> = ({ trendingItems }) => {
   return (
     <div className="p-4">
@@ -93,16 +89,20 @@ const TrendingComponent: FC<{
         </span>
       </div>
 
-      {trendingItems === null ? (
+      {trendingItems.isLoading ? (
         <>
           <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
           <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
           <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
         </>
-      ) : (
-        trendingItems.map((item) => (
+      ) : trendingItems.data && trendingItems.data.length > 0 ? (
+        trendingItems.data.map((item) => (
           <TrendingNavigation key={item.id} item={item} />
         ))
+      ) : (
+        <p className="text-sm text-gray-700 dark:text-text-primary">
+          No trending tags
+        </p>
       )}
     </div>
   );

@@ -4,14 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Book, Check, Follow } from "~/svgs";
 import ArticleActions from "./ArticleActions";
-import type { User, ArticleCard, Tag } from "~/types";
+import type { User, Article, Tag } from "~/types";
 import { formatDate } from "./../utils/miniFunctions";
 import ReactMarkdown from "react-markdown";
 import { useContext, useEffect, useState, type FC } from "react";
 import { C, type ContextValue } from "~/utils/context";
 import CommentsModal from "./CommentsModal";
 
-const ArticleBody: FC<{ article: ArticleCard }> = ({ article }) => {
+const ArticleBody: FC<{ article: Article }> = ({ article }) => {
   const [commentsModal, setCommentsModal] = useState(false);
 
   useEffect(() => {

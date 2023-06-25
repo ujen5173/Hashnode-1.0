@@ -54,13 +54,20 @@ const MainBodyArticles = () => {
             <ArticleLoading />
           </>
         ) : data?.length === 0 ? (
-          <div className="min-h-[18rem] flex w-full items-center justify-center">
+          <div className="flex min-h-[18rem] w-full items-center justify-center">
             <h1 className="text-2xl font-medium text-gray-500 dark:text-gray-400">
               No articles found 🙄
             </h1>
           </div>
         ) : (
-          data?.map((card) => <ArticleCard key={card.id} card={card} />)
+          data?.map((card) => (
+            <div
+              key={card.id}
+              className="border-b border-border-light bg-white last:border-0 dark:border-border dark:bg-primary"
+            >
+              <ArticleCard key={card.id} card={card} />
+            </div>
+          ))
         )}
       </div>
     </section>

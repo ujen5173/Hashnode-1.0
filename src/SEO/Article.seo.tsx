@@ -1,8 +1,8 @@
-import React, { FC } from "react";
+import React, { type FC } from "react";
 import Head from "next/head";
-import { ArticleCard } from "~/types";
+import { type Article } from "~/types";
 
-const ArticleSEO: FC<{ article: ArticleCard }> = ({ article }) => {
+const ArticleSEO: FC<{ article: Article }> = ({ article }) => {
   return (
     <Head>
       <title>{article.title} - Hashnode Clone</title>

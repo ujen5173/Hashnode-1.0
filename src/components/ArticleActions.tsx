@@ -2,13 +2,13 @@ import { type FC, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Heart, Comment, Share, Dots, Bookmarkplus } from "~/svgs";
 import Bookmarked from "~/svgs/Bookmarked";
-import type { ArticleCard } from "~/types";
+import type { Article } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { TRPCClientError } from "@trpc/client";
 
 const ArticleActions: FC<{
-  article: ArticleCard;
+  article: Article;
   setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ article, setCommentsModal }) => {
   const { user, bookmarks, updateBookmark } = useContext(C) as ContextValue;
@@ -77,18 +77,23 @@ const ArticleActions: FC<{
           </div>
           <span>{like.likesCount}</span>
         </button>
-        <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
-        <button
-          aria-label="icon"
-          role="button"
-          onClick={() => setCommentsModal(true)}
-          className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
-        >
-          <div className="flex items-center justify-center gap-2">
-            <Comment className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
-          </div>
-          <span>{article.commentsCount}</span>
-        </button>
+        {!article.disabledComments && (
+          <>
+            <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
+            <button
+              aria-label="icon"
+              role="button"
+              onClick={() => setCommentsModal(true)}
+              className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Comment className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
+              </div>
+              <span>{article.commentsCount}</span>
+            </button>
+          </>
+        )}
+
         <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
         <button
           aria-label="icon"

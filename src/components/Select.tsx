@@ -5,15 +5,22 @@ import { Angledown } from "~/svgs";
 interface SelectProps {
   status: boolean;
   selected: string;
-  options: string[];
+  options: {
+    label: string;
+    value: string;
+  }[];
 }
 
 interface Props {
-  options: string[];
+  options: {
+    label: string;
+    value: string;
+  }[];
   defaultText: string;
+  onChange: (value: string) => void;
 }
 
-const Select: FC<Props> = ({ options, defaultText }) => {
+const Select: FC<Props> = ({ options, defaultText, onChange }) => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
 
@@ -24,7 +31,7 @@ const Select: FC<Props> = ({ options, defaultText }) => {
   });
 
   return (
-    <button
+    <div
       onClick={() => setOpened(!opened)}
       className="relative flex w-full min-w-[180px] cursor-pointer items-center justify-between rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:bg-light-bg focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-primary-light"
     >
@@ -42,19 +49,20 @@ const Select: FC<Props> = ({ options, defaultText }) => {
               onClick={() => {
                 setSelect({
                   ...select,
-                  selected: option,
+                  selected: option.label,
                   status: false,
                 });
+                onChange(option.value);
                 setOpened(false);
               }}
               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-text-primary dark:hover:bg-primary-light"
             >
-              {option}
+              {option.label}
             </button>
           ))}
         </div>
       )}
-    </button>
+    </div>
   );
 };
 

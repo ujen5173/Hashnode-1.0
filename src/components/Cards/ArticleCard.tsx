@@ -6,13 +6,13 @@ import Link from "next/link";
 import { C, type ContextValue } from "~/utils/context";
 import Bookmarked from "~/svgs/Bookmarked";
 import removeMd from "remove-markdown";
-import { type ArticleCardMini } from "~/types";
+import { ArticleCard } from "~/types";
 
-const ArticleCard: FC<{ card: ArticleCardMini }> = ({ card }) => {
+const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
   const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
 
   return (
-    <div className="">
+    <div className="p-4">
       <header className="mb-4 flex items-center gap-2">
         <Link href={`/u/@${card.user.username}`}>
           <div>
@@ -125,12 +125,14 @@ const ArticleCard: FC<{ card: ArticleCardMini }> = ({ card }) => {
                   {card.likesCount}
                 </span>
               </button>
-              <button className="flex items-center gap-1">
-                <Multicomment className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
-                <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
-                  {card.commentsCount}
-                </span>
-              </button>
+              {!card.disabledComments && (
+                <button className="flex items-center gap-1">
+                  <Multicomment className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
+                    {card.commentsCount}
+                  </span>
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -6,11 +6,11 @@ import { ArticleBody, ArticleHeader, Footer } from "~/components";
 import ArticleSEO from "~/SEO/Article.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import type { ArticleCard } from "~/types";
+import type { Article } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 
 interface Props {
-  article: ArticleCard & {
+  article: Article & {
     isFollowing: boolean;
     user: {
       followersCount: number;
@@ -112,7 +112,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       article: articleData
         ? (JSON.parse(
             JSON.stringify({ ...articleData, isFollowing })
-          ) as ArticleCard & {
+          ) as Article & {
             isFollowing: boolean;
           })
         : null,

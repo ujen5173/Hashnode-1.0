@@ -44,7 +44,12 @@ const BookmarkMainComponent = () => {
           </div>
         ) : (
           bookmarksData?.map((article) => (
-            <ArticleCard card={article} key={article.id} />
+            <div
+              key={article.id}
+              className="border-b border-border-light bg-white last:border-0 dark:border-border dark:bg-primary"
+            >
+              <ArticleCard card={article} key={article.id} />
+            </div>
           ))
         )}
       </div>

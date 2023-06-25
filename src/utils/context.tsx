@@ -8,13 +8,14 @@ import React, {
   createContext,
 } from "react";
 import { toast } from "react-toastify";
+import { type ArticleCard } from "~/types";
 import { api } from "./api";
 
 interface Props {
   children: React.ReactNode;
 }
 
-interface TrendingTagsTypes {
+export interface TrendingTagsTypes {
   data:
     | {
         id: string;
@@ -26,21 +27,8 @@ interface TrendingTagsTypes {
     | undefined;
   isLoading: boolean;
 }
-interface TrendingArticleTypes {
-  data:
-    | {
-        id: string;
-        title: string;
-        slug: string;
-        user: {
-          profile: string | null;
-          id: string;
-          name: string;
-        };
-        likesCount: number;
-        commentsCount: number;
-      }[]
-    | undefined;
+export interface TrendingArticleTypes {
+  data: ArticleCard[] | undefined;
   isLoading: boolean;
 }
 

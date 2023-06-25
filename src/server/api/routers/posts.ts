@@ -12,19 +12,36 @@ import {
   refactorActivityHelper,
 } from "./../../../utils/microFunctions";
 import { v4 as uuid } from "uuid";
-import { Article, Prisma } from "@prisma/client";
 
-interface CommentWithChildren extends Comment {
-  level: number;
+const selectArticleCard = {
+  id: true,
+  title: true,
+  slug: true,
+  cover_image: true,
+  disabledComments: true,
   user: {
-    id: string;
-    name: string;
-    profile: string;
-    username: string;
-  };
-  likes: { id: string }[];
-  children: CommentWithChildren[];
-}
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      profile: true,
+    },
+  },
+  content: true,
+  read_time: true,
+  tags: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+    },
+  },
+  likes: { select: { id: true } },
+  likesCount: true,
+  commentsCount: true,
+  createdAt: true,
+} as const;
+
 export const postsRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
     return `Greetings Developer`;
@@ -88,23 +105,7 @@ export const postsRouter = createTRPCRouter({
             }),
           },
 
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                username: true,
-                profile: true,
-              },
-            },
-            tags: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-              },
-            },
-          },
+          select: selectArticleCard,
           take: 15,
         });
 
@@ -132,23 +133,7 @@ export const postsRouter = createTRPCRouter({
             },
           },
         },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              username: true,
-              profile: true,
-            },
-          },
-          tags: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-        },
+        select: selectArticleCard,
         take: 15,
       });
     }),
@@ -169,23 +154,7 @@ export const postsRouter = createTRPCRouter({
             in: input.ids.map((id) => id.id),
           },
         },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              username: true,
-              profile: true,
-            },
-          },
-          tags: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-        },
+        select: selectArticleCard,
         take: 15,
       });
     }),
@@ -849,7 +818,6 @@ export const postsRouter = createTRPCRouter({
               OR: [
                 { name: { contains: query, mode: "insensitive" } },
                 { username: { contains: query, mode: "insensitive" } },
-                // { bio: { contains: query, mode: "insensitive" } },
               ],
             },
             take: 6,
@@ -922,45 +890,108 @@ export const postsRouter = createTRPCRouter({
       return result;
     }),
 
-  trendingArticles: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.article.findMany({
-      take: 4,
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        cover_image: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profile: true,
+  trendingArticles: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().default(6),
+        variant: z.enum(["week", "month", "year", "any"]).default("any"),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const startDate = new Date();
+        const endDate = new Date();
+
+        if (input?.variant === "week") {
+          startDate.setDate(startDate.getDate() - 7);
+        } else if (input?.variant === "month") {
+          startDate.setMonth(startDate.getMonth() - 1);
+        } else if (input?.variant === "year") {
+          startDate.setFullYear(startDate.getFullYear() - 1);
+        }
+        const articles = await ctx.prisma.article.findMany({
+          ...(input?.variant === "any"
+            ? {}
+            : {
+                where: {
+                  createdAt: {
+                    gte: startDate,
+                    lte: endDate,
+                  },
+                },
+              }),
+          take: input?.limit || 6,
+          select: selectArticleCard,
+          orderBy: [
+            { likesCount: "desc" },
+            { commentsCount: "desc" },
+            { createdAt: "desc" },
+          ],
+        });
+        return articles;
+      } catch (err) {
+        console.log({ err });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
+
+  getFollowingArticles: protectedProcedure
+    .input(
+      z.object({
+        variant: z.enum(["week", "month", "year", "any"]).default("any"),
+        limit: z.number().default(6),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const startDate = new Date();
+        const endDate = new Date();
+
+        if (input?.variant === "week") {
+          startDate.setDate(startDate.getDate() - 7);
+        } else if (input?.variant === "month") {
+          startDate.setMonth(startDate.getMonth() - 1);
+        } else if (input?.variant === "year") {
+          startDate.setFullYear(startDate.getFullYear() - 1);
+        }
+
+        const articles = await ctx.prisma.article.findMany({
+          where: {
+            user: {
+              followers: {
+                some: {
+                  id: ctx.session.user.id,
+                },
+              },
+            },
+            ...(input?.variant === "any"
+              ? {}
+              : {
+                  createdAt: {
+                    gte: startDate,
+                    lte: endDate,
+                  },
+                }),
           },
-        },
-        content: true,
-        read_time: true,
-        tags: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
-        likes: {
-          select: {
-            id: true,
-          },
-        },
-        likesCount: true,
-        commentsCount: true,
-        createdAt: true,
-      },
-      orderBy: [
-        { likesCount: "desc" },
-        { commentsCount: "desc" },
-        { createdAt: "desc" },
-      ],
-    });
-  }),
+          take: input?.limit || 6,
+          select: selectArticleCard,
+          orderBy: [
+            { likesCount: "desc" },
+            { commentsCount: "desc" },
+            { createdAt: "desc" },
+          ],
+        });
+
+        return articles;
+      } catch (err) {
+        console.log({ err });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
 });
