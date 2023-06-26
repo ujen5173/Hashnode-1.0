@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import type { BookmarkInterface } from "../Bookmarks";
 
 const BookmarkCard = ({ bookmark }: { bookmark: BookmarkInterface }) => {

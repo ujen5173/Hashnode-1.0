@@ -1,7 +1,6 @@
-import React, { useContext, useEffect } from "react";
-import TrendingCard from "./Cards/TrendingCard";
-import { C, type ContextValue } from "~/utils/context";
+import Link from "next/link";
 import { api } from "~/utils/api";
+import TrendingCard from "./Cards/TrendingCard";
 import BookmarkLoading from "./Loading/BookmarkLoading";
 
 const Trending = () => {
@@ -14,14 +13,6 @@ const Trending = () => {
       refetchOnWindowFocus: false,
     }
   );
-  const { setTrendingArticles } = useContext(C) as ContextValue;
-
-  useEffect(() => {
-    setTrendingArticles({
-      data: data || [],
-      isLoading,
-    });
-  }, []);
 
   return (
     <div className="my-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
@@ -29,13 +20,15 @@ const Trending = () => {
         <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
           Trending
         </h1>
-        <button
-          aria-label="view all the trending articles"
-          role="button"
-          className="btn-outline-small"
-        >
-          See all
-        </button>
+        <Link href={"/explore/articles"}>
+          <button
+            aria-label="view all the trending articles"
+            role="button"
+            className="btn-outline-small"
+          >
+            See all
+          </button>
+        </Link>
       </header>
       <div>
         {isLoading ? (

@@ -1,5 +1,5 @@
 import { useClickOutside } from "@mantine/hooks";
-import React, { type FC, useState } from "react";
+import { useEffect, useState, type FC } from "react";
 import { Angledown } from "~/svgs";
 
 interface SelectProps {
@@ -17,7 +17,7 @@ interface Props {
     value: string;
   }[];
   defaultText: string;
-  onChange: (value: string) => void;
+  onChange: (value: { label: string; value: string }) => void;
 }
 
 const Select: FC<Props> = ({ options, defaultText, onChange }) => {
@@ -29,6 +29,13 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
     selected: defaultText,
     options,
   });
+
+  useEffect(() => {
+    setSelect((prev) => ({
+      ...prev,
+      selected: defaultText,
+    }));
+  }, [defaultText]);
 
   return (
     <div
@@ -52,7 +59,7 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
                   selected: option.label,
                   status: false,
                 });
-                onChange(option.value);
+                onChange(option);
                 setOpened(false);
               }}
               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-text-primary dark:hover:bg-primary-light"

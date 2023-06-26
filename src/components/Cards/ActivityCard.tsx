@@ -1,7 +1,6 @@
 import Link from "next/link";
-import React from "react";
-import { LogonoText, Pen } from "~/svgs";
 import { useRouter } from "next/router";
+import { LogonoText, Pen } from "~/svgs";
 import { type Activity } from "~/utils/microFunctions";
 
 const ActivityCard = ({

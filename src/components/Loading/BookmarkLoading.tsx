@@ -1,5 +1,3 @@
-import React from "react";
-
 const BookmarkLoading = () => {
   return (
     <div className="border-b border-border-light py-4 last:border-0 dark:border-border">

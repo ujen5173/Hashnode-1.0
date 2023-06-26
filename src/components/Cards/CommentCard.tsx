@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { type FC, useContext, useState } from "react";
+import React, { useContext, useState, type FC } from "react";
 import { Comment as CommentSVG, Heart } from "~/svgs";
 import type { Comment } from "~/types";
 import { api } from "~/utils/api";

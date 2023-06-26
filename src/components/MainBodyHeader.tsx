@@ -1,28 +1,22 @@
-import { People, Magic, Star, Filter } from "~/svgs";
 import { type FC } from "react";
-import type { FilterData } from "./MainBodyArticles";
+import { Filter, Magic, People, Star } from "~/svgs";
 import FilterSection from "./FilterSection";
+import type { FilterData } from "./MainBodyArticles";
 
 interface MainBodyHeaderProps {
   filter: FilterData;
   setFilter: React.Dispatch<React.SetStateAction<FilterData>>;
   applyFilter: () => void;
+  clearFilter: () => void;
 }
 
 const MainBodyHeader: FC<MainBodyHeaderProps> = ({
   filter,
   setFilter,
   applyFilter,
+  clearFilter,
 }) => {
-  const clearFilter = () => {
-    setFilter((prev) => ({
-      ...prev,
-      data: {
-        read_time: null,
-        tags: [],
-      },
-    }));
-  };
+  console.log({ filter });
 
   return (
     <>

@@ -2,13 +2,13 @@
 /* eslint-disable react/no-children-prop */
 import Image from "next/image";
 import Link from "next/link";
-import { Book, Check, Follow } from "~/svgs";
-import ArticleActions from "./ArticleActions";
-import type { User, Article, Tag } from "~/types";
-import { formatDate } from "./../utils/miniFunctions";
-import ReactMarkdown from "react-markdown";
 import { useContext, useEffect, useState, type FC } from "react";
+import ReactMarkdown from "react-markdown";
+import { Book, Check, Follow } from "~/svgs";
+import type { Article, Tag, User } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
+import { formatDate } from "./../utils/miniFunctions";
+import ArticleActions from "./ArticleActions";
 import CommentsModal from "./CommentsModal";
 
 const ArticleBody: FC<{ article: Article }> = ({ article }) => {

@@ -20,17 +20,23 @@ const FilterSection: FC<{
             Read Time
           </label>
           <Select
-            defaultText={"Select read time"}
+            defaultText={filter.data.read_time || "Select"}
             options={[
               { label: "Under 5 min", value: "under_5" },
               { label: "5 min", value: "5" },
               { label: "Over 5 min", value: "over_5" },
             ]}
             onChange={(value) =>
-              console.log(
-                "filtering data process is pending... :) value: ",
-                value
-              )
+              setFilter((prev) => ({
+                ...prev,
+                data: {
+                  ...prev.data,
+                  read_time: value.label as
+                    | "Over 5 min"
+                    | "Under 5 min"
+                    | "5 min",
+                },
+              }))
             }
           />
         </div>

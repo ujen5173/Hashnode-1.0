@@ -1,9 +1,9 @@
-import ArticleCard from "./Cards/ArticleCard";
 // import { articles } from "~/utils/constants";
-import MainBodyHeader from "./MainBodyHeader";
-import { api } from "~/utils/api";
-import ArticleLoading from "./Loading/ArticleLoading";
 import { useState } from "react";
+import { api } from "~/utils/api";
+import ManageData from "./Cards/ManageData";
+import ArticleLoading from "./Loading/ArticleLoading";
+import MainBodyHeader from "./MainBodyHeader";
 
 export interface Tag {
   id: string;
@@ -13,7 +13,7 @@ export interface Tag {
 export interface FilterData {
   status: boolean;
   data: {
-    read_time: "over_5" | "5" | "under_5" | null | undefined;
+    read_time: "Over 5 min" | "5 min" | "Under 5 min" | null | undefined;
     tags: Tag[];
   };
 }
@@ -26,49 +26,63 @@ const MainBodyArticles = () => {
     },
   });
 
-  const { data, isLoading } = api.posts.getAll.useQuery(undefined, {
-    refetchOnWindowFocus: false,
+  const read_time_options = [
+    { label: "Under 5 min", value: "under_5" },
+    { label: "5 min", value: "5" },
+    { label: "Over 5 min", value: "over_5" },
+  ];
+
+  const [newFilterData, setNewFilterData] = useState<{
+    read_time: "Over 5 min" | "5 min" | "Under 5 min" | null | undefined;
+    tags: Tag[];
+  }>({
+    read_time: filter.data.read_time,
+    tags: filter.data.tags,
   });
 
-  const applyFilter = () => {
-    console.log("refetching");
+  const { data, isLoading } = api.posts.getAll.useQuery(
+    {
+      type: "personalized",
+      filter: {
+        tags: newFilterData.tags,
+        read_time: newFilterData.read_time
+          ? (read_time_options.find(
+              (option) => option.label === newFilterData.read_time
+            )?.value as "over_5" | "5" | "under_5" | null | undefined)
+          : null,
+      },
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
-    // TODO: Refetch data
+  const applyFilter = () => {
+    setNewFilterData(filter.data);
+  };
+
+  const clearFilter = () => {
+    setNewFilterData({
+      read_time: null,
+      tags: [],
+    });
   };
 
   return (
     <section className="container-main my-4 min-h-screen w-full overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
       <MainBodyHeader
-        applyFilter={applyFilter}
+        applyFilter={() => void applyFilter()}
+        clearFilter={() => void clearFilter()}
         filter={filter}
         setFilter={setFilter}
       />
 
       <div>
-        {isLoading && !data ? (
-          <>
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-          </>
-        ) : data?.length === 0 ? (
-          <div className="flex min-h-[18rem] w-full items-center justify-center">
-            <h1 className="text-2xl font-medium text-gray-500 dark:text-gray-400">
-              No articles found 🙄
-            </h1>
-          </div>
-        ) : (
-          data?.map((card) => (
-            <div
-              key={card.id}
-              className="border-b border-border-light bg-white last:border-0 dark:border-border dark:bg-primary"
-            >
-              <ArticleCard key={card.id} card={card} />
-            </div>
-          ))
-        )}
+        <ManageData
+          loading={<ArticleLoading />}
+          type="ARTICLE"
+          articleData={{ data, isLoading }}
+        />
       </div>
     </section>
   );

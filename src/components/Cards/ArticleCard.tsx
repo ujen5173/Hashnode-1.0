@@ -1,12 +1,12 @@
 import Image from "next/image";
-import React, { useContext, type FC } from "react";
-import { Bookmarkplus, Book, Like, Multicomment } from "~/svgs";
-import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 import Link from "next/link";
-import { C, type ContextValue } from "~/utils/context";
-import Bookmarked from "~/svgs/Bookmarked";
+import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
+import { Book, Bookmarkplus, Like, Multicomment } from "~/svgs";
+import Bookmarked from "~/svgs/Bookmarked";
 import { ArticleCard } from "~/types";
+import { C, type ContextValue } from "~/utils/context";
+import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 
 const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
   const { bookmarks, updateBookmark } = useContext(C) as ContextValue;

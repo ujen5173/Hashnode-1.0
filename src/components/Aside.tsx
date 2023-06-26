@@ -20,17 +20,6 @@ const Aside = () => {
     }
   );
 
-  const { setTrendingTags } = useContext(C) as ContextValue;
-
-  useEffect(() => {
-    if (tagsData) {
-      setTrendingTags({
-        data: tagsData,
-        isLoading: isLoading,
-      });
-    }
-  }, [tagsData, isLoading]);
-
   return (
     <div className="container-aside relative hidden min-h-screen py-4 lg:block">
       <aside className="sticky left-0 top-4 h-fit w-full rounded-md border border-border-light bg-white py-2 dark:border-border dark:bg-primary">

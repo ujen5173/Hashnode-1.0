@@ -15,16 +15,16 @@ interface Props {
   children: React.ReactNode;
 }
 
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+  logo: string | null;
+  articlesCount: number;
+}
+
 export interface TrendingTagsTypes {
-  data:
-    | {
-        id: string;
-        name: string;
-        slug: string;
-        logo: string | null;
-        articlesCount: number;
-      }[]
-    | undefined;
+  data: Tag[] | undefined;
   isLoading: boolean;
 }
 export interface TrendingArticleTypes {
@@ -53,11 +53,6 @@ export interface ContextValue {
     }>
   >;
   followUser: () => void;
-
-  trendingTags: TrendingTagsTypes;
-  setTrendingTags: Dispatch<SetStateAction<TrendingTagsTypes>>;
-  trendingArticles: TrendingArticleTypes;
-  setTrendingArticles: Dispatch<SetStateAction<TrendingArticleTypes>>;
 }
 
 export const C = createContext<ContextValue | undefined>(undefined);
@@ -66,15 +61,6 @@ const Context = ({ children }: Props) => {
   const [user, setUser] = useState<Session | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
-  const [trendingTags, setTrendingTags] = useState<TrendingTagsTypes>({
-    data: undefined,
-    isLoading: true,
-  });
-  const [trendingArticles, setTrendingArticles] =
-    useState<TrendingArticleTypes>({
-      data: undefined,
-      isLoading: true,
-    });
 
   useEffect(() => {
     const savedBookmarks = localStorage.getItem("bookmarks");
@@ -177,12 +163,6 @@ const Context = ({ children }: Props) => {
         following,
         setFollowing,
         followUser,
-
-        trendingTags,
-        setTrendingTags,
-
-        trendingArticles,
-        setTrendingArticles,
       }}
     >
       {children}

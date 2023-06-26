@@ -1,17 +1,17 @@
+import { TRPCError } from "@trpc/server";
+import readingTime from "reading-time";
+import slugify from "slugify";
+import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import {
   createTRPCRouter,
-  publicProcedure,
   protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
-import slugify from "slugify";
-import readingTime from "reading-time";
-import { TRPCError } from "@trpc/server";
 import {
-  type Activity,
   refactorActivityHelper,
+  type Activity,
 } from "./../../../utils/microFunctions";
-import { v4 as uuid } from "uuid";
 
 const selectArticleCard = {
   id: true,
@@ -98,6 +98,7 @@ export const postsRouter = createTRPCRouter({
                             ? input?.filter?.tags.map((tag) => tag.name)
                             : undefined
                           : undefined,
+                        mode: "insensitive",
                       },
                     },
                   },
