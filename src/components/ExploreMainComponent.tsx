@@ -185,7 +185,7 @@ const ExploreSection: FC<{
             <Select
               onChange={(value) => {
                 setFilterState(
-                  value as "This week" | "This month" | "This year"
+                  value.label as "This week" | "This month" | "This year"
                 );
               }}
               defaultText="This week"

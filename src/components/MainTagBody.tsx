@@ -1,7 +1,7 @@
 import { TRPCClientError } from "@trpc/client";
-import React, { type FC, useState, useEffect, useContext } from "react";
+import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { Filter, Fire, Clock } from "~/svgs";
+import { Clock, Filter, Fire } from "~/svgs";
 import type { DetailedTag } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -171,7 +171,12 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                         ...filter,
                         data: {
                           ...filter.data,
-                          read_time: value as "under_5" | "5" | "over_5",
+                          read_time: value.label as
+                            | "Over 5 min"
+                            | "5 min"
+                            | "Under 5 min"
+                            | null
+                            | undefined,
                         },
                       });
                     }}
