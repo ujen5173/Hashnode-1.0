@@ -1,4 +1,3 @@
-import React from "react";
 import Head from "next/head";
 
 const NewSEO = () => {
@@ -12,13 +11,17 @@ const NewSEO = () => {
       />
 
       {/* Open Graph tags for social media banner */}
-      <meta property="og:title" content="New Article - Hashnode Clone" />
       <meta
         property="og:description"
         content="Share your knowledge and experiences with the community."
       />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="Hashnode Clone" />
       <meta property="og:image" content="/hashnode-social-banner.png" />
-      <meta property="og:url" content="https://hashnode.vercel.app" />
+      <meta
+        property="og:url"
+        content={process.env.NEXT_PUBLIC_VERCEL_URL as string}
+      />
 
       {/* Twitter card tags for Twitter banner */}
       <meta name="twitter:title" content="New Article - Hashnode Clone" />
@@ -30,7 +33,10 @@ const NewSEO = () => {
       <meta name="twitter:card" content="summary_large_image" />
 
       {/* Other necessary tags */}
-      <link rel="canonical" href="https://hashnode.vercel.app" />
+      <link
+        rel="canonical"
+        href={process.env.NEXT_PUBLIC_VERCEL_URL as string}
+      />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 
       {/* Image tags */}

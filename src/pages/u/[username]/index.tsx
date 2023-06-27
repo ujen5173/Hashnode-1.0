@@ -1,8 +1,8 @@
 import { type User } from "@prisma/client";
-import { type NextPage, type GetServerSideProps } from "next";
+import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Header } from "~/components";
 import UserProfileMainBody from "~/components/UserProfileBody";
 import { type SocialHandles } from "~/pages/settings";
@@ -45,7 +45,7 @@ const UserBlog: NextPage<{
 
   return (
     <>
-      <UserBlogSEO />
+      <UserBlogSEO user={user} />
       <Header />
       <UserProfileMainBody user={user} />
     </>
