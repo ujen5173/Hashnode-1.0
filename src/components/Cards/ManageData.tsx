@@ -14,8 +14,8 @@ const ManageData: FC<{
     <>
       {type === "TAG" ? (
         tagsData?.isLoading ? (
-          <div className="flex w-full flex-wrap gap-4">
-            {Array(4)
+          <div className="flex w-full flex-wrap gap-4 p-4">
+            {Array(6)
               .fill("")
               .map((_, i) => (
                 <div key={i} className="w-[calc(100%/2-0.5rem)]">
@@ -34,9 +34,11 @@ const ManageData: FC<{
             })}
           </div>
         ) : (
-          <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-            No Tags found!
-          </p>
+          <div className="py-16">
+            <p className="text-center text-lg text-gray-500 dark:text-gray-400">
+              No Tags found!
+            </p>
+          </div>
         )
       ) : articleData?.isLoading ? (
         <>

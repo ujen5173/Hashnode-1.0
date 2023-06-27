@@ -1,12 +1,19 @@
 import { useClickOutside } from "@mantine/hooks";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Search, Ai } from "~/svgs";
+import useKeyPress from "~/hooks/use-keypress";
+import { Ai, Search } from "~/svgs";
 import SearchBody from "./SearchBody";
 
 const SearchArea = () => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+
+  const handleKeyPress = (): void => {
+    setOpened(true);
+  };
+
+  useKeyPress(handleKeyPress);
 
   useEffect(() => {
     if (opened) {
@@ -47,9 +54,14 @@ const SearchArea = () => {
           >
             Search for Javascript...
           </div>
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 rounded-md border border-border-light bg-gray-200 px-2 py-1 text-xs text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary">
-            /
-          </span>
+          <div className="absolute right-4 top-1/2 flex -translate-y-1/2 gap-2">
+            {/* <span className="rounded-md border border-border-light bg-gray-200 px-2 py-1 text-xs text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary">
+              /
+            </span> */}
+            <span className="rounded-md border border-border-light bg-gray-200 px-2 py-1 text-xs text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary">
+              CTRL + K
+            </span>
+          </div>
         </div>
       </div>
       {opened && (

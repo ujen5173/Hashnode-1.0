@@ -15,7 +15,7 @@ export const CommentCard: FC<{
   const [reply, setReply] = useState(false);
   const { user } = useContext(C) as ContextValue;
   const [text, setText] = useState<string>("");
-  const { mutate: likeComment } = api.posts.likeComment.useMutation();
+  const { mutate: likeComment } = api.comments.likeComment.useMutation();
 
   const handleLike = () => {
     likeComment({ commentId: comment.id });

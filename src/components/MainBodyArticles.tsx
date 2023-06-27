@@ -1,5 +1,5 @@
-// import { articles } from "~/utils/constants";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import ManageData from "./Cards/ManageData";
 import ArticleLoading from "./Loading/ArticleLoading";
@@ -18,6 +18,8 @@ export interface FilterData {
   };
 }
 const MainBodyArticles = () => {
+  const tab = useRouter().query.tab as string | undefined;
+
   const [filter, setFilter] = useState<FilterData>({
     status: false,
     data: {
@@ -40,9 +42,9 @@ const MainBodyArticles = () => {
     tags: filter.data.tags,
   });
 
-  const { data, isLoading } = api.posts.getAll.useQuery(
+  const { data, isFetching, refetch } = api.posts.getAll.useQuery(
     {
-      type: "personalized",
+      type: (tab || "personalized") as "personalized" | "latest" | "following",
       filter: {
         tags: newFilterData.tags,
         read_time: newFilterData.read_time
@@ -53,19 +55,30 @@ const MainBodyArticles = () => {
       },
     },
     {
+      enabled: true,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
     }
   );
+  const [articles, setArticles] = useState({ data, isLoading: isFetching });
+
+  useEffect(() => {
+    void (async () => {
+      const { data, isRefetching } = await refetch();
+      setArticles({ data, isLoading: isRefetching });
+    })();
+  }, [tab]);
 
   const applyFilter = () => {
-    setNewFilterData(filter.data);
+    setNewFilterData((prev) => ({ ...prev, ...filter.data }));
   };
 
   const clearFilter = () => {
-    setNewFilterData({
+    setNewFilterData((prev) => ({
+      ...prev,
       read_time: null,
       tags: [],
-    });
+    }));
   };
 
   return (
@@ -77,13 +90,13 @@ const MainBodyArticles = () => {
         setFilter={setFilter}
       />
 
-      <div>
+      <>
         <ManageData
           loading={<ArticleLoading />}
           type="ARTICLE"
-          articleData={{ data, isLoading }}
+          articleData={articles}
         />
-      </div>
+      </>
     </section>
   );
 };

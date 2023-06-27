@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { type FC, useContext, useState } from "react";
+import React, { useContext, useState, type FC } from "react";
 import { Times } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -11,10 +11,10 @@ const CommentsModal: FC<{
   setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ id, commentsModal, setCommentsModal }) => {
   const { user } = useContext(C) as ContextValue;
-  const { mutateAsync: comment } = api.posts.newComment.useMutation();
+  const { mutateAsync: comment } = api.comments.newComment.useMutation();
   const [commentId, setCommentId] = useState<string | null>(null);
   const [text, setText] = useState<string>("");
-  const { data: comments, isLoading } = api.posts.getComments.useQuery(
+  const { data: comments, isLoading } = api.comments.getComments.useQuery(
     {
       articleId: id,
     },

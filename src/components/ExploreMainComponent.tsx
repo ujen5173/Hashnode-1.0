@@ -8,6 +8,7 @@ import {
 import ManageData from "./Cards/ManageData";
 import ExploreMainComponentNavigation from "./ExploreMainComponentNavigation";
 import ArticleLoading from "./Loading/ArticleLoading";
+import TagLoading from "./Loading/TagLoading";
 import Select from "./Select";
 
 const ExploreMainComponent = () => {
@@ -95,14 +96,20 @@ const ExploreMainComponent = () => {
                   <ExploreSection
                     title="Trending Tags"
                     type="TAG"
-                    tagsData={trendingTagsData}
+                    tagsData={{
+                      data: trendingTagsData.data,
+                      isLoading: trendingTagsData.isFetching,
+                    }}
                   />
                 </div>
 
                 <ExploreSection
                   title="Trending Articles"
                   type="ARTICLE"
-                  articlesData={trendingArticlesData}
+                  articlesData={{
+                    data: trendingArticlesData.data,
+                    isLoading: trendingArticlesData.isFetching,
+                  }}
                 />
               </>
             ),
@@ -110,21 +117,30 @@ const ExploreMainComponent = () => {
               <ExploreSection
                 title="Tags You Follow"
                 type="TAG"
-                tagsData={followingTagsData}
+                tagsData={{
+                  data: followingTagsData.data,
+                  isLoading: followingTagsData.isFetching,
+                }}
               />
             ),
             "articles-following": (
               <ExploreSection
                 title="Articles You Follow"
                 type="ARTICLE"
-                articlesData={followingArticlesData}
+                articlesData={{
+                  data: followingArticlesData.data,
+                  isLoading: followingArticlesData.isFetching,
+                }}
               />
             ),
             articles: (
               <ExploreSection
                 title="Trending Articles"
                 type="ARTICLE"
-                articlesData={trendingArticlesData}
+                articlesData={{
+                  data: trendingArticlesData.data,
+                  isLoading: trendingArticlesData.isFetching,
+                }}
                 setFilterState={setFilter}
                 showFilter={true}
               />
@@ -134,7 +150,10 @@ const ExploreMainComponent = () => {
                 title="Trending Tags"
                 subtitle="Tags with most number of articles"
                 type="TAG"
-                tagsData={trendingTagsData}
+                tagsData={{
+                  data: trendingTagsData.data,
+                  isLoading: trendingTagsData.isFetching,
+                }}
                 setFilterState={setFilter}
                 showFilter={true}
               />
@@ -169,7 +188,7 @@ const ExploreSection: FC<{
 }) => {
   return (
     <>
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-4 pb-0">
         <div>
           <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
             {title}
@@ -211,7 +230,7 @@ const ExploreSection: FC<{
       <div className="">
         <ManageData
           type={type}
-          loading={<ArticleLoading />}
+          loading={type === "TAG" ? <TagLoading /> : <ArticleLoading />}
           articleData={articlesData}
           tagsData={tagsData}
         />

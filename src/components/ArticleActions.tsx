@@ -12,7 +12,7 @@ const ArticleActions: FC<{
   setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ article, setCommentsModal }) => {
   const { user, bookmarks, updateBookmark } = useContext(C) as ContextValue;
-  const { mutate: LikeArticle } = api.posts.likeArticle.useMutation();
+  const { mutate: LikeArticle } = api.likes.likeArticle.useMutation();
   const [like, setLike] = useState({
     hasLiked: false,
     likesCount: article.likesCount,

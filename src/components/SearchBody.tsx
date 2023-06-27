@@ -1,11 +1,11 @@
 import React, { useState, type FC } from "react";
-import { Search } from "~/svgs";
-import { api } from "~/utils/api";
-import SearchArticle from "./SearchArticle";
 import { useDebouncedCallback } from "use-debounce";
+import { Search } from "~/svgs";
 import { type SearchResults } from "~/types";
-import Image from "next/image";
-import Link from "next/link";
+import { api } from "~/utils/api";
+import TagsSearchCard from "./Cards/TagsSearchCard";
+import UserSearchCard from "./Cards/UserSearchCard";
+import SearchArticle from "./SearchArticle";
 
 const SearchBody: FC<{
   setOpened: React.Dispatch<React.SetStateAction<boolean>>;
@@ -99,8 +99,10 @@ const SearchBody: FC<{
                 void debounced(e.target.value);
               }}
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 rounded-md border border-border-light bg-gray-200 px-2 py-1 text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary">
-              /
+            <span className="absolute right-4 top-1/2 -translate-y-1/2">
+              <span className="rounded-md border border-border-light bg-gray-200 px-2 py-1 text-xs text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary">
+                CTRL + K
+              </span>
             </span>
           </div>
         </header>
@@ -210,67 +212,3 @@ const SearchBody: FC<{
 };
 
 export default SearchBody;
-
-const UserSearchCard: FC<{
-  user: {
-    id: string;
-    name: string;
-    username: string;
-    profile: string;
-    followersCount: number;
-  };
-}> = ({ user }) => {
-  return (
-    <Link href={`/u/@${user.username}`}>
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-4">
-          <Image
-            width={50}
-            height={50}
-            src={user.profile}
-            alt={user.name}
-            className="h-12 w-12 rounded-full"
-          />
-          <div>
-            <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
-              {user.name}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-text-primary">
-              {user.username}
-            </p>
-          </div>
-        </div>
-        <button className="btn-filled">Follow</button>
-      </div>
-    </Link>
-  );
-};
-
-const TagsSearchCard: FC<{
-  tag: {
-    id: string;
-    name: string;
-    slug: string;
-    followersCount: number;
-    articlesCount: number;
-  };
-}> = ({ tag }) => {
-  return (
-    <li key={tag.id}>
-      <Link
-        href={`/tag/${tag.slug}`}
-        className="tag flex items-center justify-between border-b border-border-light p-4 dark:border-border"
-      >
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-gray-700 dark:text-text-primary">
-            #{tag.slug}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-text-primary">
-            {tag.articlesCount} posts
-          </p>
-        </div>
-        <button className="btn-filled">Follow</button>
-      </Link>
-    </li>
-  );
-};
