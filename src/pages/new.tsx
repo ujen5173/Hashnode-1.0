@@ -1,11 +1,11 @@
+import type { GetServerSideProps, NextPage } from "next";
+import { getServerSession, type Session } from "next-auth";
+import { useSession } from "next-auth/react";
+import { useContext, useEffect, useState } from "react";
 import { NewArticleBody, NewArticleHeader } from "~/components";
 import NewSEO from "~/SEO/New.seo";
 import { authOptions } from "~/server/auth";
 import { C, type ContextValue } from "~/utils/context";
-import { useContext, useEffect, useState } from "react";
-import type { GetServerSideProps, NextPage } from "next";
-import { useSession } from "next-auth/react";
-import { getServerSession, type Session } from "next-auth";
 
 const NewArticle: NextPage = () => {
   const [publishModal, setPublishModal] = useState<boolean>(false);
@@ -38,6 +38,10 @@ export default NewArticle;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session?.user) {
+    return { props: { session: null }, redirect: { destination: "/" } };
+  }
 
   return {
     props: {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { useContext } from "react";
-import { Angleleft, Cloud,  LogonoText, Sun } from "~/svgs";
+import { Angleleft, Cloud, LogonoText, Sun } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 
 const NewArticleHeader = ({
@@ -11,7 +11,7 @@ const NewArticleHeader = ({
 
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { handleTheme } = useContext(C) as ContextValue;
+  const { user, handleTheme } = useContext(C) as ContextValue;
 
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
@@ -23,15 +23,15 @@ const NewArticleHeader = ({
               role="button"
               className="btn-icon flex h-10 w-10"
             >
-          <Angleleft className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+              <Angleleft className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
             </button>
           </Link>
-          
+
           <div>
             <Link href={`/u/@user`} className="flex items-center gap-2">
               <LogonoText className="h-7 w-7" />
               <span className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
-                ujenbasi&apos;s Blog
+                {user?.user.username}&apos;s Blog
               </span>
             </Link>
           </div>

@@ -166,6 +166,65 @@ body.dark .anouncement {
   @apply flex h-10 w-10 items-center justify-center rounded-md;
 }
 
+.mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k {
+  border-color: #d4d7dacc;
+}
+body.dark
+  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k {
+  border-color: #2c3646;
+}
+
+body.dark
+  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k
+  svg {
+  stroke: #94a3b8;
+}
+body.dark
+  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover {
+  background: #1e293b;
+}
+body.dark
+  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover
+  svg {
+  stroke: #f8fafc;
+}
+
+body.dark .mantine-f6e83k[data-active] svg {
+  stroke: white !important;
+}
+body.dark .mantine-f6e83k[data-active] {
+  background: #1e293b;
+}
+.mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror ul,
+.mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror ol {
+  list-style: auto !important;
+}
+body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror pre {
+  background: #1e293b;
+  color: #e2e8f0 !important;
+}
+body.dark
+  .mantine-RichTextEditor-content.mantine-1drwy5n
+  .ProseMirror
+  pre
+  code {
+  background: transparent !important;
+}
+
+.ProseMirror {
+  min-height: 70vh;
+  border-radius: 0 0 2.5px 2.5px;
+}
+body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror code {
+  background: #1e293b;
+  border-color: #2c3646;
+  color: #e2e8f0 !important;
+}
+body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror {
+  background: #0f172a;
+  color: #e2e8f0 !important;
+}
+
 button:focus-visible {
   outline: 1px solid #e2e8f0 !important;
   background: #e2e8f0 !important;
@@ -188,11 +247,13 @@ body .article {
   margin-left: auto;
   margin-right: auto;
   word-break: break-word;
+  font-size: 1.25rem;
+  line-height: 1.8;
 }
+
 body .article p {
-  font-size: 20px;
-  line-height: 36px;
-  margin: 24px 0;
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
 }
 
 body .article h1 {
@@ -201,6 +262,46 @@ body .article h1 {
   margin: 56px 0 32px 0;
   font-weight: bold;
   color: #111827;
+}
+body .article h2 {
+  font-size: 1.8em;
+  margin-top: 1.5555556em;
+  margin-bottom: 0.8888889em;
+  line-height: 1.1111111;
+  font-weight: 700;
+  color: #111827;
+}
+body .article h3 {
+  font-size: 1.5em;
+  margin-top: 1.6em;
+  margin-bottom: 0.6666667em;
+  line-height: 1.3333333;
+  font-weight: 600;
+  color: #111827;
+}
+body .article h4 {
+  font-size: 20px;
+  line-height: 40px;
+  margin: 38px 0 14px 0;
+  font-weight: 500;
+  color: #111827;
+}
+body .article strong {
+  color: #111827;
+  font-weight: 600;
+}
+body .article blockquote {
+  margin-top: 1.6em;
+  margin-bottom: 1.6em;
+  padding-left: 1.0666667em;
+  font-weight: 500;
+  font-style: italic;
+  border-color: #e2e8f0;
+  quotes: "\201C""\201D""\2018""\2019";
+  border-left-width: 0.35rem;
+}
+body.dark .article blockquote {
+  border-color: #2c3646;
 }
 body .article ul {
   font-size: 20px;
@@ -218,9 +319,9 @@ body .article img {
   object-fit: cover;
 }
 body .article a {
-  font-weight: 600;
+  font-weight: 400;
   text-decoration: underline;
-  color: #eee;
+  color: #111;
 }
 body .article pre {
   padding: 28px 20px;
@@ -254,14 +355,11 @@ body .article ol {
 }
 
 /* dark theme */
-body.dark .article {
-  color: #fafafa;
-}
-body.dark .article h1 {
+body.dark .article * {
   color: #fafafa;
 }
 body.dark .article code {
-  color: #eeeeee;
+  color: #fafafa;
   background: #24292e;
 }
 

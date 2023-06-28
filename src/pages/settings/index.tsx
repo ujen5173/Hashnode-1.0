@@ -187,6 +187,10 @@ export default EditProfile;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
+    if (!session?.user) {
+      return { props: { session: null, user: null }, redirect: { destination: "/" } };
+    }
+
   const user = await prisma.user.findUnique({
     where: {
       id: session?.user.id,

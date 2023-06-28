@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable react/no-children-prop */
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
-import ReactMarkdown from "react-markdown";
 import { Book, Check, Follow } from "~/svgs";
 import type { Article, Tag, User } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
@@ -87,15 +84,10 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
               </div>
             </div>
 
-            <div className="article mb-10 w-full break-all md:w-11/12 lg:w-10/12">
-              <ReactMarkdown
-                // make anchor tag open in new tab
-                linkTarget={(url) => {
-                  return url.startsWith("/") ? "_self" : "_blank";
-                }}
-                children={article.content}
-              />
-            </div>
+            <div
+              dangerouslySetInnerHTML={{ __html: article.content || "" }}
+              className="article mb-10 w-full break-all md:w-11/12 lg:w-10/12"
+            ></div>
           </div>
           <ArticleActions
             article={article}

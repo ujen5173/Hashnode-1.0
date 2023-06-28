@@ -1,7 +1,7 @@
 import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { type KeyboardEvent, useContext, useEffect } from "react";
+import React, { useContext, useEffect, type KeyboardEvent } from "react";
 import { toast } from "react-toastify";
 import { Times } from "~/svgs";
 import { api } from "~/utils/api";
@@ -111,10 +111,10 @@ const NewArticleModal = ({
     <section
       className={`${
         !publishModal ? "translate-x-full" : "translate-x-0"
-      } transition-ease scroll-area fixed right-0 top-0 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
+      } transition-ease scroll-area fixed right-0 z-50 top-0 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
     >
-      <div className="h-max ">
-        <header className="sticky left-0 top-0 z-50 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
+      <div className="h-max">
+        <header className="sticky left-0 top-0 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
           <button
             onClick={() => void setPublishModal(false)}
             className="btn-subtle flex items-center justify-center gap-2"

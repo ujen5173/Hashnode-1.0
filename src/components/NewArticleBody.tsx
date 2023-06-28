@@ -7,6 +7,7 @@ import slugify from "slugify";
 import ImagePreview from "~/svgs/ImagePreview";
 import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
+import Editor from "./Editor";
 import ImagePlaceholder from "./ImagePlaceholder";
 import NewArticleModal from "./NewArticleModal";
 
@@ -168,20 +169,13 @@ const NewArticleBody = ({
             placeholder="Article Subtitle..."
             autoComplete="off"
             autoCorrect="off"
-            className="mb-4 w-full bg-transparent py-2 text-xl font-semibold text-gray-700 outline-none dark:text-text-secondary"
+            className="mb-10 w-full bg-transparent py-2 text-xl font-semibold text-gray-700 outline-none dark:text-text-secondary"
           />
           <div className="relative">
-            <textarea
-              id="content"
-              name="content"
-              value={data.content}
-              onChange={(e) => {
-                handleChange(e, setData);
-              }}
-              placeholder="Start writing your story..."
-              autoComplete="off"
-              autoCorrect="off"
-              className="min-h-[70vh] w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
+            <Editor
+              onChange={(data: string) =>
+                setData((prev) => ({ ...prev, content: data }))
+              }
             />
           </div>
         </section>

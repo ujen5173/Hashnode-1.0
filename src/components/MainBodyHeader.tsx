@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, type FC } from "react";
 import { Clock, Filter, Magic, People } from "~/svgs";
-import { C, ContextValue } from "~/utils/context";
+import { C, type ContextValue } from "~/utils/context";
 import FilterSection from "./FilterSection";
 import type { FilterData } from "./MainBodyArticles";
 
