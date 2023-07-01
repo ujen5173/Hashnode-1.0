@@ -12,7 +12,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
   const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
 
   return (
-    <div className="p-4">
+    <div className="w-full p-4">
       <header className="mb-4 flex items-center gap-2">
         <Link href={`/u/@${card.user.username}`}>
           <div>
@@ -33,7 +33,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
           </Link>
           <p className="flex items-center gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
             <Link
-              className="hidden sm:block"
+              // className="hidden sm:block"
               href={`/u/@${card.user.username}`}
             >
               @{card.user.username}
@@ -68,7 +68,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
             <p
               className={`${
                 card.cover_image ? "max-height-4" : "max-height-3 w-11/12"
-              } break-all text-sm text-gray-500 dark:text-text-primary`}
+              } break-all text-xs text-gray-500 dark:text-text-primary`}
             >
               {limitText(removeMd(card.content), 350)}
             </p>

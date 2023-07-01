@@ -38,6 +38,7 @@ export interface ArticleCard {
     name: string;
     username: string;
     profile: string;
+    id?: string;
   };
   content: string;
   read_time: number;

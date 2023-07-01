@@ -83,9 +83,9 @@ const SearchBody: FC<{
         className="fixed inset-0 z-40 bg-gray-700 bg-opacity-50 backdrop-blur"
       />
 
-      <div className="z-50 w-6/12 overflow-hidden rounded-xl border border-border-light bg-white shadow-lg dark:border-border dark:bg-primary">
+      <div className="z-50 w-11/12 max-w-[950px] overflow-hidden rounded-xl border border-border-light bg-white shadow-lg dark:border-border dark:bg-primary">
         <header className="p-4">
-          <div className="relative hidden flex-1 lg:block">
+          <div className="relative flex-1">
             <span className="absolute left-4 top-1/2 -translate-y-1/2">
               <Search className="h-4 w-4 stroke-gray-700 dark:stroke-text-primary" />
             </span>
@@ -166,6 +166,7 @@ const SearchBody: FC<{
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.users.map((user) => (
                       <div
+                        onClick={() => setOpened(false)}
                         key={user.id}
                         className="border-b border-border-light dark:border-border"
                       >
@@ -177,6 +178,7 @@ const SearchBody: FC<{
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.tags.map((tag) => (
                       <div
+                        onClick={() => setOpened(false)}
                         key={tag.id}
                         className="border-b border-border-light dark:border-border"
                       >
@@ -188,6 +190,7 @@ const SearchBody: FC<{
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.articles.map((article) => (
                       <div
+                        onClick={() => setOpened(false)}
                         key={article.id}
                         className="border-b border-border-light dark:border-border"
                       >

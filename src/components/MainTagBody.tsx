@@ -223,7 +223,12 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
           </div>
         ) : (
           tags?.map((article) => (
-            <ArticleCard card={article} key={article.id} />
+            <div
+              key={article.id}
+              className="w-full border-b border-border-light last:border-none dark:border-border"
+            >
+              <ArticleCard card={article} key={article.id} />
+            </div>
           ))
         )}
       </main>

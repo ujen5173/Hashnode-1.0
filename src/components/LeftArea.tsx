@@ -12,7 +12,7 @@ const LeftArea = () => {
         <Hamburger className="h-5 w-5 fill-black dark:fill-white" />
       </button>
       <Link aria-label="Go to Home Page" href={"/"}>
-        <Logo className="h-6 fill-black dark:fill-white" />
+        <Logo className="h-5 fill-black dark:fill-white lg:h-6" />
       </Link>
     </div>
   );

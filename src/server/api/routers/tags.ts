@@ -1,6 +1,6 @@
-import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
 export const TagsRouter = createTRPCRouter({
@@ -19,6 +19,38 @@ export const TagsRouter = createTRPCRouter({
       });
     }
   }),
+  searchTags: publicProcedure
+    .input(
+      z.object({
+        query: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.tag.findMany({
+          where: {
+            name: {
+              contains: input.query,
+              mode: "insensitive",
+            },
+          },
+          orderBy: {
+            followersCount: "desc",
+          },
+          take: 5,
+          select: {
+            id: true,
+            name: true,
+            logo: true
+          }
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
   followTagToggle: protectedProcedure
     .input(
       z.object({

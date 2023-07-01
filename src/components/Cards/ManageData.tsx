@@ -3,12 +3,13 @@ import { type TrendingTagsTypes } from "~/utils/context";
 import { type TrendingArticleTypes } from "./../../utils/context";
 import ArticleCard from "./ArticleCard";
 import TagCard from "./TagCard";
+import TrendingCard from "./TrendingCard";
 
 const ManageData: FC<{
   loading: React.ReactNode;
   articleData?: TrendingArticleTypes;
   tagsData?: TrendingTagsTypes;
-  type: "TAG" | "ARTICLE";
+  type: "TAG" | "ARTICLE" | "MINI_ARTICLES";
 }> = ({ loading, articleData, tagsData, type }) => {
   return (
     <>
@@ -55,7 +56,26 @@ const ManageData: FC<{
               key={item.id}
               className="border-b border-border-light last:border-none dark:border-border"
             >
-              <ArticleCard card={item} />
+              {type === "ARTICLE" ? (
+                <ArticleCard card={item} />
+              ) : (
+                <TrendingCard
+                  article={{
+                    id: item.id,
+                    title: item.title,
+                    slug: item.slug,
+                    user: {
+                      id: item.user.id as string,
+                      profile: item.user.profile,
+                      name: item.user.name,
+                      username: item.user.username,
+                    },
+                    likesCount: item.likesCount,
+                    commentsCount: item.commentsCount,
+                  }}
+                  key={item.id}
+                />
+              )}
             </div>
           );
         })

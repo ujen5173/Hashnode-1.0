@@ -1,13 +1,17 @@
 import { TRPCClientError } from "@trpc/client";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, type KeyboardEvent } from "react";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { Times } from "~/svgs";
+import { useDebouncedCallback } from "use-debounce";
+import { Hashtag, Times } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
+import Input from "./Input";
+import TagLoading from "./Loading/TagLoading";
 import type { ArticleData } from "./NewArticleBody";
 
 const NewArticleModal = ({
@@ -91,27 +95,11 @@ const NewArticleModal = ({
     setPublishing(false);
   };
 
-  const handleTagChange = (e: KeyboardEvent<HTMLInputElement>) => {
-    if ((e.target as HTMLInputElement).value.trim() === "") return;
-
-    if (e.key === "Enter" || e.key === "Tab") {
-      e.preventDefault();
-      const inputValue = (e.target as HTMLInputElement).value;
-
-      setData({
-        ...data,
-        tags: [...data.tags, inputValue],
-      });
-
-      (e.target as HTMLInputElement).value = "";
-    }
-  };
-
   return (
     <section
       className={`${
         !publishModal ? "translate-x-full" : "translate-x-0"
-      } transition-ease scroll-area fixed right-0 z-50 top-0 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
+      } transition-ease scroll-area fixed right-0 top-0 z-50 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
     >
       <div className="h-max">
         <header className="sticky left-0 top-0 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
@@ -178,16 +166,7 @@ const NewArticleModal = ({
               >
                 Article Tags
               </label>
-              <input
-                autoComplete="off"
-                autoCorrect="off"
-                type="text"
-                className="input-secondary"
-                placeholder="Seperate tags with commas"
-                id="tags"
-                name="tags"
-                onKeyDownCapture={handleTagChange}
-              />
+              <SelectTags setData={setData} tags={data.tags} />
 
               <div className="mt-2 flex flex-wrap gap-2">
                 {data.tags.map((tag, index) => (
@@ -307,3 +286,195 @@ const NewArticleModal = ({
 };
 
 export default NewArticleModal;
+
+const SelectTags: FC<{
+  tags: string[];
+  setData: React.Dispatch<React.SetStateAction<ArticleData>>;
+}> = ({ tags: t, setData }) => {
+  console.log({ t });
+  const [tags, setTags] = useState<
+    { id: string; name: string; logo?: string }[]
+  >([]);
+  const [refetching, setRefetching] = useState(true);
+  const [query, setQuery] = useState("");
+
+  const [opened, setOpened] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+  const input = useRef<HTMLInputElement | null>(null);
+
+  const { refetch } = api.tags.searchTags.useQuery(
+    {
+      query,
+    },
+    {
+      enabled: false,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  async function search(
+    criteria: string
+  ): Promise<{ id: string; name: string; logo?: string }[]> {
+    let response;
+    if (criteria.trim().length > 0) {
+      setRefetching(true);
+      response = await refetch();
+      setRefetching(false);
+      if (response.data) {
+        return response.data as { id: string; name: string; logo?: string }[];
+      } else {
+        return [];
+      }
+    }
+
+    return [];
+  }
+
+  const debounced = useDebouncedCallback(async (value: string) => {
+    const response = await search(value);
+    const newData = response.filter((tag) => !t.includes(tag.name));
+    setTags(newData);
+  }, 500);
+
+  return (
+    <div className="relative">
+      <form onSubmit={(e) => e.preventDefault()}>
+        <input
+          autoComplete="off"
+          autoCorrect="off"
+          type="text"
+          className="input-secondary"
+          ref={input}
+          placeholder="Seperate tags with commas"
+          id="tags"
+          name="tags"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            void debounced(e.target.value);
+            setRefetching(true);
+          }}
+        />
+      </form>
+
+      {(opened || query !== "") && (
+        <div
+          ref={ref}
+          className="scroll-area absolute left-0 top-full z-50 flex max-h-[250px] min-h-[250px] w-full flex-col items-center justify-start overflow-auto rounded-md border border-border-light bg-light-bg shadow-md dark:border-border dark:bg-primary"
+        >
+          {refetching ? (
+            <>
+              <TagLoading variant="non-rounded" />
+              <TagLoading variant="non-rounded" />
+              <TagLoading variant="non-rounded" />
+              <TagLoading variant="non-rounded" />
+            </>
+          ) : tags.length > 0 ? (
+            tags.map((tag, index) => (
+              <div
+                className="flex w-full cursor-pointer items-center gap-2 border-b border-border-light px-2 py-2 text-lg text-gray-500 last:border-none dark:border-border dark:text-text-primary"
+                onClick={() => {
+                  setData((prev) => ({
+                    ...prev,
+                    tags: Array.from(new Set([...prev.tags, tag.name])),
+                  }));
+                  input.current?.focus();
+
+                  setOpened(false);
+                  setQuery("");
+                }}
+                key={index}
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-md bg-white dark:bg-primary-light">
+                  {tag.logo ? (
+                    <Image
+                      src={tag.logo}
+                      alt={tag.name}
+                      width={70}
+                      height={70}
+                      className="h-12 w-12 rounded-md object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
+                      <Hashtag className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
+                    </div>
+                  )}
+                </div>
+
+                <span>{tag.name}</span>
+              </div>
+            ))
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-2">
+              <p className="text-gray-500 dark:text-text-primary">
+                No tags found
+              </p>
+              <button className="btn-filled">Create One</button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const NewTagModal = () => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 z-40 bg-black bg-opacity-40 backdrop-blur"></div>
+      <div className="relative z-50 w-full min-w-[350px] max-w-[550px] overflow-hidden rounded-md border border-border-light bg-light-bg dark:border-border dark:bg-primary">
+        <div className="border-b border-border-light p-4 dark:border-border">
+          <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
+            Create New Tag
+          </h1>
+        </div>
+
+        <div className="p-4">
+          <Input
+            label="Tag Name"
+            type="INPUT"
+            variant="FILLED"
+            placeholder="Python"
+            input_type="text"
+            disabled={false}
+            required={true}
+            value={""}
+            name="name"
+            onChange={() => {
+              console.log("hi");
+            }}
+          />
+          <Input
+            type="TEXTAREA"
+            input_type="text"
+            placeholder="Description"
+            variant="FILLED"
+            onChange={() => {
+              console.log("hi");
+            }}
+            value={""}
+            disabled={false}
+            required={true}
+            label="Tag Description"
+            name="description"
+          />
+          <Input
+            type="IMAGE"
+            input_type="image"
+            placeholder=""
+            variant="FILLED"
+            onChange={() => {
+              console.log("hi");
+            }}
+            value={""}
+            disabled={false}
+            required={true}
+            label="Tag Logo"
+            name="logo"
+          />
+          <button className="btn-filled">Create</button>
+        </div>
+      </div>
+    </div>
+  );
+};

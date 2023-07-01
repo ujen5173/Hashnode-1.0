@@ -5,9 +5,9 @@ interface InputTypes {
   type: "INPUT" | "TEXTAREA" | "IMAGE";
   variant: "FILLED" | "OUTLINED" | "ROUNDED";
   placeholder: string;
-  input_type: "email" | "text" | "password";
-  disabled: boolean;
-  required: boolean;
+  input_type: "email" | "text" | "password" | "image";
+  disabled?: boolean;
+  required?: boolean;
   value: string;
   name: string;
   onChange: (
@@ -59,7 +59,7 @@ const Input: FC<InputTypes> = ({
       ) : type === "TEXTAREA" ? (
         <>
           <textarea
-            className={`min-h-[16.4rem] ${
+            className={`min-h-[10.4rem] ${
               variant === "FILLED"
                 ? "input-filled"
                 : variant === "ROUNDED"
@@ -83,7 +83,9 @@ const Input: FC<InputTypes> = ({
             </span>
           )}
         </>
-      ) : null}
+      ) : (
+        <div className="h-24 w-24 rounded-full border border-border-light bg-light-bg dark:border-border dark:bg-primary-light"></div>
+      )}
     </div>
   );
 };

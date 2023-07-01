@@ -30,7 +30,7 @@ const NewArticleHeader = ({
           <div>
             <Link href={`/u/@user`} className="flex items-center gap-2">
               <LogonoText className="h-7 w-7" />
-              <span className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
+              <span className="hidden text-sm font-semibold text-gray-700 dark:text-text-secondary sm:block md:text-lg">
                 {user?.user.username}&apos;s Blog
               </span>
             </Link>
