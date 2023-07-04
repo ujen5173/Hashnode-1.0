@@ -1,9 +1,7 @@
-import React from "react";
-
 const Footer = () => {
   return (
     <div className="flex flex-col items-center justify-center bg-light-bg px-4 py-16 dark:bg-black">
-      <p className="text-gray-700 dark:text-text-secondary">
+      <p className="text-center text-gray-700 dark:text-text-secondary">
         @{new Date().getFullYear()} Hashnode By{" "}
         <a
           target={"_blank"}

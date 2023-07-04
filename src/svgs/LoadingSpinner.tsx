@@ -1,5 +1,3 @@
-import React from "react";
-
 const LoadingSpinner = (props: { className: string }) => {
   return (
     <svg

@@ -1,7 +1,6 @@
 import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
 import React, { useContext, useState } from "react";
-import { Search } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 import LeftArea from "./LeftArea";
 import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
@@ -20,12 +19,6 @@ const Header: React.FC = () => {
       <div className="mx-auto flex max-w-[1550px] items-center justify-between gap-4 px-4 py-4">
         <div className="flex flex-1 items-center justify-between gap-8 md:gap-4">
           <LeftArea />
-          <button
-            onClick={() => setSearchOpened(true)}
-            className="btn-icon-large flex lg:hidden"
-          >
-            <Search className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
-          </button>
           <SearchArea opened={searchOpened} setOpened={setSearchOpened} />
         </div>
 
@@ -35,19 +28,24 @@ const Header: React.FC = () => {
             aria-label="icon"
             role="button"
             className="relative rounded-full"
+            style={{ cursor: "default!important" }}
           >
             <Image
               src={user?.user.profile || "/default_user.avif"}
               alt={user?.user.name || "user"}
               width={100}
               height={100}
-              className="h-9 w-9 select-none overflow-hidden rounded-full"
+              className="h-9 w-9 cursor-pointer select-none overflow-hidden rounded-full"
               onClick={() => setOpened(true)}
               draggable={false}
             />
             {opened &&
               (!!user ? (
-                <ProfileDropdown user={user} ref={ref} />
+                <ProfileDropdown
+                  setSearchOpened={setSearchOpened}
+                  user={user}
+                  ref={ref}
+                />
               ) : (
                 <NotAuthenticatedProfileDropdown ref={ref} />
               ))}

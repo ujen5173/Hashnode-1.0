@@ -9,6 +9,21 @@
   font-family: "Inter", "Poppins" !important;
 }
 
+.animate-loading {
+  animation: animate-loading 1500ms linear infinite;
+}
+
+/* animate with rotate */
+@keyframs animate-loading {
+  from,
+  to {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(360deg);
+  }
+}
+
 .max-height-one {
   overflow: hidden;
   display: -webkit-box;
@@ -242,6 +257,9 @@ body.dark button.btn-filled:focus {
 }
 
 /* Light theme */
+body.dark .article {
+  color: #fafafa;
+}
 body .article {
   color: #111111;
   margin-left: auto;

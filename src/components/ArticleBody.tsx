@@ -34,7 +34,9 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
         )}
 
         <section
-          className={`relative ${!article?.cover_image ? "py-8 md:py-16" : ""}`}
+          className={`relative ${
+            !article?.cover_image ? "pt-8 md:pb-0 md:pt-16" : ""
+          }`}
         >
           <div className="px-4">
             <h1 className="mb-8 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:w-11/12 md:text-5xl md:leading-tight">
@@ -112,7 +114,7 @@ export default ArticleBody;
 
 const ArticleTags = ({ tags }: { tags: Tag[] }) => {
   return (
-    <div className="mx-auto my-20 flex w-full flex-wrap items-center justify-center gap-2 lg:w-8/12">
+    <div className="mx-auto my-10 flex w-11/12 flex-wrap items-center justify-center gap-2 lg:w-8/12">
       {tags.map((tag) => (
         <Link href={`/tag/${tag.slug}`} key={tag.id}>
           <span className="block rounded-md border border-border-light bg-light-bg px-4 py-2 text-sm text-gray-700 hover:shadow-md dark:border-border dark:bg-primary-light dark:text-text-secondary dark:hover:bg-border">
@@ -128,7 +130,7 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
   const { following, followUser } = useContext(C) as ContextValue;
   return (
     <div className="px-4">
-      <div className="mx-auto my-10 w-full border-y border-border-light px-4 py-6 dark:border-border md:w-8/12">
+      <div className="mx-auto mb-4 mt-10 w-full border-y border-border-light px-4 py-6 dark:border-border md:w-8/12">
         <div className="flex flex-1 items-start gap-4">
           <Link href={`/u/@${author.username}`}>
             <Image
@@ -140,7 +142,9 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
             />
           </Link>
 
-          <div className="mb-8 flex-1">
+          <div
+            className={author.bio && author.bio.length > 0 ? "mb-8" : "flex-1"}
+          >
             <div className="flex w-full flex-col items-start justify-between sm:flex-row">
               <div className="mb-6 md:mb-0">
                 <h2 className="text-uppercase mb-1 text-sm font-medium text-gray-600 dark:text-text-primary">
@@ -174,7 +178,7 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
         </div>
 
         {author.bio && (
-          <p className="text-sm text-gray-600 dark:text-text-primary">
+          <p className="text-base text-gray-600 dark:text-text-primary">
             {author.bio}
           </p>
         )}

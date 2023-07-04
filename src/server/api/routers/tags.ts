@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import slugify from "slugify";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
@@ -19,6 +20,29 @@ export const TagsRouter = createTRPCRouter({
       });
     }
   }),
+
+  getSingle: publicProcedure
+    .input(z.object({ slug: z.array(z.string().trim()) }))
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.tag.findMany({
+          where: {
+            slug: {
+              in: input.slug,
+            },
+          },
+          select: {
+            name: true,
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
+
   searchTags: publicProcedure
     .input(
       z.object({
@@ -41,8 +65,8 @@ export const TagsRouter = createTRPCRouter({
           select: {
             id: true,
             name: true,
-            logo: true
-          }
+            logo: true,
+          },
         });
       } catch (err) {
         throw new TRPCError({
@@ -251,6 +275,50 @@ export const TagsRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
+        });
+      }
+    }),
+
+  new: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().trim(),
+        logo: z.string().trim().optional().nullable(),
+        description: z.string().trim().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const tag = await ctx.prisma.tag.findUnique({
+          where: {
+            name: input.name,
+          },
+        });
+        if (tag) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Tag already exists",
+          });
+        } else {
+          return await ctx.prisma.tag.create({
+            data: {
+              name: input.name,
+              logo: input.logo,
+              description: input.description,
+              slug: slugify(input.name, {
+                lower: true,
+                replacement: "-",
+                strict: true,
+                trim: true,
+                locale: "en",
+              }),
+            },
+          });
+        }
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wr123ong, try again later",
         });
       }
     }),

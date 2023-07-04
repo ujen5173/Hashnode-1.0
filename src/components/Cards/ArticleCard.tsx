@@ -32,10 +32,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
             </h1>
           </Link>
           <p className="flex items-center gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
-            <Link
-              // className="hidden sm:block"
-              href={`/u/@${card.user.username}`}
-            >
+            <Link href={`/u/@${card.user.username}`}>
               @{card.user.username}
             </Link>
             <span className="text-gray-900 dark:text-text-primary">·</span>
@@ -61,20 +58,17 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
             </div>
           </Link>
 
-          <Link
-            className="mb-3"
-            href={`/u/@${card.user.username}/${card.slug}`}
-          >
+          <Link href={`/u/@${card.user.username}/${card.slug}`}>
             <p
               className={`${
-                card.cover_image ? "max-height-4" : "max-height-3 w-11/12"
-              } break-all text-xs text-gray-500 dark:text-text-primary`}
+                card.cover_image ? "max-height-4" : "max-height-3 mb-3 w-full"
+              } break-words break-keep text-sm text-gray-500 dark:text-text-primary`}
             >
               {limitText(removeMd(card.content), 350)}
             </p>
           </Link>
 
-          <div className="mt-2 flex justify-between gap-2">
+          <div className="mt-2 flex flex-col-reverse justify-between gap-2 md:flex-row">
             <div className="flex gap-2">
               <button
                 aria-label="icon"
@@ -118,15 +112,15 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <button className="flex items-center gap-1">
+            <div className="flex items-center">
+              <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
                 <Like className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
                 <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
                   {card.likesCount}
                 </span>
               </button>
               {!card.disabledComments && (
-                <button className="flex items-center gap-1">
+                <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
                   <Multicomment className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
                   <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
                     {card.commentsCount}

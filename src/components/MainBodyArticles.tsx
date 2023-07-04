@@ -43,36 +43,31 @@ const MainBodyArticles = () => {
     tags: filter.data.tags,
   });
 
-  const { data, isFetching, refetch } =
-    api.posts.getAll.useQuery(
-      {
-        type: (tab || "personalized") as
-          | "personalized"
-          | "latest"
-          | "following",
-        filter: {
-          tags: newFilterData.tags,
-          read_time: newFilterData.read_time
-            ? (read_time_options.find(
-                (option) => option.label === newFilterData.read_time
-              )?.value as "over_5" | "5" | "under_5" | null | undefined)
-            : null,
-        },
+  const { data, isFetching, refetch } = api.posts.getAll.useQuery(
+    {
+      type: (tab || "personalized") as "personalized" | "latest" | "following",
+      filter: {
+        tags: newFilterData.tags,
+        read_time: newFilterData.read_time
+          ? (read_time_options.find(
+              (option) => option.label === newFilterData.read_time
+            )?.value as "over_5" | "5" | "under_5" | null | undefined)
+          : null,
       },
-      {
-        enabled: true,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
-      }
-    );
+    },
+    {
+      enabled: true,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  
   const [articles, setArticles] = useState({ data, isLoading: isFetching });
 
   useEffect(() => {
-    setArticles({data, isLoading: isFetching})
+    setArticles({ data, isLoading: isFetching });
   }, [isFetching]);
-  
+
   useEffect(() => {
     void (async () => {
       const { data } = await refetch();
@@ -80,23 +75,23 @@ const MainBodyArticles = () => {
     })();
   }, [tab, newFilterData]);
 
-  const applyFilter =  () => {
+  const applyFilter = () => {
     setNewFilterData((prev) => ({ ...prev, ...filter.data }));
   };
 
-  const clearFilter =  () => {
+  const clearFilter = () => {
     setNewFilterData((prev) => ({
       ...prev,
       read_time: null,
       tags: [],
     }));
-    setFilter(prev => ({
+    setFilter((prev) => ({
       ...prev,
       data: {
         read_time: null,
         tags: [],
-      }
-    }))
+      },
+    }));
   };
 
   return (

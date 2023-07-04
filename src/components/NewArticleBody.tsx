@@ -1,14 +1,18 @@
 import { useClickOutside } from "@mantine/hooks";
 import { TRPCClientError } from "@trpc/client";
 import Image from "next/image";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
+import { useDebouncedCallback } from "use-debounce";
 import ImagePreview from "~/svgs/ImagePreview";
+import { type ArticleCard } from "~/types";
+import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import NewArticleModal from "./NewArticleModal";
+import NewTagModal from "./NewTagModal";
 
 export interface ArticleData {
   title: string;
@@ -23,18 +27,23 @@ export interface ArticleData {
   disabledComments: boolean;
 }
 
-const NewArticleBody = ({
-  setPublishModal,
-  publishModal,
-  publishing,
-  setPublishing,
-}: {
+const NewArticleBody: FC<{
   publishModal: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
   publishing: boolean;
   setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
+  setSavedState: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({
+  setPublishModal,
+  publishModal,
+  publishing,
+  setPublishing,
+  setSavedState,
 }) => {
   const { handleChange } = useContext(C) as ContextValue;
+  const [query, setQuery] = useState("");
+  const [createTagState, setCreateTagState] = useState(false);
+
   const [data, setData] = useState<ArticleData>({
     title: "",
     subtitle: "",
@@ -48,16 +57,69 @@ const NewArticleBody = ({
     disabledComments: false,
   });
 
+  const [requestedTags, setRequestedTags] = React.useState<string[]>([]);
+
+  //TODO: this code is running at page load.
+  const { refetch } = api.tags.getSingle.useQuery(
+    {
+      slug: requestedTags, // not working as it needs window object.
+    },
+    {
+      enabled: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tag = params.get("tag");
-    if (tag) {
-      setData((prev) => ({
-        ...prev,
-        tags: [tag],
-      }));
+    //* just for settings tags from url so that i can check if the tags exist or not.
+    const article = localStorage.getItem("savedData");
+    if (article) {
+      const parsedArticle = JSON.parse(article) as ArticleCard;
+      if (parsedArticle.tags.length > 0) {
+        setRequestedTags(parsedArticle.tags.map((e) => e.slug));
+      }
     }
   }, []);
+
+  useEffect(() => {
+    // Get Stored data.
+    (() => {
+      const storedData = localStorage.getItem("savedData");
+      if (storedData) {
+        const { tags, ...res } = JSON.parse(storedData) as ArticleData;
+        setData((prev) => ({ ...prev, ...res }));
+        const checkTags = async () => {
+          const { data } = await refetch();
+
+          if (!data) return;
+          setData((prev) => ({
+            ...prev,
+            tags: [...prev.tags, ...data.map((e) => e.name)],
+          }));
+        };
+
+        void checkTags();
+      }
+    })();
+  }, []);
+
+  const saveData = (): void => {
+    setSavedState(false);
+    localStorage.setItem("savedData", JSON.stringify(data));
+    setTimeout(() => {
+      setSavedState(true); // for fake saving loading 😂😂
+    }, 500);
+  };
+
+  const debounced = useDebouncedCallback(() => {
+    void saveData();
+    return;
+  }, 500);
+
+  useEffect(() => {
+    void debounced();
+  }, [data]);
 
   const [file, setFile] = React.useState<string | null>(null);
   const [fileModal, setFileModal] = React.useState<boolean>(false); // open and close file upload modal
@@ -193,10 +255,15 @@ const NewArticleBody = ({
         data={data}
         setData={setData}
         publishing={publishing}
+        setCreateTagState={setCreateTagState}
         setPublishing={setPublishing}
+        query={query}
+        setQuery={setQuery}
       />
 
-      {/* <NewTagModal /> */}
+      {createTagState && (
+        <NewTagModal query={query} setCreateTagState={setCreateTagState} />
+      )}
     </main>
   );
 };

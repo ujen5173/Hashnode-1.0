@@ -7,7 +7,10 @@ import { type Tag } from "~/utils/context";
 const TagCard: FC<{ tag: Tag }> = ({ tag }) => {
   return (
     <Link href={`/tag/${tag.slug}`}>
-      <div className="flex gap-3 rounded-md border  border-border-light bg-light-bg p-2 dark:border-border dark:bg-primary-light">
+      <div
+        title={`#${tag.name}`}
+        className="flex gap-3 rounded-md border  border-border-light bg-light-bg p-2 dark:border-border dark:bg-primary-light"
+      >
         {tag.logo ? (
           <Image
             src={tag.logo}
@@ -22,7 +25,7 @@ const TagCard: FC<{ tag: Tag }> = ({ tag }) => {
           </div>
         )}
         <div>
-          <h1 className="text-base font-medium text-gray-700 dark:text-text-secondary">
+          <h1 className="max-height-one text-base font-medium text-gray-700 dark:text-text-secondary">
             {tag.name}
           </h1>
           <p className="text-sm font-normal text-gray-700 dark:text-text-primary">

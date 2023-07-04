@@ -1,22 +1,20 @@
 import Link from "next/link";
-import React, { useContext } from "react";
+import React, { useContext, type FC } from "react";
 import { Angleleft, Cloud, LogonoText, Sun } from "~/svgs";
+import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { C, type ContextValue } from "~/utils/context";
 
-const NewArticleHeader = ({
-  setPublishModal,
-  publishing,
-}: {
+const NewArticleHeader: FC<{
   publishing: boolean;
-
+  savedState: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+}> = ({ savedState, setPublishModal, publishing }) => {
   const { user, handleTheme } = useContext(C) as ContextValue;
 
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto flex w-full max-w-[1000px] items-center justify-between p-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-start gap-2">
           <Link href="/">
             <button
               aria-label="icon"
@@ -29,7 +27,7 @@ const NewArticleHeader = ({
 
           <div>
             <Link href={`/u/@user`} className="flex items-center gap-2">
-              <LogonoText className="h-7 w-7" />
+              <LogonoText className="h-7 fill-secondary" />
               <span className="hidden text-sm font-semibold text-gray-700 dark:text-text-secondary sm:block md:text-lg">
                 {user?.user.username}&apos;s Blog
               </span>
@@ -39,9 +37,18 @@ const NewArticleHeader = ({
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-4 border-r border-border-light px-4 dark:border-border">
-            <div className="hidden items-center gap-2 lg:flex">
-              <Cloud className="h-6 w-6" />
-              <span className="text-base text-green">Saved</span>
+            <div className="hidden items-center gap-2 sm:flex">
+              {savedState ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Cloud className="h-6 w-6" />
+                  <span className="text-base text-green">Saved</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2">
+                  <LoadingSpinner className="h-6 w-6 fill-none stroke-gray-500" />
+                  <span className="text-base text-gray-500">Saving...</span>
+                </div>
+              )}
             </div>
 
             <button onClick={handleTheme} className="btn-icon-large flex">

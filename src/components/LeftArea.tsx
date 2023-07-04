@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Hamburger, Logo } from "~/svgs";
+import { Hamburger, Logo, LogonoText } from "~/svgs";
 
 const LeftArea = () => {
   return (
@@ -12,7 +12,8 @@ const LeftArea = () => {
         <Hamburger className="h-5 w-5 fill-black dark:fill-white" />
       </button>
       <Link aria-label="Go to Home Page" href={"/"}>
-        <Logo className="h-5 fill-black dark:fill-white lg:h-6" />
+        <Logo className="hidden h-6 fill-secondary md:block" />
+        <LogonoText className="block h-9 fill-secondary md:hidden" />
       </Link>
     </div>
   );

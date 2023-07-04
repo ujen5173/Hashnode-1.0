@@ -15,6 +15,7 @@ interface InputTypes {
   ) => void;
   pattern?: string | undefined;
   max?: number | undefined;
+  autoFocus?: boolean;
 }
 
 const Input: FC<InputTypes> = ({
@@ -30,6 +31,7 @@ const Input: FC<InputTypes> = ({
   onChange,
   pattern = undefined,
   max = undefined,
+  autoFocus = false,
 }) => {
   return (
     <div className="mb-6">
@@ -52,6 +54,7 @@ const Input: FC<InputTypes> = ({
           autoComplete="off"
           name={name}
           pattern={pattern}
+          autoFocus={autoFocus}
           value={value}
           max={max}
           onChange={onChange}

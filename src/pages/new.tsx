@@ -12,6 +12,7 @@ const NewArticle: NextPage = () => {
   const [publishing, setPublishing] = useState<boolean>(false); // upload loading
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
+  const [savedState, setSavedState] = useState<boolean>(true);
 
   useEffect(() => {
     setUser(session);
@@ -23,12 +24,14 @@ const NewArticle: NextPage = () => {
       <NewArticleHeader
         setPublishModal={setPublishModal}
         publishing={publishing}
+        savedState={savedState}
       />
       <NewArticleBody
         publishModal={publishModal}
         setPublishModal={setPublishModal}
         publishing={publishing}
         setPublishing={setPublishing}
+        setSavedState={setSavedState}
       />
     </>
   );

@@ -1,7 +1,7 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Header } from "~/components";
 import Aside from "~/components/Aside";
 import MainTagBody from "~/components/MainTagBody";
@@ -25,7 +25,7 @@ const SingleTag: NextPage<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       <TagSEO tagDetails={tagDetails} />
       <Header />
       <main className="min-h-screen w-full bg-light-bg dark:bg-black">
-        <div className="container-body mx-auto max-w-[1550px] gap-4 px-4">
+        <div className="container-body mx-auto max-w-[1550px] gap-4 sm:px-4">
           <Aside />
           <MainTagBody tagDetails={tagDetails} />
           <RightAsideMain tagDetails={tagDetails} />
@@ -41,7 +41,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
   const params = context.params?.slug as string;
 
- 
   if (!params) {
     return {
       props: {
