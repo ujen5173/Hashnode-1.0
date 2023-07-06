@@ -100,11 +100,10 @@ model Comment {
     likes      User[]  @relation("CommentToUser")
     likesCount Int     @default(0)
 
-    type         CommentType
-    parent       Comment?    @relation("CommentToComment", fields: [parentId], references: [id])
-    parentId     String?
-    replies      Comment[]   @relation("CommentToComment")
-    repliesCount Int         @default(0)
+    type     CommentType
+    parent   Comment?    @relation("CommentToComment", fields: [parentId], references: [id])
+    parentId String?
+    replies  Comment[]   @relation("CommentToComment")
 
     notification Notification[] @relation("Comment Article")
 

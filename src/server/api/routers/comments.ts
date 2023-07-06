@@ -7,7 +7,7 @@ export const commentsRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().trim(),
-        content: z.string().trim(),
+        content: z.string().trim().min(5).max(255),
         type: z.enum(["COMMENT", "REPLY"]),
         commentId: z.string().trim().optional().nullable(),
       })
@@ -78,6 +78,18 @@ export const commentsRouter = createTRPCRouter({
             }),
         },
       });
+
+      await ctx.prisma.article.update({
+        where: {
+          id: articleId,
+        },
+        data: {
+          commentsCount: {
+            increment: 1,
+          },
+        },
+      });
+
       return {
         success: true,
         message: "Commented successfully",
@@ -171,6 +183,7 @@ export const commentsRouter = createTRPCRouter({
           articleId,
           parent: null,
         },
+        take: 10,
         include: {
           user: {
             select: {
@@ -294,6 +307,12 @@ export const commentsRouter = createTRPCRouter({
         },
       });
 
-      return comments;
+      const totalComments = await ctx.prisma.comment.count({
+        where: {
+          articleId,
+        },
+      });
+
+      return { totalComments, comments };
     }),
 });

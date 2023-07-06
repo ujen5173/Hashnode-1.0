@@ -1,5 +1,4 @@
-import { Explore, Drafts, Bookmark, Hackathon, Team, More } from "~/svgs";
-import { ArticleCard, Comment } from "~/types";
+import { Bookmark, Drafts, Explore, Hackathon, Team } from "~/svgs";
 
 export const asideItems = [
   {
@@ -32,11 +31,11 @@ export const asideItems = [
     href: "/team-blogs",
     type: "link",
   },
-  {
-    name: "More",
-    icon: <More className="h-4 w-4 fill-gray-700 dark:fill-gray-200" />,
-    type: "dropdown",
-  },
+  // {
+  //   name: "More",
+  //   icon: <More className="h-4 w-4 fill-gray-700 dark:fill-gray-200" />,
+  //   type: "dropdown",
+  // },
 ];
 
 export const trendingItems = [

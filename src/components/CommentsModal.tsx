@@ -1,5 +1,7 @@
+import { TRPCClientError } from "@trpc/client";
 import Image from "next/image";
 import React, { useContext, useState, type FC } from "react";
+import { toast } from "react-toastify";
 import { Times } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -11,25 +13,61 @@ const CommentsModal: FC<{
   setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ id, commentsModal, setCommentsModal }) => {
   const { user } = useContext(C) as ContextValue;
-  const { mutateAsync: comment } = api.comments.newComment.useMutation();
   const [commentId, setCommentId] = useState<string | null>(null);
+  const [replyingUsername, setReplyingUsername] = useState<string | null>(null);
   const [text, setText] = useState<string>("");
-  const { data: comments, isLoading } = api.comments.getComments.useQuery(
+  const [reply, setReply] = useState<boolean>(false);
+  const {
+    data: comments,
+    isLoading,
+    refetch,
+  } = api.comments.getComments.useQuery(
     {
       articleId: id,
     },
     {
       enabled: !!id,
+      refetchOnWindowFocus: false,
     }
   );
 
+  const { mutateAsync: comment, isLoading: publishing } =
+    api.comments.newComment.useMutation();
+
   const commentFunc = async (type: "REPLY" | "COMMENT", content: string) => {
-    await comment({
-      articleId: id,
-      content,
-      commentId,
-      type,
-    });
+    try {
+      if (!user) {
+        toast.error("You need to login to comment");
+        return;
+      }
+      if (text.length < 5) {
+        toast.error("Comment is too short");
+        return;
+      }
+      if (text.length > 255) {
+        toast.error("Comment is too long");
+        return;
+      }
+      await comment({
+        articleId: id,
+        content,
+        commentId,
+        type,
+      });
+      await refetch();
+      toast.success("Commented successfully");
+    } catch (err) {
+      if (err instanceof TRPCClientError) {
+        toast.error(err.message);
+      }
+    }
+  };
+
+  const cancelComment = () => {
+    setReply(false);
+    setCommentId(null);
+    setReplyingUsername(null);
+    setText("");
   };
 
   return (
@@ -45,9 +83,9 @@ const CommentsModal: FC<{
           commentsModal ? "commentsModal" : "commentsModal-off"
         }`}
       >
-        <header className="flex items-center justify-between p-4">
+        <header className="flex items-center justify-between border-b border-border-light p-4 dark:border-border">
           <h2 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
-            Comments (0)
+            Comments ({comments?.totalComments})
           </h2>
           <button
             onClick={() => {
@@ -59,7 +97,7 @@ const CommentsModal: FC<{
           </button>
         </header>
 
-        <main className="border-b border-border-light p-4 dark:border-border">
+        <main className="border-b border-border-light p-4 pl-2 dark:border-border">
           {user && (
             <div className="flex items-center space-x-2 p-2">
               <Image
@@ -81,26 +119,58 @@ const CommentsModal: FC<{
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="min-h-[12rem] w-full resize-none rounded-lg bg-transparent p-4 text-lg text-gray-700 outline-none dark:text-text-secondary"
-            placeholder="Write a thoughtful comment..."
+            placeholder={
+              reply
+                ? `Reply to @${replyingUsername || "unknown user"}`
+                : "Write a thoughtful comment..."
+            }
           />
 
-          <div
-            onClick={() => void commentFunc("COMMENT", text)}
-            className="flex-end flex justify-end"
-          >
-            <button className="btn-filled">Comment</button>
+          <div className="flex-end flex justify-end gap-2">
+            {reply ? (
+              <button
+                className={`btn-filled ${
+                  publishing ? "cursor-not-allowed opacity-40" : ""
+                }`}
+                aria-label="Reply Button"
+                disabled={publishing}
+                onClick={() => !publishing && void commentFunc("REPLY", text)}
+              >
+                {publishing ? "Replying..." : "Reply"}
+              </button>
+            ) : (
+              <button
+                className={`btn-filled ${
+                  publishing ? "cursor-not-allowed opacity-40" : ""
+                }`}
+                aria-label="Comment Button"
+                disabled={publishing}
+                onClick={() => !publishing && void commentFunc("COMMENT", text)}
+              >
+                {publishing ? "Publishing..." : "Comment"}
+              </button>
+            )}
+            <button
+              className="btn-outline"
+              aria-label="Cancel Button"
+              onClick={() => void cancelComment()}
+            >
+              Cancel
+            </button>
           </div>
         </main>
 
         <section className="h-full">
           {!isLoading &&
-            comments?.map((comment) => (
+            comments?.comments?.map((comment) => (
               <CommentCard
                 setCommentId={setCommentId}
                 commentFunc={commentFunc}
                 type="COMMENT"
                 comment={comment}
+                setReply={setReply}
                 key={comment.id}
+                setReplyingUsername={setReplyingUsername}
               />
             ))}
         </section>
