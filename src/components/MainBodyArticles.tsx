@@ -85,13 +85,13 @@ const MainBodyArticles = () => {
       read_time: null,
       tags: [],
     }));
-    setFilter((prev) => ({
-      ...prev,
+    setFilter({
+      status: false,
       data: {
         read_time: null,
         tags: [],
       },
-    }));
+    });
   };
 
   return (

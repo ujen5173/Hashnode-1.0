@@ -1,18 +1,18 @@
 import Link from "next/link";
-import React, { useContext, useEffect, type FC } from "react";
+import { type FC } from "react";
 import { asideItems } from "~/utils/constants";
 
+import { Discord, Instagram, Linkedin, Trending, Twitter } from "~/svgs";
+import { api } from "~/utils/api";
+import { type TrendingTagsTypes } from "~/utils/context";
 import Navigation from "./Cards/Navigation";
 import TrendingNavigation from "./Cards/TrendingNavigation";
 import Divider from "./Divider";
-import { Trending, Twitter, Discord, Linkedin, Instagram } from "~/svgs";
-import { api } from "~/utils/api";
-import { C, type TrendingTagsTypes, type ContextValue } from "~/utils/context";
 
 const Aside = () => {
   const { data: tagsData, isLoading } = api.tags.getTredingTags.useQuery(
     {
-      variant: "week",
+      variant: "any",
       limit: 6,
     },
     {

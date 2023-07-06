@@ -132,11 +132,51 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string().trim(),
+        filter: z
+          .object({
+            read_time: z.enum(["over_5", "5", "under_5"]).nullable().optional(),
+            tags: z.array(
+              z.object({
+                id: z.string().trim(),
+                name: z.string().trim(),
+              })
+            ),
+          })
+          .optional()
+          .nullable(),
+        type: z.enum(["hot", "new"]).optional().default("new"),
       })
     )
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.article.findMany({
         where: {
+          ...((input?.filter?.tags || input?.filter?.read_time) && {
+            ...(input?.filter?.read_time && {
+              read_time:
+                input?.filter?.read_time === "over_5"
+                  ? { gt: 5 }
+                  : input?.filter?.read_time === "under_5"
+                  ? { lt: 5 }
+                  : input?.filter?.read_time === "5"
+                  ? { equals: 5 }
+                  : undefined,
+            }),
+            ...(input?.filter?.tags &&
+              input.filter.tags.length > 0 && {
+                tags: {
+                  some: {
+                    name: {
+                      in: input?.filter?.tags
+                        ? input?.filter?.tags.length > 0
+                          ? input?.filter?.tags.map((tag) => tag.name)
+                          : undefined
+                        : undefined,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              }),
+          }),
           tags: {
             some: {
               name: input.name,
@@ -145,6 +185,21 @@ export const postsRouter = createTRPCRouter({
         },
         select: selectArticleCard,
         take: 15,
+        orderBy:
+          input.type === "hot"
+            ? [
+                {
+                  likesCount: "desc",
+                },
+                {
+                  commentsCount: "desc",
+                },
+              ]
+            : input.type === "new"
+            ? {
+                createdAt: "desc",
+              }
+            : undefined,
       });
     }),
 
@@ -568,6 +623,7 @@ export const postsRouter = createTRPCRouter({
             { createdAt: "desc" },
           ],
         });
+
         return articles;
       } catch (err) {
         throw new TRPCError({

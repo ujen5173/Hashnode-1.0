@@ -1,10 +1,9 @@
+import type { FC } from "react";
+import type { DetailedTag } from "~/types";
 import Anouncement from "./Anouncement";
-import Drafts from "./Drafts";
 import Bookmarks from "./Bookmarks";
 import Others from "./Others";
 import Trending from "./Trending";
-import type { FC } from "react";
-import type { DetailedTag } from "~/types";
 
 const RightAsideMain: FC<{ tagDetails?: DetailedTag }> = ({ tagDetails }) => {
   return (
@@ -25,7 +24,7 @@ const RightAsideMain: FC<{ tagDetails?: DetailedTag }> = ({ tagDetails }) => {
         <Anouncement />
       )}
       <Trending />
-      <Drafts />
+      {/* <Drafts /> */}
       <Bookmarks />
       <Others />
     </aside>

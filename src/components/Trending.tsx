@@ -6,8 +6,8 @@ import BookmarkLoading from "./Loading/BookmarkLoading";
 const Trending = () => {
   const { data, isLoading } = api.posts.trendingArticles.useQuery(
     {
+      variant: "any",
       limit: 4,
-      variant: "week",
     },
     {
       refetchOnWindowFocus: false,

@@ -367,6 +367,11 @@ body.dark .article code {
 }
 
 /* This code is just copied from the dev tools of hashnode 😅🤪*/
+@media screen and (min-width: 600px) {
+  .activity_date {
+    width: 0.5rem !important;
+  }
+}
 .activity_date {
   -webkit-box-align: center;
   -ms-flex-align: center;

@@ -186,9 +186,14 @@ export const tagsRouter = createTRPCRouter({
               }),
 
           take: input?.limit || 6,
-          orderBy: {
-            followersCount: "desc",
-          },
+          orderBy: [
+            {
+              articlesCount: "desc",
+            },
+            {
+              followersCount: "desc",
+            },
+          ],
           include: {
             articles: true,
           },
@@ -200,14 +205,16 @@ export const tagsRouter = createTRPCRouter({
             name: tag.name,
             slug: tag.slug,
             logo: tag.logo,
-            articlesCount: tag.articles.filter(
-              (article) =>
-                article.createdAt >= startDate && article.createdAt <= endDate
-            ).length,
+            articlesCount:
+              input?.variant === "any"
+                ? tag.articles.length
+                : tag.articles.filter(
+                    (article) =>
+                      article.createdAt >= startDate &&
+                      article.createdAt <= endDate
+                  ).length,
           };
         });
-
-        tagData.sort((a, b) => b.articlesCount - a.articlesCount);
 
         return tagData;
       } catch (err) {

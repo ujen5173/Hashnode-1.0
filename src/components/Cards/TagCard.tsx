@@ -4,7 +4,10 @@ import { type FC } from "react";
 import { Hashtag } from "~/svgs";
 import { type Tag } from "~/utils/context";
 
-const TagCard: FC<{ tag: Tag }> = ({ tag }) => {
+const TagCard: FC<{
+  tag: Tag;
+  type: "This week" | "Any" | "This month" | "This year";
+}> = ({ tag, type }) => {
   return (
     <Link href={`/tag/${tag.slug}`}>
       <div
@@ -29,7 +32,8 @@ const TagCard: FC<{ tag: Tag }> = ({ tag }) => {
             {tag.name}
           </h1>
           <p className="text-sm font-normal text-gray-700 dark:text-text-primary">
-            {tag.articlesCount} articles this week
+            {tag.articlesCount} articles
+            {type?.toLowerCase() === "any" ? "" : " " + type?.toLowerCase()}
           </p>
         </div>
       </div>

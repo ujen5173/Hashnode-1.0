@@ -18,7 +18,8 @@ const ManageData: FC<{
   tagsData?: TrendingTagsTypes;
   type: "TAG" | "ARTICLE" | "MINI_ARTICLES" | "NOTIFICATION";
   notificationData?: NotificationDataTypes;
-}> = ({ loading, articleData, tagsData, type, notificationData }) => {
+  filter?: "This week" | "Any" | "This month" | "This year";
+}> = ({ loading, articleData, tagsData, type, notificationData, filter }) => {
   return (
     <>
       {type === "TAG" ? (
@@ -37,7 +38,7 @@ const ManageData: FC<{
             {tagsData.data.map((item) => {
               return (
                 <div key={item.id} className="w-[calc(100%/2-0.5rem)]">
-                  <TagCard tag={item} />
+                  <TagCard tag={item} type={filter || "Any"} />
                 </div>
               );
             })}

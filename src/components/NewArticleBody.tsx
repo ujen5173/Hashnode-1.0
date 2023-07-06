@@ -233,6 +233,7 @@ const NewArticleBody: FC<{
             className="mb-10 w-full bg-transparent py-2 text-xl font-semibold text-gray-700 outline-none dark:text-text-secondary"
           />
           <div className="relative">
+            {/* Editor should be dynamnically imported */}
             <Editor
               onChange={(data: string) =>
                 setData((prev) => ({ ...prev, content: data }))

@@ -14,14 +14,15 @@ import Select from "./Select";
 const ExploreMainComponent = () => {
   const { slug } = useRouter().query;
   const [filter, setFilter] = useState<
-    "This week" | "This month" | "This year"
-  >("This week");
+    "This week" | "Any" | "This month" | "This year"
+  >("Any");
   const trendingTagsData = api.tags.getTredingTags.useQuery(
     {
       limit: 10,
       variant: filter.toLowerCase().replace("this ", "") as
         | "week"
         | "month"
+        | "any"
         | "year",
     },
     {
@@ -35,6 +36,7 @@ const ExploreMainComponent = () => {
       variant: filter.toLowerCase().replace("this ", "") as
         | "week"
         | "month"
+        | "any"
         | "year",
     },
     {
@@ -50,6 +52,7 @@ const ExploreMainComponent = () => {
       limit: 10,
       variant: filter.toLowerCase().replace("this ", "") as
         | "week"
+        | "any"
         | "month"
         | "year",
     },
@@ -64,6 +67,7 @@ const ExploreMainComponent = () => {
       variant: filter.toLowerCase().replace("this ", "") as
         | "week"
         | "month"
+        | "any"
         | "year",
     },
     {
@@ -100,6 +104,7 @@ const ExploreMainComponent = () => {
                       data: trendingTagsData.data,
                       isLoading: trendingTagsData.isFetching,
                     }}
+                    filter={filter}
                   />
                 </div>
 
@@ -110,6 +115,7 @@ const ExploreMainComponent = () => {
                     data: trendingArticlesData.data,
                     isLoading: trendingArticlesData.isFetching,
                   }}
+                  filter={filter}
                 />
               </>
             ),
@@ -121,6 +127,7 @@ const ExploreMainComponent = () => {
                   data: followingTagsData.data,
                   isLoading: followingTagsData.isFetching,
                 }}
+                filter={filter}
               />
             ),
             "articles-following": (
@@ -131,6 +138,7 @@ const ExploreMainComponent = () => {
                   data: followingArticlesData.data,
                   isLoading: followingArticlesData.isFetching,
                 }}
+                filter={filter}
               />
             ),
             articles: (
@@ -143,6 +151,7 @@ const ExploreMainComponent = () => {
                 }}
                 setFilterState={setFilter}
                 showFilter={true}
+                filter={filter}
               />
             ),
             tags: (
@@ -156,6 +165,7 @@ const ExploreMainComponent = () => {
                 }}
                 setFilterState={setFilter}
                 showFilter={true}
+                filter={filter}
               />
             ),
           }[(slug ? slug[0] : "default") as string]
@@ -174,9 +184,10 @@ const ExploreSection: FC<{
   title: string;
   subtitle?: string;
   setFilterState?: Dispatch<
-    SetStateAction<"This week" | "This month" | "This year">
+    SetStateAction<"This week" | "This month" | "This year" | "Any">
   >;
   showFilter?: boolean;
+  filter?: "This week" | "This month" | "This year" | "Any";
 }> = ({
   articlesData,
   tagsData,
@@ -185,6 +196,7 @@ const ExploreSection: FC<{
   subtitle,
   setFilterState,
   showFilter = false,
+  filter,
 }) => {
   return (
     <>
@@ -207,7 +219,7 @@ const ExploreSection: FC<{
                   value.label as "This week" | "This month" | "This year"
                 );
               }}
-              defaultText="This week"
+              defaultText="Any"
               options={[
                 {
                   label: "This week",
@@ -221,6 +233,10 @@ const ExploreSection: FC<{
                   label: "This year",
                   value: "year",
                 },
+                {
+                  label: "Any",
+                  value: "any",
+                },
               ]}
             />
           </div>
@@ -233,6 +249,7 @@ const ExploreSection: FC<{
           loading={type === "TAG" ? <TagLoading /> : <ArticleLoading />}
           articleData={articlesData}
           tagsData={tagsData}
+          filter={filter}
         />
       </div>
     </>

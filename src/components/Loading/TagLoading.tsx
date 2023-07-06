@@ -1,7 +1,7 @@
 import { type FC } from "react";
 
 const TagLoading: FC<{ variant?: "rounded" | "non-rounded" }> = ({
-  variant,
+  variant = "rounded",
 }) => {
   return (
     <div

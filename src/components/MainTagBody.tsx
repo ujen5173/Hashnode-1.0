@@ -1,4 +1,6 @@
 import { TRPCClientError } from "@trpc/client";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Clock, Filter, Fire } from "~/svgs";
@@ -6,13 +8,34 @@ import type { DetailedTag } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import ArticleCard from "./Cards/ArticleCard";
+import FilterSection from "./FilterSection";
 import ArticleLoading from "./Loading/ArticleLoading";
-import type { FilterData } from "./MainBodyArticles";
-import Select from "./Select";
+import type { FilterData, Tag } from "./MainBodyArticles";
 import TagPageHeader from "./TagPageHeader";
-import Tags from "./Tags";
 
 const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
+  const tab = useRouter().query.tab as string | undefined;
+  const [filter, setFilter] = useState<FilterData>({
+    status: false,
+    data: {
+      read_time: null,
+      tags: [],
+    },
+  });
+
+  const read_time_options = [
+    { label: "Under 5 min", value: "under_5" },
+    { label: "5 min", value: "5" },
+    { label: "Over 5 min", value: "over_5" },
+  ];
+
+  const [newFilterData, setNewFilterData] = useState<{
+    read_time: "Over 5 min" | "5 min" | "Under 5 min" | null | undefined;
+    tags: Tag[];
+  }>({
+    read_time: filter.data.read_time,
+    tags: filter.data.tags,
+  });
   const [following, setFollowing] = useState<{
     status: boolean;
     followersCount: string;
@@ -25,18 +48,40 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const { data: tags, isLoading } = api.posts.getArticlesUsingTag.useQuery(
     {
       name: tagDetails.name,
+      type: (tab || "hot") as "hot" | "new",
+      filter: {
+        tags: newFilterData.tags,
+        read_time: newFilterData.read_time
+          ? (read_time_options.find(
+              (option) => option.label === newFilterData.read_time
+            )?.value as "over_5" | "5" | "under_5" | null | undefined)
+          : null,
+      },
     },
     {
       refetchOnWindowFocus: false,
     }
   );
-  const [filter, setFilter] = useState<FilterData>({
-    status: false,
-    data: {
+
+  const applyFilter = () => {
+    setNewFilterData((prev) => ({ ...prev, ...filter.data }));
+  };
+
+  const clearFilter = () => {
+    setNewFilterData((prev) => ({
+      ...prev,
       read_time: null,
       tags: [],
-    },
-  });
+    }));
+    setFilter({
+      status: false,
+      data: {
+        read_time: null,
+        tags: [],
+      },
+    });
+  };
+
   useEffect(() => {
     if (tagDetails && user) {
       const isFollowing = tagDetails.followers.find(
@@ -55,23 +100,6 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       }
     }
   }, [tagDetails, user]);
-
-  const clearFilter = () => {
-    setFilter({
-      ...filter,
-      data: {
-        read_time: null,
-        tags: [],
-      },
-    });
-  };
-
-  const applyFilter = () => {
-    setFilter({
-      ...filter,
-      status: false,
-    });
-  };
 
   const followTag = (name: string): void => {
     try {
@@ -107,14 +135,46 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
         <div className="flex w-full flex-col items-end justify-between gap-2 pt-2">
           <div className="flex w-full items-end justify-between border-b border-border-light px-2 dark:border-border">
             <div className="flex w-full items-center gap-2">
-              <button aria-label="icon" role="button" className="btn-tab">
-                <Fire className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
-                <span className={`${""} text-sm font-semibold`}>Hot</span>
-              </button>
-              <button aria-label="icon" role="button" className="btn-tab">
-                <Clock className="h-4 w-4 fill-none stroke-gray-700 dark:stroke-text-primary" />
-                <span className={`${""} text-sm font-semibold`}>New</span>
-              </button>
+              <Link href={`/tag/${tagDetails.slug}?tab=hot`}>
+                <button
+                  aria-label="icon"
+                  role="button"
+                  className={`${
+                    tab === undefined || tab === "hot"
+                      ? "btn-tab-active"
+                      : "btn-tab"
+                  }`}
+                >
+                  <Fire
+                    className={`h-4 w-4  ${
+                      tab === undefined || tab === "hot"
+                        ? "fill-secondary"
+                        : "fill-gray-700 dark:fill-text-primary"
+                    }`}
+                  />
+                  <span className={`text-sm font-semibold`}>Hot</span>
+                </button>
+              </Link>
+              <Link href={`/tag/${tagDetails.slug}?tab=new`}>
+                <button
+                  aria-label="icon"
+                  role="button"
+                  className={`${
+                    tab === undefined || tab === "new"
+                      ? "btn-tab-active"
+                      : "btn-tab"
+                  }`}
+                >
+                  <Clock
+                    className={`h-4 w-4 fill-none ${
+                      tab === undefined || tab === "new"
+                        ? "stroke-secondary"
+                        : "stroke-gray-700 dark:stroke-text-primary"
+                    }`}
+                  />
+                  <span className={`text-sm font-semibold`}>New</span>
+                </button>
+              </Link>
             </div>
 
             <div className="flex items-center gap-2">
@@ -156,60 +216,12 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
           </div>
 
           {filter.status && (
-            <section className="relative flex w-full flex-col justify-between gap-4 border-b border-border-light p-4 dark:border-border md:flex-row lg:flex-col xl:flex-row">
-              <div className="flex w-full flex-col gap-4 sm:flex-row md:w-8/12 lg:w-full xl:w-8/12">
-                <div className="w-full md:w-auto">
-                  <label
-                    className="mb-2 inline-block text-gray-700 dark:text-text-secondary"
-                    htmlFor="read_time"
-                  >
-                    Read Time
-                  </label>
-                  <Select
-                    onChange={(value) => {
-                      setFilter({
-                        ...filter,
-                        data: {
-                          ...filter.data,
-                          read_time: value.label as
-                            | "Over 5 min"
-                            | "5 min"
-                            | "Under 5 min"
-                            | null
-                            | undefined,
-                        },
-                      });
-                    }}
-                    defaultText={"Select read time"}
-                    options={[
-                      {
-                        label: "Under 5 min",
-                        value: "under_5",
-                      },
-                      { label: "5 min", value: "5" },
-                      { label: "Over 5 min", value: "over_5" },
-                    ]}
-                  />
-                </div>
-                <div className="w-full md:w-auto">
-                  <label
-                    className="mb-2 inline-block text-gray-700 dark:text-text-secondary"
-                    htmlFor="read_time"
-                  >
-                    Tags
-                  </label>
-                  <Tags filter={filter} setFilter={setFilter} />
-                </div>
-              </div>
-              <div className="mt-0 flex items-start gap-2 md:mt-8 lg:mt-0 xl:mt-8">
-                <button onClick={applyFilter} className="btn-outline">
-                  Apply
-                </button>
-                <button onClick={clearFilter} className="btn-subtle">
-                  Clear Filter
-                </button>
-              </div>
-            </section>
+            <FilterSection
+              filter={filter}
+              setFilter={setFilter}
+              applyFilter={applyFilter}
+              clearFilter={clearFilter}
+            />
           )}
         </div>
 
