@@ -1,4 +1,4 @@
-import React, { type FC } from "react";
+import { type FC } from "react";
 import { type UserDetailsInterface } from "~/pages/u/[username]";
 import {
   DateSVG,
@@ -18,7 +18,8 @@ const ProfileDetail: FC<{
 }> = ({ userDetails }) => {
   return (
     <div className="my-6 flex w-full flex-wrap items-center justify-center gap-10 rounded-md border border-border-light px-6 py-6 dark:border-border">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 overflow-hidden">
+        {/*! TODO: Below code is not working properly. :( */}
         {userDetails &&
           userDetails.social &&
           Object.entries(userDetails.social).map((data, index) => {

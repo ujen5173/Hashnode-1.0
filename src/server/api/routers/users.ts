@@ -4,7 +4,7 @@ import { type SocialHandles } from "~/pages/settings";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
-export const UsersRouter = createTRPCRouter({
+export const usersRouter = createTRPCRouter({
   followUserToggle: protectedProcedure
     .input(
       z.object({

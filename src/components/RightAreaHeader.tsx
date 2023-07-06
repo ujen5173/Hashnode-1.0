@@ -13,26 +13,30 @@ const RightArea: FC = () => {
   return (
     <>
       {!!user && (
-        <Link href={"/new"}>
-          <button
-            aria-label="icon"
-            role="button"
-            className="btn-filled hidden items-center justify-center gap-2 hover:bg-blue-500 sm:flex"
-          >
-            <Pen className="h-4 w-4 fill-white stroke-white" />
-            <span>Write</span>
-          </button>
-        </Link>
+        <>
+          <Link href={"/new"}>
+            <button
+              aria-label="icon"
+              role="button"
+              className="btn-filled hidden items-center justify-center gap-2 hover:bg-blue-500 sm:flex"
+            >
+              <Pen className="h-4 w-4 fill-white stroke-white" />
+              <span>Write</span>
+            </button>
+          </Link>
+          <div className="block sm:hidden">
+            <Link href={"/new"}>
+              <button
+                aria-label="icon"
+                role="button"
+                className="btn-icon flex h-10 w-10 xl:hidden"
+              >
+                <Pen className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
+              </button>
+            </Link>
+          </div>
+        </>
       )}
-      <Link href={"/new"}>
-        <button
-          aria-label="icon"
-          role="button"
-          className="btn-icon flex h-10 w-10 xl:hidden"
-        >
-          <Pen className="h-5 w-5 fill-gray-700 stroke-gray-700 dark:fill-text-primary dark:stroke-text-primary" />
-        </button>
-      </Link>
       <button
         aria-label="icon"
         role="button"

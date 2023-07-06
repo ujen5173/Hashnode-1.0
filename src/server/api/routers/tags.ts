@@ -4,7 +4,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
-export const TagsRouter = createTRPCRouter({
+export const tagsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     try {
       return await ctx.prisma.tag.findMany({

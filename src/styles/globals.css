@@ -9,21 +9,6 @@
   font-family: "Inter", "Poppins" !important;
 }
 
-.animate-loading {
-  animation: animate-loading 1500ms linear infinite;
-}
-
-/* animate with rotate */
-@keyframs animate-loading {
-  from,
-  to {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(360deg);
-  }
-}
-
 .max-height-one {
   overflow: hidden;
   display: -webkit-box;
@@ -455,7 +440,7 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
 }
 
 .loading {
-  animation: animate-loading 1500ms linear infinite;
+  animation: animate-loading 2000ms linear infinite;
 }
 
 @keyframes animate-loading {

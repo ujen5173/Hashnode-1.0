@@ -10,6 +10,7 @@ import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
+import Editor from "./Editor";
 import ImagePlaceholder from "./ImagePlaceholder";
 import NewArticleModal from "./NewArticleModal";
 import NewTagModal from "./NewTagModal";
@@ -84,24 +85,23 @@ const NewArticleBody: FC<{
 
   useEffect(() => {
     // Get Stored data.
-    (() => {
-      const storedData = localStorage.getItem("savedData");
-      if (storedData) {
-        const { tags, ...res } = JSON.parse(storedData) as ArticleData;
-        setData((prev) => ({ ...prev, ...res }));
-        const checkTags = async () => {
-          const { data } = await refetch();
+    const storedData = localStorage.getItem("savedData");
+    if (storedData) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { tags, ...res } = JSON.parse(storedData) as ArticleData;
+      setData((prev) => ({ ...prev, ...res }));
+      const checkTags = async () => {
+        const { data } = await refetch();
 
-          if (!data) return;
-          setData((prev) => ({
-            ...prev,
-            tags: [...prev.tags, ...data.map((e) => e.name)],
-          }));
-        };
+        if (!data) return;
+        setData((prev) => ({
+          ...prev,
+          tags: [...prev.tags, ...data.map((e) => e.name)],
+        }));
+      };
 
-        void checkTags();
-      }
-    })();
+      void checkTags();
+    }
   }, []);
 
   const saveData = (): void => {
@@ -233,11 +233,11 @@ const NewArticleBody: FC<{
             className="mb-10 w-full bg-transparent py-2 text-xl font-semibold text-gray-700 outline-none dark:text-text-secondary"
           />
           <div className="relative">
-            {/* <Editor
+            <Editor
               onChange={(data: string) =>
                 setData((prev) => ({ ...prev, content: data }))
               }
-            /> */}
+            />
           </div>
         </section>
       </div>

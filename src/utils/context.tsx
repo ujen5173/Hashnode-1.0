@@ -1,11 +1,11 @@
 import { type Session } from "next-auth";
 import React, {
-  useState,
+  createContext,
   useEffect,
+  useState,
   type ChangeEvent,
   type Dispatch,
   type SetStateAction,
-  createContext,
 } from "react";
 import { toast } from "react-toastify";
 import { type ArticleCard } from "~/types";
@@ -30,6 +30,25 @@ export interface TrendingTagsTypes {
 export interface TrendingArticleTypes {
   data: ArticleCard[] | undefined;
   isLoading: boolean;
+}
+export interface NotificationDataTypes {
+  data: Notification[] | undefined;
+  isLoading: boolean;
+  type: "ALL" | "COMMENT" | "LIKE" | "NEW_ARTICLE";
+}
+
+export interface Notification {
+  id: string;
+  body?: string | null; // This is for comment notification
+  type: "ALL" | "COMMENT" | "LIKE" | "NEW_ARTICLE";
+  slug: string;
+  title: string;
+  createdAt: Date;
+  from: {
+    username: string;
+    name: string;
+    profile: string;
+  };
 }
 
 export interface ContextValue {
