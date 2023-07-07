@@ -1,11 +1,12 @@
 import { TRPCClientError } from "@trpc/client";
-import { useContext, useEffect, useState, type FC } from "react";
+import { useContext, useEffect, useState, FC } from "react";
 import { toast } from "react-toastify";
 import { Bookmarkplus, Comment, Dots, Heart, Share } from "~/svgs";
 import Bookmarked from "~/svgs/Bookmarked";
 import type { Article } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C, ContextValue } from "~/utils/context";
+import ShareMenu from "./ShareMenu"; // Import the ShareMenu component
 
 const ArticleActions: FC<{
   article: Article;
@@ -17,6 +18,8 @@ const ArticleActions: FC<{
     hasLiked: false,
     likesCount: article.likesCount,
   });
+
+  const [shareMenuOpen, setShareMenuOpen] = useState(false); // State to manage share menu visibility
 
   useEffect(() => {
     if (!user?.user.id) {
@@ -55,6 +58,14 @@ const ArticleActions: FC<{
         toast.error(error.message);
       }
     }
+  };
+
+  const openShareMenu = () => {
+    setShareMenuOpen(true);
+  };
+
+  const closeShareMenu = () => {
+    setShareMenuOpen(false);
   };
 
   return (
@@ -117,6 +128,7 @@ const ArticleActions: FC<{
           aria-label="icon"
           role="button"
           className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
+          onClick={openShareMenu} // Open the share menu
         >
           <div className="flex items-center justify-center gap-2">
             <Share className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
@@ -132,6 +144,10 @@ const ArticleActions: FC<{
             <Dots className="h-5 w-5 stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
           </div>
         </button>
+
+        {shareMenuOpen && (
+          <ShareMenu onClose={closeShareMenu} /> // Render the share menu when shareMenuOpen is true
+        )}
       </div>
     </div>
   );
