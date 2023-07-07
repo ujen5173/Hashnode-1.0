@@ -8,7 +8,6 @@ This is a **full-stack application** that serves as a clone of the popular blogg
 - Features
 - Installation
 - Usage
-- TODO
 
 ## Features
 1. Authentication
@@ -45,11 +44,5 @@ Contributions are welcome! If you would like to contribute to this project, plea
 - Create a new branch for your contribution: `git checkout -b feature/your-feature`
 - Make your changes and commit them: `git commit -m "Add your message here"`
 - Push the changes to your branch: `git push origin feature/your-feature`
-
-## TODO
-- [ ] Implement user notifications system.
-- [ ] Implement Authentication.
-- [ ] Develop Backend.
-- [ ] Implement Chatgpt.
 
 Cheers 🍻.
