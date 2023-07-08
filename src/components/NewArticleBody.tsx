@@ -233,11 +233,11 @@ const NewArticleBody: FC<{
           />
           <div className="relative">
             {/* Editor should be dynamnically imported */}
-            {/* <Editor
+            { <Editor
               onChange={(data: string) =>
                 setData((prev) => ({ ...prev, content: data }))
               }
-            /> */}
+            /> }
           </div>
         </section>
       </div>
