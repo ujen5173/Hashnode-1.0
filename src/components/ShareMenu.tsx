@@ -57,7 +57,6 @@ const ShareMenu: React.FC<ShareMenuProps> = ({ onClose }) => {
           className="share-option flex items-center gap-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
           onClick={shareOnFacebook}
         >
-          <FiFacebook />
           <span>Share on Facebook</span>
         </button>
       </li>
