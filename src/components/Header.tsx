@@ -12,14 +12,13 @@ const Header: React.FC = () => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const { user } = useContext(C) as ContextValue;
-  const [searchOpened, setSearchOpened] = useState(false);
 
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto flex max-w-[1550px] items-center justify-between gap-4 px-4 py-4">
         <div className="flex flex-1 items-center justify-between gap-8 md:gap-4">
           <LeftArea />
-          <SearchArea opened={searchOpened} setOpened={setSearchOpened} />
+          <SearchArea />
         </div>
 
         <div className="flex items-center gap-2">
@@ -41,11 +40,7 @@ const Header: React.FC = () => {
             />
             {opened &&
               (!!user ? (
-                <ProfileDropdown
-                  setSearchOpened={setSearchOpened}
-                  user={user}
-                  ref={ref}
-                />
+                <ProfileDropdown user={user} ref={ref} />
               ) : (
                 <NotAuthenticatedProfileDropdown ref={ref} />
               ))}

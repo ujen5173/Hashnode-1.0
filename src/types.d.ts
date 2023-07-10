@@ -111,9 +111,9 @@ export interface Comment {
   likes: { id: string }[];
   likesCount: number;
   type: CommentType;
-  replies: Comment[];
   parentId?: string | null;
   articleId?: string | null;
+  repliesCount?: number;
 
   createdAt: Date;
   updatedAt: Date;

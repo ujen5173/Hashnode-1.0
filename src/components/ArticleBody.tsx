@@ -101,6 +101,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             <CommentsModal
               id={article.id}
               commentsModal={commentsModal}
+              authorUsername={article.user.username}
               setCommentsModal={setCommentsModal}
             />
           )}
@@ -143,7 +144,9 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
           </Link>
 
           <div
-            className={author.bio && author.bio.length > 0 ? "mb-8" : "flex-1"}
+            className={
+              author.bio && author.bio.length > 0 ? "mb-8 flex-1" : "flex-1"
+            }
           >
             <div className="flex w-full flex-col items-start justify-between sm:flex-row">
               <div className="mb-6 md:mb-0">

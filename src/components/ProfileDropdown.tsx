@@ -2,7 +2,7 @@ import type { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useContext } from "react";
 import {
   Bookmarkalt,
   Document,
@@ -11,15 +11,16 @@ import {
   Tab,
   User as UserSVG,
 } from "~/svgs";
+import { C, type ContextValue } from "~/utils/context";
 import Divider from "./Divider";
 
 const ProfileDropdown = React.forwardRef<
   HTMLDivElement,
   {
     user: Session | null;
-    setSearchOpened: React.Dispatch<React.SetStateAction<boolean>>;
   }
->(({ user, setSearchOpened }, ref) => {
+>(({ user }, ref) => {
+  const { setSearchOpen } = useContext(C) as ContextValue;
   const logout = async () => {
     await signOut({ callbackUrl: "/" });
   };
@@ -79,7 +80,7 @@ const ProfileDropdown = React.forwardRef<
         <span className="text-sm font-medium">Manage your blogs</span>
       </div>
       <div
-        onClick={() => setSearchOpened(true)}
+        onClick={() => setSearchOpen(true)}
         className="flex cursor-pointer items-center gap-2 px-4 py-3 text-gray-700  hover:bg-gray-200 dark:text-text-primary dark:hover:bg-primary-light lg:hidden"
       >
         <span>

@@ -173,6 +173,7 @@ export const commentsRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().trim(),
+        type: z.enum(["COMMENT", "REPLY"]).default("COMMENT").optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -198,108 +199,9 @@ export const commentsRouter = createTRPCRouter({
               id: true,
             },
           },
-          replies: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  username: true,
-                  profile: true,
-                },
-              },
-              likes: {
-                select: {
-                  id: true,
-                },
-              },
-              replies: {
-                include: {
-                  user: {
-                    select: {
-                      id: true,
-                      name: true,
-                      username: true,
-                      profile: true,
-                    },
-                  },
-                  likes: {
-                    select: {
-                      id: true,
-                    },
-                  },
-                  replies: {
-                    include: {
-                      user: {
-                        select: {
-                          id: true,
-                          name: true,
-                          username: true,
-                          profile: true,
-                        },
-                      },
-                      likes: {
-                        select: {
-                          id: true,
-                        },
-                      },
-                      replies: {
-                        include: {
-                          user: {
-                            select: {
-                              id: true,
-                              name: true,
-                              username: true,
-                              profile: true,
-                            },
-                          },
-                          likes: {
-                            select: {
-                              id: true,
-                            },
-                          },
-                          replies: {
-                            include: {
-                              user: {
-                                select: {
-                                  id: true,
-                                  name: true,
-                                  username: true,
-                                  profile: true,
-                                },
-                              },
-                              likes: {
-                                select: {
-                                  id: true,
-                                },
-                              },
-                              replies: {
-                                include: {
-                                  user: {
-                                    select: {
-                                      id: true,
-                                      name: true,
-                                      username: true,
-                                      profile: true,
-                                    },
-                                  },
-                                  likes: {
-                                    select: {
-                                      id: true,
-                                    },
-                                  },
-                                  replies: true,
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
+
+          _count: {
+            select: { replies: true },
           },
         },
         orderBy: {
@@ -313,6 +215,79 @@ export const commentsRouter = createTRPCRouter({
         },
       });
 
-      return { totalComments, comments };
+      return {
+        totalComments,
+        comments: comments.map((comment) => {
+          const newComment = {
+            ...comment,
+            repliesCount: comment._count.replies,
+          };
+
+          const { _count, ...res } = newComment;
+          return res;
+        }),
+      };
+    }),
+
+  getReplies: publicProcedure
+    .input(
+      z.object({
+        commentId: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const commentId = input.commentId; // Assuming you have the articleId value
+
+      const replies = await ctx.prisma.comment.findMany({
+        where: {
+          parent: {
+            id: commentId,
+          },
+        },
+        take: 5,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile: true,
+            },
+          },
+          likes: {
+            select: {
+              id: true,
+            },
+          },
+
+          _count: {
+            select: { replies: true },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      const totalReplies = await ctx.prisma.comment.count({
+        where: {
+          parent: {
+            id: commentId,
+          },
+        },
+      });
+
+      return {
+        totalReplies,
+        replies: replies.map((reply) => {
+          const newReply = {
+            ...reply,
+            repliesCount: reply._count.replies,
+          };
+
+          const { _count, ...res } = newReply;
+          return res;
+        }),
+      };
     }),
 });

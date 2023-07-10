@@ -1,30 +1,10 @@
-import { useClickOutside } from "@mantine/hooks";
 import Link from "next/link";
-import { useEffect, type FC } from "react";
-import useKeyPress from "~/hooks/use-keypress";
+import { useContext, type FC } from "react";
 import { Ai, Search } from "~/svgs";
-import SearchBody from "./SearchBody";
+import { C, type ContextValue } from "~/utils/context";
 
-const SearchArea: FC<{
-  opened: boolean;
-  setOpened: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ opened, setOpened }) => {
-  const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
-
-  const handleKeyPress = (): void => {
-    setOpened(true);
-  };
-
-  useKeyPress(handleKeyPress);
-
-  useEffect(() => {
-    if (opened) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [opened]);
-
+const SearchArea: FC = () => {
+  const { setSearchOpen } = useContext(C) as ContextValue;
   return (
     <>
       <div className="hidden items-center gap-2 xl:flex">
@@ -47,7 +27,7 @@ const SearchArea: FC<{
         </button>
       </div>
       <div className="relative hidden flex-1 lg:block">
-        <div onClick={() => setOpened(true)} className="relative z-30">
+        <div onClick={() => setSearchOpen(true)} className="relative z-30">
           <div className="absolute left-4 top-1/2 -translate-y-1/2">
             <Search className="h-4 w-4 stroke-gray-700 dark:stroke-text-primary" />
           </div>
@@ -63,11 +43,6 @@ const SearchArea: FC<{
           </div>
         </div>
       </div>
-      {opened && (
-        <div ref={ref}>
-          <SearchBody setOpened={setOpened} />
-        </div>
-      )}
     </>
   );
 };

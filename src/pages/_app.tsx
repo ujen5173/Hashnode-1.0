@@ -1,22 +1,43 @@
-import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { type AppType } from "next/app";
 
-import { api } from "~/utils/api";
 import NextTopLoader from "nextjs-toploader";
+import { api } from "~/utils/api";
 
+import { ToastContainer } from "react-toastify";
 import "~/styles/globals.css";
 import Context from "~/utils/context";
-import { ToastContainer } from "react-toastify";
 
+import { useClickOutside } from "@mantine/hooks";
+import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
+import { SearchBody } from "~/components";
+import useKeyPress from "~/hooks/use-keypress";
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const handleKeyPress = (): void => {
+    setSearchOpen(true);
+  };
+
+  useKeyPress(handleKeyPress);
+
+  useEffect(() => {
+    if (searchOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [searchOpen]);
+  const ref = useClickOutside<HTMLDivElement>(() => setSearchOpen(false));
+
   return (
     <SessionProvider session={session}>
-      <Context>
+      <Context options={{ searchOpen, setSearchOpen }}>
         <ToastContainer
           closeButton={false}
           pauseOnFocusLoss={false}
@@ -26,6 +47,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
         <NextTopLoader color="#2563eb" />
         <Component {...pageProps} />
+
+        {searchOpen && (
+          <div ref={ref}>
+            <SearchBody setOpened={setSearchOpen} />
+          </div>
+        )}
       </Context>
     </SessionProvider>
   );

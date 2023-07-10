@@ -7,6 +7,7 @@
 *::before,
 *::after {
   font-family: "Inter", "Poppins" !important;
+  scroll-behavior: smooth;
 }
 
 .max-height-one {
@@ -62,6 +63,18 @@ body.dark .anouncement {
   text-overflow: ellipsis;
 }
 
+.hamburger_menu {
+  transition: transform 0.3s ease-in-out;
+}
+
+.hamburger_menu.inactive {
+  transform: translateX(-100%);
+}
+
+.hamburger_menu.active {
+  transform: translateX(0);
+}
+
 .btn-link {
   @apply text-base font-medium text-gray-700 hover:text-gray-500 hover:underline dark:text-text-secondary dark:hover:text-text-secondary;
 }
@@ -75,7 +88,7 @@ body.dark .anouncement {
   @apply rounded-full border border-black bg-black px-4 py-2 text-sm font-medium text-white transition duration-150 hover:border-primary-light hover:bg-primary-light dark:hover:bg-primary-light;
 }
 .btn-filled {
-  @apply rounded-full border border-secondary bg-secondary px-4 py-2 text-sm font-medium text-white transition duration-150 hover:border-blue-500 hover:bg-blue-500 hover:shadow-md;
+  @apply rounded-full border border-secondary bg-secondary px-4 py-2 text-sm font-medium text-white transition duration-150 hover:border-blue-500 hover:bg-blue-500 hover:shadow-md focus:text-secondary;
 }
 .btn-filled-large {
   @apply rounded-full border border-secondary bg-secondary px-6 py-3 text-lg font-medium tracking-wider text-white transition duration-150 hover:border-blue-500 hover:bg-blue-500 hover:shadow-md;

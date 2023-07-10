@@ -159,15 +159,11 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                 <button
                   aria-label="icon"
                   role="button"
-                  className={`${
-                    tab === undefined || tab === "new"
-                      ? "btn-tab-active"
-                      : "btn-tab"
-                  }`}
+                  className={`${tab === "new" ? "btn-tab-active" : "btn-tab"}`}
                 >
                   <Clock
                     className={`h-4 w-4 fill-none ${
-                      tab === undefined || tab === "new"
+                      tab === "new"
                         ? "stroke-secondary"
                         : "stroke-gray-700 dark:stroke-text-primary"
                     }`}

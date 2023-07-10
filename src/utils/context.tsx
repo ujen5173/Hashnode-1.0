@@ -13,6 +13,12 @@ import { api } from "./api";
 
 interface Props {
   children: React.ReactNode;
+  options: Options;
+}
+
+interface Options {
+  searchOpen: boolean;
+  setSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface Tag {
@@ -51,7 +57,7 @@ export interface Notification {
   };
 }
 
-export interface ContextValue {
+export interface ContextValue extends Options {
   handleTheme: () => void;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -76,7 +82,7 @@ export interface ContextValue {
 
 export const C = createContext<ContextValue | undefined>(undefined);
 
-const Context = ({ children }: Props) => {
+const Context = ({ children, options }: Props) => {
   const [user, setUser] = useState<Session | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
@@ -182,6 +188,8 @@ const Context = ({ children }: Props) => {
         following,
         setFollowing,
         followUser,
+
+        ...options,
       }}
     >
       {children}
