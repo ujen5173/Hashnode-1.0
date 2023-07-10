@@ -238,6 +238,12 @@ const NewArticleBody: FC<{
                 setData((prev) => ({ ...prev, content: data }))
               }
             /> */}
+            <textarea
+              value={data.content}
+              onChange={(e) => {
+                setData((prev) => ({ ...prev, content: e.target.value }));
+              }}
+            />
           </div>
         </section>
       </div>

@@ -43,10 +43,12 @@ export function formatDate(date: Date): string {
 
   if (timeDifference < 60 * 60 * 1000) {
     const minutesAgo = Math.floor(timeDifference / (60 * 1000));
-    return minutesAgo <= 0 ? "Just now" : `${minutesAgo} mins ago`;
+    return minutesAgo <= 0
+      ? "Just now"
+      : `${minutesAgo} ${minutesAgo > 1 ? "mins" : "min"} ago`;
   } else if (timeDifference < 24 * 60 * 60 * 1000) {
     const hoursAgo = Math.floor(timeDifference / (60 * 60 * 1000));
-    return `${hoursAgo} hours ago`;
+    return `${hoursAgo} ${hoursAgo > 1 ? "hours" : "hour"} ago`;
   } else {
     const options: Intl.DateTimeFormatOptions = {
       year: "numeric",

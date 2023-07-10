@@ -147,13 +147,15 @@ const ManageData: FC<{
                     </div>
                   )}
                   <Link
-                    href={`/u/${notification.from.username}/${notification.slug}`}
+                    href={`/u/${notification.from.username}/${
+                      notification.slug as string
+                    }`}
                   >
                     <h1 className="mb-1 text-lg font-semibold text-secondary">
                       {notification.title}
                     </h1>
                   </Link>
-                  <p className="text-gray-500 dark:text-text-primary">
+                  <p className="text-sm text-gray-500 dark:text-text-primary">
                     {formatDate(notification.createdAt)}
                   </p>
                 </div>

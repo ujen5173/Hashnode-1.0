@@ -1,3 +1,4 @@
+import { NotificationTypes } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -21,6 +22,13 @@ export const commentsRouter = createTRPCRouter({
         },
         select: {
           id: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+          slug: true,
           comments: {
             select: {
               id: true,
@@ -44,6 +52,11 @@ export const commentsRouter = createTRPCRouter({
           },
           select: {
             id: true,
+            user: {
+              select: {
+                id: true,
+              },
+            },
           },
         }));
 
@@ -54,7 +67,7 @@ export const commentsRouter = createTRPCRouter({
         });
       }
 
-      await ctx.prisma.comment.create({
+      const newComment = await ctx.prisma.comment.create({
         data: {
           body: input.content,
           type: input.type,
@@ -77,6 +90,9 @@ export const commentsRouter = createTRPCRouter({
               },
             }),
         },
+        select: {
+          id: true,
+        },
       });
 
       await ctx.prisma.article.update({
@@ -89,6 +105,53 @@ export const commentsRouter = createTRPCRouter({
           },
         },
       });
+
+      // Notify the author of the article
+      if (input.type === "COMMENT") {
+        await ctx.prisma.notification.create({
+          data: {
+            type: NotificationTypes.COMMENT,
+            fromId: ctx.session.user.id,
+            userId: article.user.id,
+            title: `${ctx.session.user.name} commented on your article`,
+            body:
+              input.content.length > 50
+                ? input.content.slice(0, 50) + "..."
+                : input.content,
+            isRead: false,
+            slug: `${article.slug}?commentId=${newComment.id}`,
+          },
+        });
+      } else if (input.type === "REPLY" && parentComment) {
+        await ctx.prisma.notification.createMany({
+          data: [
+            {
+              type: NotificationTypes.COMMENT,
+              fromId: ctx.session.user.id,
+              userId: article.user.id,
+              title: `${ctx.session.user.name} commented on your article`,
+              body:
+                input.content.length > 50
+                  ? input.content.slice(0, 50) + "..."
+                  : input.content,
+              isRead: false,
+              slug: `${article.slug}?commentId=${newComment.id}`,
+            },
+            {
+              type: NotificationTypes.COMMENT,
+              fromId: ctx.session.user.id,
+              userId: parentComment.user.id,
+              title: `${ctx.session.user.name} commented on your article`,
+              body:
+                input.content.length > 50
+                  ? input.content.slice(0, 50) + "..."
+                  : input.content,
+              isRead: false,
+              slug: `${article.slug}?commentId=${newComment.id}`,
+            },
+          ],
+        });
+      }
 
       return {
         success: true,

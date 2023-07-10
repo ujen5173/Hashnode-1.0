@@ -65,7 +65,7 @@ const ArticleActions: FC<{
   return (
     <div className="sticky bottom-4 left-0 flex w-full items-center justify-center gap-2 px-4 py-4">
       <div className="mx-auto flex items-center justify-between gap-2 rounded-full border border-border-light bg-light-bg px-4 py-1 dark:border-border dark:bg-primary-light sm:w-max">
-        <Tooltip label="Link">
+        <Tooltip label="Like">
           <button
             aria-label="icon"
             role="button"

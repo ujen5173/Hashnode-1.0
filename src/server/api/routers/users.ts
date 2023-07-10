@@ -1,3 +1,4 @@
+import { NotificationTypes } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { type SocialHandles } from "~/pages/settings";
@@ -110,6 +111,21 @@ export const usersRouter = createTRPCRouter({
                 },
                 followingCount: {
                   increment: 1,
+                },
+              },
+            }),
+            ctx.prisma.notification.create({
+              data: {
+                type: NotificationTypes.FOLLOW,
+                from: {
+                  connect: {
+                    id: currentUser.id,
+                  },
+                },
+                user: {
+                  connect: {
+                    username,
+                  },
                 },
               },
             }),

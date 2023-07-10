@@ -1,3 +1,4 @@
+import { NotificationTypes } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import readingTime from "reading-time";
 import slugify from "slugify";
@@ -403,6 +404,29 @@ export const postsRouter = createTRPCRouter({
               input.content.slice(0, 40),
             seoOgImage: input.seoOgImage || input.cover_image,
           },
+          include: {
+            user: {
+              select: {
+                followers: {
+                  select: {
+                    id: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Notify followers of the user
+        await ctx.prisma.notification.createMany({
+          data: newArticle.user.followers.map((follower) => ({
+            userId: follower.id,
+            type: NotificationTypes.NEW_ARTICLE,
+            body: `@${ctx.session.user.username} published a new article`,
+            slug: newArticle.slug,
+            isRead: false,
+            fromId: ctx.session.user.id,
+          })),
         });
 
         return {

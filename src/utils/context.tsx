@@ -1,3 +1,4 @@
+import { type NotificationTypes } from "@prisma/client";
 import { type Session } from "next-auth";
 import React, {
   createContext,
@@ -40,15 +41,15 @@ export interface TrendingArticleTypes {
 export interface NotificationDataTypes {
   data: Notification[] | undefined;
   isLoading: boolean;
-  type: "ALL" | "COMMENT" | "LIKE" | "NEW_ARTICLE";
+  type: "COMMENT" | "LIKE" | "NEW_ARTICLE" | "MENTION" | "FOLLOW" | "ALL";
 }
 
 export interface Notification {
   id: string;
   body?: string | null; // This is for comment notification
-  type: "ALL" | "COMMENT" | "LIKE" | "NEW_ARTICLE";
-  slug: string;
-  title: string;
+  type: NotificationTypes | null;
+  slug?: string | null;
+  title?: string | null;
   createdAt: Date;
   from: {
     username: string;

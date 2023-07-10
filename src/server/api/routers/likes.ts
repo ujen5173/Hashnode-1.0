@@ -1,3 +1,4 @@
+import { NotificationTypes } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -18,6 +19,13 @@ export const likesRouter = createTRPCRouter({
             id: articleId,
           },
           select: {
+            slug: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
             likes: {
               select: {
                 id: true,
@@ -61,6 +69,28 @@ export const likesRouter = createTRPCRouter({
           likes: { id: string }[];
           likesCount: number;
         };
+
+        if (!hasLiked) {
+          await ctx.prisma.notification.create({
+            data: {
+              type: NotificationTypes.LIKE,
+              from: {
+                connect: {
+                  id: ctx.session.user.id,
+                },
+              },
+              body: null,
+              title: `${ctx.session.user.username} liked your article`,
+              user: {
+                connect: {
+                  id: article.user.id,
+                },
+              },
+              isRead: false,
+              slug: article.slug,
+            },
+          });
+        }
 
         return {
           success: true,

@@ -1,7 +1,9 @@
 import { useClickOutside } from "@mantine/hooks";
 import Link from "next/link";
-import { useContext, useState, type FC } from "react";
+import { useContext, useEffect, useState, type FC } from "react";
+import { toast } from "react-toastify";
 import { Notification as NotificationSVG, Pen, Sun, Updates } from "~/svgs";
+import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import Notification from "./Notification";
 
@@ -9,6 +11,29 @@ const RightArea: FC = () => {
   const { user, handleTheme } = useContext(C) as ContextValue;
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+  const [count, setCount] = useState(0);
+
+  // notifications are refetched every 15 seconds
+  const { data, error } = api.notifications.getCount.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchInterval: 15000, // 15 seconds
+  });
+
+  const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
+
+  useEffect(() => {
+    if (opened) {
+      mutate();
+      setCount(0);
+    }
+  }, [opened]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Error Fetching Notifications State");
+    }
+    setCount(data || 0);
+  }, [error, data]);
 
   return (
     <>
@@ -62,6 +87,9 @@ const RightArea: FC = () => {
         >
           <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
         </button>
+        <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">
+          <span className="text-xs">{count}</span>
+        </div>
         {opened && (
           <div
             ref={ref}

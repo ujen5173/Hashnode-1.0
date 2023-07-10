@@ -1,5 +1,6 @@
-import { useContext, useState, type FC } from "react";
-import { Read } from "~/svgs";
+import { type NotificationTypes } from "@prisma/client";
+import { useContext, useEffect, useState, type FC } from "react";
+import { toast } from "react-toastify";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import ManageData from "./Cards/ManageData";
@@ -19,12 +20,8 @@ const Notification = () => {
     <div className="w-full rounded-md border border-border-light bg-white p-4 shadow-lg dark:border-border dark:bg-black md:w-[35rem]">
       <div className="mb-4 flex items-center justify-between gap-2">
         <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
-          Notification
+          Notifications
         </h1>
-        <button className="btn-outline flex items-center gap-2">
-          <Read className="h-4 w-4 fill-secondary" />
-          <span className="font-medium text-secondary">Mark as read</span>
-        </button>
       </div>
       <header className="scroll-area overflow-auto border-b border-border-light px-4 dark:border-border">
         <div className="flex w-max items-end justify-center gap-2">
@@ -70,21 +67,23 @@ const Notification = () => {
 export default Notification;
 
 const NotificationContainer: FC<{
-  res: "all" | "comment" | "like" | "new_article";
+  res: "all" | "comment" | "like" | "new_article" | "follow";
 }> = ({ res }) => {
-  const { data, isLoading } = api.notifications.get.useQuery(
+  const { data, isLoading, isError } = api.notifications.get.useQuery(
     {
       limit: 6,
-      type: res.toLocaleUpperCase() as
-        | "ALL"
-        | "COMMENT"
-        | "LIKE"
-        | "NEW_ARTICLE",
+      type: res.toLocaleUpperCase() as NotificationTypes,
     },
     {
       refetchOnWindowFocus: false,
     }
   );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("Error Fetching Notifications");
+    }
+  }, [isError]);
 
   return (
     <div className=" scroll-area max-h-[400px] overflow-auto px-4">
