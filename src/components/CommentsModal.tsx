@@ -121,32 +121,14 @@ const CommentsModal: FC<{
             </div>
           )}
 
-          {/* TODO: Shifting reply textarea to reply section */}
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="min-h-[12rem] w-full resize-none rounded-lg bg-transparent p-4 text-base text-gray-700 outline-none dark:text-text-secondary"
-            placeholder={
-              // reply
-              //   ? `Reply to @${replyingUserDetails || "unknown user"}`
-              //   :
-              "Write a thoughtful comment..."
-            }
+            placeholder={"Write a thoughtful comment..."}
           />
 
           <div className="flex-end flex justify-end gap-2">
-            {/* {reply ? (
-              <button
-                className={`btn-filled ${
-                  publishing ? "cursor-not-allowed opacity-40" : ""
-                }`}
-                aria-label="Reply Button"
-                disabled={publishing}
-                onClick={() => !publishing && void commentFunc("REPLY", text)}
-              >
-                {publishing ? "Replying..." : "Reply"}
-              </button>
-            ) : ( */}
             <button
               className={`btn-filled ${
                 publishing ? "cursor-not-allowed opacity-40" : ""
@@ -157,7 +139,6 @@ const CommentsModal: FC<{
             >
               {publishing ? "Publishing..." : "Comment"}
             </button>
-            {/* )} */}
             <button
               className="btn-outline"
               aria-label="Cancel Button"
