@@ -44,7 +44,7 @@ const ImagePlaceholder = ({
           style={{
             minHeight: minHeight,
           }}
-          className={`relative flex w-full flex-col items-center justify-center gap-4 rounded-md border-2 border-dashed border-border-light bg-light-bg dark:border-border dark:bg-primary-light`}
+          className={`relative flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-lg border-2 border-dashed border-border-light bg-light-bg dark:border-border dark:bg-primary-light`}
         >
           {file ? (
             <Image

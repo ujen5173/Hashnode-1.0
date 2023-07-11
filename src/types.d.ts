@@ -34,6 +34,10 @@ export interface ArticleCard {
   slug: string;
   cover_image?: string | null;
   disabledComments: boolean;
+  commonUsers: {
+    profile: string;
+    id: string;
+  }[];
   user: {
     name: string;
     username: string;
@@ -51,6 +55,18 @@ export interface ArticleCard {
   likesCount: number;
   commentsCount: number;
   createdAt: Date;
+}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ArticleCardRemoveCommonUser
+  extends Omit<ArticleCard, "commonUsers"> {}
+
+export interface ArticleCardWithComments extends ArticleCardRemoveCommonUser {
+  comments: {
+    user: {
+      id: string;
+      profile: string;
+    };
+  }[];
 }
 
 export interface Tag {

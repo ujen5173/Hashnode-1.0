@@ -5,6 +5,7 @@ import { type SearchResults } from "~/types";
 import { api } from "~/utils/api";
 import TagsSearchCard from "./Cards/TagsSearchCard";
 import UserSearchCard from "./Cards/UserSearchCard";
+import SearchLoading from "./Loading/SearchLoading";
 import SearchArticle from "./SearchArticle";
 
 const SearchBody: FC<{
@@ -62,8 +63,6 @@ const SearchBody: FC<{
 
   const refetchData = async () => {
     if (query.trim().length > 0) {
-      setRefetching(true);
-
       const res = await refetch();
       setData(res.data as SearchResults);
       setRefetching(false);
@@ -80,7 +79,7 @@ const SearchBody: FC<{
     <div className="absolute inset-0 flex items-start justify-center py-16">
       <div
         onClick={() => setOpened(false)}
-        className="fixed inset-0 z-40 bg-gray-700 bg-opacity-50 backdrop-blur"
+        className="fixed inset-0 z-50 bg-gray-700 bg-opacity-50 backdrop-blur"
       />
 
       <div className="z-50 w-11/12 max-w-[950px] overflow-hidden rounded-xl border border-border-light bg-white shadow-lg dark:border-border dark:bg-primary">
@@ -96,6 +95,8 @@ const SearchBody: FC<{
               autoFocus
               onChange={(e) => {
                 setQuery(e.target.value);
+                setRefetching(true);
+
                 void debounced(e.target.value);
               }}
             />
@@ -150,18 +151,7 @@ const SearchBody: FC<{
             ) : (
               <div className="">
                 {refetching ? (
-                  <div className="h-64 flex-1 ">
-                    <div className="border-b border-border-light p-4 last:border-0 dark:border-border">
-                      <div className="loading mb-1 h-4 w-8/12 rounded-full bg-border-light dark:bg-border" />
-                      <div className="loading mb-1 h-4 w-6/12 rounded-full bg-border-light dark:bg-border" />
-                      <div className="loading mb-1 h-4 w-3/12 rounded-full bg-border-light dark:bg-border" />
-                    </div>
-                    <div className="border-b border-border-light p-4 last:border-0 dark:border-border">
-                      <div className="loading mb-1 h-4 w-8/12 rounded-full bg-border-light dark:bg-border" />
-                      <div className="loading mb-1 h-4 w-6/12 rounded-full bg-border-light dark:bg-border" />
-                      <div className="loading mb-1 h-4 w-3/12 rounded-full bg-border-light dark:bg-border" />
-                    </div>
-                  </div>
+                  <SearchLoading />
                 ) : type === "USERS" && data.users && data.users.length > 0 ? (
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.users.map((user) => (

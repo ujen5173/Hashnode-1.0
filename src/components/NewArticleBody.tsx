@@ -11,6 +11,7 @@ import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
+import Input from "./Input";
 import NewArticleModal from "./NewArticleModal";
 import NewTagModal from "./NewTagModal";
 
@@ -67,7 +68,6 @@ const NewArticleBody: FC<{
     {
       enabled: false,
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
     }
   );
 
@@ -89,6 +89,7 @@ const NewArticleBody: FC<{
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { tags, ...res } = JSON.parse(storedData) as ArticleData;
       setData((prev) => ({ ...prev, ...res }));
+      if (tags.length === 0) return;
       const checkTags = async () => {
         const { data } = await refetch();
 
@@ -167,7 +168,7 @@ const NewArticleBody: FC<{
           {fileModal && (
             <div
               ref={ref}
-              className="absolute left-0 top-full z-30 mt-2 w-full bg-light-bg dark:bg-primary-light sm:w-96"
+              className="absolute left-0 top-full z-30 mt-2 w-full sm:w-96"
             >
               <ImagePlaceholder
                 file={file}
@@ -195,12 +196,7 @@ const NewArticleBody: FC<{
 
         <section className="px-2">
           <div className="relative">
-            <input
-              type="text"
-              id="title"
-              name="title"
-              autoComplete="off"
-              autoCorrect="off"
+            <Input
               value={data.title}
               onChange={(e) => {
                 handleChange(e, setData);
@@ -216,33 +212,43 @@ const NewArticleBody: FC<{
                   }),
                 }));
               }}
-              placeholder="Article Title..."
-              className="mb-4 w-full bg-transparent py-2 text-4xl font-bold text-gray-700 outline-none dark:text-text-secondary"
+              placeholder="Article Title"
+              input_type="text"
+              variant="TRANSPARENT"
+              name="title"
+              fontSize="4xl"
+              type="INPUT"
+              required={true}
+              autoFocus={true}
             />
           </div>
-          <input
-            type="text"
-            id="subtitle"
+          <Input
+            value={data.subtitle as string}
+            onChange={(e) => {
+              handleChange(e, setData);
+            }}
+            placeholder="Article Subtitle (optional)"
+            input_type="text"
+            variant="TRANSPARENT"
             name="subtitle"
-            value={data.subtitle}
-            onChange={(e) => handleChange(e, setData)}
-            placeholder="Article Subtitle..."
-            autoComplete="off"
-            autoCorrect="off"
-            className="mb-10 w-full bg-transparent py-2 text-xl font-semibold text-gray-700 outline-none dark:text-text-secondary"
+            fontSize="2xl"
+            type="INPUT"
+            required={true}
           />
+
           <div className="relative">
-            {/* Editor should be dynamnically imported */}
-            {/* <Editor
-              onChange={(data: string) =>
-                setData((prev) => ({ ...prev, content: data }))
-              }
-            /> */}
-            <textarea
+            <Input
               value={data.content}
               onChange={(e) => {
-                setData((prev) => ({ ...prev, content: e.target.value }));
+                handleChange(e, setData);
               }}
+              placeholder="Start writing your story..."
+              input_type="text"
+              variant="TRANSPARENT"
+              fontSize="3xl"
+              name="content"
+              type="TEXTAREA"
+              required={true}
             />
           </div>
         </section>

@@ -17,6 +17,7 @@ const RightArea: FC = () => {
   const { data, error } = api.notifications.getCount.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchInterval: 15000, // 15 seconds
+    enabled: !!user,
   });
 
   const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
@@ -78,23 +79,22 @@ const RightArea: FC = () => {
       >
         <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
       </button>
-      <div className="relative">
+      <div className="relative hidden sm:block">
         <button
           onClick={() => setOpened((prev) => !prev)}
           aria-label="icon"
           role="button"
-          className="btn-icon hidden h-10 w-10 sm:flex"
+          className="btn-icon flex h-10 w-10"
         >
           <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
         </button>
-        <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">
-          <span className="text-xs">{count}</span>
-        </div>
+        {count > 0 && (
+          <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">
+            <span className="text-xs">{count}</span>
+          </div>
+        )}
         {opened && (
-          <div
-            ref={ref}
-            className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
-          >
+          <div ref={ref} className="absolute right-0 top-full z-50 mt-2">
             <Notification />
           </div>
         )}

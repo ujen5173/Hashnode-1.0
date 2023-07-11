@@ -1,9 +1,9 @@
 import { type FC } from "react";
 
 interface InputTypes {
-  label: string;
+  label?: string;
   type: "INPUT" | "TEXTAREA" | "IMAGE";
-  variant: "FILLED" | "OUTLINED" | "ROUNDED";
+  variant: "FILLED" | "OUTLINED" | "ROUNDED" | "TRANSPARENT";
   placeholder: string;
   input_type: "email" | "text" | "password" | "image";
   disabled?: boolean;
@@ -16,6 +16,7 @@ interface InputTypes {
   pattern?: string | undefined;
   max?: number | undefined;
   autoFocus?: boolean;
+  fontSize?: "sm" | "xs" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
 }
 
 const Input: FC<InputTypes> = ({
@@ -32,20 +33,25 @@ const Input: FC<InputTypes> = ({
   pattern = undefined,
   max = undefined,
   autoFocus = false,
+  fontSize = "sm",
 }) => {
   return (
     <div className="mb-6">
-      <label className="mb-2 block text-sm font-normal text-gray-700 dark:text-text-secondary">
-        {label}
-      </label>
+      {label && (
+        <label className="mb-2 block text-sm font-normal text-gray-700 dark:text-text-secondary">
+          {label}
+        </label>
+      )}
       {type === "INPUT" ? (
         <input
           type={input_type}
-          className={`text-sm ${
+          className={`text-${fontSize} ${
             variant === "FILLED"
               ? "input-filled"
               : variant === "ROUNDED"
               ? "input-primary"
+              : variant === "TRANSPARENT"
+              ? "mb-4 w-full bg-transparent py-2 font-bold text-gray-700 placeholder-opacity-50 outline-none dark:text-text-secondary"
               : "input-outline"
           }`}
           placeholder={placeholder}
@@ -62,11 +68,13 @@ const Input: FC<InputTypes> = ({
       ) : type === "TEXTAREA" ? (
         <>
           <textarea
-            className={`min-h-[10.4rem] ${
+            className={`text-${fontSize} ${
               variant === "FILLED"
                 ? "input-filled"
                 : variant === "ROUNDED"
                 ? "input-primary"
+                : variant === "TRANSPARENT"
+                ? "mb-4 w-full bg-transparent py-2 font-bold text-gray-700 placeholder-opacity-50 outline-none dark:text-text-secondary"
                 : "input-outline"
             }`}
             placeholder={placeholder}

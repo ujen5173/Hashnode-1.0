@@ -123,6 +123,7 @@ const NewArticleModal: FC<{
       const res = await mutateAsync(data);
       if (res.success) {
         setPublishModal(false);
+        localStorage.removeItem("savedData");
         await router.push(res.redirectLink);
         toast.success("Article published successfully");
       }

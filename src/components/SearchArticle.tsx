@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import React, { type FC } from "react";
-import { Heart } from "~/svgs";
+import { type FC } from "react";
+import { Comment, Heart } from "~/svgs";
 import { formatDate } from "~/utils/miniFunctions";
 
 interface Props {
@@ -46,11 +46,20 @@ const SearchArticle: FC<Props> = ({ data }) => {
           <h1 className="mb-4 text-xl font-semibold text-gray-700 dark:text-text-secondary">
             {data.title}
           </h1>
-          <div className="flex items-center gap-2">
-            <Heart className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
-            <p className="text-base font-medium text-gray-700 dark:text-text-primary">
-              {data.likesCount}
-            </p>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Heart className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+              <p className="text-base font-medium text-gray-700 dark:text-text-primary">
+                {data.likesCount}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Comment className="h-6 w-6 fill-none stroke-gray-700 dark:stroke-text-primary" />
+              <p className="text-base font-medium text-gray-700 dark:text-text-primary">
+                {data.commentsCount}
+              </p>
+            </div>
           </div>
         </div>
         {data.cover_image && (

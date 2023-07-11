@@ -1,5 +1,10 @@
-import { NotificationTypes } from "@prisma/client";
+import {
+  NotificationTypes,
+  type Prisma,
+  type PrismaClient,
+} from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { type Session } from "next-auth";
 import readingTime from "reading-time";
 import slugify from "slugify";
 import { v4 as uuid } from "uuid";
@@ -9,6 +14,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { type ArticleCardWithComments } from "~/types";
 import {
   refactorActivityHelper,
   type Activity,
@@ -28,6 +34,16 @@ const selectArticleCard = {
       profile: true,
     },
   },
+  comments: {
+    select: {
+      user: {
+        select: {
+          id: true,
+          profile: true,
+        },
+      },
+    },
+  },
   content: true,
   read_time: true,
   tags: {
@@ -42,6 +58,62 @@ const selectArticleCard = {
   commentsCount: true,
   createdAt: true,
 } as const;
+
+function displayUniqueObjects(objects: Array<{ id: string; profile: string }>) {
+  // Create a set to store the unique IDs.
+  const uniqueIds = new Set();
+  // Create an array to store the unique objects.
+  const uniqueObjects = [];
+
+  // Iterate over the objects and add them to the set if they are not already present.
+  for (const object of objects) {
+    const id = object.id;
+    if (!uniqueIds.has(id)) {
+      uniqueIds.add(id);
+      uniqueObjects.push(object);
+    }
+  }
+
+  // Return the list of unique objects.
+  return uniqueObjects;
+}
+
+const getArticlesWithUserFollowingProfiles = async (
+  ctx: {
+    session: Session | null;
+    prisma: PrismaClient<
+      Prisma.PrismaClientOptions,
+      never,
+      Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
+    >;
+  },
+  articles: ArticleCardWithComments[]
+) => {
+  const userFollowing = await ctx.prisma.user.findUnique({
+    where: {
+      id: ctx.session?.user?.id,
+    },
+    select: {
+      following: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  return articles.map((article) => {
+    const { comments, ...rest } = article;
+    const followingComments = displayUniqueObjects(
+      comments
+        .map((c) => c.user)
+        .filter((user) =>
+          userFollowing?.following.some((f) => f.id === user.id)
+        )
+    );
+    return { ...rest, commonUsers: followingComments };
+  });
+};
 
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure
@@ -120,7 +192,13 @@ export const postsRouter = createTRPCRouter({
             : {}),
         });
 
-        return data;
+        return await getArticlesWithUserFollowingProfiles(
+          {
+            session: ctx.session,
+            prisma: ctx.prisma,
+          },
+          data
+        );
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -149,59 +227,65 @@ export const postsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.article.findMany({
-        where: {
-          ...((input?.filter?.tags || input?.filter?.read_time) && {
-            ...(input?.filter?.read_time && {
-              read_time:
-                input?.filter?.read_time === "over_5"
-                  ? { gt: 5 }
-                  : input?.filter?.read_time === "under_5"
-                  ? { lt: 5 }
-                  : input?.filter?.read_time === "5"
-                  ? { equals: 5 }
-                  : undefined,
-            }),
-            ...(input?.filter?.tags &&
-              input.filter.tags.length > 0 && {
-                tags: {
-                  some: {
-                    name: {
-                      in: input?.filter?.tags
-                        ? input?.filter?.tags.length > 0
-                          ? input?.filter?.tags.map((tag) => tag.name)
-                          : undefined
-                        : undefined,
-                      mode: "insensitive",
+      return await getArticlesWithUserFollowingProfiles(
+        {
+          session: ctx.session,
+          prisma: ctx.prisma,
+        },
+        await ctx.prisma.article.findMany({
+          where: {
+            ...((input?.filter?.tags || input?.filter?.read_time) && {
+              ...(input?.filter?.read_time && {
+                read_time:
+                  input?.filter?.read_time === "over_5"
+                    ? { gt: 5 }
+                    : input?.filter?.read_time === "under_5"
+                    ? { lt: 5 }
+                    : input?.filter?.read_time === "5"
+                    ? { equals: 5 }
+                    : undefined,
+              }),
+              ...(input?.filter?.tags &&
+                input.filter.tags.length > 0 && {
+                  tags: {
+                    some: {
+                      name: {
+                        in: input?.filter?.tags
+                          ? input?.filter?.tags.length > 0
+                            ? input?.filter?.tags.map((tag) => tag.name)
+                            : undefined
+                          : undefined,
+                        mode: "insensitive",
+                      },
                     },
                   },
-                },
-              }),
-          }),
-          tags: {
-            some: {
-              name: input.name,
+                }),
+            }),
+            tags: {
+              some: {
+                name: input.name,
+              },
             },
           },
-        },
-        select: selectArticleCard,
-        take: 15,
-        orderBy:
-          input.type === "hot"
-            ? [
-                {
-                  likesCount: "desc",
-                },
-                {
-                  commentsCount: "desc",
-                },
-              ]
-            : input.type === "new"
-            ? {
-                createdAt: "desc",
-              }
-            : undefined,
-      });
+          select: selectArticleCard,
+          take: 15,
+          orderBy:
+            input.type === "hot"
+              ? [
+                  {
+                    likesCount: "desc",
+                  },
+                  {
+                    commentsCount: "desc",
+                  },
+                ]
+              : input.type === "new"
+              ? {
+                  createdAt: "desc",
+                }
+              : undefined,
+        })
+      );
     }),
 
   getMany: publicProcedure
@@ -214,15 +298,21 @@ export const postsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.article.findMany({
-        where: {
-          id: {
-            in: input.ids.map((id) => id.id),
-          },
+      return await getArticlesWithUserFollowingProfiles(
+        {
+          session: ctx.session,
+          prisma: ctx.prisma,
         },
-        select: selectArticleCard,
-        take: 15,
-      });
+        await ctx.prisma.article.findMany({
+          where: {
+            id: {
+              in: input.ids.map((id) => id.id),
+            },
+          },
+          select: selectArticleCard,
+          take: 15,
+        })
+      );
     }),
 
   getBookmarks: publicProcedure
@@ -495,6 +585,7 @@ export const postsRouter = createTRPCRouter({
       return Array.from(refactoredActivities);
     }),
 
+  // TODO: common users
   search: publicProcedure
     .input(
       z.object({
@@ -648,7 +739,13 @@ export const postsRouter = createTRPCRouter({
           ],
         });
 
-        return articles;
+        return await getArticlesWithUserFollowingProfiles(
+          {
+            session: ctx.session,
+            prisma: ctx.prisma,
+          },
+          articles
+        );
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -704,7 +801,13 @@ export const postsRouter = createTRPCRouter({
           ],
         });
 
-        return articles;
+        return await getArticlesWithUserFollowingProfiles(
+          {
+            session: ctx.session,
+            prisma: ctx.prisma,
+          },
+          articles
+        );
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

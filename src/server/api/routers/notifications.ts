@@ -8,6 +8,7 @@ export const notificationRouter = createTRPCRouter({
         userId: ctx.session.user.id,
         isRead: false,
       },
+      take: 5,
     });
 
     return result;

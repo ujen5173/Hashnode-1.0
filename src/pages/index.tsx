@@ -2,7 +2,7 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useContext, useEffect } from "react";
-import { AuthCheck, Header, MainBody } from "~/components";
+import { Header, MainBody } from "~/components";
 import HomeSEO from "~/SEO/Home.seo";
 import { authOptions } from "~/server/auth";
 import { C, type ContextValue } from "~/utils/context";
@@ -19,7 +19,7 @@ const Home: NextPage = () => {
     <>
       <HomeSEO />
       <Header />
-      <AuthCheck />
+      {/* <AuthCheck /> */}
       <MainBody />
     </>
   );

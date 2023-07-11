@@ -20,6 +20,7 @@ export const likesRouter = createTRPCRouter({
           },
           select: {
             slug: true,
+            title: true,
             user: {
               select: {
                 id: true,
@@ -80,7 +81,7 @@ export const likesRouter = createTRPCRouter({
                 },
               },
               body: null,
-              title: `${ctx.session.user.username} liked your article`,
+              title: article.title,
               user: {
                 connect: {
                   id: article.user.id,
