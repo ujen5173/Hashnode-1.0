@@ -1,16 +1,53 @@
-import Image from "next/image";
-import React, { type FC, useContext, useState } from "react";
-import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import { useClickOutside } from "@mantine/hooks";
+import Image from "next/image";
+import { useContext, useEffect, useState, type FC } from "react";
+import { toast } from "react-toastify";
+import {
+  Check,
+  Follow,
+  Notification as NotificationSVG,
+  Search,
+  Sun
+} from "~/svgs";
+import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
-import { Search, Sun, Follow, Check } from "~/svgs";
+import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
+import Notification from "./Notification";
 
 const ArticleRightArea: FC = () => {
-  const [opened, setOpened] = useState(false);
+  const [opened, setOpened] = useState(false); // profile dropdown state
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+  const [notificationOpened, setNotificationOpened] = useState(false); // notification dropdown state
+  const Notificationref = useClickOutside<HTMLDivElement>(() =>
+    setNotificationOpened(false)
+  );
   const { handleTheme, user } = useContext(C) as ContextValue;
   const { following, followUser } = useContext(C) as ContextValue;
+  const [count, setCount] = useState(0);
+
+  // notifications are refetched every 15 seconds
+  const { data, error } = api.notifications.getCount.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchInterval: 15000, // 15 seconds
+    enabled: !!user,
+  });
+
+  const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
+
+  useEffect(() => {
+    if (opened) {
+      mutate();
+      setCount(0);
+    }
+  }, [opened]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Error Fetching Notifications State");
+    }
+    setCount(data || 0);
+  }, [error, data]);
 
   return (
     <div className="flex items-center justify-center gap-2">
@@ -19,7 +56,7 @@ const ArticleRightArea: FC = () => {
         role="button"
         className="btn-icon hidden h-10 w-10 lg:flex"
       >
-        <Search className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-white" />
+        <Search className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
       </button>
       <button
         aria-label="icon"
@@ -27,8 +64,31 @@ const ArticleRightArea: FC = () => {
         className="btn-icon flex h-10 w-10"
         onClick={handleTheme}
       >
-        <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-white" />
+        <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
       </button>
+      <div className="relative hidden sm:block">
+        <button
+          onClick={() => setNotificationOpened((prev) => !prev)}
+          aria-label="icon"
+          role="button"
+          className="btn-icon flex h-10 w-10"
+        >
+          <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+        </button>
+        {count > 0 && (
+          <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">
+            <span className="text-xs">{count}</span>
+          </div>
+        )}
+        {notificationOpened && (
+          <div
+            ref={Notificationref}
+            className="absolute right-0 top-full z-50 mt-2"
+          >
+            <Notification />
+          </div>
+        )}
+      </div>
       <div className="hidden md:block">
         <button
           onClick={() => void followUser()}

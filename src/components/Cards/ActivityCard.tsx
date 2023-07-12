@@ -31,9 +31,9 @@ const ActivityCard = ({
     >
       <div className="mb-2 flex items-center gap-2 last:mb-0">
         {item.activity_type === "JOINED" ? (
-          <LogonoText className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+          <LogonoText className="h-4 w-4 fill-secondary" />
         ) : (
-          <Pen className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+          <Pen className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
         )}
         <span className="text-gray-700 dark:text-text-secondary">
           {item.activity_type === "JOINED"

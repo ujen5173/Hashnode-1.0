@@ -1,0 +1,86 @@
+.article {
+  line-height: 36px;
+  font-weight: 400;
+  font-size: 20px;
+  color: #111111;
+}
+.article h1 {
+  font-weight: 800;
+  color: #111827;
+  font-size: 40px;
+  line-height: 48px;
+  margin-bottom: 34px;
+}
+.article h2 {
+  font-weight: 700;
+  color: #111827;
+  font-size: 36px;
+  line-height: 40px;
+  margin-bottom: 32px;
+}
+.article h3 {
+  font-weight: 600;
+  color: #111827;
+  font-size: 32px;
+  line-height: 36px;
+  margin-bottom: 30px;
+}
+.article p {
+  line-height: 36px;
+  font-weight: 400;
+  font-size: 20px;
+  color: #111111;
+  margin: 24px 0;
+}
+.article strong,
+.article em {
+  font-weight: 600;
+  color: #111827;
+}
+.article a {
+  font-weight: 500;
+  text-decoration: underline;
+}
+.article code {
+  color: #000000;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 29px;
+  background: #f0efed;
+}
+.article pre {
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 7px;
+  border: 1px solid #1f2937;
+  margin: 36px 0;
+  padding: 32px;
+}
+.article pre code {
+  background: transparent;
+  color: #e5e7eb;
+}
+.article ul,
+.article ol {
+  margin: 24px 0;
+}
+.article blockquote {
+  border-color: #e2e8f0;
+  font-style: italic;
+  margin: 32px 0;
+}
+
+body.dark {
+  color: #fafafa;
+}
+body.dark code {
+  background: #24292e;
+  color: #fafafa;
+}
+body.dark pre {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+body.dark pre code {
+  background: transparent;
+}/*# sourceMappingURL=editor.css.map */

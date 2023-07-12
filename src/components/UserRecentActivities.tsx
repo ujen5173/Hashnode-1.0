@@ -25,35 +25,31 @@ const UserRecentActivities = () => {
       <section>
         {refactoredActivity?.map((activity, index) => (
           <div
-            className="my-3 flex w-full flex-col gap-0 lg:my-0 lg:flex-row lg:gap-2 lg:gap-6"
+            className="my-2 flex w-full gap-2 lg:my-0 lg:gap-6 xl:my-8"
             key={index}
           >
-            <div className="py-0 md:py-2">
-              <p className="text-center text-sm font-medium text-gray-700 dark:text-text-secondary">
+            <div className="activity_date">
+              <span className="text-center text-xs text-gray-700 dark:text-text-secondary">
                 {activity[0]}
-              </p>
+              </span>
+              {activity[1][0]?.activity_type !== "JOINED" && (
+                <div className="activity_date_dots"></div>
+              )}
             </div>
 
-            <div className="flex w-full gap-2">
-              <div className="activity_date">
-                {activity[1][0]?.activity_type !== "JOINED" && (
-                  <div className="activity_date_dots hidden sm:block"></div>
-                )}
-              </div>
-              <div className="flex-1 px-4 lg:px-0 lg:px-6">
-                {activity[1].map((item, i) => {
-                  return (
-                    <ActivityCard
-                      index={index}
-                      i={i}
-                      item={item}
-                      key={i}
-                      subActivityLength={activity[1].length}
-                      activityLength={refactoredActivity.length}
-                    />
-                  );
-                })}
-              </div>
+            <div className="flex-1">
+              {activity[1].map((item, i) => {
+                return (
+                  <ActivityCard
+                    index={index}
+                    i={i}
+                    item={item}
+                    key={i}
+                    subActivityLength={activity[1].length}
+                    activityLength={refactoredActivity.length}
+                  />
+                );
+              })}
             </div>
           </div>
         ))}

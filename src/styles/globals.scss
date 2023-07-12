@@ -1,8 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+// import editor.css from styles folder
 @import url("editor.css");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 *,
 *::before,
 *::after {
@@ -17,7 +19,6 @@
   line-clamp: 1;
   -webkit-box-orient: vertical;
 }
-
 .max-height-two {
   overflow: hidden;
   display: -webkit-box;
@@ -25,7 +26,6 @@
   line-clamp: 2;
   -webkit-box-orient: vertical;
 }
-
 .max-height-4 {
   overflow: hidden;
   display: -webkit-box;
@@ -33,7 +33,6 @@
   line-clamp: 4;
   -webkit-box-orient: vertical;
 }
-
 .max-height-3 {
   overflow: hidden;
   display: -webkit-box;
@@ -81,43 +80,33 @@ body.dark .anouncement {
 .btn-link {
   @apply text-base font-medium text-gray-700 hover:text-gray-500 hover:underline dark:text-text-secondary dark:hover:text-text-secondary;
 }
-
 .btn-outline {
   @apply rounded-full border border-border-light bg-transparent px-4 py-2 font-medium text-black hover:bg-gray-200 dark:border-border dark:text-secondary hover:dark:bg-primary-light;
 }
-
 .btn-outline-small {
   @apply rounded-full border border-border-light bg-transparent px-3 py-1 text-sm font-medium text-black hover:bg-gray-200 dark:border-border dark:text-white hover:dark:bg-primary-light;
 }
-
 .btn-tertiary {
   @apply rounded-full border border-black bg-black px-4 py-2 text-sm font-medium text-white transition duration-150 hover:border-primary-light hover:bg-primary-light dark:hover:bg-primary-light;
 }
-
 .btn-filled {
   @apply rounded-full border border-secondary bg-secondary px-4 py-2 text-sm font-medium text-white transition duration-150 hover:border-blue-500 hover:bg-blue-500 hover:shadow-md;
 }
-
 .btn-filled-large {
   @apply rounded-full border border-secondary bg-secondary px-6 py-3 text-lg font-medium tracking-wider text-white transition duration-150 hover:border-blue-500 hover:bg-blue-500 hover:shadow-md;
 }
-
 .btn-oauth {
   @apply flex items-center justify-center gap-2 rounded-full border border-border-light bg-transparent px-6 py-3 text-base font-medium tracking-wider text-gray-700 transition duration-150 hover:border-border-light hover:bg-light-bg hover:shadow-md dark:border-primary-light dark:bg-primary-light dark:text-white dark:hover:bg-border;
 }
-
 .btn-follow {
   @apply flex items-center justify-center rounded-full border border-border-light bg-white px-4 py-2 text-sm font-medium text-secondary hover:bg-gray-100 dark:border-border;
 }
-
 .btn-follow-filled {
   @apply flex items-center justify-center rounded-full border border-border-light bg-secondary px-4 py-2 text-base font-medium text-white transition duration-150 hover:bg-blue-500 dark:border-border;
 }
-
 .btn-subtle {
   @apply rounded-full border border-transparent bg-primary bg-transparent px-4 py-2 font-medium text-black hover:bg-gray-200 dark:text-white hover:dark:bg-primary-light;
 }
-
 .btn-icon {
   @apply items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
 }
@@ -125,23 +114,18 @@ body.dark .anouncement {
 .btn-icon-outline {
   @apply flex h-11 w-11 items-center justify-center rounded-full border hover:bg-gray-200 dark:border-border dark:hover:bg-primary-light;
 }
-
 .btn-icon-small {
   @apply h-8 w-8 items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
 }
-
 .btn-icon-large {
   @apply h-10 w-10 items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
 }
-
 .btn-tab {
   @apply flex items-center gap-2 rounded-t border-b border-transparent bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-primary dark:text-text-secondary dark:hover:bg-primary-light;
 }
-
 .btn-tab-active {
   @apply flex items-center gap-2 rounded-t border-b border-secondary bg-white px-2 py-3 text-secondary hover:bg-border-light dark:bg-primary dark:hover:bg-primary-light;
 }
-
 .btn-tab-secondary {
   @apply flex items-center gap-2 rounded-t bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-transparent dark:text-text-secondary dark:hover:bg-primary-light;
 }
@@ -149,55 +133,42 @@ body.dark .anouncement {
 .input-primary::-webkit-input-placeholder {
   opacity: 0.4;
 }
-
 .input-primary {
   @apply rounded-full border border-border-light bg-light-bg px-10 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border;
 }
-
 .input-filled::-webkit-input-placeholder {
   opacity: 0.4;
 }
-
 .input-filled::-moz-placeholder {
   opacity: 0.4;
 }
-
 .input-filled {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-3 text-base text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-primary;
 }
-
 .input-outline::-webkit-input-placeholder {
   opacity: 0.4;
 }
-
 .input-outline::-moz-placeholder {
   opacity: 0.4;
 }
-
 .input-outline {
   @apply w-full bg-transparent p-2 text-lg text-gray-700 outline-none dark:text-text-secondary;
 }
-
 .input-secondary::-webkit-input-placeholder {
   opacity: 0.4;
 }
-
 .input-secondary-moz-placeholder {
   opacity: 0.4;
 }
-
 .input-secondary {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
-
 .input-oauth::-webkit-input-placeholder {
   opacity: 0.4;
 }
-
 .input-oauthed::-moz-placeholder {
   opacity: 0.4;
 }
-
 .input-oauth {
   @apply w-full rounded-full border border-border-light bg-light-bg px-6 py-3 text-lg font-semibold text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
@@ -206,50 +177,52 @@ body.dark .anouncement {
 .btn-social-icon:hover path {
   fill: white;
 }
-
 .btn-social-icon {
   @apply flex h-10 w-10 items-center justify-center rounded-md;
 }
 
 .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k {
-  border-color: rgba(212, 215, 218, 0.8);
+  border-color: #d4d7dacc;
 }
-
-body.dark .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k {
+body.dark
+  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k {
   border-color: #2c3646;
 }
 
-body.dark .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k svg {
+body.dark
+  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k
+  svg {
   stroke: #94a3b8;
 }
-
-body.dark .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover {
+body.dark
+  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover {
   background: #1e293b;
 }
-
-body.dark .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover svg {
+body.dark
+  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover
+  svg {
   stroke: #f8fafc;
 }
 
 body.dark .mantine-f6e83k[data-active] svg {
   stroke: white !important;
 }
-
 body.dark .mantine-f6e83k[data-active] {
   background: #1e293b;
 }
-
 .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror ul,
 .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror ol {
   list-style: auto !important;
 }
-
 body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror pre {
   background: #1e293b;
   color: #e2e8f0 !important;
 }
-
-body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror pre code {
+body.dark
+  .mantine-RichTextEditor-content.mantine-1drwy5n
+  .ProseMirror
+  pre
+  code {
   background: transparent !important;
 }
 
@@ -257,13 +230,11 @@ body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror pre code 
   min-height: 70vh;
   border-radius: 0 0 2.5px 2.5px;
 }
-
 body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror code {
   background: #1e293b;
   border-color: #2c3646;
   color: #e2e8f0 !important;
 }
-
 body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror {
   background: #0f172a;
   color: #e2e8f0 !important;
@@ -273,7 +244,6 @@ button:focus-visible {
   outline: 1px solid #e2e8f0 !important;
   background: #e2e8f0 !important;
 }
-
 button.btn-filled:focus {
   background: #2563eb;
 }
@@ -282,7 +252,6 @@ body.dark button:focus-visible {
   outline: 1px solid #334155 !important;
   background: #1e293b !important;
 }
-
 body.dark button.btn-filled:focus {
   background: #2563eb;
 }
@@ -296,13 +265,14 @@ body.dark .article {
 body.dark .article * {
   color: #fafafa;
 }
-
 body.dark .article code {
   color: #fafafa;
   background: #24292e;
 }
 
 .activity_date {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -312,17 +282,18 @@ body.dark .article code {
   display: flex;
   width: 5rem;
   --tw-text-opacity: 1;
-  color: rgb(226 232 240/var(--tw-text-opacity));
+  color: rgb(226 232 240 / var(--tw-text-opacity));
 }
 
 .activity_date_dots {
   margin-top: 0.5rem;
   width: 1px;
+  -webkit-flex: 1 1 0%;
   flex: 1 1 0%;
   border-width: 1px;
   border-style: dashed;
   --tw-border-opacity: 1;
-  border-color: rgb(147 197 253/var(--tw-border-opacity));
+  border-color: rgb(147 197 253 / var(--tw-border-opacity));
 }
 
 .scroll-area::-webkit-scrollbar {
@@ -349,21 +320,17 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
 .container-body {
   display: grid;
 }
-
 .container-aside {
-  grid-column: span 2/span 2;
+  grid-column: span 2 / span 2;
 }
-
 .container-main {
-  grid-column: span 7/span 7;
+  grid-column: span 7 / span 7;
 }
-
 .container-full-main {
-  grid-column: span 10/span 10;
+  grid-column: span 10 / span 10;
 }
-
 .container-right-aside {
-  grid-column: span 3/span 3;
+  grid-column: span 3 / span 3;
 }
 
 @media screen and (max-width: 768px) {
@@ -376,40 +343,23 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 }
-.loading {
-  -webkit-animation: animate-loading 2000ms linear infinite;
-          animation: animate-loading 2000ms linear infinite;
-}
 
-@-webkit-keyframes animate-loading {
-  from, to {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 1;
-  }
+.loading {
+  animation: animate-loading 2000ms linear infinite;
 }
 
 @keyframes animate-loading {
-  from, to {
+  from,
+  to {
     opacity: 0.4;
   }
   50% {
     opacity: 1;
   }
 }
-.commentsModal {
-  -webkit-animation: animate-comments 300ms ease-in-out;
-          animation: animate-comments 300ms ease-in-out;
-}
 
-@-webkit-keyframes animate-comments {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+.commentsModal {
+  animation: animate-comments 300ms ease-in-out;
 }
 
 @keyframes animate-comments {
@@ -420,24 +370,25 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
     transform: translateX(0);
   }
 }
+
 .mantine-Group-root.mantine-RichTextEditor-toolbar.mantine-nlxhsk {
   background: transparent !important;
-  border-color: rgba(212, 215, 218, 0.8) !important;
+  border-color: #d4d7dacc !important;
 }
 
 .mantine-RichTextEditor-root.mantine-3eqw8l {
-  border-color: rgba(212, 215, 218, 0.8) !important;
+  border-color: #d4d7dacc !important;
 }
 
 body.dark .mantine-Group-root.mantine-RichTextEditor-toolbar.mantine-nlxhsk {
   border-color: #2c3646 !important;
 }
-
 body.dark .mantine-RichTextEditor-root.mantine-3eqw8l {
   border-color: #2c3646 !important;
 }
 
 /* Mention feature */
+
 .items {
   background: #fff;
   border-radius: 0.5rem;
@@ -459,7 +410,6 @@ body.dark .mantine-RichTextEditor-root.mantine-3eqw8l {
   text-align: left;
   width: 100%;
 }
-
 .item.is-selected {
   border-color: #000;
 }
@@ -470,4 +420,4 @@ body.dark .mantine-RichTextEditor-root.mantine-3eqw8l {
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   padding: 0.1rem 0.3rem;
-}/*# sourceMappingURL=globals.css.map */
+}

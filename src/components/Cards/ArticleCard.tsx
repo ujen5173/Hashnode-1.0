@@ -112,7 +112,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               </div>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex flex-1 items-center lg:flex-[0]">
               <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
                 <Like className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
                 <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
@@ -120,32 +120,34 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                 </span>
               </button>
               {!card.disabledComments && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-1 items-center justify-between gap-2">
                   <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
                     <Multicomment className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
                     <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
                       {card.commentsCount}
                     </span>
                   </button>
-                  <div className="flex">
-                    {card.commonUsers.map((user, index) => (
-                      <button
-                        className={`relative -ml-2 first:ml-0`}
-                        style={{
-                          zIndex: card.commonUsers.length - index,
-                        }}
-                        key={user.id}
-                      >
-                        <Image
-                          src={user.profile}
-                          alt="user"
-                          width={20}
-                          height={20}
-                          className="h-8 w-8 rounded-full object-cover"
-                        />
-                      </button>
-                    ))}
-                  </div>
+                  {card.commonUsers.length > 0 && (
+                    <div className="flex">
+                      {card.commonUsers.map((user, index) => (
+                        <button
+                          className={`relative -ml-2 first:ml-0`}
+                          style={{
+                            zIndex: card.commonUsers.length - index,
+                          }}
+                          key={user.id}
+                        >
+                          <Image
+                            src={user.profile}
+                            alt="user"
+                            width={20}
+                            height={20}
+                            className="h-8 w-8 rounded-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

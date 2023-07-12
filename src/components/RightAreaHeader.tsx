@@ -47,7 +47,7 @@ const RightArea: FC = () => {
               className="btn-filled hidden items-center justify-center gap-2 hover:bg-blue-500 sm:flex"
             >
               <Pen className="h-4 w-4 fill-white stroke-white" />
-              <span>Write</span>
+              <span className="text-sm">Write</span>
             </button>
           </Link>
           <div className="block sm:hidden">

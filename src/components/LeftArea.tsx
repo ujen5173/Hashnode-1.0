@@ -19,7 +19,7 @@ const LeftArea = () => {
       <HamburgerMenu menu={menu} setMenu={setMenu} />
       <Link aria-label="Go to Home Page" href={"/"}>
         <Logo className="hidden h-6 fill-secondary md:block" />
-        <LogonoText className="block h-9 fill-secondary md:hidden" />
+        <LogonoText className="block h-7 fill-secondary md:hidden" />
       </Link>
     </div>
   );

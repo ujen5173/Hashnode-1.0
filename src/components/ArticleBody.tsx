@@ -22,29 +22,32 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
   return (
     <main className="min-h-screen bg-white pb-12 dark:bg-primary">
       <div className="mx-auto max-w-[1200px]">
-        {article?.cover_image && (
+        {!article?.cover_image && (
           <Image
-            src={article?.cover_image || ""}
+            src={
+              article?.cover_image ||
+              "https://cdn.hashnode.com/res/hashnode/image/upload/v1688992349190/b3744811-3074-4284-8961-1cc8a052c83e.png?w=1600&h=840&fit=crop&crop=entropy&auto=compress,format&format=webp"
+            }
             alt={article.title}
             width={1200}
             height={800}
             draggable={false}
-            className="mb-16 w-full overflow-hidden rounded-full object-cover px-4"
+            className="mb-16 w-full overflow-hidden rounded-b-md object-cover px-4"
           />
         )}
 
         <section
           className={`relative ${
-            !article?.cover_image ? "pt-8 md:pb-0 md:pt-16" : ""
+            article?.cover_image ? "pt-8 md:pb-0 md:pt-16" : ""
           }`}
         >
           <div className="px-4">
-            <h1 className="mb-8 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:w-11/12 md:text-5xl md:leading-tight">
-              {article.title}{" "}
+            <h1 className="mb-6 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:mb-8 md:w-11/12 md:text-5xl md:leading-tight">
+              {article.title}
             </h1>
             {article?.subtitle && (
-              <h2 className="mx-auto mb-10 w-full text-center text-xl font-normal text-gray-600 dark:text-text-primary sm:w-10/12 md:text-3xl">
-                {article?.subtitle}{" "}
+              <h2 className="mx-auto mb-5 w-full text-center text-xl font-normal text-gray-600 dark:text-text-primary sm:w-10/12 md:mb-10 md:text-3xl">
+                {article?.subtitle}
               </h2>
             )}
 
@@ -71,7 +74,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
                 <span className="hidden text-gray-900 dark:text-text-secondary lg:block">
                   ·
                 </span>
-                <h3 className="text-lg font-medium text-gray-700 dark:text-text-primary">
+                <h3 className="text-base font-medium text-gray-700 dark:text-text-primary md:text-lg">
                   {formatDate(new Date(article.createdAt))}
                 </h3>
                 <span className="hidden text-gray-900 dark:text-text-secondary lg:block">
@@ -79,7 +82,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
                 </span>
                 <div className="flex items-center gap-2">
                   <Book className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
-                  <span className="text-lg text-gray-700 dark:text-text-primary">
+                  <span className="text-base text-gray-700 dark:text-text-primary md:text-lg">
                     {article.read_time} min read
                   </span>
                 </div>
@@ -88,7 +91,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
             <div
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
-              className="article mb-10 w-full break-all md:w-11/12 lg:w-10/12"
+              className="article mb-10 w-full break-all md:w-11/12 lg:w-10/12 xl:w-full"
             ></div>
           </div>
           <ArticleActions

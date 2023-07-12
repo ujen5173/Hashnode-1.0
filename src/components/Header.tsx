@@ -15,7 +15,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="sticky left-0 top-0 z-50 w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
-      <div className="mx-auto flex max-w-[1550px] items-center justify-between gap-4 px-4 py-4">
+      <div className="mx-auto flex max-w-[1550px] items-center justify-between gap-4 px-4 py-2 md:py-4">
         <div className="flex flex-1 items-center justify-between gap-8 md:gap-4">
           <LeftArea />
           <SearchArea />
@@ -34,7 +34,7 @@ const Header: React.FC = () => {
               alt={user?.user.name || "user"}
               width={100}
               height={100}
-              className="h-9 w-9 cursor-pointer select-none overflow-hidden rounded-full"
+              className="h-7 w-7 cursor-pointer select-none overflow-hidden rounded-full md:h-8 md:w-8 lg:h-9 lg:w-9"
               onClick={() => setOpened(true)}
               draggable={false}
             />

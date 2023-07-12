@@ -1,6 +1,6 @@
 const LogonoText = (props: { className: string }) => {
   return (
-    <svg {...props} viewBox="0 0 70 56">
+    <svg {...props} viewBox="0 0 57 56">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

@@ -124,18 +124,18 @@ const ArticleActions: FC<{
         </Tooltip>
 
         <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
-        <Tooltip label="Share">
-          <div className="relative">
-            {shareOpen && (
-              <ShareOptions
-                acticleDetails={{
-                  title: article.title,
-                  by: article.user.username,
-                }}
-                ref={ref}
-                setShareOpen={setShareOpen}
-              />
-            )}
+        <div className="relative">
+          {shareOpen && (
+            <ShareOptions
+              acticleDetails={{
+                title: article.title,
+                by: article.user.username,
+              }}
+              ref={ref}
+              setShareOpen={setShareOpen}
+            />
+          )}
+          <Tooltip label="Share">
             <button
               aria-label="icon"
               role="button"
@@ -146,8 +146,8 @@ const ArticleActions: FC<{
                 <Share className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
               </div>
             </button>
-          </div>
-        </Tooltip>
+          </Tooltip>
+        </div>
         <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
         <Tooltip label="Report">
           <button

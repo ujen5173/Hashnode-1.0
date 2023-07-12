@@ -1,5 +1,8 @@
-import React, { useContext, useState, type FC } from "react";
+import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
+import Link from "next/link";
+import { useContext, useState, type FC } from "react";
+import { type UserDetailsInterface } from "~/pages/u/[username]";
 import {
   Angledown,
   Check,
@@ -9,10 +12,7 @@ import {
   Report,
   Twitter,
 } from "~/svgs";
-import { useClickOutside } from "@mantine/hooks";
 import { C, type ContextValue } from "~/utils/context";
-import Link from "next/link";
-import { type UserDetailsInterface } from "~/pages/u/[username]";
 
 const UserProfileArea: FC<{
   userDetails: UserDetailsInterface | undefined;
@@ -25,7 +25,7 @@ const UserProfileArea: FC<{
 
   return (
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
-      <div className="h-40 w-40 overflow-hidden rounded-full bg-light-bg dark:bg-primary-light">
+      <div className="h-28 w-28 overflow-hidden rounded-full bg-light-bg dark:bg-primary-light md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40">
         <Image
           src={userDetails?.profile || ""}
           alt={userDetails?.name || ""}
@@ -38,10 +38,15 @@ const UserProfileArea: FC<{
       <div className="flex flex-1 flex-col items-start gap-4 lg:flex-row">
         <div className="flex w-full flex-1 items-start justify-between">
           <div>
-            <h1 className="mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
-              {userDetails?.name}
-            </h1>
-            <p className="mb-6 text-base font-medium text-gray-500 dark:text-text-primary">
+            <div className="mb-4 md:mb-6">
+              <h1 className="mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
+                {userDetails?.name}
+              </h1>
+              <p className="text-base font-medium text-gray-500 dark:text-text-primary lg:text-lg">
+                @{userDetails?.username}
+              </p>
+            </div>
+            <p className="mb-4 text-base font-medium text-gray-500 dark:text-text-primary md:mb-6">
               {userDetails?.tagline}
             </p>
             <div className="flex gap-4 text-gray-700 dark:text-text-primary">
@@ -147,22 +152,24 @@ const UserProfileArea: FC<{
             </button>
           </Link>
         ) : (
-          <button
-            onClick={() => void followUser()}
-            className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
-          >
-            {following.status ? (
-              <>
-                <Check className="h-5 w-5 fill-secondary" />
-                Following
-              </>
-            ) : (
-              <>
-                <Follow className="h-5 w-5 fill-secondary" />
-                Follow User
-              </>
-            )}
-          </button>
+          <div className="max-w-[250px]">
+            <button
+              onClick={() => void followUser()}
+              className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+            >
+              {following.status ? (
+                <>
+                  <Check className="h-5 w-5 fill-secondary" />
+                  Following
+                </>
+              ) : (
+                <>
+                  <Follow className="h-5 w-5 fill-secondary" />
+                  Follow User
+                </>
+              )}
+            </button>
+          </div>
         )}
       </div>
     </div>

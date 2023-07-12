@@ -115,7 +115,7 @@ const ShareOptions = React.forwardRef<
   return (
     <div
       ref={ref}
-      className="absolute -left-2 bottom-full mb-2 min-w-[190px] rounded-md border border-border-light bg-white shadow-md dark:border-border dark:bg-primary"
+      className="absolute -right-full bottom-full mb-2 min-w-[190px] rounded-md border border-border-light bg-white shadow-md dark:border-border dark:bg-primary md:-left-2"
     >
       <ul className="py-2">
         {OPTIONS.map((option, index) => (
