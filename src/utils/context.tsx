@@ -87,6 +87,7 @@ const Context = ({ children, options }: Props) => {
   const [user, setUser] = useState<Session | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
+  // eslint-disable-next-line @typescript-eslint/unbound-method
 
   useEffect(() => {
     const savedBookmarks = localStorage.getItem("bookmarks");

@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { v4 as uuid } from "uuid";
 import { api } from "~/utils/api";
 import ActivityCard from "./Cards/ActivityCard";
 
@@ -24,10 +25,7 @@ const UserRecentActivities = () => {
 
       <section>
         {refactoredActivity?.map((activity, index) => (
-          <div
-            className="my-2 flex w-full gap-2 lg:my-0 lg:gap-6 xl:my-8"
-            key={index}
-          >
+          <div className="flex w-full gap-2 lg:gap-6" key={index}>
             <div className="activity_date">
               <span className="text-center text-xs text-gray-700 dark:text-text-secondary">
                 {activity[0]}
@@ -38,14 +36,12 @@ const UserRecentActivities = () => {
             </div>
 
             <div className="flex-1">
-              {activity[1].map((item, i) => {
+              {activity[1].map((item) => {
                 return (
                   <ActivityCard
                     index={index}
-                    i={i}
                     item={item}
-                    key={i}
-                    subActivityLength={activity[1].length}
+                    key={uuid()}
                     activityLength={refactoredActivity.length}
                   />
                 );

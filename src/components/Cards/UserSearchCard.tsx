@@ -1,6 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type FC } from "react";
+import { useContext, useState, type FC } from "react";
+import { toast } from "react-toastify";
+import { Check, Follow } from "~/svgs";
+import { api } from "~/utils/api";
+import { C, type ContextValue } from "~/utils/context";
 
 const UserSearchCard: FC<{
   user: {
@@ -8,32 +12,77 @@ const UserSearchCard: FC<{
     name: string;
     username: string;
     profile: string;
-    followersCount: number;
+    isFollowing: boolean;
   };
-}> = ({ user }) => {
+  setOpened: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ user: searchedUser, setOpened }) => {
+  const [isFollowing, setIsFollowing] = useState<boolean>(
+    searchedUser.isFollowing
+  );
+  const { user } = useContext(C) as ContextValue;
+
+  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+
+  const followUser = () => {
+    if (!user) {
+      return toast.error("You need to be logged in to follow users");
+    }
+
+    if (searchedUser.username === user.user.username) {
+      return toast.error("You can't follow yourself");
+    }
+
+    setIsFollowing(!isFollowing);
+
+    followToggle({
+      username: searchedUser.username,
+    });
+  };
+
   return (
-    <Link href={`/u/@${user.username}`}>
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-4">
+    <div className="flex items-center justify-between gap-4 p-4">
+      <Link
+        href={`/u/@${searchedUser.username}`}
+        className="tag flex flex-1 items-center justify-between"
+      >
+        <div
+          onClick={() => void setOpened(false)}
+          className="flex flex-1 items-center gap-4"
+        >
           <Image
             width={50}
             height={50}
-            src={user.profile}
-            alt={user.name}
+            src={searchedUser.profile}
+            alt={searchedUser.name}
             className="h-12 w-12 rounded-full"
           />
           <div>
             <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
-              {user.name}
+              {searchedUser.name}
             </h3>
             <p className="text-sm text-gray-500 dark:text-text-primary">
-              {user.username}
+              {searchedUser.username}
             </p>
           </div>
         </div>
-        <button className="btn-filled">Follow</button>
-      </div>
-    </Link>
+      </Link>
+      <button
+        onClick={() => void followUser()}
+        className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+      >
+        {isFollowing ? (
+          <>
+            <Check className="h-5 w-5 fill-secondary" />
+            Following
+          </>
+        ) : (
+          <>
+            <Follow className="h-5 w-5 fill-secondary" />
+            Follow User
+          </>
+        )}
+      </button>
+    </div>
   );
 };
 

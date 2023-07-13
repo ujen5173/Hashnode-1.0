@@ -120,7 +120,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                 </span>
               </button>
               {!card.disabledComments && (
-                <div className="flex flex-1 items-center justify-between gap-2">
+                <div className="flex w-max flex-1 items-center justify-between gap-2">
                   <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
                     <Multicomment className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
                     <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
@@ -128,7 +128,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                     </span>
                   </button>
                   {card.commonUsers.length > 0 && (
-                    <div className="flex">
+                    <div className="flex flex-1">
                       {card.commonUsers.map((user, index) => (
                         <button
                           className={`relative -ml-2 first:ml-0`}

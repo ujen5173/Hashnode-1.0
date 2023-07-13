@@ -142,7 +142,7 @@ interface SearchResults {
         name: string;
         username: string;
         profile: string;
-        followersCount: number;
+        isFollowing: boolean;
       }[]
     | null;
   tags:
@@ -150,8 +150,7 @@ interface SearchResults {
         id: string;
         name: string;
         slug: string;
-        followersCount: number;
-        articlesCount: number;
+        isFollowing: boolean;
       }[]
     | null;
   articles:

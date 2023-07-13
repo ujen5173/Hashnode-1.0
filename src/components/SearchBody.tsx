@@ -1,4 +1,4 @@
-import React, { useState, type FC } from "react";
+import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Search } from "~/svgs";
 import { type SearchResults } from "~/types";
@@ -8,14 +8,17 @@ import UserSearchCard from "./Cards/UserSearchCard";
 import SearchLoading from "./Loading/SearchLoading";
 import SearchArticle from "./SearchArticle";
 
-const SearchBody: FC<{
-  setOpened: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setOpened }) => {
+const SearchBody = React.forwardRef<
+  HTMLDivElement,
+  {
+    setOpened: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+>(({ setOpened }, ref) => {
   const [query, setQuery] = useState<string>("");
   const [type, setType] = useState<
     "TOP" | "LATEST" | "ARTICLES" | "USERS" | "TAGS"
   >("TOP");
-  const { refetch } = api.posts.search.useQuery(
+  const { refetch, isFetching } = api.posts.search.useQuery(
     {
       query,
       type,
@@ -34,10 +37,16 @@ const SearchBody: FC<{
 
   const [refetching, setRefetching] = useState(false);
 
+  useEffect(() => {
+    // just to show loading when changing search type (top, latest, articles, users, tags)
+    if (isFetching) {
+      setRefetching(true);
+    }
+  }, [isFetching]);
+
   async function search(criteria: string): Promise<SearchResults> {
     let response;
     if (criteria.trim().length > 0) {
-      setRefetching(true);
       response = await refetch();
       setRefetching(false);
       if (response.data) {
@@ -76,10 +85,13 @@ const SearchBody: FC<{
   };
 
   return (
-    <div className="absolute inset-0 flex items-start justify-center py-16">
+    <div
+      ref={ref}
+      className="absolute inset-0 flex items-start justify-center py-24"
+    >
       <div
         onClick={() => setOpened(false)}
-        className="fixed inset-0 z-50 bg-gray-700 bg-opacity-50 backdrop-blur"
+        className="fixed inset-0 z-40 bg-gray-700 bg-opacity-50 backdrop-blur"
       />
 
       <div className="z-50 w-11/12 max-w-[950px] overflow-hidden rounded-xl border border-border-light bg-white shadow-lg dark:border-border dark:bg-primary">
@@ -156,11 +168,15 @@ const SearchBody: FC<{
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.users.map((user) => (
                       <div
-                        onClick={() => setOpened(false)}
+                        // onClick={() => setOpened(false)}
                         key={user.id}
                         className="border-b border-border-light dark:border-border"
                       >
-                        <UserSearchCard key={user.id} user={user} />
+                        <UserSearchCard
+                          key={user.id}
+                          user={user}
+                          setOpened={setOpened}
+                        />
                       </div>
                     ))}
                   </ul>
@@ -168,11 +184,15 @@ const SearchBody: FC<{
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.tags.map((tag) => (
                       <div
-                        onClick={() => setOpened(false)}
+                        // onClick={() => setOpened(false)}
                         key={tag.id}
                         className="border-b border-border-light dark:border-border"
                       >
-                        <TagsSearchCard key={tag.id} tag={tag} />
+                        <TagsSearchCard
+                          key={tag.id}
+                          tag={tag}
+                          setOpened={setOpened}
+                        />
                       </div>
                     ))}
                   </ul>
@@ -202,6 +222,8 @@ const SearchBody: FC<{
       </div>
     </div>
   );
-};
+});
+
+SearchBody.displayName = "SearchBody";
 
 export default SearchBody;

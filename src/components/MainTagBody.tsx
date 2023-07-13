@@ -63,8 +63,6 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     }
   );
 
-  console.log({ tags });
-
   const applyFilter = () => {
     setNewFilterData((prev) => ({ ...prev, ...filter.data }));
   };

@@ -1,3 +1,4 @@
+import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
@@ -63,42 +64,49 @@ const RightArea: FC = () => {
           </div>
         </>
       )}
-      <button
-        aria-label="icon"
-        role="button"
-        className="btn-icon hidden h-10 w-10 xl:flex"
-      >
-        <Updates className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
-      </button>
-
-      <button
-        aria-label="icon"
-        role="button"
-        className="btn-icon flex h-10 w-10"
-        onClick={handleTheme}
-      >
-        <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
-      </button>
-      <div className="relative hidden sm:block">
+      <Tooltip label="Updates" position="bottom" withArrow>
         <button
-          onClick={() => setOpened((prev) => !prev)}
+          aria-label="icon"
+          role="button"
+          className="btn-icon hidden h-10 w-10 xl:flex"
+        >
+          <Updates className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+        </button>
+      </Tooltip>
+
+      <Tooltip label="Toggle Theme" position="bottom" withArrow>
+        <button
           aria-label="icon"
           role="button"
           className="btn-icon flex h-10 w-10"
+          onClick={handleTheme}
         >
-          <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+          <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
         </button>
-        {count > 0 && (
-          <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">
-            <span className="text-xs">{count}</span>
-          </div>
-        )}
-        {opened && (
-          <div ref={ref} className="absolute right-0 top-full z-50 mt-2">
-            <Notification />
-          </div>
-        )}
-      </div>
+      </Tooltip>
+
+      <Tooltip label="Notifications" position="bottom" withArrow>
+        <div className="relative hidden sm:block">
+          <button
+            onClick={() => setOpened((prev) => !prev)}
+            aria-label="icon"
+            role="button"
+            className="btn-icon flex h-10 w-10"
+          >
+            <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+          </button>
+          {count > 0 && (
+            <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">
+              <span className="text-xs">{count}</span>
+            </div>
+          )}
+          {opened && (
+            <div ref={ref} className="absolute right-0 top-full z-50 mt-2">
+              <Notification />
+            </div>
+          )}
+        </div>
+      </Tooltip>
     </>
   );
 };

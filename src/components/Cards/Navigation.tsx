@@ -1,3 +1,4 @@
+import { Tooltip } from "@mantine/core";
 import React, { type FC } from "react";
 
 interface Props {
@@ -10,15 +11,17 @@ interface Props {
 }
 const Navigation: FC<Props> = ({ item }) => {
   return (
-    <div
-      className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-border-light focus:bg-red dark:bg-primary dark:hover:bg-primary-light"
-      role="button"
-    >
-      <div className="flex items-center justify-center">{item.icon}</div>
-      <div className="font-semibold text-gray-700 dark:text-text-secondary">
-        {item.name}
+    <Tooltip label={item.name} position="right" withArrow>
+      <div
+        className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-border-light focus:bg-red dark:bg-primary dark:hover:bg-primary-light"
+        role="button"
+      >
+        <div className="flex items-center justify-center">{item.icon}</div>
+        <div className="font-semibold text-gray-700 dark:text-text-secondary">
+          {item.name}
+        </div>
       </div>
-    </div>
+    </Tooltip>
   );
 };
 

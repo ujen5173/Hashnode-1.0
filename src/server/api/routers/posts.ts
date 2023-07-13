@@ -89,30 +89,52 @@ const getArticlesWithUserFollowingProfiles = async (
   },
   articles: ArticleCardWithComments[]
 ) => {
-  const userFollowing = await ctx.prisma.user.findUnique({
-    where: {
-      id: ctx.session?.user?.id,
-    },
-    select: {
-      following: {
-        select: {
-          id: true,
+  // If user is logged in, get the user's following profiles else return empty array for commenUsers
+  // Retrieve user following outside the loop
+  const userFollowing = ctx.session?.user
+    ? await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
         },
-      },
-    },
-  });
+        select: {
+          following: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      })
+    : null;
 
-  return articles.map((article) => {
+  // Combine the mapping logic into a single loop
+  const updatedArticles = articles.map((article) => {
     const { comments, ...rest } = article;
-    const followingComments = displayUniqueObjects(
-      comments
-        .map((c) => c.user)
-        .filter((user) =>
-          userFollowing?.following.some((f) => f.id === user.id)
-        )
-    );
+    let followingComments: {
+      id: string;
+      profile: string;
+    }[] = [];
+
+    if (userFollowing) {
+      followingComments = displayUniqueObjects(
+        comments
+          .map((c) => c.user)
+          .filter((user) =>
+            userFollowing.following.some((f) => f.id === user.id)
+          )
+      );
+    }
+
     return { ...rest, commonUsers: followingComments };
   });
+
+  // Handle the case when ctx.session.user is not present
+  if (!ctx.session?.user) {
+    updatedArticles.forEach((article) => {
+      article.commonUsers = [];
+    });
+  }
+
+  return updatedArticles;
 };
 
 export const postsRouter = createTRPCRouter({
@@ -585,7 +607,6 @@ export const postsRouter = createTRPCRouter({
       return Array.from(refactoredActivities);
     }),
 
-  // TODO: common users
   search: publicProcedure
     .input(
       z.object({
@@ -611,17 +632,35 @@ export const postsRouter = createTRPCRouter({
               id: true,
               name: true,
               slug: true,
-              followersCount: true,
-              articlesCount: true,
+              followers: {
+                select: {
+                  id: true,
+                },
+              },
             },
+          });
+
+          const response = tags.map((e) => {
+            const { followers, ...rest } = e;
+            let isFollowing = false;
+            if (ctx.session?.user) {
+              isFollowing = followers.some(
+                (follower) => follower.id === ctx.session?.user?.id
+              );
+            }
+            return {
+              ...rest,
+              isFollowing,
+            };
           });
 
           result = {
             users: null,
-            tags,
+            tags: response,
             articles: null,
           };
           break;
+
         case "USERS":
           const users = await ctx.prisma.user.findMany({
             where: {
@@ -636,12 +675,30 @@ export const postsRouter = createTRPCRouter({
               name: true,
               username: true,
               profile: true,
-              followersCount: true,
+              followers: {
+                select: {
+                  id: true,
+                },
+              },
             },
           });
 
+          const res = users.map((e) => {
+            const { followers, ...rest } = e;
+            let isFollowing = false;
+            if (ctx.session?.user) {
+              isFollowing = followers.some(
+                (follower) => follower.id === ctx.session?.user?.id
+              );
+            }
+            return {
+              ...rest,
+              isFollowing,
+            };
+          });
+
           result = {
-            users,
+            users: res,
             tags: null,
             articles: null,
           };
@@ -808,6 +865,46 @@ export const postsRouter = createTRPCRouter({
           },
           articles
         );
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
+
+  getAuthorArticles: publicProcedure
+    .input(
+      z.object({
+        username: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.article.findMany({
+          where: {
+            user: {
+              username: input.username,
+            },
+          },
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            read_time: true,
+            user: {
+              select: {
+                profile: true,
+                username: true,
+              },
+            },
+            subtitle: true,
+            cover_image: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

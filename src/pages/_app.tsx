@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { SearchBody } from "~/components";
 import useKeyPress from "~/hooks/use-keypress";
+
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
@@ -33,6 +34,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       document.body.style.overflow = "auto";
     }
   }, [searchOpen]);
+
   const ref = useClickOutside<HTMLDivElement>(() => setSearchOpen(false));
 
   return (
@@ -46,12 +48,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
           }
         />
         <NextTopLoader color="#2563eb" />
+
         <Component {...pageProps} />
 
         {searchOpen && (
-          <div ref={ref}>
-            <SearchBody setOpened={setSearchOpen} />
-          </div>
+            <SearchBody ref={ref} setOpened={setSearchOpen} />
         )}
       </Context>
     </SessionProvider>
