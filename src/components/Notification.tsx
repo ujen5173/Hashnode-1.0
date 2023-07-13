@@ -86,7 +86,7 @@ const NotificationContainer: FC<{
   }, [isError]);
 
   return (
-    <div className=" scroll-area max-h-[400px] overflow-auto px-4">
+    <div className="scroll-area max-h-[400px] overflow-auto px-4">
       <ManageData
         loading={
           <div className="loading h-24 w-full border-b border-border-light py-4 dark:border-border"></div>

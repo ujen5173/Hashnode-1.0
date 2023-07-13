@@ -151,24 +151,16 @@ model Notification {
     createdAt DateTime          @default(now())
     updatedAt DateTime          @updatedAt
 
-    body  String? @default("")
-    slug  String? @default("")
-    title String? @default("")
+    body          String? @default("")
+    slug          String? @default("")
+    title         String? @default("")
+    articleAuthor String? @default("")
 
     user   User   @relation("Notification Handler", fields: [userId], references: [id])
     userId String
 
     from   User   @relation("Notification From", fields: [fromId], references: [id])
     fromId String
-
-    // newArticle   Article? @relation("New Article", fields: [newArticleId], references: [id])
-    // newArticleId String?
-
-    // commentArticle   Comment? @relation("Comment Article", fields: [commentArticleId], references: [id])
-    // commentArticleId String?
-
-    // likeArticle   Article? @relation("Liked Article", fields: [likeArticleId], references: [id])
-    // likeArticleId String?
 }
 
 enum NotificationTypes {

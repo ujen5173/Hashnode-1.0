@@ -377,9 +377,17 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const article = await ctx.prisma.article.findUnique({
+        console.log({ input });
+        const article = await ctx.prisma.article.findFirst({
           where: {
-            slug: input.slug,
+            AND: [
+              { slug: input.slug },
+              {
+                user: {
+                  username: input.username.slice(1, input.username.length),
+                },
+              },
+            ],
           },
           include: {
             user: {
@@ -387,7 +395,13 @@ export const postsRouter = createTRPCRouter({
                 id: true,
                 name: true,
                 username: true,
+                bio: true,
                 profile: true,
+                followers: {
+                  select: {
+                    id: true,
+                  },
+                },
               },
             },
             tags: {
@@ -395,6 +409,11 @@ export const postsRouter = createTRPCRouter({
                 id: true,
                 name: true,
                 slug: true,
+              },
+            },
+            likes: {
+              select: {
+                id: true,
               },
             },
           },
@@ -407,12 +426,27 @@ export const postsRouter = createTRPCRouter({
           });
         }
 
-        return article;
+        const { followers, ...rest } = article.user;
+        if (ctx.session?.user) {
+          const isFollowing = article.user.followers.some(
+            (follower) => follower.id === ctx.session?.user.id
+          );
+          return {
+            ...article,
+            isFollowing,
+            user: rest,
+          };
+        } else {
+          return {
+            ...article,
+            isFollowing: false,
+            user: rest,
+          };
+        }
       } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong, try again later",
-        });
+        if (err instanceof TRPCError) {
+          throw err;
+        }
       }
     }),
 
@@ -519,6 +553,7 @@ export const postsRouter = createTRPCRouter({
           include: {
             user: {
               select: {
+                username: true,
                 followers: {
                   select: {
                     id: true,
@@ -536,6 +571,7 @@ export const postsRouter = createTRPCRouter({
             type: NotificationTypes.NEW_ARTICLE,
             body: `@${ctx.session.user.username} published a new article`,
             slug: newArticle.slug,
+            articleAuthor: newArticle.user.username,
             isRead: false,
             fromId: ctx.session.user.id,
           })),

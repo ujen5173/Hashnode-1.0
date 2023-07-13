@@ -1,20 +1,17 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { ArticleBody, ArticleHeader, Footer } from "~/components";
 import ArticleSEO from "~/SEO/Article.seo";
 import { authOptions } from "~/server/auth";
-import { prisma } from "~/server/db";
-import type { Article } from "~/types";
+import { generateSSGHelper } from "~/server/ssgHelper";
+import { type Article } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 
 interface Props {
   article: Article & {
     isFollowing: boolean;
-    user: {
-      followersCount: number;
-    };
   };
 }
 
@@ -26,7 +23,7 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
     setUser(session);
     setFollowing({
       status: article.isFollowing,
-      followersCount: article.user.followersCount.toString(),
+      followersCount: "", // not needed
     });
   }, []);
 
@@ -43,79 +40,39 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
 export default SingleArticle;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = getServerSession(context.req, context.res, authOptions);
+  const session = await getServerSession(context.req, context.res, authOptions);
 
-  const article = prisma.article.findUnique({
-    where: {
-      slug: context.params?.slug as string,
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          bio: true,
-          profile: true,
-          followersCount: true,
-          followers: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      },
-      tags: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-      likes: {
-        select: {
-          id: true,
-        },
-      },
-    },
-  });
+  const ssg = await generateSSGHelper({ req: context.req, res: context.res });
 
-  const [sessionData, articleData] = await Promise.all([session, article]);
+  const params = context.params as {
+    username: string;
+    slug: string;
+  };
 
-  if (!articleData) {
+  try {
+    const data = await ssg.posts.getSingleArticle.fetch({
+      slug: params.slug,
+      username: params.username,
+    });
+
     return {
       props: {
-        session: sessionData
-          ? (JSON.parse(JSON.stringify(sessionData)) as Session)
+        session: session
+          ? (JSON.parse(JSON.stringify(session)) as Session)
           : null,
-        article: null,
+        article: data
+          ? (JSON.parse(JSON.stringify(data)) as Article & {
+              isFollowing: boolean;
+            })
+          : null,
       },
+    };
+  } catch (err) {
+    return {
       redirect: {
         destination: "/",
         permanent: false,
       },
     };
   }
-
-  let isFollowing = false;
-  if (sessionData) {
-    isFollowing = articleData.user.followers.some(
-      (follower) => follower.id === sessionData?.user.id
-    );
-  }
-
-  return {
-    props: {
-      session: sessionData
-        ? (JSON.parse(JSON.stringify(sessionData)) as Session)
-        : null,
-      article: articleData
-        ? (JSON.parse(
-            JSON.stringify({ ...articleData, isFollowing })
-          ) as Article & {
-            isFollowing: boolean;
-          })
-        : null,
-    },
-  };
 };

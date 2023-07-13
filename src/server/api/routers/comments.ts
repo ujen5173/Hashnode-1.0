@@ -119,6 +119,7 @@ export const commentsRouter = createTRPCRouter({
                 ? input.content.slice(0, 50) + "..."
                 : input.content,
             isRead: false,
+            articleAuthor: article.user.username,
             slug: `${article.slug}?commentId=${newComment.id}`,
           },
         });
@@ -135,6 +136,7 @@ export const commentsRouter = createTRPCRouter({
                   ? input.content.slice(0, 50) + "..."
                   : input.content,
               isRead: false,
+              articleAuthor: article.user.username,
               slug: `${article.slug}?commentId=${newComment.id}`,
             },
             {
@@ -146,6 +148,7 @@ export const commentsRouter = createTRPCRouter({
                 input.content.length > 50
                   ? input.content.slice(0, 50) + "..."
                   : input.content,
+              articleAuthor: article.user.username,
               isRead: false,
               slug: `${article.slug}?commentId=${newComment.id}`,
             },

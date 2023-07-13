@@ -50,6 +50,7 @@ export interface Notification {
   type: NotificationTypes | null;
   slug?: string | null;
   title?: string | null;
+  articleAuthor?: string | null;
   createdAt: Date;
   from: {
     username: string;

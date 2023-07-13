@@ -28,7 +28,7 @@ const ManageData: FC<{
             {Array(6)
               .fill("")
               .map((_, i) => (
-                <div key={i} className="w-[calc(100%/2-0.5rem)]">
+                <div key={i} className="w-full md:w-[calc(100%/2-0.5rem)]">
                   {loading}
                 </div>
               ))}
@@ -37,7 +37,10 @@ const ManageData: FC<{
           <div className="flex w-full flex-wrap gap-4 p-4">
             {tagsData.data.map((item) => {
               return (
-                <div key={item.id} className="w-[calc(100%/2-0.5rem)]">
+                <div
+                  key={item.id}
+                  className="w-full md:w-[calc(100%/2-0.5rem)]"
+                >
                   <TagCard tag={item} type={filter || "Any"} />
                 </div>
               );
@@ -128,7 +131,7 @@ const ManageData: FC<{
                 </div>
                 <div className="flex-1 text-left">
                   <p className="mb-2 text-base text-gray-500 dark:text-text-primary">
-                    <Link href={`/u/@${notification.from.username}`}>
+                    <Link href={`/u/@${notification.articleAuthor as string}`}>
                       <span className="mr-1 font-semibold text-gray-700 dark:text-text-secondary">
                         {notification.from.name}
                       </span>
@@ -147,7 +150,7 @@ const ManageData: FC<{
                     </div>
                   )}
                   <Link
-                    href={`/u/${notification.from.username}/${
+                    href={`/u/@${notification.articleAuthor as string}/${
                       notification.slug as string
                     }`}
                   >

@@ -80,6 +80,7 @@ export const likesRouter = createTRPCRouter({
                   id: ctx.session.user.id,
                 },
               },
+              articleAuthor: article.user.username,
               body: null,
               title: article.title,
               user: {
