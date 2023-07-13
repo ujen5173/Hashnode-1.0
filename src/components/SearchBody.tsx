@@ -121,42 +121,44 @@ const SearchBody = React.forwardRef<
         </header>
         <div className="">
           {query.trim() !== "" && (
-            <ul className="flex items-center gap-2 border-b border-border-light px-4 dark:border-border">
-              {["TOP", "LATEST", "ARTICLES", "USERS", "TAGS"].map(
-                (item, index) => (
-                  <li key={index}>
-                    <button
-                      onClick={() => {
-                        setType(
-                          item as
-                            | "TOP"
-                            | "LATEST"
-                            | "ARTICLES"
-                            | "USERS"
-                            | "TAGS"
-                        );
-                        setTimeout(() => {
-                          void refetchData();
-                        }, 200);
-                      }}
-                      className={`${
-                        type === item ? "btn-tab-active" : "btn-tab"
-                      }`}
-                    >
-                      {`${item.slice(0, 1)}${item
-                        .slice(1, item.length)
-                        .toLowerCase()} `}
-                    </button>
-                  </li>
-                )
-              )}
-            </ul>
+            <div className="w-full overflow-auto">
+              <ul className="scroll-area flex w-full items-center gap-2 border-b border-border-light px-4 dark:border-border">
+                {["TOP", "LATEST", "ARTICLES", "USERS", "TAGS"].map(
+                  (item, index) => (
+                    <li key={index}>
+                      <button
+                        onClick={() => {
+                          setType(
+                            item as
+                              | "TOP"
+                              | "LATEST"
+                              | "ARTICLES"
+                              | "USERS"
+                              | "TAGS"
+                          );
+                          setTimeout(() => {
+                            void refetchData();
+                          }, 200);
+                        }}
+                        className={`${
+                          type === item ? "btn-tab-active" : "btn-tab"
+                        }`}
+                      >
+                        {`${item.slice(0, 1)}${item
+                          .slice(1, item.length)
+                          .toLowerCase()} `}
+                      </button>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
           )}
           <section>
             {query.trim() === "" ? (
               <div className="flex min-h-[10rem] items-center justify-center p-4">
                 <h1 className="flex items-center gap-2 text-center text-base text-gray-700 dark:text-text-secondary">
-                  <Search className="h-4 w-4 stroke-gray-700 dark:stroke-text-primary" />
+                  <Search className="hidden h-4 w-4 stroke-gray-700 dark:stroke-text-primary md:block" />
                   Search for tags, people, articles, and more
                 </h1>
               </div>
@@ -210,7 +212,7 @@ const SearchBody = React.forwardRef<
                   </ul>
                 ) : (
                   <div className="flex h-64 items-center justify-center">
-                    <p className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
+                    <p className="text-center text-base font-semibold text-gray-700 dark:text-text-secondary md:text-xl">
                       Whoops! No results found. Try a new keyword or phrase.
                     </p>
                   </div>

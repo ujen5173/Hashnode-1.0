@@ -1,7 +1,9 @@
 import { type NotificationTypes } from "@prisma/client";
+import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/utils/api";
+import { notificationNavigation } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 import ManageData from "./Cards/ManageData";
 
@@ -15,6 +17,11 @@ enum Type {
 const Notification = () => {
   const [notificationType, setNotificationType] = useState<Type>(Type.all);
   const { user } = useContext(C) as ContextValue;
+  const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
+
+  useEffect(() => {
+    mutate();
+  }, []);
 
   return user ? (
     <div className="w-full rounded-md border border-border-light bg-white p-4 shadow-lg dark:border-border dark:bg-black md:w-[35rem]">
@@ -25,12 +32,7 @@ const Notification = () => {
       </div>
       <header className="scroll-area overflow-auto border-b border-border-light px-4 dark:border-border">
         <div className="flex w-max items-end justify-center gap-2">
-          {[
-            { id: 123, name: "all", label: "All Notifications" },
-            { id: 345, name: "comment", label: "Comments" },
-            { id: 567, name: "like", label: "Likes" },
-            { id: 789, name: "new_article", label: "Articles" },
-          ].map((type) => (
+          {notificationNavigation(notificationType).map((type) => (
             <button
               key={type.id}
               onClick={() => setNotificationType(type.name as Type)}
@@ -48,6 +50,11 @@ const Notification = () => {
 
       <section className="min-h-[20rem] flex-1 text-center">
         <NotificationContainer res={notificationType} />
+        <div className="border-t border-border-light px-4 pt-2 dark:border-border">
+          <Link href="/notifications" className="font-semibold text-secondary">
+            See all notifications
+          </Link>
+        </div>
       </section>
     </div>
   ) : (
@@ -66,7 +73,7 @@ const Notification = () => {
 
 export default Notification;
 
-const NotificationContainer: FC<{
+export const NotificationContainer: FC<{
   res: "all" | "comment" | "like" | "new_article" | "follow";
 }> = ({ res }) => {
   const { data, isLoading, isError } = api.notifications.get.useQuery(

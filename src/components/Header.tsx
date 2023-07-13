@@ -14,7 +14,7 @@ const Header: React.FC = () => {
   const { user } = useContext(C) as ContextValue;
 
   return (
-    <header className="sticky left-0 top-0 z-50 w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
+    <header className="sticky left-0 top-0 z-40 w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto flex max-w-[1550px] items-center justify-between gap-4 px-4 py-2 md:py-4">
         <div className="flex flex-1 items-center justify-between gap-8 md:gap-4">
           <LeftArea />
@@ -40,7 +40,7 @@ const Header: React.FC = () => {
             />
             {opened &&
               (!!user ? (
-                <ProfileDropdown user={user} ref={ref} />
+                <ProfileDropdown setOpened={setOpened} user={user} ref={ref} />
               ) : (
                 <NotAuthenticatedProfileDropdown ref={ref} />
               ))}

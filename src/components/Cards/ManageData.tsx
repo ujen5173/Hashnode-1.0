@@ -154,7 +154,7 @@ const ManageData: FC<{
                       notification.slug as string
                     }`}
                   >
-                    <h1 className="mb-1 text-lg font-semibold text-secondary">
+                    <h1 className="mb-1 text-base font-semibold text-secondary">
                       {notification.title}
                     </h1>
                   </Link>

@@ -1,5 +1,5 @@
 import { Tooltip } from "@mantine/core";
-import { useClickOutside } from "@mantine/hooks";
+import { useClickOutside, useViewportSize } from "@mantine/hooks";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
@@ -13,6 +13,7 @@ const RightArea: FC = () => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [count, setCount] = useState(0);
+  const { width } = useViewportSize();
 
   // notifications are refetched every 15 seconds
   const { data, error } = api.notifications.getCount.useQuery(undefined, {
@@ -21,11 +22,8 @@ const RightArea: FC = () => {
     enabled: !!user,
   });
 
-  const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
-
   useEffect(() => {
     if (opened) {
-      mutate();
       setCount(0);
     }
   }, [opened]);
@@ -85,28 +83,43 @@ const RightArea: FC = () => {
         </button>
       </Tooltip>
 
-      <Tooltip label="Notifications" position="bottom" withArrow>
-        <div className="relative hidden sm:block">
-          <button
-            onClick={() => setOpened((prev) => !prev)}
-            aria-label="icon"
-            role="button"
-            className="btn-icon flex h-10 w-10"
+      <div className="relative">
+        <Tooltip label="Notifications" position="bottom" withArrow>
+          <div>
+            <button
+              onClick={() => setOpened((prev) => !prev)}
+              aria-label="icon"
+              role="button"
+              className="btn-icon hidden h-10 w-10 sm:flex"
+            >
+              <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+            </button>
+            <Link className="block sm:hidden" href={"/notifications"}>
+              <button
+                onClick={() => setOpened((prev) => !prev)}
+                aria-label="icon"
+                role="button"
+                className="btn-icon flex h-10 w-10"
+              >
+                <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+              </button>
+            </Link>
+          </div>
+        </Tooltip>
+        {count > 0 && (
+          <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">
+            <span className="text-xs">{count}</span>
+          </div>
+        )}
+        {opened && width >= 640 && (
+          <div
+            ref={ref}
+            className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
           >
-            <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
-          </button>
-          {count > 0 && (
-            <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">
-              <span className="text-xs">{count}</span>
-            </div>
-          )}
-          {opened && (
-            <div ref={ref} className="absolute right-0 top-full z-50 mt-2">
-              <Notification />
-            </div>
-          )}
-        </div>
-      </Tooltip>
+            <Notification />
+          </div>
+        )}
+      </div>
     </>
   );
 };

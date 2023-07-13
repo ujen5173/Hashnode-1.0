@@ -112,7 +112,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               </div>
             </div>
 
-            <div className="flex flex-1 items-center lg:flex-[0]">
+            <div className="flex items-center">
               <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
                 <Like className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
                 <span className="text-sm font-medium text-gray-700 dark:text-text-primary">

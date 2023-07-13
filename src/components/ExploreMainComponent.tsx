@@ -78,11 +78,11 @@ const ExploreMainComponent = () => {
 
   return (
     <section className="container-main my-4 min-h-screen w-full">
-      <div className="mb-4 rounded-md border border-border-light bg-white px-6 py-12 dark:border-border dark:bg-primary">
-        <h1 className="mb-2 text-center text-3xl font-semibold text-gray-700 dark:text-text-secondary">
+      <div className="mb-4 rounded-md border border-border-light bg-white px-4 py-12 dark:border-border dark:bg-primary md:px-6">
+        <h1 className="mb-4 text-center text-3xl font-semibold text-gray-700 dark:text-text-secondary">
           Explore Tech articles & Tags
         </h1>
-        <p className="mx-auto w-10/12 text-center text-base font-normal text-gray-500 dark:text-text-primary">
+        <p className="mx-auto w-full text-center text-base font-normal text-gray-500 dark:text-text-primary md:w-10/12 lg:w-8/12">
           Everything that&apos;s… Hashnode. Explore the most popular tech
           articles from the Hashnode community. A constantly updating list of
           popular tags and the best minds in tech.

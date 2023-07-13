@@ -3,6 +3,7 @@ import {
   type Prisma,
   type PrismaClient,
 } from "@prisma/client";
+import { type DefaultArgs } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
 import readingTime from "reading-time";
@@ -81,11 +82,7 @@ function displayUniqueObjects(objects: Array<{ id: string; profile: string }>) {
 const getArticlesWithUserFollowingProfiles = async (
   ctx: {
     session: Session | null;
-    prisma: PrismaClient<
-      Prisma.PrismaClientOptions,
-      never,
-      Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
-    >;
+    prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
   },
   articles: ArticleCardWithComments[]
 ) => {

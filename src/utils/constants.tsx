@@ -1,42 +1,112 @@
-import { Bookmark, Drafts, Explore, Hackathon, Team } from "~/svgs";
+import {
+  Bookmark,
+  Comment,
+  Document,
+  Drafts,
+  Explore,
+  Hackathon,
+  Heart,
+  Team,
+} from "~/svgs";
 
 export const asideItems = [
   {
     name: "Explore",
-    icon: <Explore className="h-4 w-4 fill-gray-700 dark:fill-gray-200" />,
+    icon: (
+      <Explore className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+    ),
     href: "/explore",
     type: "link",
   },
   {
     name: "Drafts",
-    icon: <Drafts className="h-4 w-4 fill-gray-700 dark:fill-gray-200" />,
+    icon: <Drafts className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />,
     href: "/drafts",
     type: "link",
   },
   {
     name: "Bookmarks",
-    icon: <Bookmark className="h-4 w-4 fill-gray-700 dark:fill-gray-200" />,
+    icon: (
+      <Bookmark className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+    ),
     href: "/bookmarks",
     type: "link",
   },
   {
     name: "Hackathons",
-    icon: <Hackathon className="h-4 w-4 fill-gray-700 dark:fill-gray-200" />,
+    icon: (
+      <Hackathon className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+    ),
     href: "/hackathons",
     type: "link",
   },
   {
     name: "Team Blogs",
-    icon: <Team className="h-4 w-4 fill-gray-700 dark:fill-gray-200" />,
+    icon: <Team className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />,
     href: "/team-blogs",
     type: "link",
   },
-  // {
-  //   name: "More",
-  //   icon: <More className="h-4 w-4 fill-gray-700 dark:fill-gray-200" />,
-  //   type: "dropdown",
-  // },
 ];
+
+enum Type {
+  all = "all",
+  new_articles = "new_article",
+  comments = "comment",
+  likes = "like",
+}
+
+export const notificationNavigation = (notificationType: Type) => {
+  return [
+    {
+      id: 123,
+      name: "all",
+      label: "All Notifications",
+      icon: null,
+    },
+    {
+      id: 345,
+      name: "comment",
+      label: "Comments",
+      icon: (name: string) => (
+        <Comment
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
+        />
+      ),
+    },
+    {
+      id: 567,
+      name: "like",
+      label: "Likes",
+      icon: (name: string) => (
+        <Heart
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
+        />
+      ),
+    },
+    {
+      id: 789,
+      name: "new_article",
+      label: "Articles",
+      icon: (name: string) => (
+        <Document
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
+        />
+      ),
+    },
+  ];
+};
 
 export const trendingItems = [
   {
