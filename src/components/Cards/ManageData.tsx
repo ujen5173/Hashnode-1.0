@@ -28,7 +28,10 @@ const ManageData: FC<{
             {Array(6)
               .fill("")
               .map((_, i) => (
-                <div key={i} className="w-full md:w-[calc(100%/2-0.5rem)]">
+                <div
+                  key={i}
+                  className="w-full border-b border-border-light dark:border-border md:w-[calc(100%/2-0.5rem)]"
+                >
                   {loading}
                 </div>
               ))}
@@ -59,7 +62,12 @@ const ManageData: FC<{
             {Array(4)
               .fill("")
               .map((_, i) => (
-                <div key={i}>{loading}</div>
+                <div
+                  key={i}
+                  className="border-b border-border-light dark:border-border"
+                >
+                  {loading}
+                </div>
               ))}
           </>
         ) : articleData?.data && articleData?.data.length > 0 ? (

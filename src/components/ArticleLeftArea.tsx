@@ -1,10 +1,13 @@
-import Link from "next/link";
-import { Hamburger, Angleleft } from "~/svgs";
 import Image from "next/image";
+import Link from "next/link";
+import { useState, type FC } from "react";
+import { Angleleft, Hamburger } from "~/svgs";
+import ArticleHamburgerMenu from "./ArticleHamburgerMenu";
 import type { User } from "./ArticleHeader";
-import type { FC } from "react";
 
 const ArticleLeftArea: FC<{ user: User }> = ({ user }) => {
+  const [menu, setMenu] = useState<boolean>(false);
+
   return (
     <div className="flex items-center justify-center gap-2">
       <Link href="/">
@@ -20,10 +23,14 @@ const ArticleLeftArea: FC<{ user: User }> = ({ user }) => {
       <button
         aria-label="icon"
         role="button"
+        onClick={() => setMenu((prev) => !prev)}
         className="btn-icon mr-2 flex h-10 w-10"
       >
         <Hamburger className="h-5 w-5 fill-black dark:fill-white" />
       </button>
+
+      <ArticleHamburgerMenu user={user} menu={menu} setMenu={setMenu} />
+
       <Link
         aria-label="Visit Profile"
         className="hidden items-center gap-2 md:flex"

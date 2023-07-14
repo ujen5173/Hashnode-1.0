@@ -21,10 +21,13 @@ enum Type {
 const Notifications = () => {
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
+  const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
 
   useEffect(() => {
+    mutate();
     setUser(session);
   }, []);
+
   const [notificationType, setNotificationType] = useState<Type>(Type.all);
 
   const { data, isLoading, isError } = api.notifications.get.useQuery(

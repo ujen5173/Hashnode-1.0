@@ -1,8 +1,9 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
+import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
-import { Check, Follow, LogonoText, Search, Sun } from "~/svgs";
+import { Check, Follow, Logo, LogonoText, Search, Settings, Sun } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
@@ -11,6 +12,7 @@ const AuthorBlogHeader: FC<{
   user: {
     name: string;
     username: string;
+    profile: string;
     followers: { id: string }[];
   };
 }> = ({ user: author }) => {
@@ -40,12 +42,29 @@ const AuthorBlogHeader: FC<{
     <header className="bg-white px-4 py-6 dark:bg-primary">
       <div className="mx-auto flex max-w-[1300px] items-center justify-between py-2">
         <div className="flex items-center gap-2">
-          <LogonoText className="h-8 w-8 fill-secondary" />
-          {author?.username && (
-            <h1 className="text-base font-semibold  text-gray-700 dark:text-text-secondary md:text-lg">
-              {author.username}&apos;s Blog
-            </h1>
+          {author && (
+            <Link
+              href={`/u/@${author.username}`}
+              className="flex items-center gap-2"
+            >
+              <Image
+                src={author.profile}
+                className="h-10 w-10 rounded-full object-cover"
+                width={50}
+                height={50}
+                alt={`${author.username}'s Blog`}
+              />
+              <h1 className="text-base font-semibold  text-gray-700 dark:text-text-secondary md:text-lg">
+                {author.username}&apos;s Blog
+              </h1>
+            </Link>
           )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link href="/">
+            <Logo className="h-7 fill-secondary" />
+          </Link>
         </div>
 
         <div className="flex items-center gap-2">
@@ -95,25 +114,34 @@ const AuthorBlogHeader: FC<{
       </div>
       <div className="mx-auto flex max-w-[1300px] items-center justify-between py-2">
         <div className="flex items-center gap-2">
-          <LogonoText className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+          <Link href="/">
+            <LogonoText className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+          </Link>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => void followUser()}
-            className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
-          >
-            {following.status ? (
-              <>
-                <Check className="h-5 w-5 fill-secondary" />
-                Following
-              </>
-            ) : (
-              <>
-                <Follow className="h-5 w-5 fill-secondary" />
-                Follow User
-              </>
-            )}
-          </button>
+          {user?.user.username === author.username ? (
+            <button className="btn-filled flex w-full items-center justify-center gap-2 text-secondary md:w-max">
+              <Settings className="h-5 w-5 fill-white" />
+              Dashboard
+            </button>
+          ) : (
+            <button
+              onClick={() => void followUser()}
+              className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+            >
+              {following.status ? (
+                <>
+                  <Check className="h-5 w-5 fill-secondary" />
+                  Following
+                </>
+              ) : (
+                <>
+                  <Follow className="h-5 w-5 fill-secondary" />
+                  Follow User
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </header>

@@ -8,15 +8,17 @@ import {
   Follow,
   Notification as NotificationSVG,
   Search,
+  Settings,
   Sun,
 } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
+import { type User } from "./ArticleHeader";
 import ArticleProfileDropdown from "./ArticleProfileDropdown";
 import NotAuthenticatedProfileDropdown from "./NotAuthenticatedProfileDropdown";
 import Notification from "./Notification";
 
-const ArticleRightArea: FC = () => {
+const ArticleRightArea: FC<{ user: User }> = ({ user: author }) => {
   const [opened, setOpened] = useState(false); // profile dropdown state
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [notificationOpened, setNotificationOpened] = useState(false); // notification dropdown state
@@ -102,22 +104,29 @@ const ArticleRightArea: FC = () => {
         )}
       </div>
       <div className="hidden md:block">
-        <button
-          onClick={() => void followUser()}
-          className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
-        >
-          {following.status ? (
-            <>
-              <Check className="h-5 w-5 fill-secondary" />
-              Following
-            </>
-          ) : (
-            <>
-              <Follow className="h-5 w-5 fill-secondary" />
-              Follow User
-            </>
-          )}
-        </button>
+        {user?.user.username === author.username ? (
+          <button className="btn-filled mx-4 flex w-full items-center justify-center gap-2 text-secondary md:w-max">
+            <Settings className="h-5 w-5 fill-white" />
+            Dashboard
+          </button>
+        ) : (
+          <button
+            onClick={() => void followUser()}
+            className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+          >
+            {following.status ? (
+              <>
+                <Check className="h-5 w-5 fill-secondary" />
+                Following
+              </>
+            ) : (
+              <>
+                <Follow className="h-5 w-5 fill-secondary" />
+                Follow User
+              </>
+            )}
+          </button>
+        )}
       </div>
       <button
         aria-label="profile"

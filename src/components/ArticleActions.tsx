@@ -65,7 +65,7 @@ const ArticleActions: FC<{
   return (
     <div className="sticky bottom-4 left-0 flex w-full items-center justify-center gap-2 px-4 py-4">
       <div className="mx-auto flex items-center justify-between gap-2 rounded-full border border-border-light bg-light-bg px-4 py-1 dark:border-border dark:bg-primary-light sm:w-max">
-        <Tooltip label="Like">
+        <Tooltip label="Like" withArrow>
           <button
             aria-label="icon"
             role="button"
@@ -84,27 +84,41 @@ const ArticleActions: FC<{
             <span>{like.likesCount}</span>
           </button>
         </Tooltip>
-        {!article.disabledComments && (
-          <>
-            <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
-            <Tooltip label="Comments">
-              <button
-                aria-label="icon"
-                role="button"
-                onClick={() => setCommentsModal(true)}
-                className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Comment className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
-                </div>
-                <span>{article.commentsCount}</span>
-              </button>
-            </Tooltip>
-          </>
-        )}
+        <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
+        <Tooltip
+          label={`${
+            article.disabledComments
+              ? "Comments Disabled"
+              : `Comments (${article.commentsCount})`
+          }`}
+          classNames={{
+            tooltip:
+              "bg-[#dc2626!important] text-[#fafafa!important] dark:text-[#fff!important]",
+          }}
+          withArrow
+        >
+          <div>
+            <button
+              aria-label="icon"
+              role="button"
+              onClick={() =>
+                !article.disabledComments && setCommentsModal(true)
+              }
+              disabled={article.disabledComments}
+              className={`${
+                article.disabledComments ? "cursor-not-allowed opacity-70" : ""
+              } flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Comment className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
+              </div>
+              <span>{article.commentsCount}</span>
+            </button>
+          </div>
+        </Tooltip>
 
         <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
-        <Tooltip label="Bookmark">
+        <Tooltip label="Bookmark" withArrow>
           <button
             aria-label="icon"
             onClick={() => updateBookmark(article.id)}
@@ -135,7 +149,7 @@ const ArticleActions: FC<{
               setShareOpen={setShareOpen}
             />
           )}
-          <Tooltip label="Share">
+          <Tooltip label="Share" withArrow>
             <button
               aria-label="icon"
               role="button"
@@ -149,7 +163,7 @@ const ArticleActions: FC<{
           </Tooltip>
         </div>
         <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
-        <Tooltip label="Report">
+        <Tooltip label="Report" withArrow>
           <button
             aria-label="icon"
             role="button"

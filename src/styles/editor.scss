@@ -94,3 +94,28 @@ body.dark {
     }
   }
 }
+@media screen and (max-width: 1024px) {
+  .article {
+    font-size: 18px;
+    line-height: 32px;
+  }
+  h1 {
+    font-size: 34px;
+    line-height: 44px;
+  }
+
+  h2 {
+    font-size: 30px;
+    line-height: 40px;
+  }
+
+  h3 {
+    font-size: 26px;
+    line-height: 36px;
+  }
+
+  pre code {
+    font-size: 16px;
+    line-height: 28px;
+  }
+}

@@ -51,9 +51,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
         <Component {...pageProps} />
 
-        {searchOpen && (
-            <SearchBody ref={ref} setOpened={setSearchOpen} />
-        )}
+        {searchOpen && <SearchBody ref={ref} setOpened={setSearchOpen} />}
       </Context>
     </SessionProvider>
   );

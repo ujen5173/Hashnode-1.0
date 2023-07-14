@@ -223,11 +223,18 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
 
         {isLoading ? (
           <div className="w-full">
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
+            {Array(4)
+              .fill("")
+              .map((_, i) => {
+                return (
+                  <div
+                    className="border-b border-border-light dark:border-border"
+                    key={i}
+                  >
+                    <ArticleLoading />
+                  </div>
+                );
+              })}
           </div>
         ) : (
           tags?.map((article) => (

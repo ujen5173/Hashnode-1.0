@@ -16,7 +16,7 @@ interface InputTypes {
   pattern?: string | undefined;
   max?: number | undefined;
   autoFocus?: boolean;
-  fontSize?: "sm" | "xs" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
+  fontSize?: "sm" | "xs" | "lg" | "xl" | "2xl" | "3xl";
 }
 
 const Input: FC<InputTypes> = ({
@@ -36,7 +36,7 @@ const Input: FC<InputTypes> = ({
   fontSize = "sm",
 }) => {
   return (
-    <div className="mb-6">
+    <div className="mb-3">
       {label && (
         <label className="mb-2 block text-sm font-normal text-gray-700 dark:text-text-secondary">
           {label}

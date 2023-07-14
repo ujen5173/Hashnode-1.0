@@ -43,7 +43,7 @@ const UserSearchCard: FC<{
     <div className="flex items-center justify-between gap-4 p-4">
       <Link
         href={`/u/@${searchedUser.username}`}
-        className="tag flex flex-1 items-center justify-between"
+        className="flex flex-1 items-center justify-between"
       >
         <div
           onClick={() => void setOpened(false)}
@@ -54,10 +54,10 @@ const UserSearchCard: FC<{
             height={50}
             src={searchedUser.profile}
             alt={searchedUser.name}
-            className="h-12 w-12 rounded-full"
+            className="h-9 w-9 rounded-full md:h-12 md:w-12"
           />
           <div>
-            <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-text-secondary md:text-xl">
               {searchedUser.name}
             </h3>
             <p className="text-sm text-gray-500 dark:text-text-primary">
@@ -68,17 +68,17 @@ const UserSearchCard: FC<{
       </Link>
       <button
         onClick={() => void followUser()}
-        className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+        className="btn-outline flex items-center justify-center gap-2 text-secondary md:w-max"
       >
         {isFollowing ? (
           <>
             <Check className="h-5 w-5 fill-secondary" />
-            Following
+            <span className="text-sm md:text-base">Following</span>
           </>
         ) : (
           <>
             <Follow className="h-5 w-5 fill-secondary" />
-            Follow User
+            <span className="text-sm md:text-base">Follow User</span>
           </>
         )}
       </button>

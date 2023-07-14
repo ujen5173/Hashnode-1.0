@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useContext, type FC } from "react";
-import { Logo, Magic } from "~/svgs";
+import { Logo, Magic, Times } from "~/svgs";
 import { asideItems } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 
@@ -27,14 +27,21 @@ const HamburgerMenu: FC<{
             <Link href="/">
               <Logo className="h-6 fill-secondary" />
             </Link>
+            <button
+              onClick={() => setMenu(false)}
+              aria-label="Close Hambuger Menu"
+              className="btn-icon-large flex"
+            >
+              <Times className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+            </button>
           </header>
-          <section className="flex flex-1 flex-col bg-light-bg shadow-md dark:bg-primary">
+          <section className="flex flex-1 flex-col bg-light-bg px-4 shadow-md dark:bg-primary">
             <div className="flex flex-1 flex-col py-4">
               <ul className="mb-4 border-b border-border-light pb-4 dark:border-border">
                 {asideItems.map((item, index) => (
                   <li key={index}>
                     <Link href={item.href}>
-                      <div className="px-6 py-2 text-base font-semibold tracking-wide text-gray-700 dark:text-text-secondary">
+                      <div className="rounded-md px-4 py-3 text-base font-medium tracking-wide text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
                         {item.name}
                       </div>
                     </Link>
@@ -43,10 +50,10 @@ const HamburgerMenu: FC<{
               </ul>
               <div className="flex-1">
                 <Link href="/">
-                  <div className="flex items-center gap-2 px-6 py-2 text-base tracking-wide text-gray-700 dark:text-text-secondary">
+                  <div className="flex items-center gap-2 rounded-md px-4 py-2 text-base tracking-wide text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
                     <Magic className="h-5 w-5 fill-secondary" />
                     <span>Rix</span>
-                    <button className="400 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-secondary dark:bg-border">
+                    <button className="400 rounded-full border border-border-light bg-gray-100 px-2 py-1 text-xs font-medium text-secondary dark:border-border dark:bg-border">
                       Upcomming
                     </button>
                   </div>
@@ -54,7 +61,7 @@ const HamburgerMenu: FC<{
               </div>
             </div>
             {!user?.user && (
-              <div className="mt-16 flex flex-wrap justify-center gap-2 px-4">
+              <div className="mt-16 flex flex-wrap justify-center gap-2 p-4">
                 <button className="btn-filled w-full">Sign In</button>
                 <button className="btn-outline w-full">Sign Up</button>
               </div>

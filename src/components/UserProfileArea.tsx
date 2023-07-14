@@ -29,9 +29,10 @@ const UserProfileArea: FC<{
         <Image
           src={userDetails?.profile || ""}
           alt={userDetails?.name || ""}
-          width={100}
+          width={160}
+          height={160}
+          decoding="async"
           className="h-full w-full rounded-full object-cover"
-          height={100}
         />
       </div>
 

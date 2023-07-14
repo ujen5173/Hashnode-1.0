@@ -15,14 +15,16 @@ import { C, type ContextValue } from "~/utils/context";
 const AuthorBlogs: NextPage<{
   user: {
     name: string;
+    profile: string;
     username: string;
     followers: { id: string }[];
   };
 }> = ({ user }) => {
+  console.log({ user });
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
   const router = useRouter();
-  const { data, isError } = api.posts.getAuthorArticles.useQuery(
+  const { data, isLoading, isError } = api.posts.getAuthorArticles.useQuery(
     {
       username: router.query.username
         ? (router.query?.username.slice(
@@ -52,7 +54,7 @@ const AuthorBlogs: NextPage<{
       <AuthorBlog author={user} />
       <AuthorBlogHeader user={user} />
       <AuthorBlogNavigation /> {/* Home, Badge, Newsletter */}
-      <AuthorBlogArticleArea data={data} />
+      <AuthorBlogArticleArea data={data} isLoading={isLoading} />
       <Footer />
     </>
   );
@@ -71,6 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     select: {
       username: true,
       name: true,
+      profile: true,
       followers: {
         select: { id: true },
       },
@@ -91,6 +94,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
             username: string;
+            profile: string;
             followers: { id: string }[];
           })
         : null,

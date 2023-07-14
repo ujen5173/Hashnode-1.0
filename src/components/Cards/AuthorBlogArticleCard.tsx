@@ -1,24 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type FC } from "react";
+import { useContext, type FC } from "react";
 import { Book } from "~/svgs";
+import { C, type ContextValue } from "~/utils/context";
+import { type DataType } from "../AuthorBlogArticleArea";
 
 const AuthorBlogArticleCard: FC<{
   width?: string;
   type: "main" | "group" | "non-grid";
-  article: {
-    id: string;
-    title: string;
-    slug: string;
-    read_time: number;
-    user: {
-      profile: string;
-      username: string;
-    };
-    subtitle?: string | null;
-    cover_image?: string | null;
-  };
+  article: DataType;
 }> = ({ type, width = "w-full", article }) => {
+  const { theme } = useContext(C) as ContextValue;
   return (
     <Link
       target="_blank"
@@ -35,13 +27,15 @@ const AuthorBlogArticleCard: FC<{
                 "https://cdn.hashnode.com/res/hashnode/image/stock/unsplash/agFmImWyPso/upload/5ed248fc8629df6d8824fd0d36433368.jpeg?w=1600&h=840&fit=crop&crop=entropy&auto=compress,format&format=webp",
                 "https://cdn.hashnode.com/res/hashnode/image/upload/v1688886169067/20f23ddb-3acc-46d3-b7e5-7e65eb801c3a.png?w=1600&h=840&fit=crop&crop=entropy&auto=compress,format&format=webp",
                 "https://cdn.hashnode.com/res/hashnode/image/upload/v1688879073994/0fbfeb98-50d5-496b-b5fc-cb91a82b4580.png?w=1600&h=840&fit=crop&crop=entropy&auto=compress,format&format=webp",
-                "/imagePlaceholder.avif",
+                theme === "dark"
+                  ? "/imagePlaceholder-dark.avif"
+                  : "/imagePlaceholder-light.avif",
               ][Math.floor(Math.random() * 4 + 1)] as string)
             }
             alt="Error Loading Image!"
             width={500}
             height={500}
-            className="h-full w-full rounded-md"
+            className="h-full w-full rounded-md bg-white dark:bg-primary-light"
           />
         </div>
         <div className="p-2 md:p-4">

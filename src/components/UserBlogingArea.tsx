@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { type FC } from "react";
 import { type UserDetailsInterface } from "~/pages/u/[username]";
 import { Topright } from "~/svgs";
@@ -21,12 +22,14 @@ const UserBlogingArea: FC<{
             {userDetails?.username}
           </h1>
         </div>
-        <button className="btn-outline flex items-center justify-center gap-2">
-          <Topright className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
-          <span className="text-sm text-gray-700 dark:text-text-secondary md:text-base">
-            Read the Blog
-          </span>
-        </button>
+        <Link href={`/dev/@${userDetails?.username as string}`}>
+          <button className="btn-outline flex items-center justify-center gap-2">
+            <Topright className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+            <span className="text-sm text-gray-700 dark:text-text-secondary md:text-base">
+              Read the Blog
+            </span>
+          </button>
+        </Link>
       </section>
     </div>
   );

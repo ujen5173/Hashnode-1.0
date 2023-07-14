@@ -1,20 +1,20 @@
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
+import { useSession } from "next-auth/react";
 import React, { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { z } from "zod";
 import {
   BasicInfo,
   Header,
   SocialInfo,
   UserDetailsOptions,
 } from "~/components";
+import SettingsSEO from "~/SEO/Settings.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { useSession } from "next-auth/react";
-import { C, type ContextValue } from "~/utils/context";
 import { api } from "~/utils/api";
-import { toast } from "react-toastify";
-import { z } from "zod";
-import SettingsSEO from "~/SEO/Settings.seo";
+import { C, type ContextValue } from "~/utils/context";
 
 export interface UserDetails {
   name: string;
@@ -100,7 +100,20 @@ const EditProfile: NextPage<{
     });
 
     try {
-      schema.parse(data);
+      const dataWithSocial = {
+        ...data,
+        social: {
+          twitter: data.social.twitter || "",
+          instagram: data.social.instagram || "",
+          github: data.social.github || "",
+          stackoverflow: data.social.stackoverflow || "",
+          facebook: data.social.facebook || "",
+          website: data.social.website || "",
+          linkedin: data.social.linkedin || "",
+          youtube: data.social.youtube || "",
+        },
+      };
+      schema.parse(dataWithSocial);
       const socialHandles: (keyof SocialHandles)[] = [
         "twitter",
         "instagram",
@@ -113,7 +126,7 @@ const EditProfile: NextPage<{
       ];
 
       for (const handle of socialHandles) {
-        const url = data.social[handle];
+        const url = dataWithSocial.social[handle];
         if (url !== "") {
           try {
             z.string().url().parse(url);
@@ -125,20 +138,19 @@ const EditProfile: NextPage<{
           }
         }
       }
+      const res = await mutateAsync({
+        ...dataWithSocial,
+        skills: dataWithSocial.skills.split(",").map((e) => e.trim()),
+        social: dataWithSocial.social,
+      });
+
+      toast.success("Profile Updated Successfully");
+      setData(res.data);
     } catch (error) {
       if (error instanceof z.ZodError && error.errors[0]) {
         toast.error(error.errors[0].message);
       }
     }
-
-    const res = await mutateAsync({
-      ...data,
-      skills: data.skills.split(",").map((e) => e.trim()),
-      social: data.social,
-    });
-
-    toast.success("Profile Updated Successfully");
-    setData(res.data);
   };
 
   return (
@@ -187,9 +199,12 @@ export default EditProfile;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
-    if (!session?.user) {
-      return { props: { session: null, user: null }, redirect: { destination: "/" } };
-    }
+  if (!session?.user) {
+    return {
+      props: { session: null, user: null },
+      redirect: { destination: "/" },
+    };
+  }
 
   const user = await prisma.user.findUnique({
     where: {

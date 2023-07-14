@@ -1,39 +1,91 @@
+import Image from "next/image";
+import Link from "next/link";
 import { type FC } from "react";
+import { Pen } from "~/svgs";
 import AuthorBlogArticleCard from "./Cards/AuthorBlogArticleCard";
 
+export interface DataType {
+  id: string;
+  title: string;
+  slug: string;
+  read_time: number;
+  user: {
+    profile: string;
+    username: string;
+  };
+  subtitle?: string | null | undefined;
+  cover_image?: string | null | undefined;
+}
+
 const AuthorBlogArticleArea: FC<{
-  data:
-    | {
-        id: string;
-        title: string;
-        slug: string;
-        read_time: number;
-        user: {
-          profile: string;
-          username: string;
-        };
-        subtitle?: string | null;
-        cover_image?: string | null;
-      }[]
-    | undefined; // undefined because this is api based data can can be undefined
-}> = ({ data }) => {
+  data: DataType[] | undefined; // undefined because this is api based data can can be undefined
+  isLoading: boolean;
+}> = ({ data, isLoading }) => {
   return (
     <>
       <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-black">
-        <div className="author-blog-grid mx-auto max-w-[1300px] px-4 py-8">
-          {data && data[0] ? (
-            <AuthorBlogArticleCard type="main" article={data[0]} />
-          ) : null}
+        {isLoading ? (
+          <div className="border-light h-[50%] min-h-[24rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
+        ) : data && data.length > 0 ? (
+          <div className="author-blog-grid mx-auto max-w-[1300px] px-4 py-8">
+            <AuthorBlogArticleCard type="main" article={data[0] as DataType} />
+            {data.length === 1 ? (
+              <>
+                {data?.slice(1, 3).map((article) => (
+                  <div className="child-block" key={article.id}>
+                    <AuthorBlogArticleCard type="group" article={article} />
+                  </div>
+                ))}
+                <div className="child-block h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
+                <div className="child-block h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
+              </>
+            ) : data.length === 2 ? (
+              <>
+                {data?.slice(1, 3).map((article) => (
+                  <div className="child-block" key={article.id}>
+                    <AuthorBlogArticleCard type="group" article={article} />
+                  </div>
+                ))}
+                <div className="child-block h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
+              </>
+            ) : (
+              <>
+                {data?.slice(1, 3).map((article) => (
+                  <div className="child-block" key={article.id}>
+                    <AuthorBlogArticleCard type="group" article={article} />
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="w-full bg-light-bg px-4 py-8 dark:bg-primary">
+            <div className="mx-auto w-full max-w-[35rem]">
+              <Image
+                src="/noArticlesUploaded.avif"
+                alt="No Articles Uploaded By the Author"
+                width={800}
+                height={800}
+                className="mx-auto w-full object-cover"
+              />
 
-          {data
-            ? data.length > 1 &&
-              data?.slice(1, 3).map((article) => (
-                <div className="child-block" key={article.id}>
-                  <AuthorBlogArticleCard type="group" article={article} />
-                </div>
-              ))
-            : null}
-        </div>
+              <div className="flex flex-col justify-center">
+                <h1 className="mb-6 text-center text-2xl font-medium text-gray-700 dark:text-text-secondary">
+                  Your blog is empty! Write your first article
+                </h1>
+
+                <Link href="/new" className="mx-auto block">
+                  <button className="btn-filled">
+                    <span className="flex items-center gap-2">
+                      <Pen className="h-5 w-5 fill-gray-700 stroke-none dark:fill-text-secondary" />
+                      <span className="tracking-wider">Write an article</span>
+                    </span>
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {data
         ? data?.length > 2 && (

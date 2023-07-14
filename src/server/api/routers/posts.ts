@@ -374,7 +374,6 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        console.log({ input });
         const article = await ctx.prisma.article.findFirst({
           where: {
             AND: [

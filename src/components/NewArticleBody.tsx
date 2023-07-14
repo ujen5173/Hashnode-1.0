@@ -216,7 +216,7 @@ const NewArticleBody: FC<{
               input_type="text"
               variant="TRANSPARENT"
               name="title"
-              fontSize="4xl"
+              fontSize="3xl"
               type="INPUT"
               required={true}
               autoFocus={true}

@@ -119,7 +119,7 @@ body.dark .anouncement {
 }
 
 .btn-icon {
-  @apply items-center justify-center rounded-full border border-transparent  hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
+  @apply items-center justify-center rounded-full border border-transparent hover:bg-gray-200  dark:hover:border-border dark:hover:bg-primary-light;
 }
 
 .btn-icon-outline {
@@ -534,14 +534,14 @@ body.dark .mantine-RichTextEditor-root.mantine-3eqw8l {
 }
 
 body.dark .mantine-Tooltip-tooltip.mantine-iu41h {
-  background: rgb(30, 41, 59) !important;
-  color: #fafafa !important;
+  background: rgb(30, 41, 59);
+  color: #fafafa;
   box-shadow: 0 0 0 1px rgba(30, 41, 59, 0.05), 0px 10px 20px rgba(30, 41, 59, 0.1);
 }
 
 .mantine-Tooltip-tooltip.mantine-iu41h {
-  background: #f8fafc !important;
-  color: #111 !important;
+  background: #f8fafc;
+  color: #111;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 10px 20px rgba(0, 0, 0, 0.1);
   font-weight: 500;
 }/*# sourceMappingURL=globals.css.map */

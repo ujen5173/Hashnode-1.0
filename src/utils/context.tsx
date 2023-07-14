@@ -66,6 +66,7 @@ export interface ContextValue extends Options {
     setState: Dispatch<SetStateAction<any>>
   ) => void;
   user: Session | null;
+  theme: "light" | "dark";
   setUser: Dispatch<SetStateAction<Session | null>>;
   bookmarks: { id: string }[];
   updateBookmark: (id: string) => void;
@@ -183,6 +184,7 @@ const Context = ({ children, options }: Props) => {
       value={{
         bookmarks,
         updateBookmark,
+        theme,
         handleTheme,
         handleChange,
         user,
