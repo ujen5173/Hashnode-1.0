@@ -29,7 +29,7 @@ const ProfileDropdown = React.forwardRef<
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full z-20 mt-1 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-md dark:border-border dark:bg-black"
+      className="absolute right-0 top-full z-20 mt-2 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-lg shadow-primary dark:border-border dark:bg-primary"
     >
       <Link href={`/u/@${user?.user.username as string} `}>
         <div className="p-2 pb-0">

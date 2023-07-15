@@ -61,7 +61,7 @@ const ArticleRightArea: FC<{ user: User }> = ({ user: author }) => {
           className="btn-icon hidden h-10 w-10 lg:flex"
           onClick={() => setSearchOpen(true)}
         >
-          <Search className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+          <Search className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
         </button>
       </Tooltip>
       <Tooltip label="Toggle Theme" position="bottom" withArrow>
@@ -71,7 +71,7 @@ const ArticleRightArea: FC<{ user: User }> = ({ user: author }) => {
           className="btn-icon flex h-10 w-10"
           onClick={handleTheme}
         >
-          <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+          <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
         </button>
       </Tooltip>
 
@@ -84,7 +84,7 @@ const ArticleRightArea: FC<{ user: User }> = ({ user: author }) => {
               role="button"
               className="btn-icon flex h-10 w-10"
             >
-              <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+              <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
             </button>
             {count > 0 && (
               <div className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red text-xs text-white">

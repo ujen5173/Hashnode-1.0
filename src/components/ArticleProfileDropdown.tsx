@@ -2,12 +2,13 @@ import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useContext } from "react";
-import { Bookmarkalt, Exit, LogonoText, Pen, User } from "~/svgs";
+import { Bookmarkalt, Exit, LogonoText, Pen, Settings, User } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 import Divider from "./Divider";
 
 const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
   const { user } = useContext(C) as ContextValue;
+
   const logout = async () => {
     await signOut({ callbackUrl: "/" });
   };
@@ -15,7 +16,7 @@ const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full z-20 mt-1 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-md dark:border-border dark:bg-primary"
+      className="absolute right-0 top-full z-20 mt-2 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-md dark:border-border dark:bg-primary"
     >
       <Link href={`/u/@${user?.user.username as string} `}>
         <div className="p-2 pb-0">
@@ -40,6 +41,16 @@ const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
         </div>
       </Link>
       <Divider />
+      {user?.user && (
+        <Link href={`/${user?.user.id}/dashboard`}>
+          <div className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-gray-200 dark:text-text-primary dark:hover:bg-primary-light">
+            <span>
+              <Settings className="h-4 w-4 fill-gray-900 stroke-none dark:fill-text-primary" />
+            </span>
+            <span className="text-sm font-medium">Dashboard</span>
+          </div>
+        </Link>
+      )}
       <Link href="/new">
         <div className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-gray-200 dark:text-text-primary dark:hover:bg-primary-light">
           <span>

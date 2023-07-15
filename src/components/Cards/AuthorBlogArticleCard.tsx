@@ -61,10 +61,10 @@ const AuthorBlogArticleCard: FC<{
               alt="user"
               width={30}
               height={30}
-              className="h-10 w-10 rounded-full object-cover"
+              className="h-9 w-9 rounded-full object-cover md:h-10 md:w-10"
             />
             <div className="flex flex-col">
-              <h1 className="mb-1 text-lg font-semibold text-gray-700 dark:text-text-primary">
+              <h1 className="text-lg font-semibold text-gray-700 dark:text-text-primary md:mb-1">
                 {article.user.username}
               </h1>
               <div className="flex items-center gap-1">

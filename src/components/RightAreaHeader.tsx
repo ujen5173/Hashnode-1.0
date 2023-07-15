@@ -56,7 +56,7 @@ const RightArea: FC = () => {
                 role="button"
                 className="btn-icon flex h-10 w-10 xl:hidden"
               >
-                <Pen className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
+                <Pen className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
               </button>
             </Link>
           </div>
@@ -68,7 +68,7 @@ const RightArea: FC = () => {
           role="button"
           className="btn-icon hidden h-10 w-10 xl:flex"
         >
-          <Updates className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+          <Updates className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
         </button>
       </Tooltip>
 
@@ -79,7 +79,7 @@ const RightArea: FC = () => {
           className="btn-icon flex h-10 w-10"
           onClick={handleTheme}
         >
-          <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+          <Sun className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
         </button>
       </Tooltip>
 
@@ -92,7 +92,7 @@ const RightArea: FC = () => {
               role="button"
               className="btn-icon hidden h-10 w-10 sm:flex"
             >
-              <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+              <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
             </button>
             <Link className="block sm:hidden" href={"/notifications"}>
               <button
@@ -101,7 +101,7 @@ const RightArea: FC = () => {
                 role="button"
                 className="btn-icon flex h-10 w-10"
               >
-                <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-primary" />
+                <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
               </button>
             </Link>
           </div>

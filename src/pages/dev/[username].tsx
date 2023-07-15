@@ -107,17 +107,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const AuthorBlogNavigation = () => {
   return (
-    <section className="border-b border-border-light bg-white dark:border-border dark:bg-primary">
+    <section className="hidden border-b border-border-light bg-white dark:border-border dark:bg-primary lg:block">
       <div className="mx-auto flex max-w-[1300px] items-center justify-center px-4">
         <div className="flex items-center gap-4">
           <ul className="flex">
             <li className="border-b-2 border-gray-500 py-2 dark:border-gray-400">
-              <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-primary-light">
+              <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-lg font-medium hover:bg-gray-100 dark:hover:bg-primary-light">
                 Home
               </span>
             </li>
             <li className="py-2">
-              <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-primary-light">
+              <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-lg font-medium hover:bg-gray-100 dark:hover:bg-primary-light">
                 Badge
               </span>
             </li>

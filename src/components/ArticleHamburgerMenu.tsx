@@ -5,7 +5,7 @@ import { Facebook, Github, Linkedin, Times, Twitter } from "~/svgs";
 import { type User } from "./ArticleHeader";
 
 const ArticleHamburgerMenu: FC<{
-  user: User;
+  user: User | null;
   menu: boolean;
   setMenu: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ user, menu, setMenu }) => {
@@ -26,15 +26,17 @@ const ArticleHamburgerMenu: FC<{
           <header className="flex items-center justify-between border-b border-border border-border-light bg-light-bg p-6 shadow-md dark:border-border dark:bg-primary">
             <Link className="flex items-center gap-2" href="/">
               <Image
-                src={user.profile}
-                alt={user.name}
+                src={user?.profile || "/default_user.avif"}
+                alt={user?.name || "User"}
                 className="h-9 w-9 rounded-full object-cover"
                 width={40}
                 height={40}
               />
-              <h1 className="text-lg font-medium text-gray-700 dark:text-text-secondary">
-                {user.name}&rsquo;s Blog
-              </h1>
+              {user?.name && (
+                <h1 className="text-lg font-medium text-gray-700 dark:text-text-secondary">
+                  {user?.name}&rsquo;s Blog
+                </h1>
+              )}
             </Link>
 
             <button
