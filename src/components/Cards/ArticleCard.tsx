@@ -32,7 +32,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
             </h1>
           </Link>
           <p className="flex items-center gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
-            <Link href={`/u/@${card.user.username}`}>
+            <Link href={`/dev/@${card.user.username}`}>
               @{card.user.username}
             </Link>
             <span className="text-gray-900 dark:text-text-primary">·</span>
@@ -62,7 +62,9 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
             <Link href={`/u/@${card.user.username}/${card.slug}`}>
               <p
                 className={`${
-                  card.cover_image ? "max-height-4" : "max-height-3 mb-3 w-full"
+                  card.cover_image
+                    ? "max-height-4"
+                    : "max-height-3 mb-0 w-full md:mb-3"
                 } break-words break-keep text-sm text-gray-500 dark:text-text-primary`}
               >
                 {limitText(removeMd(card.content), 350)}

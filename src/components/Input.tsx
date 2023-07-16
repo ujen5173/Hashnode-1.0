@@ -36,14 +36,18 @@ const Input: FC<InputTypes> = ({
   fontSize = "sm",
 }) => {
   return (
-    <div className="mb-3">
+    <div className="my-3">
       {label && (
-        <label className="mb-2 block text-sm font-normal text-gray-700 dark:text-text-secondary">
-          {label}
+        <label
+          htmlFor={name}
+          className="mb-2  block text-sm font-normal text-gray-700 dark:text-text-secondary"
+        >
+          {label} {required && <span className="text-[#dc2626]">*</span>}
         </label>
       )}
       {type === "INPUT" ? (
         <input
+          id={name}
           type={input_type}
           className={`text-${fontSize} ${
             variant === "FILLED"
@@ -83,6 +87,7 @@ const Input: FC<InputTypes> = ({
             autoComplete="off"
             name={name}
             maxLength={max}
+            id={name}
             value={value}
             onChange={onChange}
           />

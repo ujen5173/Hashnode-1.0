@@ -17,7 +17,7 @@ const ProfileDetail: FC<{
   userDetails: UserDetailsInterface | undefined;
 }> = ({ userDetails }) => {
   return (
-    <div className="my-6 flex w-full flex-wrap items-center justify-center gap-10 rounded-md border border-border-light px-6 py-4 dark:border-border lg:py-6">
+    <div className="my-6 flex w-full flex-wrap items-center justify-center gap-4 rounded-md border border-border-light px-6 py-4 dark:border-border md:gap-8 lg:gap-10 lg:py-6">
       <div className="flex items-center gap-2 overflow-hidden">
         {/*! TODO: Below code is not working properly. :( */}
         {userDetails &&

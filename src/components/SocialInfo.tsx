@@ -113,7 +113,7 @@ const SocialInfo: FC<{
         onChange={handleSocialChange}
       />
 
-      <h1 className="text-base font-semibold text-gray-700 dark:text-text-secondary">
+      <h1 className="mb-4 mt-8 text-base font-semibold text-gray-700 dark:text-text-secondary">
         Profile Identity
       </h1>
 

@@ -168,7 +168,7 @@ const EditProfile: NextPage<{
             <UserDetailsOptions />
           </div>
           <main className="container-full-main my-4 min-h-screen rounded-md border border-border-light bg-white p-10 dark:border-border dark:bg-primary">
-            <div className="flex gap-8">
+            <div className="flex flex-col gap-8 md:flex-row">
               <BasicInfo handleChange={handleChange} data={data} />
               <SocialInfo
                 data={data}

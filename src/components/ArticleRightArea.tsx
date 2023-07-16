@@ -1,6 +1,7 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
+import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import {
@@ -105,10 +106,12 @@ const ArticleRightArea: FC<{ user: User }> = ({ user: author }) => {
       </div>
       <div className="hidden md:block">
         {user?.user.username === author.username ? (
-          <button className="btn-filled mx-4 flex w-full items-center justify-center gap-2 text-secondary md:w-max">
-            <Settings className="h-5 w-5 fill-white" />
-            Dashboard
-          </button>
+          <Link href={`/${user?.user.id}/dashboard`}>
+            <button className="btn-filled mx-4 flex w-full items-center justify-center gap-2 text-secondary md:w-max">
+              <Settings className="h-5 w-5 fill-white" />
+              Dashboard
+            </button>
+          </Link>
         ) : (
           <button
             onClick={() => void followUser()}

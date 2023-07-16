@@ -40,7 +40,9 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
   return (
     <div
       onClick={() => setOpened(!opened)}
-      className="relative flex w-full min-w-[180px] cursor-pointer items-center justify-between rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:bg-light-bg focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-primary-light"
+      className={`relative flex w-full min-w-[130px] cursor-pointer items-center justify-between rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 
+      outline-none transition-[ring] duration-100 focus:bg-light-bg focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary 
+      hover:dark:border-border dark:focus:bg-primary-light md:min-w-[180px]`}
     >
       <span className="text-base">{select.selected}</span>
       <Angledown className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />

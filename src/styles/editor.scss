@@ -9,7 +9,8 @@
     color: #111827;
     font-size: 40px;
     line-height: 48px;
-    margin-bottom: 34px;
+    margin-top: 44px;
+    margin-bottom: 28px;
   }
 
   h2 {
@@ -17,7 +18,8 @@
     color: #111827;
     font-size: 36px;
     line-height: 40px;
-    margin-bottom: 32px;
+    margin-top: 42px;
+    margin-bottom: 28px;
   }
 
   h3 {
@@ -25,7 +27,8 @@
     color: #111827;
     font-size: 32px;
     line-height: 36px;
-    margin-bottom: 30px;
+    margin-top: 40px;
+    margin-bottom: 28px;
   }
 
   p {
@@ -56,14 +59,16 @@
   }
 
   pre {
-    background: #0f172a;
+    background: #1e293b;
     color: #e5e7eb;
     border-radius: 7px;
     border: 1px solid #1f2937;
-    margin: 36px 0;
-    padding: 32px;
+    margin: 32px 0;
+    padding: 20px;
+    overflow: auto;
+    width: 100%;
     code {
-      background: transparent;
+      background: transparent !important;
       color: #e5e7eb;
     }
   }
@@ -87,10 +92,10 @@ body.dark {
   }
 
   pre {
-    background: #0f172a;
+    background: #1e293b;
     color: #e5e7eb;
     code {
-      background: transparent;
+      background: transparent !important;
     }
   }
 }

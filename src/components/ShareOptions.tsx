@@ -24,7 +24,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "Permalink",
       icon: (
-        <Permalink className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+        <Permalink className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         void navigator.clipboard.writeText(window.location.href);
@@ -35,7 +35,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "Twitter",
       icon: (
-        <Twitter className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+        <Twitter className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(
@@ -48,7 +48,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "Reddit",
       icon: (
-        <Reddit className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+        <Reddit className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(
@@ -61,7 +61,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "LinkedIn",
       icon: (
-        <Linkedin className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+        <Linkedin className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(
@@ -74,7 +74,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "Hacker News",
       icon: (
-        <HackerNews className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+        <HackerNews className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(
@@ -87,7 +87,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "Facebook",
       icon: (
-        <Facebook className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+        <Facebook className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(
@@ -100,7 +100,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "WhatsApp",
       icon: (
-        <WhatsApp className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+        <WhatsApp className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(
@@ -121,7 +121,7 @@ const ShareOptions = React.forwardRef<
         {OPTIONS.map((option, index) => (
           <li
             onClick={option.action}
-            className="flex w-full cursor-pointer items-center justify-start gap-2 px-4 py-2 pr-4 text-sm text-gray-700 hover:bg-gray-100 dark:text-text-secondary dark:hover:bg-border"
+            className="flex w-full cursor-pointer items-center justify-start gap-3 px-4 py-2 pr-4 text-sm text-gray-700 hover:bg-gray-100 dark:text-text-secondary dark:hover:bg-border"
             key={index}
           >
             {option.icon}

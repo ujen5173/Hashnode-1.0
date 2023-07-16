@@ -39,6 +39,7 @@ const AuthorBlogHeader: FC<{
   const [opened, setOpened] = useState(false);
   const [menu, setMenu] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+
   useEffect(() => {
     if (author && user) {
       setFollowing({
@@ -58,7 +59,7 @@ const AuthorBlogHeader: FC<{
             <button
               arial-label="Hamburger Menu"
               role="button"
-              onClick={() => setOpened(true)}
+              onClick={() => setMenu(true)}
               className="btn-icon-large flex"
             >
               <Hamburger className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
@@ -142,10 +143,12 @@ const AuthorBlogHeader: FC<{
           <div className="flex w-full flex-col items-center justify-between lg:flex-row-reverse">
             <div className="mb-4 flex w-full items-center justify-center gap-2 lg:mb-0 lg:w-auto">
               {user?.user.username === author.username ? (
-                <button className="btn-filled flex w-auto items-center justify-center gap-2 text-secondary md:w-max">
-                  <Settings className="h-5 w-5 fill-white" />
-                  Dashboard
-                </button>
+                <Link href={`/${user?.user.id}/dashboard`}>
+                  <button className="btn-filled flex w-auto items-center justify-center gap-2 text-secondary md:w-max">
+                    <Settings className="h-5 w-5 fill-white" />
+                    Dashboard
+                  </button>
+                </Link>
               ) : (
                 <button
                   onClick={() => void followUser()}
@@ -167,16 +170,16 @@ const AuthorBlogHeader: FC<{
             </div>
             <div className="flex items-center justify-center gap-2">
               <button className="btn-icon-large flex">
-                <Twitter className="h-6 w-6 fill-text-secondary dark:fill-text-primary" />
+                <Twitter className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
               </button>
               <button className="btn-icon-large flex">
-                <Github className="h-6 w-6 fill-text-secondary dark:fill-text-primary" />
+                <Github className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
               </button>
               <button className="btn-icon-large flex">
-                <LogonoText className="h-6 w-6 fill-text-secondary dark:fill-text-primary" />
+                <LogonoText className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
               </button>
               <button className="btn-icon-large flex">
-                <Linkedin className="h-6 w-6 fill-text-secondary dark:fill-text-primary" />
+                <Linkedin className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
               </button>
             </div>
           </div>

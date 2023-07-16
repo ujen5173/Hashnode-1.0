@@ -8,7 +8,7 @@ import ProfileDropdown from "./ProfileDropdown";
 import RightArea from "./RightAreaHeader";
 import SearchArea from "./Search";
 
-const Header: React.FC = () => {
+const Header: React.FC<{ search?: boolean }> = ({ search = true }) => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const { user } = useContext(C) as ContextValue;
@@ -18,17 +18,12 @@ const Header: React.FC = () => {
       <div className="mx-auto flex max-w-[1550px] items-center justify-between gap-4 px-4 py-2 md:py-4">
         <div className="flex flex-1 items-center justify-between gap-8 md:gap-4">
           <LeftArea />
-          <SearchArea />
+          {search && <SearchArea />}
         </div>
 
         <div className="flex items-center gap-2">
           <RightArea />
-          <button
-            aria-label="icon"
-            role="button"
-            className="relative rounded-full"
-            style={{ cursor: "default!important" }}
-          >
+          <div className="relative rounded-full">
             <Image
               src={user?.user.profile || "/default_user.avif"}
               alt={user?.user.name || "user"}
@@ -44,7 +39,7 @@ const Header: React.FC = () => {
               ) : (
                 <NotAuthenticatedProfileDropdown ref={ref} />
               ))}
-          </button>
+          </div>
         </div>
       </div>
     </header>

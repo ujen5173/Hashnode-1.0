@@ -1,12 +1,29 @@
+import { v4 as uuid } from "uuid";
 import {
+  Analytics,
   Bookmark,
   Comment,
+  Customize,
   Document,
-  Drafts,
   Explore,
+  ExportFile,
+  Feed,
+  Github,
+  Global,
   Hackathon,
   Heart,
+  ImportFile,
+  Integrations,
+  Navbar,
+  Newsletter,
+  Pages,
+  Seo,
+  Series,
+  Settings,
+  Sponsors,
   Team,
+  Tools,
+  Widgets,
 } from "~/svgs";
 
 export const asideItems = [
@@ -16,12 +33,6 @@ export const asideItems = [
       <Explore className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
     ),
     href: "/explore",
-    type: "link",
-  },
-  {
-    name: "Drafts",
-    icon: <Drafts className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />,
-    href: "/drafts",
     type: "link",
   },
   {
@@ -138,13 +149,13 @@ export const trendingItems = [
 
 export const articles = [
   {
-    id: "123asdfasdf",
+    id: uuid(),
     title: "Creating a 3D Table Configurator with React Three Fiber",
     slug: "creating-a-3d-table-configurator-with-react-three-fiber",
     cover_image:
       "https://cdn.hashnode.com/res/hashnode/image/upload/v1677291012839/7853f4fe-48c7-4598-84c4-92a50e04f740.jpeg?w=1600&h=840&fit=crop&crop=entropy&auto=compress,format&format=webp",
     user: {
-      id: "1234rwefasd1",
+      id: uuid(),
       name: "Wawa Sensei",
       username: "sensei",
       profile:
@@ -156,7 +167,7 @@ export const articles = [
 
     tags: [
       {
-        id: "1243fqwefasdfawef",
+        id: uuid(),
         name: "testing-tags",
         slug: "testing-tags",
       },
@@ -165,7 +176,7 @@ export const articles = [
       "Learn how to create a custom React hook to fetch data from an API",
     likes: ["1"],
     commentsCount: 0,
-    userId: "",
+    userId: uuid(),
     disabledComments: false,
     seoTitle: "",
     seoDescription: "",
@@ -174,13 +185,13 @@ export const articles = [
     updatedAt: new Date("2021-08-24T15:30:00.000Z"),
   },
   {
-    id: "212f2134fs34",
+    id: uuid(),
     title: "Data Visualization with Julia: Exploring Plots.jl",
     slug: "data-visualization-with-julia-exploring-plots-jl",
     cover_image:
       "https://cdn.hashnode.com/res/hashnode/image/upload/v1684601711468/c5e6e1be-79fe-4732-a29c-b4acac22db1a.png?w=1600&h=840&fit=crop&crop=entropy&auto=compress,format&format=webp",
     user: {
-      id: "2342wfasdf2q43",
+      id: uuid(),
       name: "Ifihan Olusheye",
       username: "ifihan",
       profile:
@@ -192,14 +203,14 @@ export const articles = [
     subtitle: null,
     tags: [
       {
-        id: "1243fqwefasdfawef",
+        id: uuid(),
         name: "testing-tags",
         slug: "testing-tags",
       },
     ],
     likes: ["1"],
     commentsCount: 5,
-    userId: "",
+    userId: uuid(),
     disabledComments: false,
     seoTitle: "",
     seoDescription: "",
@@ -208,11 +219,11 @@ export const articles = [
     updatedAt: new Date("2021-08-24T15:30:00.000Z"),
   },
   {
-    id: "212asdf34f2334",
+    id: uuid(),
     title: "Using Intersection Observer API in React",
     slug: "using-intersection-observer-api-in-react",
     user: {
-      id: "23123412fw423",
+      id: uuid(),
       name: "Samuel Umoren",
       username: "samuelumoren",
       profile:
@@ -224,7 +235,7 @@ export const articles = [
     subtitle: null,
     tags: [
       {
-        id: "1243fqwefasdfawef",
+        id: uuid(),
         name: "testing-tags",
         slug: "testing-tags",
       },
@@ -232,7 +243,7 @@ export const articles = [
     cover_image: null,
     likes: ["1", "2"],
     commentsCount: 20,
-    userId: "",
+    userId: uuid(),
     disabledComments: false,
     seoTitle: "",
     seoDescription: "",
@@ -241,11 +252,11 @@ export const articles = [
     updatedAt: new Date("2021-08-24T15:30:00.000Z"),
   },
   {
-    id: "212312345234",
+    id: uuid(),
     title: "Using Intersection Observer API in React",
     slug: "using-intersection-observer-api-in-react",
     user: {
-      id: "2343412323",
+      id: uuid(),
       name: "Samuel Umoren",
       username: "samuelumoren",
       profile:
@@ -257,14 +268,14 @@ export const articles = [
     cover_image: null,
     tags: [
       {
-        id: "1243fqwefasdfawef",
+        id: uuid(),
         name: "testing-tags",
         slug: "testing-tags",
       },
     ],
     likes: ["1", "2"],
     commentsCount: 20,
-    userId: "",
+    userId: uuid(),
     disabledComments: false,
     seoTitle: "",
     seoDescription: "",
@@ -274,11 +285,11 @@ export const articles = [
     updatedAt: new Date("2021-08-24T15:30:00.000Z"),
   },
   {
-    id: "21226534534",
+    id: uuid(),
     title: "Using Intersection Observer API in React",
     slug: "using-intersection-observer-api-in-react",
     user: {
-      id: "23421324513453",
+      id: uuid(),
       name: "Samuel Umoren",
       username: "samuelumoren",
       profile:
@@ -291,7 +302,7 @@ export const articles = [
     subtitle: null,
     tags: [
       {
-        id: "1243fqwefasdfawef",
+        id: uuid(),
         name: "testing-tags",
         slug: "testing-tags",
       },
@@ -355,68 +366,68 @@ export const bookmarks = articles.slice(0, 2);
 export const others = [
   [
     {
-      id: "6as48df6a84e65w",
+      id: uuid(),
       name: "Feature Requests",
       link: "https://roadmap.hashnode.vercel.app/feature-requests",
     },
     {
-      id: "6as48df6a84e65w",
+      id: uuid(),
       name: "Changelog",
       link: "https://roadmap.hashnode.vercel.app/changelog",
     },
     {
-      id: "6as48df6a84e65w",
+      id: uuid(),
       name: "Hashnode APIs",
       link: "api.hahsnode.vercel.app",
     },
   ],
   [
     {
-      id: "6as48df6a84e65w",
+      id: uuid(),
       name: "About",
       link: "https://hashnode.vercel.app/about",
     },
     {
-      id: "a6s4f98w6e4f65as4d6f",
+      id: uuid(),
       name: "Service Status",
       link: "https://hashnode.vercel.app/status",
     },
     {
-      id: "6as48dfas54f6a84we6a84e65w",
+      id: uuid(),
       name: "Official Blog",
       link: "https://hashnode.vercel.app/blog",
     },
     {
-      id: "6as48df6a84easdf3a6we65w",
+      id: uuid(),
       name: "Press Kit",
       link: "https://hashnode.vercel.app/press",
     },
     {
-      id: "6as48df6a84e65wqfwefd",
+      id: uuid(),
       name: "Support",
 
       link: "https://hashnode.vercel.app/support",
     },
     {
-      id: "6as48df6a8123424e65w",
+      id: uuid(),
       name: "Careers",
 
       link: "https://hashnode.vercel.app/careers",
     },
     {
-      id: "6as48df6a84e651243123w",
+      id: uuid(),
       name: "OSS ACK",
       link: "https://hashnode.vercel.app/oss-ack",
     },
   ],
   [
     {
-      id: "6as4132412548df6a84e65w",
+      id: uuid(),
       name: "Privacy Policy",
       link: "https://hashnode.vercel.app/privacy",
     },
     {
-      id: "a6f54a6s6as48df6a84e65w",
+      id: uuid(),
       name: "Terms of Service",
       link: "https://hashnode.vercel.app/terms",
     },
@@ -425,49 +436,49 @@ export const others = [
 
 export const trending = [
   {
-    id: "12345",
+    id: uuid(),
     title: "Incredible Discovery in Deep Space!",
     user: {
       name: "John Doe",
       profile:
         "https://cdn.hashnode.com/res/hashnode/image/upload/v1680307844268/5d7c75c1-6668-4556-86fa-704396926856.png?w=500&h=500&fit=crop&crop=faces&auto=compress,format&format=webp",
-      id: "98765",
+      id: uuid(),
     },
     likesCount: 532,
     commentsCount: 87,
   },
   {
-    id: "23456",
+    id: uuid(),
     title: "New Recipes for Summer Delights",
     user: {
       name: "Jane Smith",
       profile:
         "https://cdn.hashnode.com/res/hashnode/image/upload/v1684859615973/gc_c8CNhY.png?w=500&h=500&fit=crop&crop=faces&auto=compress,format&format=webp",
-      id: "54321",
+      id: uuid(),
     },
     likesCount: 782,
     commentsCount: 112,
   },
   {
-    id: "34567",
+    id: uuid(),
     title: "Breaking News: Earthquake Hits City",
     user: {
       name: "Michael Johnson",
       profile:
         "https://cdn.hashnode.com/res/hashnode/image/upload/v1678624600195/2x7sf0LJn.png?w=500&h=500&fit=crop&crop=faces&auto=compress,format&format=webp",
-      id: "13579",
+      id: uuid(),
     },
     likesCount: 315,
     commentsCount: 42,
   },
   {
-    id: "45678",
+    id: uuid(),
     title: "Exclusive Interview with Famous Author",
     user: {
       name: "Sarah Anderson",
       profile:
         "https://cdn.hashnode.com/res/hashnode/image/upload/v1678624600195/2x7sf0LJn.png?w=500&h=500&fit=crop&crop=faces&auto=compress,format&format=webp",
-      id: "24680",
+      id: uuid(),
     },
     likesCount: 642,
     commentsCount: 95,
@@ -725,42 +736,42 @@ add unique id to each tag
 */
 export const trendingTags = [
   {
-    id: "12345",
+    id: uuid(),
     name: "AWS",
     image:
       "https://cdn.hashnode.com/res/hashnode/image/upload/v1607508501076/CYQAUOwqq.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp",
     articlesCount: 169,
   },
   {
-    id: "23456",
+    id: uuid(),
     name: "JavaScript",
     image:
       "https://cdn.hashnode.com/res/hashnode/image/upload/v1607082785538/EryuLRriM.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp",
     articlesCount: 287,
   },
   {
-    id: "34567",
+    id: uuid(),
     name: "Python",
     image:
       "https://cdn.hashnode.com/res/hashnode/image/upload/v1607321670861/lG265gIUp.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp",
     articlesCount: 166,
   },
   {
-    id: "45678",
+    id: uuid(),
     name: "Web Development",
     image:
       "https://cdn.hashnode.com/res/hashnode/image/upload/vdxecajl3uwbprclsctm/1450469658.jpg?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp&auto=compress,format&format=webp",
     articlesCount: 256,
   },
   {
-    id: "56789",
+    id: uuid(),
     name: "React",
     image:
       "https://cdn.hashnode.com/res/hashnode/image/upload/v1513321478077/ByCWNxZMf.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp",
     articlesCount: 144,
   },
   {
-    id: "67890",
+    id: uuid(),
     name: "Devops",
     image:
       "https://cdn.hashnode.com/res/hashnode/image/upload/cnvm0znfqcrwelhgtblb/1496913014.png?w=200&h=200&fit=crop&crop=faces&auto=compress,format&format=webp&auto=compress,format&format=webp",
@@ -783,92 +794,127 @@ export const fakeSeach: {
   createdAt: Date;
   likesCount: number;
   cover_image: string | null;
-}[] = [
-  // {
-  //   id: "1234675245",
-  //   title: "Tick-Tock, Hackers! Are You Ready to Hack with 1Password?",
-  //   slug: "1password-hackathon",
-  //   user: {
-  //     id: "12312345",
-  //     name: "Jane Smith",
-  //     username: "testing-username",
-  //   },
-  //   createdAt: new Date("2021-08-24T15:30:00.000Z"),
-  //   likesCount: 10,
-  //   cover_image:
-  //     "https://cdn.hashnode.com/res/hashnode/image/upload/v1687338197226/fcaec3fd-a3fc-4bff-8cb6-89e60055b3bf.png?w=800&h=420&fit=crop&crop=entropy&auto=compress,format&format=webp",
-  // },
-  // {
-  //   id: "12312345123",
-  //   title: "Reflections from shadowing GitLab's Development Director",
-  //   slug: "reflections-from-shadowing-gitLab-development-director",
-  //   user: {
-  //     id: "1241251",
-  //     name: "Ujen Basi",
-  //     username: "ujenbasi",
-  //   },
-  //   createdAt: new Date("2022-08-24T15:30:00.000Z"),
-  //   likesCount: 10,
-  //   cover_image: null,
-  // },
-];
+}[] = [];
 
-// export const fakeComments: Comment[] = [
-//   {
-//     id: "1",
-//     content: "Great post!",
-//     hasLiked: true,
-//     likesCount: 10,
-//     createdAt: new Date("2023-06-15"),
-//     replies: [
-//       {
-//         id: "1.1",
-//         content: "I agree!",
-//         hasLiked: false,
-//         likesCount: 5,
-//         createdAt: new Date("2023-06-15"),
-//         replies: [],
-//         user: {
-//           id: "2",
-//           name: "John Doe",
-//           profile:
-//             "https://yt3.ggpht.com/yti/AHyvSCBbo7U8vNQ5HyqHYmiYi3pZEVEVhYSaqkc7jQ=s88-c-k-c0x00ffffff-no-rj-mo",
-//         },
-//       },
-//       {
-//         id: "1.2",
-//         content: "Totally agreed!",
-//         hasLiked: false,
-//         likesCount: 0,
-//         createdAt: new Date("2023-06-15"),
-//         replies: [],
-//         user: {
-//           id: "21234",
-//           name: "Ujen Doe",
-//           profile:
-//             "https://yt3.ggpht.com/yti/AHyvSCBbo7U8vNQ5HyqHYmiYi3pZEVEVhYSaqkc7jQ=s88-c-k-c0x00ffffff-no-rj-mo",
-//         },
-//       },
-//     ],
-//     user: {
-//       id: "1",
-//       name: "Jane Smith",
-//       profile:
-//         "https://yt3.ggpht.com/-xGHWnXB5JPwYMXBsCkjyRglj55rQiCUpYS0RHNIL-Vjm4zOaLooEbvBcu2gFpQlmymZh4OCbbo=s88-c-k-c0x00ffffff-no-rj",
-//     },
-//   },
-//   {
-//     id: "2",
-//     content: "Nice work!",
-//     hasLiked: false,
-//     likesCount: 2,
-//     createdAt: new Date("2023-06-14"),
-//     replies: [],
-//     user: {
-//       id: "3",
-//       name: "Bob Johnson",
-//       profile:
-//         "https://yt3.ggpht.com/ytc/AGIKgqNZVUQ8QIhj7XrkGtjJt_28foz9lxcxPe_132Yb=s88-c-k-c0x00ffffff-no-rj",
-//     },
-//   },
-// ];
+export const dashboardNavigations = [
+  {
+    id: uuid(),
+    name: "General",
+    icon: (
+      <Settings className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/general",
+  },
+  {
+    id: uuid(),
+    name: "Appearance",
+    icon: (
+      <Customize className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/appearance",
+  },
+  {
+    id: uuid(),
+    name: "Navbar",
+    icon: <Navbar className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    link: "/dashboard/navbar",
+  },
+  {
+    id: uuid(),
+    name: "Articles",
+    icon: <Feed className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    link: "/dashboard/articles",
+  },
+  {
+    id: uuid(),
+    name: "Series",
+    icon: <Series className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    link: "/dashboard/series",
+  },
+  {
+    id: uuid(),
+    name: "Pages",
+    icon: <Pages className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    link: "/dashboard/pages",
+  },
+  {
+    id: uuid(),
+    name: "Sponsors",
+    icon: (
+      <Sponsors className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/sponsors",
+  },
+  {
+    id: uuid(),
+    name: "Analytics",
+    icon: (
+      <Analytics className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/analytics",
+  },
+  {
+    id: uuid(),
+    name: "Widgets",
+    icon: (
+      <Widgets className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/widgets",
+  },
+  {
+    id: uuid(),
+    name: "Newsletter",
+    icon: (
+      <Newsletter className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/newsletter",
+  },
+  {
+    id: uuid(),
+    name: "Integrations",
+    icon: (
+      <Integrations className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/integrations",
+  },
+  {
+    id: uuid(),
+    name: "SEO",
+    icon: <Seo className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    link: "/dashboard/seo",
+  },
+  {
+    id: uuid(),
+    name: "Domain",
+    icon: <Global className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    link: "/dashboard/domain",
+  },
+  {
+    id: uuid(),
+    name: "GitHub",
+    icon: <Github className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    link: "/dashboard/github",
+  },
+  {
+    id: uuid(),
+    name: "Import",
+    icon: (
+      <ImportFile className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/import",
+  },
+  {
+    id: uuid(),
+    name: "Export",
+    icon: (
+      <ExportFile className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    ),
+    link: "/dashboard/export",
+  },
+  {
+    id: uuid(),
+    name: "Advanced",
+    icon: <Tools className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    link: "/dashboard/advanced",
+  },
+];
