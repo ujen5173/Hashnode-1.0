@@ -13,6 +13,9 @@ export interface Article {
     username: string;
     profile: string;
     bio: string;
+    handle?: {
+      handle: string;
+    } | null;
   };
   content: string;
   read_time: number;
@@ -42,6 +45,9 @@ export interface ArticleCard {
     name: string;
     username: string;
     profile: string;
+    handle?: {
+      handle: string;
+    } | null;
     id?: string;
   };
   content: string;
@@ -80,6 +86,9 @@ export interface User {
   name: string;
   username: string;
   profile: string;
+  handle?: {
+    handle: string;
+  } | null;
   bio: string;
 }
 
@@ -94,6 +103,9 @@ export interface DetailedUser {
   cover_image: string;
   bio: string;
   skills: string[];
+  handle?: {
+    handle: string;
+  };
   social: unknown;
   following: { username: string }[];
   followers: { username: string }[];

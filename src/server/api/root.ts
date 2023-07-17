@@ -5,8 +5,9 @@ import {
   notificationRouter,
   postsRouter,
   tagsRouter,
-  usersRouter,
+  usersRouter
 } from "./routers";
+import handleRouter from "./routers/handle";
 
 export const appRouter = createTRPCRouter({
   posts: postsRouter,
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   likes: likesRouter,
   comments: commentsRouter,
   notifications: notificationRouter,
+  handles: handleRouter,
 });
 
 export type AppRouter = typeof appRouter;

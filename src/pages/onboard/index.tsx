@@ -1,9 +1,8 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import Divider from "~/components/Divider";
-import { Github, Google, Logo } from "~/svgs";
+import { Google, Logo } from "~/svgs";
 
 const Onboard = () => {
   return (
@@ -33,7 +32,7 @@ const Onboard = () => {
                 <Google className="h-5 w-5 fill-gray-700 dark:fill-white" />
                 <span>Continue with Google</span>
               </button>
-              <button
+              {/* <button
                 onClick={() =>
                   void signIn("github", {
                     callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
@@ -43,7 +42,7 @@ const Onboard = () => {
               >
                 <Github className="h-5 w-5 fill-gray-700 dark:fill-white" />
                 <span>Continue with Github</span>
-              </button>
+              </button> */}
             </div>
 
             <Divider />

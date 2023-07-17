@@ -3,7 +3,14 @@ import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useContext } from "react";
-import { Bookmarkalt, Exit, Manage, Search, User as UserSVG } from "~/svgs";
+import {
+  Bookmarkalt,
+  Exit,
+  Feed,
+  Manage,
+  Search,
+  User as UserSVG,
+} from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 
 const ProfileDropdown = React.forwardRef<
@@ -24,7 +31,7 @@ const ProfileDropdown = React.forwardRef<
       className="absolute right-0 top-full z-20 mt-2 w-64 rounded-md border border-border-light bg-gray-50 py-2 text-left shadow-lg shadow-primary dark:border-border dark:bg-primary"
     >
       <Link href={`/u/@${user?.user.username as string} `}>
-        <div className="flex w-full cursor-pointer items-center gap-2 rounded-md px-4 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
+        <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
           <Image
             src={user?.user.profile || "/default_user.avif"}
             alt={user?.user.name || "user"}
@@ -44,18 +51,34 @@ const ProfileDropdown = React.forwardRef<
         </div>
       </Link>
       <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
-      <div className="">
-        <h1 className="px-4 text-xs font-semibold text-gray-500 dark:text-text-primary">
-          Personal Blogs
-        </h1>
-        <Link href={`/dev/ujenbasi`}>
-          <div className="px-4 py-2 hover:bg-border-light hover:dark:bg-border">
-            <h1 className="text-base text-gray-700 dark:text-text-secondary">
-              ujenbasi.hashnode.dev
-            </h1>
+      {user?.user && user?.user.handle ? (
+        <div>
+          <h1 className="mb-1 px-4 text-xs font-semibold text-gray-500 dark:text-text-primary">
+            Personal Blogs
+          </h1>
+          <Link href={`/${user.user.id}/dashboard`}>
+            <div className="px-4 py-2 hover:bg-border-light hover:dark:bg-border">
+              <h1 className="text-sm text-gray-700 dark:text-text-secondary">
+                {user.user.handle.handle}.hashnode-t3.dev
+              </h1>
+            </div>
+          </Link>
+        </div>
+      ) : (
+        <Link href={`/onboard/blog/setup`}>
+          <div className="flex w-full cursor-pointer gap-2 px-4 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
+            <Feed className="h-7 w-7 fill-secondary" />
+            <div>
+              <h1 className="mb-1 text-sm font-semibold text-secondary">
+                Start a personal blog
+              </h1>
+              <h1 className="text-xs font-medium text-gray-500 dark:text-text-secondary">
+                Create a Hashnode blog for personal use. No collaborators.
+              </h1>
+            </div>
           </div>
         </Link>
-      </div>
+      )}
       <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
       <Link href="/bookmarks">
         <div className="flex cursor-pointer items-center gap-2 px-4 py-3 text-gray-700  hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">

@@ -39,7 +39,7 @@ const RightArea: FC = () => {
     <>
       {!!user && (
         <>
-          <Link href={"/new"}>
+          <Link href={user.user.handle ? "/new" : "/onboard/blog/setup"}>
             <button
               aria-label="icon"
               role="button"
@@ -50,7 +50,7 @@ const RightArea: FC = () => {
             </button>
           </Link>
           <div className="block sm:hidden">
-            <Link href={"/new"}>
+            <Link href={user.user.handle ? "/new" : "/onboard/blog/setup"}>
               <button
                 aria-label="icon"
                 role="button"

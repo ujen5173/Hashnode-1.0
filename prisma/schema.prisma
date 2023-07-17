@@ -67,10 +67,23 @@ model User {
     notifications     Notification[] @relation("Notification Handler")
     notificationsFrom Notification[] @relation("Notification From")
 
+    handle Handle?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     @@index([email, username])
+}
+
+model Handle {
+    id        String   @id @default(cuid())
+    user      User?    @relation(fields: [userId], references: [id])
+    userId    String   @unique
+    handle    String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId, handle])
 }
 
 model Tag {

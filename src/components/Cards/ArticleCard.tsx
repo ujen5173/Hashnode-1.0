@@ -31,13 +31,15 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               {card.user.name}
             </h1>
           </Link>
-          <p className="flex items-center gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
-            <Link href={`/dev/@${card.user.username}`}>
-              @{card.user.username}
-            </Link>
-            <span className="text-gray-900 dark:text-text-primary">·</span>
-            <span>{formatDate(card.createdAt)}</span>
-          </p>
+          {card.user.handle && (
+            <p className="flex items-center gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
+              <Link href={`/dev/@${card.user.handle.handle}`}>
+                @{card.user.handle.handle}
+              </Link>
+              <span className="text-gray-900 dark:text-text-primary">·</span>
+              <span>{formatDate(card.createdAt)}</span>
+            </p>
+          )}
         </div>
       </header>
 

@@ -66,14 +66,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
   const username = context.query.username as string;
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
-      username: username.slice(1, username.length),
+      handle: {
+        handle: username.slice(1, username.length),
+      },
     },
     select: {
       username: true,
       name: true,
       profile: true,
+      handle: {
+        select: {
+          handle: true,
+        },
+      },
       followers: {
         select: { id: true },
       },

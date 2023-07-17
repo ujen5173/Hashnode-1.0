@@ -245,7 +245,7 @@ const NewArticleBody: FC<{
               placeholder="Start writing your story..."
               input_type="text"
               variant="TRANSPARENT"
-              fontSize="3xl"
+              fontSize="lg"
               name="content"
               type="TEXTAREA"
               required={true}

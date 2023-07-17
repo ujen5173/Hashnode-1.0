@@ -57,7 +57,7 @@ const Input: FC<InputTypes> = ({
               : variant === "TRANSPARENT"
               ? "mb-4 w-full bg-transparent py-2 font-bold text-gray-700 placeholder-opacity-50 outline-none dark:text-text-secondary"
               : "input-outline"
-          }`}
+          } w-full`}
           placeholder={placeholder}
           disabled={disabled}
           required={required}
@@ -78,7 +78,7 @@ const Input: FC<InputTypes> = ({
                 : variant === "ROUNDED"
                 ? "input-primary"
                 : variant === "TRANSPARENT"
-                ? "mb-4 w-full bg-transparent py-2 font-bold text-gray-700 placeholder-opacity-50 outline-none dark:text-text-secondary"
+                ? "mb-4 min-h-[20rem] w-full bg-transparent py-2 text-gray-700 placeholder-opacity-50 outline-none dark:text-text-secondary"
                 : "input-outline"
             }`}
             placeholder={placeholder}

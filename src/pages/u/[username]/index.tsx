@@ -14,6 +14,9 @@ import { C, type ContextValue } from "~/utils/context";
 export interface UserDetailsInterface {
   followers: { id: string }[];
   isFollowing: boolean;
+  handle: {
+    handle: string;
+  } | null;
   followersCount: number;
   social: SocialHandles;
   id: string;
@@ -66,6 +69,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         username: username.slice(1, username.length),
       },
       include: {
+        handle: {
+          select: {
+            handle: true,
+          },
+        },
         followers: {
           select: {
             id: true,

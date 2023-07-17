@@ -1,16 +1,15 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type NextAuthOptions,
   type DefaultSession,
-  type User,
+  type NextAuthOptions,
+  type User
 } from "next-auth";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
-import GithubProvider, { type GithubProfile } from "next-auth/providers/github";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import slugify from "slugify";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
-import slugify from "slugify";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -31,6 +30,9 @@ declare module "next-auth" {
     profile: string;
     emailVerified: Date | null;
     tagline: string;
+    handle?: {
+      handle: string;
+    };
   }
 }
 
@@ -41,18 +43,34 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        profile: user.profile,
-        emailVerified: user.emailVerified,
-        tagline: user.tagline,
-      },
-    }),
+    session: async ({ session, user }) => {
+       const handle = await prisma.handle.findUnique({
+        where: {
+          userId: user.id,
+        },
+        select: {
+          handle: true,
+        },
+      });
+
+      return {
+        ...session,
+        user: {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          profile: user.profile,
+          emailVerified: user.emailVerified,
+          tagline: user.tagline,
+          handle: handle
+            ? {
+                handle: handle.handle,
+              }
+            : null,
+        },
+      };
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -116,21 +134,21 @@ export const authOptions: NextAuthOptions = {
       },
     }),
 
-    GithubProvider({
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET,
-      profile(profile: GithubProfile): User {
-        return {
-          id: profile.id.toString() || "",
-          name: profile.name || "",
-          username: profile.login,
-          email: profile.email || "",
-          profile: profile.avatar_url,
-          emailVerified: profile.email ? new Date() : null,
-          tagline: "Software Devloper",
-        };
-      },
-    }),
+    // GithubProvider({
+    //   clientId: env.GITHUB_CLIENT_ID,
+    //   clientSecret: env.GITHUB_CLIENT_SECRET,
+    //   profile(profile: GithubProfile): User {
+    //     return {
+    //       id: profile.id.toString() || "",
+    //       name: profile.name || "",
+    //       username: profile.login,
+    //       email: profile.email || "",
+    //       profile: profile.avatar_url,
+    //       emailVerified: profile.email ? new Date() : null,
+    //       tagline: "Software Devloper",
+    //     };
+    //   },
+    // }),
   ],
   pages: {
     signIn: "/onboard",

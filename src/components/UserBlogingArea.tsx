@@ -16,13 +16,13 @@ const UserBlogingArea: FC<{
       <section className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:gap-0">
         <div className="flex-1">
           <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary md:text-xl">
-            {userDetails?.username}&apos;s Developer Diary
+            {userDetails?.handle?.handle as string}&apos;s Developer Diary
           </h1>
           <h1 className="text-sm font-normal text-gray-700 dark:text-text-primary md:text-base">
-            {userDetails?.username}
+            {userDetails?.handle?.handle as string}
           </h1>
         </div>
-        <Link href={`/dev/@${userDetails?.username as string}`}>
+        <Link href={`/dev/@${userDetails?.handle?.handle as string}`}>
           <button className="btn-outline flex items-center justify-center gap-2">
             <Topright className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
             <span className="text-sm text-gray-700 dark:text-text-secondary md:text-base">

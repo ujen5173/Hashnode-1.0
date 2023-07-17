@@ -33,6 +33,11 @@ const selectArticleCard = {
       name: true,
       username: true,
       profile: true,
+      handle: {
+        select: {
+          handle: true,
+        },
+      },
     },
   },
   comments: {
@@ -393,6 +398,11 @@ export const postsRouter = createTRPCRouter({
                 username: true,
                 bio: true,
                 profile: true,
+                handle: {
+                  select: {
+                    handle: true,
+                  },
+                },
                 followers: {
                   select: {
                     id: true,
@@ -566,6 +576,7 @@ export const postsRouter = createTRPCRouter({
             userId: follower.id,
             type: NotificationTypes.NEW_ARTICLE,
             body: `@${ctx.session.user.username} published a new article`,
+            title: newArticle.title,
             slug: newArticle.slug,
             articleAuthor: newArticle.user.username,
             isRead: false,
