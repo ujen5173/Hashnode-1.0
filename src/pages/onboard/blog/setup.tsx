@@ -1,23 +1,38 @@
 import { TRPCClientError } from "@trpc/client";
 import { type GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import slugify from "slugify";
+import { Input } from "~/components";
 import { authOptions } from "~/server/auth";
 import { Logo } from "~/svgs";
 import { api } from "~/utils/api";
 
 const Setup = () => {
-  const [subdomain, setSubdomain] = useState("");
+  const { data: session } = useSession();
+
+  const [handle, setHandle] = useState({
+    name: "",
+    domain: "",
+  });
+
+  useEffect(() => {
+    if (session) {
+      setHandle((prev) => ({ ...prev, domain: session.user.username }));
+    }
+  }, []);
+
   const { mutateAsync, isLoading } =
     api.handles.createPersonalHandle.useMutation();
 
   const handleSubdomain = async () => {
-    if (subdomain.length > 0) {
+    if (handle.domain.length > 0) {
       try {
         const data = await mutateAsync({
-          handle: subdomain,
+          handle: handle,
         });
 
         if (data) {
@@ -45,17 +60,55 @@ const Setup = () => {
             Where do you want this blog to be located?
           </h1>
 
-          <div className="mb-6 rounded-md border border-border-light bg-light-bg p-4 dark:border-border dark:bg-primary">
-            <h1 className="mb-2 text-base font-semibold text-gray-700 dark:text-text-secondary">
-              Hashnode Clone’s subdomain
-            </h1>
-            <input
-              value={subdomain}
-              onChange={(e) => setSubdomain(e.target.value)}
-              type="text"
-              placeholder="Search for a subdomain"
-              className="w-full rounded-full border border-border-light bg-light-bg px-4 py-3 text-sm outline-none dark:border-border dark:bg-primary"
-            />
+          <div className="mb-6 rounded-md border border-border-light bg-light-bg px-6 py-4 dark:border-border dark:bg-primary">
+            <div className="mb-4 md:mb-8">
+              <Input
+                input_type="text"
+                name="name"
+                onChange={(e) =>
+                  setHandle({
+                    domain: slugify(e.target.value, {
+                      lower: true,
+                      strict: true,
+                      locale: "en",
+                      replacement: "-",
+                      trim: true,
+                    }),
+                    name: e.target.value,
+                  })
+                }
+                placeholder="Enter your blog name"
+                type="INPUT"
+                variant="FILLED"
+                label="Choose a name for your blog"
+                required={false}
+                value={handle.name}
+              />
+            </div>
+
+            <div className="relative mb-4">
+              <div
+                style={{
+                  bottom: "14px",
+                }}
+                className="absolute right-4 cursor-default text-gray-500 dark:text-text-primary"
+              >
+                .hashndoe-t3.app
+              </div>
+              <Input
+                input_type="text"
+                name="domain"
+                onChange={(e) =>
+                  setHandle((prev) => ({ ...prev, domain: e.target.value }))
+                }
+                placeholder="Enter a domain name"
+                type="INPUT"
+                variant="FILLED"
+                label="Choose a domain for your blog (johndoe.hashnode-t3.app)"
+                required={false}
+                value={handle.domain}
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-between">

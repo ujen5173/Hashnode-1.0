@@ -15,6 +15,8 @@ export interface Article {
     bio: string;
     handle?: {
       handle: string;
+      name: string;
+      about: string;
     } | null;
   };
   content: string;
@@ -88,29 +90,10 @@ export interface User {
   profile: string;
   handle?: {
     handle: string;
+    name: string;
+    about: string;
   } | null;
   bio: string;
-}
-
-export interface DetailedUser {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  emailVerified: Date;
-  profile: string;
-  tagline: string;
-  cover_image: string;
-  bio: string;
-  skills: string[];
-  handle?: {
-    handle: string;
-  };
-  social: unknown;
-  following: { username: string }[];
-  followers: { username: string }[];
-  followersCount: number;
-  followingCount: number;
 }
 
 export interface DetailedTag {

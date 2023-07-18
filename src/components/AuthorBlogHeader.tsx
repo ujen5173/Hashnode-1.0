@@ -3,17 +3,23 @@ import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
+import { v4 as uuid } from "uuid";
+import { type BlogSocial } from "~/pages/dev/[username]";
 import {
   Check,
+  Dailydev,
   Follow,
   Github,
+  Global,
   Hamburger,
+  Instagram,
   Linkedin,
-  LogonoText,
+  Mastodon,
   Search,
   Settings,
   Sun,
   Twitter,
+  Youtube,
 } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 import ArticleHamburgerMenu from "./ArticleHamburgerMenu";
@@ -25,6 +31,11 @@ const AuthorBlogHeader: FC<{
     name: string;
     username: string;
     profile: string;
+    handle: {
+      handle: string;
+      name: string;
+      social: BlogSocial;
+    };
     followers: { id: string }[];
   };
 }> = ({ user: author }) => {
@@ -71,7 +82,10 @@ const AuthorBlogHeader: FC<{
             />
           </div>
           <div className="hidden lg:block">
-            <Link href="/" className="flex items-center gap-2">
+            <Link
+              href={`/@${author.username}`}
+              className="flex items-center gap-2"
+            >
               <Image
                 src={author.profile}
                 alt={author.name}
@@ -169,18 +183,31 @@ const AuthorBlogHeader: FC<{
               )}
             </div>
             <div className="flex items-center justify-center gap-2">
-              <button className="btn-icon-large flex">
-                <Twitter className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
-              </button>
-              <button className="btn-icon-large flex">
-                <Github className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
-              </button>
-              <button className="btn-icon-large flex">
-                <LogonoText className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
-              </button>
-              <button className="btn-icon-large flex">
-                <Linkedin className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
-              </button>
+              {author.handle.social &&
+                Object.entries(author.handle.social)
+                  .filter((e) => e[0] !== "handle" && e[1] !== "")
+                  .map((e) => {
+                    const iconStyle =
+                      "h-5 w-5 fill-gray-500 dark:fill-text-primary";
+                    const social = {
+                      twitter: <Twitter className={iconStyle} />,
+                      github: <Github className={iconStyle} />,
+                      linkedin: <Linkedin className={iconStyle} />,
+                      mastodon: <Mastodon className={iconStyle} />,
+                      instagram: <Instagram className={iconStyle} />,
+                      website: <Global className={iconStyle} />,
+                      youtube: <Youtube className={iconStyle} />,
+                      dailydev: <Dailydev className={iconStyle} />,
+                    };
+
+                    return (
+                      <a target="_blank" key={uuid()} href={e[1] as string}>
+                        <button className="btn-icon-large flex">
+                          {social[e[0] as keyof typeof social]}
+                        </button>
+                      </a>
+                    );
+                  })}
             </div>
           </div>
         </section>

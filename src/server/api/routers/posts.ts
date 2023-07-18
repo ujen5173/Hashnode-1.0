@@ -401,6 +401,8 @@ export const postsRouter = createTRPCRouter({
                 handle: {
                   select: {
                     handle: true,
+                    name: true,
+                    about: true,
                   },
                 },
                 followers: {

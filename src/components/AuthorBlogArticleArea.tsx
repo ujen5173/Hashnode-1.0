@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type FC } from "react";
+import { useContext, type FC } from "react";
 import { Pen } from "~/svgs";
+import { C, type ContextValue } from "~/utils/context";
 import AuthorBlogArticleCard from "./Cards/AuthorBlogArticleCard";
 
 export interface DataType {
@@ -20,7 +21,15 @@ export interface DataType {
 const AuthorBlogArticleArea: FC<{
   data: DataType[] | undefined; // undefined because this is api based data can can be undefined
   isLoading: boolean;
-}> = ({ data, isLoading }) => {
+  user: {
+    name: string;
+    profile: string;
+    username: string;
+    followers: { id: string }[];
+  };
+}> = ({ data, isLoading, user: author }) => {
+  const { user } = useContext(C) as ContextValue;
+
   return (
     <>
       <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-black">
@@ -71,17 +80,23 @@ const AuthorBlogArticleArea: FC<{
 
               <div className="flex flex-col justify-center">
                 <h1 className="mb-6 text-center text-2xl font-medium text-gray-700 dark:text-text-secondary">
-                  Your blog is empty! Write your first article
+                  {user?.user.username === author.username ? "Your" : "Author"}{" "}
+                  blog is empty!{" "}
+                  {user?.user.username === author.username
+                    ? "Write your first article"
+                    : ""}
                 </h1>
 
-                <Link href="/new" className="mx-auto block">
-                  <button className="btn-filled">
-                    <span className="flex items-center gap-2">
-                      <Pen className="h-5 w-5 fill-gray-700 stroke-none dark:fill-text-secondary" />
-                      <span className="tracking-wider">Write an article</span>
-                    </span>
-                  </button>
-                </Link>
+                {user?.user.username === author.username && (
+                  <Link href="/new" className="mx-auto block">
+                    <button className="btn-filled">
+                      <span className="flex items-center gap-2">
+                        <Pen className="h-5 w-5 fill-gray-700 stroke-none dark:fill-text-secondary" />
+                        <span className="tracking-wider">Write an article</span>
+                      </span>
+                    </button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>

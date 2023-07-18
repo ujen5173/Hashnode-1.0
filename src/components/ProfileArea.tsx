@@ -24,7 +24,7 @@ const ProfileArea: FC<{
       <UserProfileArea userDetails={user} />
       <ProfileDetail userDetails={user} />
       <UserDetailsPage userDetails={user} />
-      <UserBlogingArea userDetails={user} />
+      {user?.handle && <UserBlogingArea userDetails={user} />}
       <UserRecentActivities />
     </main>
   );

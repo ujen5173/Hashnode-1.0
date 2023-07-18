@@ -64,6 +64,7 @@ const componentMap = {
 const Dashboard = () => {
   const paths = useRouter().query;
   const { data: session } = useSession();
+  console.log({ session });
   const { setUser } = useContext(C) as ContextValue;
 
   useEffect(() => {
@@ -122,52 +123,52 @@ const Dashboard = () => {
               </Link>
             </div>
           </div>
-          <div className="mb-6 w-full rounded-md border border-border-light bg-white p-6 dark:border-border dark:bg-primary">
+          <div className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
             <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
               Welcome to your new blog! What&apos;s next?
             </h1>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light p-4 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-                <div className="absolute right-2 top-2">
+            <div className="flex flex-wrap gap-4">
+              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+                <div className="absolute right-4 top-4">
                   <Pen className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
                 </div>
-                <CheckFilled className="h-7 w-7 fill-green md:h-10 md:w-10" />
+                <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
                 <div className="flex-1">
-                  <h1 className="text-xl font-semibold text-secondary">
+                  <h1 className="mb-2  text-xl font-semibold text-secondary">
                     Write your first article
                   </h1>
-                  <p className="text-base text-gray-500 dark:text-text-primary">
+                  <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
                     Share your thoughts, and connect with the community by
                     writing your first article.
                   </p>
                 </div>
               </div>
-              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light p-4 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-                <div className="absolute right-2 top-2">
+              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+                <div className="absolute right-4 top-4">
                   <Customize className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
                 </div>
-                <CheckFilled className="h-7 w-7 fill-green md:h-10 md:w-10" />
+                <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
                 <div className="flex-1">
-                  <h1 className="text-xl font-semibold text-secondary">
+                  <h1 className="mb-2 text-xl  font-semibold text-secondary">
                     Customizing the appearance
                   </h1>
-                  <p className="text-base text-gray-500 dark:text-text-primary">
+                  <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
                     Personalize the design of your blog and showcase your
                     personality.
                   </p>
                 </div>
               </div>
-              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light p-4 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-                <div className="absolute right-2 top-2">
+              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+                <div className="absolute right-4 top-4">
                   <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
                 </div>
-                <CheckFilled className="h-7 w-7 fill-green md:h-10 md:w-10" />
+                <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
                 <div className="flex-1">
-                  <h1 className="text-xl font-semibold text-secondary">
+                  <h1 className="mb-2 text-xl  font-semibold text-secondary">
                     Map a custom domain
                   </h1>
-                  <p className="text-base text-gray-500 dark:text-text-primary">
+                  <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
                     Change your hashnode.dev blog URL to a custom domain of your
                     choice for free!
                   </p>
@@ -178,49 +179,70 @@ const Dashboard = () => {
 
           {/* main dashboard navigations */}
           <div className="flex gap-4">
-            <div className="w-[18rem] overflow-hidden rounded-md bg-white py-2 dark:bg-primary">
-              {dashboardNavigations.map((dashboard, index) => (
-                <div
-                  key={dashboard.id}
-                  // the className logic is just to add margings in divider navigations.
-                  // You can see the navigations is divided into 3 parts. so to add margin in between them, I have added this logic
-                  className={`
-                    ${
-                      index === 2 ||
-                      index === 5 ||
-                      index === 11 ||
-                      index === 13 ||
-                      index === 15
-                        ? "mb-2 border-b border-border-light dark:border-border"
-                        : ""
-                    }
-                    `}
-                >
-                  <Link
-                    href={`/${session?.user.id as string}${dashboard.link}`}
-                  >
-                    <div
-                      className={`flex w-full cursor-pointer items-center gap-2 px-6 py-4 hover:bg-gray-200 dark:hover:bg-primary-light
+            <div className="w-[18rem] overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
+              {dashboardNavigations.map((dashboard, index) => {
+                const state = paths.dashboard
+                  ? paths.dashboard[0] === dashboard.name.toLowerCase()
+                    ? true
+                    : false
+                  : dashboard.name === "General"
+                  ? true
+                  : false;
+                return (
+                  <div
+                    key={dashboard.id}
+                    // the className logic is just to add margings in divider navigations.
+                    // You can see the navigations is divided into 3 parts. so to add margin in between them, I have added this logic
+                    className={`
                       ${
                         index === 2 ||
                         index === 5 ||
                         index === 11 ||
                         index === 13 ||
                         index === 15
-                          ? "mb-2"
+                          ? "mb-2 border-b border-border-light dark:border-border"
                           : ""
-                      }`}
+                      }
+                      `}
+                  >
+                    <Link
+                      href={`/${session?.user.id as string}${dashboard.link}`}
                     >
-                      {dashboard.icon}
-                      <span className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
-                        {dashboard.name}
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+                      <div
+                        className={`flex w-full cursor-pointer items-center gap-2 px-6 py-4 
+                        ${
+                          index === 2 ||
+                          index === 5 ||
+                          index === 11 ||
+                          index === 13 ||
+                          index === 15
+                            ? "mb-2"
+                            : ""
+                        }
+                        ${
+                          state
+                            ? "bg-secondary"
+                            : "hover:bg-gray-200 dark:hover:bg-primary-light"
+                        }
+                        `}
+                      >
+                        {dashboard.icon(state)}
+                        <span
+                          className={`text-base ${
+                            state
+                              ? "text-white"
+                              : "text-gray-700 dark:text-text-secondary"
+                          }`}
+                        >
+                          {dashboard.name}
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
-            <div className="min-h-[40rem] flex-1 overflow-hidden rounded-md bg-light-bg dark:bg-primary">
+            <div className="min-h-[40rem] flex-1 overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
               {dashboardName}
             </div>
           </div>
@@ -239,6 +261,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       redirect: {
         destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  if (session.user.id !== context.params?.id) {
+    return {
+      redirect: {
+        destination: `/`,
         permanent: false,
       },
     };

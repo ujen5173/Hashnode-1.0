@@ -146,13 +146,9 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
             />
           </Link>
 
-          <div
-            className={
-              author.bio && author.bio.length > 0 ? "mb-8 flex-1" : "flex-1"
-            }
-          >
-            <div className="flex w-full flex-col items-start justify-between sm:flex-row">
-              <div className="mb-6 md:mb-0">
+          <div className={"flex-1"}>
+            <div className="flex w-full items-start justify-between">
+              <div className="">
                 <h2 className="text-uppercase mb-1 text-sm font-medium text-gray-600 dark:text-text-primary">
                   WRITTEN BY
                 </h2>
@@ -162,10 +158,9 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                   </h1>
                 </Link>
               </div>
-
               <button
                 onClick={followUser}
-                className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+                className="btn-outline flex w-max items-center justify-center gap-2 text-secondary"
               >
                 {following.status ? (
                   <>
@@ -180,14 +175,15 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                 )}
               </button>
             </div>
+            {author?.handle?.about && (
+              <div className="mt-4 sm:mt-8">
+                <p className="text-base text-gray-600 dark:text-text-primary">
+                  {author.handle.about}
+                </p>
+              </div>
+            )}
           </div>
         </div>
-
-        {author.bio && (
-          <p className="text-base text-gray-600 dark:text-text-primary">
-            {author.bio}
-          </p>
-        )}
       </div>
     </div>
   );

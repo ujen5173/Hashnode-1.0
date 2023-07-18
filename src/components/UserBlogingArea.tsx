@@ -4,7 +4,7 @@ import { type UserDetailsInterface } from "~/pages/u/[username]";
 import { Topright } from "~/svgs";
 
 const UserBlogingArea: FC<{
-  userDetails: UserDetailsInterface | undefined;
+  userDetails: UserDetailsInterface;
 }> = ({ userDetails }) => {
   return (
     <div className="my-6 w-full rounded-md border border-border-light px-6 py-6 dark:border-border md:px-12">
@@ -16,10 +16,12 @@ const UserBlogingArea: FC<{
       <section className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:gap-0">
         <div className="flex-1">
           <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary md:text-xl">
-            {userDetails?.handle?.handle as string}&apos;s Developer Diary
+            {userDetails?.handle?.name === userDetails?.username
+              ? `${userDetails?.handle?.name}'s Blog`
+              : userDetails?.handle?.name}
           </h1>
           <h1 className="text-sm font-normal text-gray-700 dark:text-text-primary md:text-base">
-            {userDetails?.handle?.handle as string}
+            {userDetails?.handle?.handle}.hashnode-t3.vercel.app
           </h1>
         </div>
         <Link href={`/dev/@${userDetails?.handle?.handle as string}`}>

@@ -4,6 +4,7 @@ import {
   Bookmark,
   Comment,
   Customize,
+  Dailydev,
   Document,
   Explore,
   ExportFile,
@@ -13,7 +14,10 @@ import {
   Hackathon,
   Heart,
   ImportFile,
+  Instagram,
   Integrations,
+  LogonoText,
+  Mastodon,
   Navbar,
   Newsletter,
   Pages,
@@ -23,7 +27,9 @@ import {
   Sponsors,
   Team,
   Tools,
+  Twitter,
   Widgets,
+  Youtube,
 } from "~/svgs";
 
 export const asideItems = [
@@ -800,121 +806,268 @@ export const dashboardNavigations = [
   {
     id: uuid(),
     name: "General",
-    icon: (
-      <Settings className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <Settings
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/general",
   },
   {
     id: uuid(),
     name: "Appearance",
-    icon: (
-      <Customize className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <Customize
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/appearance",
   },
   {
     id: uuid(),
     name: "Navbar",
-    icon: <Navbar className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    icon: (state: boolean) => (
+      <Navbar
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
+    ),
     link: "/dashboard/navbar",
   },
   {
     id: uuid(),
     name: "Articles",
-    icon: <Feed className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    icon: (state: boolean) => (
+      <Feed
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
+    ),
     link: "/dashboard/articles",
   },
   {
     id: uuid(),
     name: "Series",
-    icon: <Series className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    icon: (state: boolean) => (
+      <Series
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
+    ),
     link: "/dashboard/series",
   },
   {
     id: uuid(),
     name: "Pages",
-    icon: <Pages className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    icon: (state: boolean) => (
+      <Pages
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
+    ),
     link: "/dashboard/pages",
   },
   {
     id: uuid(),
     name: "Sponsors",
-    icon: (
-      <Sponsors className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <Sponsors
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/sponsors",
   },
   {
     id: uuid(),
     name: "Analytics",
-    icon: (
-      <Analytics className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <Analytics
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/analytics",
   },
   {
     id: uuid(),
     name: "Widgets",
-    icon: (
-      <Widgets className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <Widgets
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/widgets",
   },
   {
     id: uuid(),
     name: "Newsletter",
-    icon: (
-      <Newsletter className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <Newsletter
+        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/newsletter",
   },
   {
     id: uuid(),
     name: "Integrations",
-    icon: (
-      <Integrations className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <Integrations
+        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/integrations",
   },
   {
     id: uuid(),
     name: "SEO",
-    icon: <Seo className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    icon: (state: boolean) => (
+      <Seo
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
+    ),
     link: "/dashboard/seo",
   },
   {
     id: uuid(),
     name: "Domain",
-    icon: <Global className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    icon: (state: boolean) => (
+      <Global
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
+    ),
     link: "/dashboard/domain",
   },
   {
     id: uuid(),
     name: "GitHub",
-    icon: <Github className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    icon: (state: boolean) => (
+      <Github
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
+    ),
     link: "/dashboard/github",
   },
   {
     id: uuid(),
     name: "Import",
-    icon: (
-      <ImportFile className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <ImportFile
+        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/import",
   },
   {
     id: uuid(),
     name: "Export",
-    icon: (
-      <ExportFile className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+    icon: (state: boolean) => (
+      <ExportFile
+        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
     ),
     link: "/dashboard/export",
   },
   {
     id: uuid(),
     name: "Advanced",
-    icon: <Tools className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />,
+    icon: (state: boolean) => (
+      <Tools
+        className={`h-5 w-5 ${
+          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        }`}
+      />
+    ),
     link: "/dashboard/advanced",
+  },
+];
+
+export const generalSettingsSocials = [
+  {
+    id: uuid(),
+    label: "Twitter Profile",
+    placeholder: "https://twitter.com/username",
+    name: "twitter",
+    icon: <Twitter className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+  },
+  {
+    id: uuid(),
+    label: "Mastodon Profile",
+    placeholder: "https://mastodon.social/@username",
+    name: "mastodon",
+    icon: <Mastodon className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+  },
+  {
+    id: uuid(),
+    label: "Instagram Profile",
+    placeholder: "https://instagram.com/username",
+    name: "instagram",
+    icon: (
+      <Instagram className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+    ),
+  },
+  {
+    id: uuid(),
+    label: "Github Profile",
+    placeholder: "https://github.com/username",
+    name: "github",
+    icon: <Github className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+  },
+  {
+    id: uuid(),
+    label: "Your Website",
+    placeholder: "https://something.com",
+    name: "website",
+    icon: <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+  },
+  {
+    id: uuid(),
+    label: "Hashnode Profile",
+    placeholder: "https://hashnode.com/@username",
+    name: "hashnode",
+    icon: (
+      <LogonoText className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+    ),
+  },
+  {
+    id: uuid(),
+    label: "Youtube Channel",
+    placeholder: "https://youtube.com/@username",
+    name: "youtube",
+    icon: <Youtube className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+  },
+  {
+    id: uuid(),
+    label: "Daily.dev Profile",
+    placeholder: "https://app.daily.dev/username",
+    name: "dailydev",
+    icon: <Dailydev className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
   },
 ];

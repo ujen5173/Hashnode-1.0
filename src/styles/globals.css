@@ -16,6 +16,7 @@
   -webkit-line-clamp: 1; /* number of lines to show */
   line-clamp: 1;
   -webkit-box-orient: vertical;
+  word-break: break-all;
 }
 
 .max-height-two {
@@ -24,6 +25,7 @@
   -webkit-line-clamp: 2; /* number of lines to show */
   line-clamp: 2;
   -webkit-box-orient: vertical;
+  word-break: break-all;
 }
 
 .max-height-4 {
@@ -32,6 +34,7 @@
   -webkit-line-clamp: 4; /* number of lines to show */
   line-clamp: 4;
   -webkit-box-orient: vertical;
+  word-break: break-all;
 }
 
 .max-height-3 {
@@ -40,6 +43,7 @@
   -webkit-line-clamp: 3; /* number of lines to show */
   line-clamp: 3;
   -webkit-box-orient: vertical;
+  word-break: break-all;
 }
 
 .anouncement {
@@ -146,24 +150,28 @@ body.dark .anouncement {
   @apply flex items-center gap-2 rounded-t bg-white px-2 py-3 text-gray-700 hover:bg-border-light dark:bg-transparent dark:text-text-secondary dark:hover:bg-primary-light;
 }
 
-.input-primary::-webkit-input-placeholder {
-  opacity: 0.4;
-}
-
 .input-primary {
   @apply rounded-full border border-border-light bg-light-bg px-10 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border;
 }
 
-.input-filled::-webkit-input-placeholder {
-  opacity: 0.4;
-}
-
-.input-filled::-moz-placeholder {
-  opacity: 0.4;
+.input-primary::-webkit-input-placeholder {
+  opacity: 0.5;
 }
 
 .input-filled {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-3 text-base text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-primary;
+}
+
+.input-filled::-webkit-input-placeholder {
+  opacity: 1;
+}
+
+.input-filled::-moz-placeholder {
+  opacity: 1;
+}
+
+.input-outline {
+  @apply w-full bg-transparent p-2 text-lg text-gray-700 outline-none dark:text-text-secondary;
 }
 
 .input-outline::-webkit-input-placeholder {
@@ -174,8 +182,8 @@ body.dark .anouncement {
   opacity: 0.4;
 }
 
-.input-outline {
-  @apply w-full bg-transparent p-2 text-lg text-gray-700 outline-none dark:text-text-secondary;
+.input-secondary {
+  @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
 
 .input-secondary::-webkit-input-placeholder {
@@ -184,10 +192,6 @@ body.dark .anouncement {
 
 .input-secondary-moz-placeholder {
   opacity: 0.4;
-}
-
-.input-secondary {
-  @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
 
 .input-oauth::-webkit-input-placeholder {
@@ -208,7 +212,7 @@ body.dark .anouncement {
 }
 
 .btn-social-icon {
-  @apply flex h-10 w-10 items-center justify-center rounded-md;
+  @apply flex items-center justify-center rounded-md;
 }
 
 .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k {

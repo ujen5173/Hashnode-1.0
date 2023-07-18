@@ -12,7 +12,7 @@ const Anouncement = () => {
         </span>
       </header>
 
-      <p className="mb-5 text-base text-gray-700 dark:text-text-secondary">
+      <p className="mb-5 text-sm text-gray-700 dark:text-text-secondary sm:text-base">
         Level up your publishing experience with Hahsnode Pro with powerful AI
         and premium features.
       </p>

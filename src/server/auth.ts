@@ -4,11 +4,12 @@ import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
-  type User
+  type User,
 } from "next-auth";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import slugify from "slugify";
 import { env } from "~/env.mjs";
+import { type BlogSocial } from "~/pages/dev/[username]";
 import { prisma } from "~/server/db";
 
 /**
@@ -32,7 +33,10 @@ declare module "next-auth" {
     tagline: string;
     handle?: {
       handle: string;
-    };
+      name: string;
+      about: string;
+      social: BlogSocial;
+    } | null;
   }
 }
 
@@ -44,12 +48,15 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session: async ({ session, user }) => {
-       const handle = await prisma.handle.findUnique({
+      const handle = await prisma.handle.findUnique({
         where: {
           userId: user.id,
         },
         select: {
           handle: true,
+          name: true,
+          social: true,
+          about: true,
         },
       });
 
@@ -63,11 +70,7 @@ export const authOptions: NextAuthOptions = {
           profile: user.profile,
           emailVerified: user.emailVerified,
           tagline: user.tagline,
-          handle: handle
-            ? {
-                handle: handle.handle,
-              }
-            : null,
+          handle: handle,
         },
       };
     },

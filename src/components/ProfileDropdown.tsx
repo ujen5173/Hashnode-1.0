@@ -58,8 +58,8 @@ const ProfileDropdown = React.forwardRef<
           </h1>
           <Link href={`/${user.user.id}/dashboard`}>
             <div className="px-4 py-2 hover:bg-border-light hover:dark:bg-border">
-              <h1 className="text-sm text-gray-700 dark:text-text-secondary">
-                {user.user.handle.handle}.hashnode-t3.dev
+              <h1 className="max-height-one text-sm text-gray-700 dark:text-text-secondary">
+                {`${user.user.handle.handle}.hashnode-t3.dev`}
               </h1>
             </div>
           </Link>

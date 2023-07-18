@@ -56,7 +56,7 @@ const RightArea: FC = () => {
                 role="button"
                 className="btn-icon flex h-10 w-10 xl:hidden"
               >
-                <Pen className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
+                <Pen className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
               </button>
             </Link>
           </div>

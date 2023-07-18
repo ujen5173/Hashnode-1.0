@@ -79,6 +79,9 @@ model Handle {
     id        String   @id @default(cuid())
     user      User?    @relation(fields: [userId], references: [id])
     userId    String   @unique
+    name      String
+    social    Json?
+    about     String?  @default("")
     handle    String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

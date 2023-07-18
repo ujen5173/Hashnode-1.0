@@ -25,12 +25,13 @@ const Notification = () => {
 
   return user ? (
     <div className="relative mt-1 w-full rounded-md border border-border-light bg-white p-4 shadow-lg dark:border-border dark:bg-black md:w-[35rem]">
-      <div className="absolute -top-2 right-[0.7rem] h-4 w-4 rotate-45 bg-white dark:bg-black" />
+      <div className="absolute -top-2 right-[0.7rem] h-4 w-4 rotate-45 border-l border-t border-border-light bg-white dark:border-border dark:bg-black" />
       <div className="mb-4 flex items-center justify-between gap-2">
         <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
           Notifications
         </h1>
       </div>
+
       <header className="scroll-area overflow-auto border-b border-border-light px-4 dark:border-border">
         <div className="flex w-max items-end justify-center gap-2">
           {notificationNavigation(notificationType).map((type) => (
@@ -94,7 +95,7 @@ export const NotificationContainer: FC<{
   }, [isError]);
 
   return (
-    <div className="scroll-area max-h-[400px] overflow-auto px-4">
+    <div className="scroll-area min-h-[19.25rem] overflow-auto px-4">
       <ManageData
         loading={
           <div className="loading h-24 w-full border-b border-border-light py-4 dark:border-border"></div>

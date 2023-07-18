@@ -12,15 +12,30 @@ import { prisma } from "~/server/db";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 
+export interface BlogSocial {
+  twitter: string;
+  mastodon: string;
+  instagram: string;
+  github: string;
+  website: string;
+  linkedin: string;
+  youtube: string;
+  dailydev: string;
+}
+
 const AuthorBlogs: NextPage<{
   user: {
     name: string;
     profile: string;
+    handle: {
+      handle: string;
+      name: string;
+      social: BlogSocial;
+    };
     username: string;
     followers: { id: string }[];
   };
 }> = ({ user }) => {
-  console.log({ user });
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
   const router = useRouter();
@@ -54,7 +69,7 @@ const AuthorBlogs: NextPage<{
       <AuthorBlog author={user} />
       <AuthorBlogHeader user={user} />
       <AuthorBlogNavigation /> {/* Home, Badge, Newsletter */}
-      <AuthorBlogArticleArea data={data} isLoading={isLoading} />
+      <AuthorBlogArticleArea data={data} isLoading={isLoading} user={user} />
       <Footer />
     </>
   );
@@ -76,11 +91,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       username: true,
       name: true,
       profile: true,
-      handle: {
-        select: {
-          handle: true,
-        },
-      },
+      handle: true,
       followers: {
         select: { id: true },
       },
@@ -102,6 +113,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ? (JSON.parse(JSON.stringify(user)) as {
             username: string;
             profile: string;
+            handle: BlogSocial;
             followers: { id: string }[];
           })
         : null,

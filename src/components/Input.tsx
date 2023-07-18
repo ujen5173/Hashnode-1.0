@@ -40,7 +40,7 @@ const Input: FC<InputTypes> = ({
       {label && (
         <label
           htmlFor={name}
-          className="mb-2  block text-sm font-normal text-gray-700 dark:text-text-secondary"
+          className="mb-2 block text-sm font-semibold text-gray-700 dark:text-text-primary md:text-base"
         >
           {label} {required && <span className="text-[#dc2626]">*</span>}
         </label>
@@ -55,7 +55,7 @@ const Input: FC<InputTypes> = ({
               : variant === "ROUNDED"
               ? "input-primary"
               : variant === "TRANSPARENT"
-              ? "mb-4 w-full bg-transparent py-2 font-bold text-gray-700 placeholder-opacity-50 outline-none dark:text-text-secondary"
+              ? "mb-4 w-full bg-transparent py-2 font-bold text-gray-700 outline-none dark:text-text-secondary"
               : "input-outline"
           } w-full`}
           placeholder={placeholder}
@@ -78,9 +78,9 @@ const Input: FC<InputTypes> = ({
                 : variant === "ROUNDED"
                 ? "input-primary"
                 : variant === "TRANSPARENT"
-                ? "mb-4 min-h-[20rem] w-full bg-transparent py-2 text-gray-700 placeholder-opacity-50 outline-none dark:text-text-secondary"
+                ? "mb-4 w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
                 : "input-outline"
-            }`}
+            } min-h-[15rem]`}
             placeholder={placeholder}
             disabled={disabled}
             required={required}

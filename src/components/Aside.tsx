@@ -104,36 +104,36 @@ const SocialHandles = () => {
         <button
           aria-label="social links"
           role="button"
-          className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-twitterColor"
+          className="btn-social-icon flex h-9 w-9 items-center justify-center hover:bg-twitterColor"
         >
-          <Twitter className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
+          <Twitter className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
       <a target="_blank" href="https://discord.com/app">
         <button
           aria-label="social links"
           role="button"
-          className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-discordColor"
+          className="btn-social-icon flex h-9 w-9 items-center justify-center hover:bg-discordColor"
         >
-          <Discord className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
+          <Discord className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
       <a target="_blank" href="https://linkedin.com">
         <button
           aria-label="social links"
           role="button"
-          className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-linkedinColor"
+          className="btn-social-icon flex h-9 w-9 items-center justify-center hover:bg-linkedinColor"
         >
-          <Linkedin className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
+          <Linkedin className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
       <a target="_blank" href="https://instagram.com">
         <button
           aria-label="social links"
           role="button"
-          className="btn-social-icon flex h-10 w-10 items-center justify-center hover:bg-instaColor"
+          className="btn-social-icon flex h-9 w-9 items-center justify-center hover:bg-instaColor"
         >
-          <Instagram className="h-6 w-6 fill-gray-500 dark:fill-text-primary" />
+          <Instagram className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
         </button>
       </a>
     </div>
