@@ -95,7 +95,7 @@ export const handleRouter = createTRPCRouter({
       return result ? true : false;
     }),
 
-  updateNavbarData: protectedProcedure
+  newNavbarData: protectedProcedure
     .input(
       z.object({
         handle: z.string(),
@@ -117,6 +117,29 @@ export const handleRouter = createTRPCRouter({
             create: input.tab,
           },
         },
+      });
+
+      return result ? true : false;
+    }),
+
+  updateNavbarData: protectedProcedure
+    .input(
+      z.object({
+        handle: z.string(),
+        tab: z.object({
+          label: z.string(),
+          type: z.string(),
+          value: z.string(),
+          priority: z.number().default(0),
+        }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.prisma.customTab.update({
+        where: {
+          id: input.handle,
+        },
+        data: input.tab,
       });
 
       return result ? true : false;

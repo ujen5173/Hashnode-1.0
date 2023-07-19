@@ -96,7 +96,7 @@ const NavBarItem: FC<{
   addNewItem: boolean;
   setAddNewItem: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ addNewItem, setAddNewItem, data, refetchData }) => {
-  const { mutateAsync } = api.handles.updateNavbarData.useMutation();
+  const { mutateAsync } = api.handles.newNavbarData.useMutation();
 
   const [newItemData, setNewItemData] = useState<{
     label: string;
@@ -105,7 +105,7 @@ const NavBarItem: FC<{
     priority: number;
   }>({
     label: "",
-    type: "",
+    type: "LINK",
     value: "https://",
     priority: 0,
   });
@@ -129,7 +129,7 @@ const NavBarItem: FC<{
 
     setNewItemData({
       label: "",
-      type: "",
+      type: "LINK",
       value: "",
       priority: 0,
     });
@@ -141,8 +141,30 @@ const NavBarItem: FC<{
   const { mutateAsync: deleteItem } =
     api.handles.deleteNavbarData.useMutation();
 
+  const { mutateAsync: updateItem, isLoading: isUpdating } =
+    api.handles.updateNavbarData.useMutation();
+
+  const [editing, setEditing] = useState({
+    status: false,
+    id: "",
+  });
+
+  const editItem = async () => {
+    await updateItem({
+      handle: editing.id,
+      tab: newItemData,
+    });
+
+    void refetchData();
+    setEditing({
+      status: false,
+      id: "",
+    });
+    setAddNewItem(false);
+  };
+
   const removeItem = async (id: string) => {
-    const res = await deleteItem({
+    await deleteItem({
       tabId: id,
     });
 
@@ -204,30 +226,92 @@ const NavBarItem: FC<{
             </div>
           </div>
         )}
-        {data.map((e) => (
-          <div
-            className="flex flex-row items-center border-b bg-white px-4 py-4 text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
-            key={e.id}
-          >
-            <div className="w-1/4 pr-4 text-left">{e.label}</div>
-            <div className="w-1/4 pr-4 text-left">{e.type}</div>
-            <div className="w-1/4 break-words pr-4 text-left font-medium text-secondary">
-              <a href={e.value} target="_blank">
-                {e.value}
-              </a>
-            </div>
-            <div className="flex-1 pr-4 text-left">{e.priority}</div>
-            <button className="btn-icon-large flex items-center gap-2">
-              <Pen className="h-4 w-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
-            </button>
-            <button
-              onClick={() => void removeItem(e.id)}
-              className="btn-icon-large flex items-center gap-2"
+
+        {data.map((e) =>
+          editing.status && editing.id === e.id ? (
+            <div
+              key={e.id}
+              className="flex items-center border-b border-border-light bg-light-bg px-4 py-4 text-slate-900 dark:border-border dark:bg-primary-light dark:text-slate-200"
             >
-              <Times className="h-4 w-4 fill-gray-700 stroke-none dark:fill-text-secondary" />
-            </button>
-          </div>
-        ))}
+              <div className="w-1/4 pr-4 text-left">
+                <input
+                  type="text"
+                  className="w-full rounded-md border border-border-light bg-light-bg px-4 py-3 outline-none focus:outline-none focus:ring-2 focus:ring-secondary dark:border-border dark:bg-primary"
+                  placeholder="Label"
+                  value={newItemData.label}
+                  autoFocus
+                  onChange={(e) =>
+                    setNewItemData({ ...newItemData, label: e.target.value })
+                  }
+                />
+              </div>
+              <div className="w-1/4 pr-4 text-left">
+                <div className="w-full cursor-not-allowed rounded-md border border-border-light bg-slate-100 px-4 py-3 outline-none focus:outline-none focus:ring-2 focus:ring-secondary dark:border-border dark:bg-border">
+                  LINK
+                </div>
+              </div>
+              <div className="w-1/4 break-words pr-4 text-left font-medium text-secondary">
+                <input
+                  type="text"
+                  className="w-full rounded-md border border-border-light bg-light-bg px-4 py-3 text-gray-700 outline-none focus:outline-none focus:ring-2 focus:ring-secondary dark:border-border dark:bg-primary dark:text-text-secondary"
+                  placeholder="Value"
+                  value={newItemData.value}
+                  onChange={(e) =>
+                    setNewItemData({ ...newItemData, value: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex-1 pr-4 text-left">
+                <input
+                  type="number"
+                  className="w-full rounded-md border border-border-light bg-light-bg px-4 py-3 outline-none focus:outline-none focus:ring-2 focus:ring-secondary dark:border-border dark:bg-primary"
+                  placeholder="Priority"
+                  value={newItemData.priority}
+                  onChange={(e) =>
+                    setNewItemData({
+                      ...newItemData,
+                      priority: Number(e.target.value),
+                    })
+                  }
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              className="flex flex-row items-center border-b bg-white px-4 py-4 text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              key={e.id}
+            >
+              <div className="w-1/4 pr-4 text-left">{e.label}</div>
+              <div className="w-1/4 pr-4 text-left">{e.type}</div>
+              <div className="w-1/4 break-words pr-4 text-left font-medium text-secondary">
+                <a href={e.value} target="_blank">
+                  {e.value}
+                </a>
+              </div>
+              <div className="flex-1 pr-4 text-left">{e.priority}</div>
+              <button
+                onClick={() => {
+                  setEditing({
+                    status: true,
+                    id: e.id,
+                  });
+                  const { id, ...rest } = e;
+                  setNewItemData(rest);
+                }}
+                className="btn-icon-large flex items-center gap-2"
+              >
+                <Pen className="h-4 w-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+              </button>
+              <button
+                onClick={() => void removeItem(e.id)}
+                className="btn-icon-large flex items-center gap-2"
+              >
+                <Times className="h-4 w-4 fill-gray-700 stroke-none dark:fill-text-secondary" />
+              </button>
+            </div>
+          )
+        )}
+
         <div className="p-4">
           {addNewItem ? (
             <div className="flex items-center justify-between">
@@ -245,6 +329,26 @@ const NavBarItem: FC<{
               >
                 <Add className="h-4 w-4 fill-secondary" />
                 <span>Save Navbar</span>
+              </button>
+            </div>
+          ) : editing.status ? (
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setAddNewItem(false)}
+                className="btn-subtle flex items-center gap-2"
+              >
+                <span>Cancel</span>
+              </button>
+              <button
+                type="button"
+                disabled={isUpdating}
+                onClick={() => void editItem()}
+                className={`btn-outline flex items-center gap-2 ${
+                  isUpdating ? "cursor-not-allowed opacity-40" : ""
+                }}`}
+              >
+                <span>{isUpdating ? "Updating" : "Update"}</span>
               </button>
             </div>
           ) : (
