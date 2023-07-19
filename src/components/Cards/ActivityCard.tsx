@@ -25,7 +25,7 @@ const ActivityCard = ({
         {item.activity_type === "JOINED" ? (
           <LogonoText className="h-4 w-4 fill-secondary" />
         ) : (
-          <Pen className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
+          <Pen className="h-4 w-4 fill-gray-700 stroke-none dark:fill-text-secondary" />
         )}
         <span className="text-gray-700 dark:text-text-secondary">
           {item.activity_type === "JOINED"

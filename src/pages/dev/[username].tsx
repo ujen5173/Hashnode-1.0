@@ -2,7 +2,7 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, type FC } from "react";
 import { toast } from "react-toastify";
 import { AuthorBlogHeader, Footer } from "~/components";
 import AuthorBlogArticleArea from "~/components/AuthorBlogArticleArea";
@@ -23,6 +23,16 @@ export interface BlogSocial {
   dailydev: string;
 }
 
+export interface CustomTabs {
+  id: string;
+  label: string;
+  type: string;
+  value: string;
+  priority: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const AuthorBlogs: NextPage<{
   user: {
     name: string;
@@ -31,6 +41,7 @@ const AuthorBlogs: NextPage<{
       handle: string;
       name: string;
       social: BlogSocial;
+      customTabs: CustomTabs[];
     };
     username: string;
     followers: { id: string }[];
@@ -68,7 +79,8 @@ const AuthorBlogs: NextPage<{
     <>
       <AuthorBlog author={user} />
       <AuthorBlogHeader user={user} />
-      <AuthorBlogNavigation /> {/* Home, Badge, Newsletter */}
+      <AuthorBlogNavigation tabs={user.handle.customTabs} />{" "}
+      {/* Home, Badge, Newsletter */}
       <AuthorBlogArticleArea data={data} isLoading={isLoading} user={user} />
       <Footer />
     </>
@@ -91,7 +103,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       username: true,
       name: true,
       profile: true,
-      handle: true,
+      handle: {
+        select: {
+          handle: true,
+          name: true,
+          customTabs: true,
+          social: true,
+        },
+      },
       followers: {
         select: { id: true },
       },
@@ -113,7 +132,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ? (JSON.parse(JSON.stringify(user)) as {
             username: string;
             profile: string;
-            handle: BlogSocial;
+            handle: {
+              handle: string;
+              name: string;
+              social: BlogSocial;
+              customTabs: CustomTabs[];
+            };
             followers: { id: string }[];
           })
         : null,
@@ -124,22 +148,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const AuthorBlogNavigation = () => {
+const AuthorBlogNavigation: FC<{ tabs: CustomTabs[] }> = ({ tabs }) => {
   return (
     <section className="hidden border-b border-border-light bg-white dark:border-border dark:bg-primary lg:block">
       <div className="mx-auto flex max-w-[1300px] items-center justify-center px-4">
         <div className="flex items-center gap-4">
           <ul className="flex">
             <li className="border-b-2 border-gray-500 py-2 dark:border-gray-400">
-              <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-lg font-medium hover:bg-gray-100 dark:hover:bg-primary-light">
+              <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-lg font-medium text-gray-700 hover:bg-gray-100 dark:text-text-secondary dark:hover:bg-primary-light">
                 Home
               </span>
             </li>
             <li className="py-2">
-              <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-lg font-medium hover:bg-gray-100 dark:hover:bg-primary-light">
+              <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-lg font-medium text-gray-700 hover:bg-gray-100 dark:text-text-secondary dark:hover:bg-primary-light">
                 Badge
               </span>
             </li>
+            {tabs.map((tab) => (
+              <li key={tab.id} className="py-2">
+                <a target="_blank" href={tab.value}>
+                  <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-lg font-medium text-gray-700 hover:bg-gray-100 dark:text-text-secondary dark:hover:bg-primary-light">
+                    {tab.label}
+                  </span>
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

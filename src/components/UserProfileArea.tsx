@@ -88,7 +88,7 @@ const UserProfileArea: FC<{
                         rel="noopener noreferrer"
                         href={`https://twitter.com/intent/tweet?text=${
                           process.env.NEXT_PUBLIC_VERCEL_URL as string
-                        }/u/@${userDetails?.username || ""}`}
+                        }u/@${userDetails?.username || ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
@@ -104,7 +104,7 @@ const UserProfileArea: FC<{
                         rel="noopener noreferrer"
                         href={`https://www.linkedin.com/sharing/share-offsite/?url=${
                           process.env.NEXT_PUBLIC_VERCEL_URL as string
-                        }/u/@${userDetails?.username || ""}`}
+                        }u/@${userDetails?.username || ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>

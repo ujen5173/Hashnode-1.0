@@ -28,6 +28,7 @@ const AuthorBlogArticleArea: FC<{
     followers: { id: string }[];
   };
 }> = ({ data, isLoading, user: author }) => {
+  console.log({ data, isLoading });
   const { user } = useContext(C) as ContextValue;
 
   return (
@@ -45,8 +46,8 @@ const AuthorBlogArticleArea: FC<{
                     <AuthorBlogArticleCard type="group" article={article} />
                   </div>
                 ))}
-                <div className="child-block h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
-                <div className="child-block h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
+                <div className="child-block hidden h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light md:block"></div>
+                <div className="child-block hidden h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light md:block"></div>
               </>
             ) : data.length === 2 ? (
               <>
@@ -55,7 +56,7 @@ const AuthorBlogArticleArea: FC<{
                     <AuthorBlogArticleCard type="group" article={article} />
                   </div>
                 ))}
-                <div className="child-block h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
+                <div className="child-block hidden h-[18rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light md:block"></div>
               </>
             ) : (
               <>
@@ -91,7 +92,7 @@ const AuthorBlogArticleArea: FC<{
                   <Link href="/new" className="mx-auto block">
                     <button className="btn-filled">
                       <span className="flex items-center gap-2">
-                        <Pen className="h-5 w-5 fill-gray-700 stroke-none dark:fill-text-secondary" />
+                        <Pen className="h-5 w-5 fill-none stroke-gray-100" />
                         <span className="tracking-wider">Write an article</span>
                       </span>
                     </button>

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { type FC } from "react";
 import { type UserDetailsInterface } from "~/pages/u/[username]";
 
@@ -30,15 +29,11 @@ const UserDetails: FC<{
         {userDetails?.skills && userDetails?.skills.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {userDetails?.skills?.map((tech, index) => (
-              <Link
-                target={"_blank"}
-                href={"/tag/" + tech.toLowerCase()}
-                key={index}
-              >
+              <div key={index}>
                 <span className="block rounded-md border border-border-light bg-light-bg px-3 py-1 text-sm text-gray-700 hover:shadow-sm dark:border-border dark:bg-primary-light dark:text-text-secondary md:text-base">
                   {tech}
                 </span>
-              </Link>
+              </div>
             ))}
           </div>
         ) : (

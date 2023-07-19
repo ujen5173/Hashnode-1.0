@@ -28,10 +28,10 @@ const ProfileDropdown = React.forwardRef<
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full z-20 mt-2 w-64 rounded-md border border-border-light bg-gray-50 py-2 text-left shadow-lg shadow-primary dark:border-border dark:bg-primary"
+      className="absolute right-0 top-full z-20 mt-2 w-64 rounded-md border border-border-light bg-gray-50 py-2 text-left shadow-lg shadow-light-bg dark:border-border dark:bg-primary dark:shadow-primary"
     >
       <Link href={`/u/@${user?.user.username as string} `}>
-        <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
+        <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
           <Image
             src={user?.user.profile || "/default_user.avif"}
             alt={user?.user.name || "user"}
@@ -57,7 +57,7 @@ const ProfileDropdown = React.forwardRef<
             Personal Blogs
           </h1>
           <Link href={`/${user.user.id}/dashboard`}>
-            <div className="px-4 py-2 hover:bg-border-light hover:dark:bg-border">
+            <div className="px-4 py-2 hover:bg-gray-200 hover:dark:bg-border">
               <h1 className="max-height-one text-sm text-gray-700 dark:text-text-secondary">
                 {`${user.user.handle.handle}.hashnode-t3.dev`}
               </h1>

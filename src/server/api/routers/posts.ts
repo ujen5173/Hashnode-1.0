@@ -349,25 +349,34 @@ export const postsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.article.findMany({
-        where: {
-          id: {
-            in: input.ids.map((id) => id.id),
-          },
-        },
-        select: {
-          id: true,
-          read_time: true,
-          title: true,
-          slug: true,
-          user: {
-            select: {
-              name: true,
+      try {
+        const res = await ctx.prisma.article.findMany({
+          where: {
+            id: {
+              in: input.ids.map((id) => id.id),
             },
           },
-        },
-        take: 4,
-      });
+          select: {
+            id: true,
+            read_time: true,
+            title: true,
+            slug: true,
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          take: 4,
+        });
+
+        return res;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
     }),
 
   getSingleArticle: publicProcedure
@@ -549,7 +558,7 @@ export const postsRouter = createTRPCRouter({
                 id: ctx.session.user.id,
               },
             },
-            read_time: readingTime(input.content).minutes,
+            read_time: readingTime(input.content).minutes || 1,
             slug,
             seoTitle: input.seoTitle || title,
             seoDescription:
@@ -929,13 +938,16 @@ export const postsRouter = createTRPCRouter({
         return await ctx.prisma.article.findMany({
           where: {
             user: {
-              username: input.username,
+              handle: {
+                handle: input.username,
+              },
             },
           },
           select: {
             id: true,
             title: true,
             slug: true,
+            createdAt: true,
             read_time: true,
             user: {
               select: {

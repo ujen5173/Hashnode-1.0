@@ -33,21 +33,21 @@ const ProfileDetail: FC<{
               <a href={value} target="_blank" key={index}>
                 <button className="btn-icon-large flex">
                   {key === "twitter" ? (
-                    <Twitter className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                    <Twitter className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "instagram" ? (
-                    <Instagram className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                    <Instagram className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "github" ? (
-                    <Github className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                    <Github className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "stackoverflow" ? (
-                    <Stackoverflow className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                    <Stackoverflow className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "facebook" ? (
-                    <Facebook className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                    <Facebook className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "website" ? (
-                    <Web className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                    <Web className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "linkedin" ? (
-                    <Linkedin className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                    <Linkedin className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "youtube" ? (
-                    <Youtube className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                    <Youtube className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : null}
                 </button>
               </a>

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/utils/api";
+import { generalSettingsSocials } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 import Input from "../Input";
 
@@ -36,8 +37,6 @@ const General = () => {
     };
   }>(dataFallBack);
 
-  console.log({ data, user });
-
   useEffect(() => {
     if (user?.user.handle) {
       setData(user?.user.handle);
@@ -72,6 +71,7 @@ const General = () => {
         value={data.name}
         autoFocus={false}
         required={false}
+        opacity={true}
         variant="FILLED"
         label="Publication Name"
       />
@@ -84,20 +84,21 @@ const General = () => {
         placeholder="Tell the world the best thing about you…"
         type="TEXTAREA"
         required={false}
+        opacity={true}
         value={data.about}
         variant="FILLED"
         label="About me"
       />
 
       <div className="mb-4 flex flex-wrap gap-4">
-        {/* {generalSettingsSocials.map((e) => (
+        {generalSettingsSocials.map((e) => (
           <div className="w-full md:w-[calc(100%/2-1rem)]" key={e.id}>
-            <div className="flex items-center gap-2">
+            <label htmlFor={e.name} className="flex items-center gap-2">
               {e.icon}
               <span className="text-base font-semibold text-gray-700 dark:text-text-primary">
                 {e.label}
               </span>
-            </div>
+            </label>
 
             <Input
               input_type="text"
@@ -111,6 +112,7 @@ const General = () => {
                   },
                 });
               }}
+              opacity={true}
               placeholder={e.placeholder}
               type="INPUT"
               value={data.social[e.name as keyof typeof data.social]}
@@ -118,7 +120,7 @@ const General = () => {
               variant="FILLED"
             />
           </div>
-        ))} */}
+        ))}
       </div>
 
       <div className="w-full py-4">

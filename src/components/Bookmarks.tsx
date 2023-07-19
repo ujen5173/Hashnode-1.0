@@ -53,9 +53,25 @@ const Bookmarks = () => {
             <BookmarkLoading />
           </>
         ) : bookmarks.length > 0 ? (
-          bookmarksData?.map((bookmark) => (
-            <BookmarkCard key={bookmark.id} bookmark={bookmark} />
-          ))
+          bookmarksData ? (
+            bookmarksData?.length > 0 ? (
+              bookmarksData?.map((bookmark) => (
+                <BookmarkCard key={bookmark.id} bookmark={bookmark} />
+              ))
+            ) : (
+              <div className="py-8">
+                <p className="text-center text-gray-700 dark:text-text-secondary">
+                  You don&apos;t have any bookmarks yet.
+                </p>
+              </div>
+            )
+          ) : (
+            <div className="py-8">
+              <p className="text-center text-gray-700 dark:text-text-secondary">
+                You don&apos;t have any bookmarks yet.
+              </p>
+            </div>
+          )
         ) : (
           <div className="py-8">
             <p className="text-center text-gray-700 dark:text-text-secondary">

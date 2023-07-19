@@ -4,6 +4,12 @@
   font-size: 20px;
   color: #111111;
 
+  ol,
+  ul {
+    list-style-type: initial;
+    padding-left: 25px;
+  }
+
   h1 {
     font-weight: 800;
     color: #111827;

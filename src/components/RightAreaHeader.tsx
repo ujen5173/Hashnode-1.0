@@ -94,7 +94,10 @@ const RightArea: FC = () => {
             >
               <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
             </button>
-            <Link className="block sm:hidden" href={"/notifications"}>
+            <Link
+              className="block sm:hidden"
+              href={!!user?.user ? "/notifications" : "/onboard"}
+            >
               <button
                 onClick={() => setOpened((prev) => !prev)}
                 aria-label="icon"

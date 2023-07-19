@@ -24,8 +24,10 @@ const Notifications = () => {
   const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
 
   useEffect(() => {
-    mutate();
-    setUser(session);
+    if (session) {
+      mutate();
+      setUser(session);
+    }
   }, []);
 
   const [notificationType, setNotificationType] = useState<Type>(Type.all);
@@ -91,16 +93,15 @@ const Notifications = () => {
 };
 
 export default Notifications;
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
-  if (!session)
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
+  console.log(session?.user);
+
+  if (!session?.user) {
+    return { props: { session: null }, redirect: { destination: "/" } };
+  }
 
   return {
     props: {

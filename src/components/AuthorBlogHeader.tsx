@@ -19,7 +19,7 @@ import {
   Settings,
   Sun,
   Twitter,
-  Youtube,
+  Youtube
 } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 import ArticleHamburgerMenu from "./ArticleHamburgerMenu";
@@ -83,7 +83,7 @@ const AuthorBlogHeader: FC<{
           </div>
           <div className="hidden lg:block">
             <Link
-              href={`/@${author.username}`}
+              href={`/u/@${author.username}`}
               className="flex items-center gap-2"
             >
               <Image
@@ -95,7 +95,7 @@ const AuthorBlogHeader: FC<{
                 draggable={false}
               />
 
-              <h3 className="text-2xl font-semibold text-gray-700 dark:text-text-secondary">
+              <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
                 {author.name}&apos;s Blog
               </h3>
             </Link>
@@ -149,7 +149,7 @@ const AuthorBlogHeader: FC<{
 
         <section className="flex w-full flex-col lg:pb-4 lg:pt-8">
           <div className="m-4 block lg:hidden">
-            <h1 className="text-center text-2xl font-semibold text-gray-700 dark:text-text-secondary sm:text-3xl">
+            <h1 className="text-center text-xl font-semibold text-gray-700 dark:text-text-secondary sm:text-2xl">
               {author.name}&apos;s Blog
             </h1>
           </div>
@@ -182,7 +182,7 @@ const AuthorBlogHeader: FC<{
                 </button>
               )}
             </div>
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center">
               {author.handle.social &&
                 Object.entries(author.handle.social)
                   .filter((e) => e[0] !== "handle" && e[1] !== "")

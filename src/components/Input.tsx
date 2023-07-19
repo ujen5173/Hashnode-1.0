@@ -16,6 +16,7 @@ interface InputTypes {
   pattern?: string | undefined;
   max?: number | undefined;
   autoFocus?: boolean;
+  opacity?: boolean;
   fontSize?: "sm" | "xs" | "lg" | "xl" | "2xl" | "3xl";
 }
 
@@ -34,6 +35,7 @@ const Input: FC<InputTypes> = ({
   max = undefined,
   autoFocus = false,
   fontSize = "sm",
+  opacity = false,
 }) => {
   return (
     <div className="my-3">
@@ -57,7 +59,7 @@ const Input: FC<InputTypes> = ({
               : variant === "TRANSPARENT"
               ? "mb-4 w-full bg-transparent py-2 font-bold text-gray-700 outline-none dark:text-text-secondary"
               : "input-outline"
-          } w-full`}
+          } w-full ${opacity ? "input-with-opacity" : ""}`}
           placeholder={placeholder}
           disabled={disabled}
           required={required}

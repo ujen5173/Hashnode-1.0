@@ -68,7 +68,9 @@ const Notification = () => {
         Learn insights from developers and people in tech from around the world.
         Grow 1% every day.
       </p>
-      <button className="btn-filled">Let&apos;s start</button>
+      <Link href="/onboard">
+        <button className="btn-filled">Let&apos;s start</button>
+      </Link>
     </div>
   );
 };

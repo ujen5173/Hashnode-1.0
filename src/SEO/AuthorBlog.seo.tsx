@@ -10,7 +10,7 @@ const AuthorBlog: FC<{
 }> = ({ author }) => {
   return (
     <Head>
-      <title>{author?.name}&apos;s Blog - Hashnode Clone</title>
+      <title>{`${author?.name || ""}'s Blog - Hashnode Clone`}</title>
       <meta name="description" content={`${author?.name || ""}&apos;s Blog`} />
 
       {/* Open Graph tags for social media banner */}

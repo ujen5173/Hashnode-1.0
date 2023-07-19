@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { publicProcedure } from "./../trpc";
 
 export const handleRouter = createTRPCRouter({
   updateHandle: protectedProcedure
@@ -89,6 +90,68 @@ export const handleRouter = createTRPCRouter({
             dailydev: "",
           },
           name: input.handle.name || ctx.session.user.username,
+        },
+      });
+      return result ? true : false;
+    }),
+
+  updateNavbarData: protectedProcedure
+    .input(
+      z.object({
+        handle: z.string(),
+        tab: z.object({
+          label: z.string(),
+          type: z.string(),
+          value: z.string(),
+          priority: z.number().default(0),
+        }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.prisma.handle.update({
+        where: {
+          handle: input.handle,
+        },
+        data: {
+          customTabs: {
+            create: input.tab,
+          },
+        },
+      });
+
+      return result ? true : false;
+    }),
+
+  getNavbarData: publicProcedure
+    .input(
+      z.object({
+        handle: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.prisma.customTab.findMany({
+        where: {
+          handle: {
+            handle: input.handle,
+          },
+        },
+        orderBy: {
+          priority: "asc",
+        },
+      });
+      return result;
+    }),
+
+  deleteNavbarData: protectedProcedure
+    .input(
+      z.object({
+        tabId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.prisma.customTab.delete({
+        where: {
+          id: input.tabId,
         },
       });
       return result ? true : false;

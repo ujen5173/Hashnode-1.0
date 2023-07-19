@@ -27,7 +27,7 @@ const UserRecentActivities = () => {
         {refactoredActivity?.map((activity, index) => (
           <div className="flex w-full gap-2 lg:gap-6" key={index}>
             <div className="activity_date">
-              <span className="text-center text-xs text-gray-700 dark:text-text-secondary">
+              <span className="text-center text-sm font-medium text-gray-700 dark:text-text-secondary">
                 {activity[0]}
               </span>
               {activity[1][0]?.activity_type !== "JOINED" && (

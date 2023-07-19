@@ -9,7 +9,7 @@ const Onboard = () => {
     <>
       <header className="flex items-center justify-center border-b border-border-light bg-white p-4 dark:border-border dark:bg-primary">
         <Link href="/">
-          <Logo className="h-9 fill-black dark:fill-white" />
+          <Logo className="h-9 fill-secondary" />
         </Link>
       </header>
 

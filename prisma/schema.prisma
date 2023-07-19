@@ -76,17 +76,32 @@ model User {
 }
 
 model Handle {
-    id        String   @id @default(cuid())
-    user      User?    @relation(fields: [userId], references: [id])
-    userId    String   @unique
-    name      String
-    social    Json?
-    about     String?  @default("")
-    handle    String   @unique
+    id         String      @id @default(cuid())
+    user       User?       @relation(fields: [userId], references: [id])
+    userId     String      @unique
+    name       String
+    customTabs CustomTab[]
+    social     Json?
+    about      String?     @default("")
+    handle     String      @unique
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @updatedAt
+
+    @@index([userId, handle])
+}
+
+model CustomTab {
+    id       String @id @default(cuid())
+    label    String
+    type     String @default("LINK")
+    value    String
+    priority Int    @default(0)
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([userId, handle])
+    handle   Handle @relation(fields: [handleId], references: [id])
+    handleId String
 }
 
 model Tag {

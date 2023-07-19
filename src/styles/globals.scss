@@ -144,41 +144,52 @@ body.dark .anouncement {
 .input-filled {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-3 text-base text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-primary;
 }
+body.dark .input-filled.input-with-opacity::-webkit-input-placeholder {
+  opacity: 0.5;
+}
 .input-filled::-webkit-input-placeholder {
-  opacity: 1;
+  opacity: 0.7;
+}
+body.dark .input-filled.input-with-opacity::-moz-placeholder {
+  opacity: 0.5;
 }
 .input-filled::-moz-placeholder {
-  opacity: 1;
+  opacity: 0.7;
 }
 
 .input-outline {
   @apply w-full bg-transparent p-2 text-lg text-gray-700 outline-none dark:text-text-secondary;
 }
+body.dark .input-outline.input-with-opacity::-webkit-input-placeholder {
+  opacity: 0.5;
+}
 .input-outline::-webkit-input-placeholder {
-  opacity: 0.4;
+  opacity: 0.7;
+}
+body.dark .input-outline.input-with-opacity::-moz-placeholder {
+  opacity: 0.5;
 }
 .input-outline::-moz-placeholder {
-  opacity: 0.4;
+  opacity: 0.7;
 }
 
 .input-secondary {
   @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
+body.dark .input-secondary.input-with-opacity::-webkit-input-placeholder {
+  opacity: 0.5;
+}
 .input-secondary::-webkit-input-placeholder {
-  opacity: 0.4;
+  opacity: 0.7;
 }
-.input-secondary-moz-placeholder {
-  opacity: 0.4;
+body.dark .input-secondary.input-with-opacity::-moz-placeholder {
+  opacity: 0.5;
 }
-
-.input-oauth::-webkit-input-placeholder {
-  opacity: 0.4;
-}
-.input-oauthed::-moz-placeholder {
-  opacity: 0.4;
+.input-secondary::-moz-placeholder {
+  opacity: 0.7;
 }
 .input-oauth {
-  @apply w-full rounded-full border border-border-light bg-light-bg px-6 py-3 text-lg font-semibold text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
+  @apply w-full rounded-full border border-border-light bg-light-bg px-6 py-3 text-lg font-medium text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-primary hover:dark:border-border dark:focus:bg-border;
 }
 
 .btn-social-icon:hover svg,

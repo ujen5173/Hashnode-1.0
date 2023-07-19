@@ -5,7 +5,7 @@ import { type User } from "~/types";
 const UserBlogSEO: FC<{ user: User }> = ({ user }) => {
   return (
     <Head>
-      <title>{user.name || ""}&apos;s blog</title>
+      <title>{`${user.name || ""}'s Blog`}&apos;s blog</title>
       <meta name="description" content={user.name || ""} />
 
       {/* Open Graph tags for social media banner */}
