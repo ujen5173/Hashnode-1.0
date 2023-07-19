@@ -35,7 +35,7 @@ const UserRecentActivities = () => {
               )}
             </div>
 
-            <div className="flex-1">
+            <div className="flex flex-col justify-center flex-1">
               {activity[1].map((item) => {
                 return (
                   <ActivityCard

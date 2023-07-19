@@ -28,7 +28,6 @@ const AuthorBlogArticleArea: FC<{
     followers: { id: string }[];
   };
 }> = ({ data, isLoading, user: author }) => {
-  console.log({ data, isLoading });
   const { user } = useContext(C) as ContextValue;
 
   return (

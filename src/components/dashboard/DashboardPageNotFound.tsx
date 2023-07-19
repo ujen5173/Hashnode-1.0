@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 
 const DashboardPageNotFound = () => {
   const router = useRouter();
-  console.log({ router });
   const handleRoute = async () => {
     await router.push(`/${router.query.id as string}/dashboard/general`);
   };

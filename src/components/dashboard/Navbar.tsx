@@ -147,7 +147,6 @@ const NavBarItem: FC<{
     });
 
     void refetchData();
-    console.log({ res });
   };
 
   return (

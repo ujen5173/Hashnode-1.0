@@ -64,7 +64,6 @@ const componentMap = {
 const Dashboard = () => {
   const paths = useRouter().query;
   const { data: session } = useSession();
-  console.log({ session });
   const { setUser } = useContext(C) as ContextValue;
 
   useEffect(() => {

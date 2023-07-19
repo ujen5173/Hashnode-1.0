@@ -50,20 +50,21 @@ const AuthorBlogs: NextPage<{
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
   const router = useRouter();
-  const { data, isLoading, isError } = api.posts.getAuthorArticles.useQuery(
-    {
-      username: router.query.username
-        ? (router.query?.username.slice(
-            1,
-            router.query?.username.length
-          ) as string) || ""
-        : "",
-    },
-    {
-      enabled: !!router.query.username,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const { data, isLoading, isError } =
+    api.posts.getAuthorArticlesByHandle.useQuery(
+      {
+        handle: router.query.username
+          ? (router.query?.username.slice(
+              1,
+              router.query?.username.length
+            ) as string) || ""
+          : "",
+      },
+      {
+        enabled: !!router.query.username,
+        refetchOnWindowFocus: false,
+      }
+    );
 
   useEffect(() => {
     setUser(session);

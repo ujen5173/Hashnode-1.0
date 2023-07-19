@@ -938,8 +938,49 @@ export const postsRouter = createTRPCRouter({
         return await ctx.prisma.article.findMany({
           where: {
             user: {
+              username: input.username,
+            },
+          },
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            createdAt: true,
+            read_time: true,
+            user: {
+              select: {
+                profile: true,
+                username: true,
+              },
+            },
+            subtitle: true,
+            cover_image: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
+
+  getAuthorArticlesByHandle: publicProcedure
+    .input(
+      z.object({
+        handle: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.article.findMany({
+          where: {
+            user: {
               handle: {
-                handle: input.username,
+                handle: input.handle,
               },
             },
           },

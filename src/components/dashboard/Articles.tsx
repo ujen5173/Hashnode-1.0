@@ -70,14 +70,18 @@ const Articles = () => {
               <ArticleCard key={article.id} data={article} />
             ))
           ) : (
+            <div className="flex items-center justify-center px-4 py-8">
+              <h1 className="text-3xl font-semibold text-gray-700 dark:text-text-secondary">
+                No articles Publised yet.
+              </h1>
+            </div>
+          )
+        ) : (
+          <div className="flex items-center justify-center px-4 py-8">
             <h1 className="text-3xl font-semibold text-gray-700 dark:text-text-secondary">
               No articles Publised yet.
             </h1>
-          )
-        ) : (
-          <h1 className="text-3xl font-semibold text-gray-700 dark:text-text-secondary">
-            No articles Publised yet.
-          </h1>
+          </div>
         )}
       </main>
     </section>

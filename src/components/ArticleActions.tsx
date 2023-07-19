@@ -92,8 +92,11 @@ const ArticleActions: FC<{
               : `Comments (${article.commentsCount})`
           }`}
           classNames={{
-            tooltip:
-              "bg-[#dc2626!important] text-[#fafafa!important] dark:text-[#fff!important]",
+            tooltip: `${
+              article.disabledComments
+                ? "bg-[#dc2626!important] text-[#fafafa!important] dark:text-[#fff!important]"
+                : ""
+            }`,
           }}
           withArrow
         >

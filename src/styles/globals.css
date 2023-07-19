@@ -330,7 +330,7 @@ body.dark .article code {
   line-height: 1.25rem;
   flex-direction: column;
   display: flex;
-  width: 5rem;
+  width: 6rem;
   --tw-text-opacity: 1;
   color: rgb(226 232 240/var(--tw-text-opacity));
 }
