@@ -64,6 +64,8 @@ model User {
     likedArticles  Article[]
     likedComments  Comment[] @relation("CommentToUser")
 
+    series Series[]
+
     notifications     Notification[] @relation("Notification Handler")
     notificationsFrom Notification[] @relation("Notification From")
 
@@ -77,7 +79,7 @@ model User {
 
 model Handle {
     id         String      @id @default(cuid())
-    user       User?       @relation(fields: [userId], references: [id])
+    user       User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId     String      @unique
     name       String
     customTabs CustomTab[]
@@ -100,7 +102,7 @@ model CustomTab {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    handle   Handle @relation(fields: [handleId], references: [id])
+    handle   Handle @relation(fields: [handleId], references: [id], onDelete: Cascade)
     handleId String
 }
 
@@ -123,16 +125,16 @@ model Tag {
 
 model Comment {
     id         String  @id @default(cuid())
-    user       User    @relation("CommentAuthor", fields: [userId], references: [id])
+    user       User    @relation("CommentAuthor", fields: [userId], references: [id], onDelete: Cascade)
     userId     String
-    article    Article @relation(fields: [articleId], references: [id])
+    article    Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
     articleId  String
     body       String
     likes      User[]  @relation("CommentToUser")
     likesCount Int     @default(0)
 
     type     CommentType
-    parent   Comment?    @relation("CommentToComment", fields: [parentId], references: [id])
+    parent   Comment?    @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
     parentId String?
     replies  Comment[]   @relation("CommentToComment")
 
@@ -152,7 +154,7 @@ model Article {
     id               String    @id @default(cuid())
     title            String
     cover_image      String?
-    user             User      @relation("author", fields: [userId], references: [id])
+    user             User      @relation("author", fields: [userId], references: [id], onDelete: Cascade)
     userId           String
     content          String
     read_time        Int
@@ -168,10 +170,28 @@ model Article {
     comments         Comment[]
     commentsCount    Int       @default(0)
 
+    series   Series? @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+    seriesId String?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     @@index([userId])
+    @@index([slug])
+}
+
+model Series {
+    id          String    @id @default(cuid())
+    title       String
+    description String?
+    articles    Article[]
+    author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    authorId    String    @unique
+    cover_image String?
+    slug        String    @unique
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
     @@index([slug])
 }
 
@@ -187,10 +207,10 @@ model Notification {
     title         String? @default("")
     articleAuthor String? @default("")
 
-    user   User   @relation("Notification Handler", fields: [userId], references: [id])
+    user   User   @relation("Notification Handler", fields: [userId], references: [id], onDelete: Cascade)
     userId String
 
-    from   User   @relation("Notification From", fields: [fromId], references: [id])
+    from   User   @relation("Notification From", fields: [fromId], references: [id], onDelete: Cascade)
     fromId String
 }
 

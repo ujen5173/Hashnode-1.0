@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useRef, useState, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Hashtag } from "~/svgs";
 import { api } from "~/utils/api";
@@ -9,10 +9,18 @@ import { type ArticleData } from "./NewArticleBody";
 const SelectTags: FC<{
   tags: string[];
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
+  createTagState: boolean;
   setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ tags: t, setData, setCreateTagState, query, setQuery }) => {
+}> = ({
+  tags: t,
+  setData,
+  createTagState,
+  setCreateTagState,
+  query,
+  setQuery,
+}) => {
   const [tags, setTags] = useState<
     { id: string; name: string; logo?: string }[]
   >([]);
@@ -31,6 +39,17 @@ const SelectTags: FC<{
       refetchOnWindowFocus: false,
     }
   );
+
+  useEffect(() => {
+    // This will refetch the tags when the new tag model is closed to insure that the new tag is created
+    if (!createTagState && query.length > 0) {
+      void (async () => {
+        const response = await search(query);
+        const newData = response.filter((tag) => !t.includes(tag.name));
+        setTags(newData);
+      })();
+    }
+  }, [createTagState]);
 
   async function search(
     criteria: string

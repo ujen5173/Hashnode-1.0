@@ -45,7 +45,7 @@ export const handleRouter = createTRPCRouter({
           social: input.social,
         },
       });
-      return result ? true : false;
+      return !!result;
     }),
 
   createPersonalHandle: protectedProcedure
@@ -92,7 +92,7 @@ export const handleRouter = createTRPCRouter({
           name: input.handle.name || ctx.session.user.username,
         },
       });
-      return result ? true : false;
+      return !!result;
     }),
 
   newNavbarData: protectedProcedure
@@ -119,7 +119,7 @@ export const handleRouter = createTRPCRouter({
         },
       });
 
-      return result ? true : false;
+      return !!result;
     }),
 
   updateNavbarData: protectedProcedure
@@ -142,7 +142,7 @@ export const handleRouter = createTRPCRouter({
         data: input.tab,
       });
 
-      return result ? true : false;
+      return !!result;
     }),
 
   getNavbarData: publicProcedure
@@ -177,7 +177,7 @@ export const handleRouter = createTRPCRouter({
           id: input.tabId,
         },
       });
-      return result ? true : false;
+      return !!result;
     }),
 });
 

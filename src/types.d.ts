@@ -19,6 +19,9 @@ export interface Article {
       about: string;
     } | null;
   };
+  series?: {
+    title: string;
+  };
   content: string;
   read_time: number;
   tags: {
@@ -43,6 +46,10 @@ export interface ArticleCard {
     profile: string;
     id: string;
   }[];
+  series?: {
+    title: string;
+    slug: string;
+  } | null;
   user: {
     name: string;
     username: string;
@@ -159,6 +166,9 @@ interface SearchResults {
           id: string;
         };
         cover_image: string;
+        series?: {
+          title: string;
+        };
         slug: string;
         read_time: number;
         likesCount: number;

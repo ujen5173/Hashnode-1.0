@@ -46,7 +46,7 @@ export default Aside;
 
 const Navigations = () => {
   return (
-    <div className="pb-3">
+    <div className="pb-2">
       {asideItems.map((item, index) => {
         return item.type !== "link" ? (
           <Navigation key={index} item={item} />
@@ -68,7 +68,7 @@ const TrendingComponent: FC<{
   trendingItems: TrendingTagsTypes;
 }> = ({ trendingItems }) => {
   return (
-    <div className="p-4">
+    <div className="px-4 py-3">
       <div className="mb-2 flex items-center justify-between">
         <h1 className="mb-2 text-sm font-semibold dark:text-text-primary ">
           Trending tags
@@ -99,14 +99,14 @@ const TrendingComponent: FC<{
 
 const SocialHandles = () => {
   return (
-    <div className="flex flex-wrap p-4">
+    <div className="flex flex-wrap px-4 py-2">
       <a target="_blank" href="https://twitter.com">
         <button
           aria-label="social links"
           role="button"
           className="btn-social-icon flex h-9 w-9 items-center justify-center hover:bg-twitterColor"
         >
-          <Twitter className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+          <Twitter className="h-5 w-5 fill-gray-400 dark:fill-text-primary" />
         </button>
       </a>
       <a target="_blank" href="https://discord.com/app">
@@ -115,7 +115,7 @@ const SocialHandles = () => {
           role="button"
           className="btn-social-icon flex h-9 w-9 items-center justify-center hover:bg-discordColor"
         >
-          <Discord className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+          <Discord className="h-5 w-5 fill-gray-400 dark:fill-text-primary" />
         </button>
       </a>
       <a target="_blank" href="https://linkedin.com">
@@ -124,7 +124,7 @@ const SocialHandles = () => {
           role="button"
           className="btn-social-icon flex h-9 w-9 items-center justify-center hover:bg-linkedinColor"
         >
-          <Linkedin className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+          <Linkedin className="h-5 w-5 fill-gray-400 dark:fill-text-primary" />
         </button>
       </a>
       <a target="_blank" href="https://instagram.com">
@@ -133,7 +133,7 @@ const SocialHandles = () => {
           role="button"
           className="btn-social-icon flex h-9 w-9 items-center justify-center hover:bg-instaColor"
         >
-          <Instagram className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+          <Instagram className="h-5 w-5 fill-gray-400 dark:fill-text-primary" />
         </button>
       </a>
     </div>

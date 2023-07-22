@@ -40,6 +40,12 @@ const selectArticleCard = {
       },
     },
   },
+  series: {
+    select: {
+      slug: true,
+      title: true,
+    },
+  },
   comments: {
     select: {
       user: {
@@ -414,6 +420,7 @@ export const postsRouter = createTRPCRouter({
                     about: true,
                   },
                 },
+                series: true,
                 followers: {
                   select: {
                     id: true,
@@ -485,6 +492,7 @@ export const postsRouter = createTRPCRouter({
         seoOgImage: z.string().trim().optional().nullable(),
         cover_image: z.string().trim().optional().nullable(),
         disabledComments: z.boolean().optional().default(false),
+        seriesId: z.string().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -547,12 +555,21 @@ export const postsRouter = createTRPCRouter({
         const createdTags = await Promise.all(tagPromises);
 
         // Create the article with the created tags
+        const { seriesId, ...rest } = input;
         const newArticle = await ctx.prisma.article.create({
           data: {
-            ...input,
+            ...rest,
             tags: {
               connect: createdTags.map((tag) => ({ id: tag.id })),
             },
+            // somthing is wront in this section
+            ...(seriesId && {
+              series: {
+                connect: {
+                  id: seriesId,
+                },
+              },
+            }),
             user: {
               connect: {
                 id: ctx.session.user.id,

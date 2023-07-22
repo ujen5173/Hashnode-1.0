@@ -18,7 +18,7 @@ const TrendingNavigation: FC<Props> = ({ item }) => {
       href={`/tag/${item.slug}`}
       title={item.name}
     >
-      <div className="flex cursor-pointer select-none items-center justify-between rounded-md p-1 text-sm hover:bg-border-light dark:bg-primary dark:hover:bg-primary-light">
+      <div className="flex cursor-pointer select-none items-center justify-between rounded-md p-1 text-sm hover:bg-gray-100 dark:bg-primary dark:hover:bg-primary-light">
         <span className="text-limit-horizontal text-sm font-medium text-gray-500 dark:text-text-secondary">
           {item.name}
         </span>

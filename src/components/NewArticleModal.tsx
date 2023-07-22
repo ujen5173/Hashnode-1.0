@@ -16,10 +16,11 @@ const NewArticleModal: FC<{
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
   data: ArticleData;
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
+  createTagState: boolean;
   setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
-
   publishing: boolean;
   setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
+
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
 }> = ({
@@ -29,6 +30,7 @@ const NewArticleModal: FC<{
   setData,
   publishing,
   setPublishing,
+  createTagState,
   setCreateTagState,
 
   query,
@@ -211,6 +213,7 @@ const NewArticleModal: FC<{
                 tags={data.tags}
                 query={query}
                 setQuery={setQuery}
+                createTagState={createTagState}
                 setCreateTagState={setCreateTagState}
               />
 

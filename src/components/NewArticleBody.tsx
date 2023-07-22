@@ -45,6 +45,12 @@ const NewArticleBody: FC<{
   const [query, setQuery] = useState("");
   const [createTagState, setCreateTagState] = useState(false);
 
+  useEffect(() => {
+    if (createTagState) {
+      document.querySelector("body")?.setAttribute("style", "overflow:hidden");
+    }
+  }, [createTagState]);
+
   const [data, setData] = useState<ArticleData>({
     title: "",
     subtitle: "",
@@ -60,7 +66,6 @@ const NewArticleBody: FC<{
 
   const [requestedTags, setRequestedTags] = React.useState<string[]>([]);
 
-  //TODO: this code is running at page load.
   const { refetch } = api.tags.getSingle.useQuery(
     {
       slug: requestedTags, // not working as it needs window object.
@@ -267,6 +272,7 @@ const NewArticleBody: FC<{
         data={data}
         setData={setData}
         publishing={publishing}
+        createTagState={createTagState}
         setCreateTagState={setCreateTagState}
         setPublishing={setPublishing}
         query={query}
@@ -274,7 +280,11 @@ const NewArticleBody: FC<{
       />
 
       {createTagState && (
-        <NewTagModal query={query} setCreateTagState={setCreateTagState} />
+        <NewTagModal
+          query={query}
+          setQuery={setQuery}
+          setCreateTagState={setCreateTagState}
+        />
       )}
     </main>
   );

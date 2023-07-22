@@ -8,7 +8,8 @@ import Input from "./Input";
 export const NewTagModal: FC<{
   setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
   query: string;
-}> = ({ setCreateTagState, query }) => {
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ setCreateTagState, query, setQuery }) => {
   const [newTag, setNewTag] = useState<{
     name: string;
     description: string;
@@ -23,8 +24,8 @@ export const NewTagModal: FC<{
 
   const handleCreateNew = async () => {
     try {
-      if (!newTag.name || !newTag.description) {
-        alert("Please fill up the name and description");
+      if (!newTag.name) {
+        alert("Please fill up the name");
         return;
       }
 
@@ -50,7 +51,7 @@ export const NewTagModal: FC<{
         className="absolute inset-0 z-40 bg-black bg-opacity-40 backdrop-blur"
       ></div>
       <div className="relative z-50 w-full min-w-[350px] max-w-[550px] overflow-hidden rounded-md border border-border-light bg-light-bg dark:border-border dark:bg-primary">
-        <div className="flex items-center justify-between border-b border-border-light p-4 dark:border-border">
+        <header className="flex items-center justify-between border-b border-border-light p-4 dark:border-border">
           <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
             Create New Tag
           </h1>
@@ -62,67 +63,77 @@ export const NewTagModal: FC<{
           >
             <Times className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
           </button>
-        </div>
+        </header>
 
-        <div className="p-4">
-          <Input
-            label="Tag Name"
-            type="INPUT"
-            variant="FILLED"
-            placeholder="Python"
-            input_type="text"
-            disabled={false}
-            required={true}
-            value={newTag.name}
-            autoFocus={true}
-            name="name"
-            onChange={(e) => {
-              setNewTag((prev) => ({
-                ...prev,
-                name: e.target.value,
-              }));
-            }}
-          />
-          <Input
-            type="TEXTAREA"
-            input_type="text"
-            placeholder="Description"
-            variant="FILLED"
-            onChange={(e) => {
-              setNewTag((prev) => ({
-                ...prev,
-                description: e.target.value,
-              }));
-            }}
-            value={newTag.description}
-            disabled={false}
-            required={true}
-            label="Tag Description"
-            name="description"
-          />
-          <Input
-            type="IMAGE"
-            input_type="image"
-            placeholder=""
-            variant="FILLED"
-            onChange={() => {
-              console.log("hi");
-            }}
-            value={newTag.logo || ""}
-            disabled={false}
-            required={true}
-            label="Tag Logo"
-            name="logo"
-          />
-          <button
-            onClick={() => void handleCreateNew()}
-            className={`btn-filled ${
-              isLoading ? "cursor-not-allowed opacity-40" : ""
-            }`}
-          >
-            {isLoading ? "Creating..." : "Create"}
-          </button>
-        </div>
+        <main className="scroll-area max-h-[80vh] overflow-auto py-4">
+          <div className="h-full">
+            <div className="px-4">
+              <Input
+                label="Tag Name"
+                type="INPUT"
+                variant="FILLED"
+                placeholder="Python"
+                input_type="text"
+                disabled={false}
+                required={true}
+                value={newTag.name}
+                autoFocus={true}
+                name="name"
+                onChange={(e) => {
+                  setNewTag((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }));
+                  setQuery(e.target.value);
+                }}
+              />
+              <Input
+                type="TEXTAREA"
+                input_type="text"
+                placeholder="Description"
+                variant="FILLED"
+                onChange={(e) => {
+                  setNewTag((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }));
+                }}
+                value={newTag.description}
+                disabled={false}
+                required={false}
+                label="Tag Description"
+                name="description"
+              />
+              <div className="mb-6">
+                <Input
+                  type="IMAGE"
+                  input_type="image"
+                  placeholder=""
+                  variant="FILLED"
+                  onChange={() => {
+                    console.log("hi");
+                  }}
+                  value={newTag.logo || ""}
+                  disabled={false}
+                  required={false}
+                  label="Tag Logo"
+                  name="logo"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between border-t border-border-light px-4 pt-4 dark:border-border">
+              <button className={`btn-outline`}>Cancel</button>
+              <button
+                onClick={() => void handleCreateNew()}
+                className={`btn-filled ${
+                  isLoading ? "cursor-not-allowed opacity-40" : ""
+                }`}
+              >
+                {isLoading ? "Creating..." : "Create"}
+              </button>
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );

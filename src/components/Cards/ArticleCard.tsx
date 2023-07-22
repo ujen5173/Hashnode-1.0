@@ -2,13 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
-import { Book, Bookmarkplus, Like, Multicomment } from "~/svgs";
+import { Book, Bookmarkplus, Like, Multicomment, Series } from "~/svgs";
 import Bookmarked from "~/svgs/Bookmarked";
 import { ArticleCard } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 
 const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
+  console.log({ card });
   const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
 
   return (
@@ -93,7 +94,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
         </div>
 
         <div className="mt-2 flex flex-col-reverse justify-between gap-2 md:flex-row">
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <button
               aria-label="icon"
               onClick={() => updateBookmark(card.id)}
@@ -137,6 +138,18 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
           </div>
 
           <div className="flex items-center">
+            {card.series && (
+              <Link href={`/series/${card.series.slug}`}>
+                <p className="mr-2 flex items-center gap-1 rounded-full bg-secondary bg-opacity-10 px-2 py-1">
+                  <span className="text-gray-900 dark:text-text-primary">
+                    <Series className="h-3 w-3 fill-secondary" />
+                  </span>
+                  <span className="text-xs font-semibold text-secondary">
+                    {card.series.title}
+                  </span>
+                </p>
+              </Link>
+            )}
             <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
               <Like className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
               <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
