@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Header } from "~/components";
+import CreateNewSeries from "~/components/CreateNewSeries";
 import {
   Advanced,
   Analytics,
@@ -58,6 +59,7 @@ const componentMap = {
   import: <Import />,
   export: <Export />,
   advanced: <Advanced />,
+  "series/create": <CreateNewSeries />,
   "404": <DashboardPageNotFound />,
 };
 
@@ -78,13 +80,13 @@ const Dashboard = () => {
     // set dashboard component based on the path. if path is incorrect, set 404 component else set respective component and if path is undefined, set general component
     setDashboardName(
       componentMap[
-        (paths.dashboard
-          ? dashboardNavigations
-              .map((e) => e.name.toLowerCase())
-              .includes(paths.dashboard[0] as string)
-            ? (paths.dashboard[0] as string)
-            : "404"
-          : "general") as keyof typeof componentMap
+        Object.keys(componentMap).includes(
+          (paths?.dashboard as string[])?.join("/") ?? "general"
+        )
+          ? ((paths?.dashboard as string[])?.join(
+              "/"
+            ) as keyof typeof componentMap) ?? "general"
+          : "404"
       ]
     );
   }, [paths.dashboard]);

@@ -128,7 +128,7 @@ const SeriesSection: FC<{
   slug: string;
   series: { title: string; slug: string };
 }> = ({ series, slug }) => {
-  const { data } = api.series.getSeriesOfAuthor.useQuery({
+  const { data } = api.series.getSeriesOfArticle.useQuery({
     slug: series.slug,
   });
 

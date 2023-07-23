@@ -11,7 +11,40 @@ const SeriesRouter = createTRPCRouter({
     return series;
   }),
 
-  getSeriesOfAuthor: publicProcedure
+  new: protectedProcedure
+    .input(
+      z.object({
+        title: z.string(),
+        description: z.string().optional(),
+        cover_image: z.string().optional(),
+        slug: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const series = await ctx.prisma.series.create({
+        data: {
+          ...input,
+          author: {
+            connect: {
+              id: ctx.session.user.id,
+            },
+          },
+          slug:
+            input.slug ||
+            slugify(input.title, {
+              lower: true,
+              replacement: "-",
+              locale: "vi",
+              trim: true,
+              strict: true,
+            }),
+        },
+      });
+
+      return !!series;
+    }),
+
+  getSeriesOfArticle: publicProcedure
     .input(
       z.object({
         slug: z.string(),
@@ -44,6 +77,35 @@ const SeriesRouter = createTRPCRouter({
       }
 
       return series.articles;
+    }),
+
+  getSeriesOfAuthor: publicProcedure
+    .input(
+      z.object({
+        username: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const series = await ctx.prisma.series.findMany({
+        where: {
+          author: {
+            username: input.username,
+          },
+        },
+        select: {
+          title: true,
+          id: true,
+        },
+      });
+
+      if (!series) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Series not found",
+        });
+      }
+
+      return series;
     }),
 
   searchSeries: protectedProcedure
