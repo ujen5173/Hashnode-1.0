@@ -170,21 +170,33 @@ export const tagsRouter = createTRPCRouter({
         }
 
         const tags = await ctx.prisma.tag.findMany({
-          ...(input?.variant === "any"
-            ? {}
-            : {
-                where: {
-                  articles: {
-                    some: {
-                      createdAt: {
-                        gte: startDate,
-                        lte: endDate,
+          where: {
+            ...(input?.variant === "any"
+              ? {
+                  articlesCount: {
+                    gt: 0,
+                  },
+                }
+              : {
+                  AND: [
+                    {
+                      articles: {
+                        some: {
+                          createdAt: {
+                            gte: startDate,
+                            lte: endDate,
+                          },
+                        },
                       },
                     },
-                  },
-                },
-              }),
-
+                    {
+                      articlesCount: {
+                        gt: 0,
+                      },
+                    },
+                  ],
+                }),
+          },
           take: input?.limit || 6,
           orderBy: [
             {

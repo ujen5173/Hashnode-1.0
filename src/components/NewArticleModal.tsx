@@ -4,14 +4,16 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, type FC } from "react";
 import { toast } from "react-toastify";
 import { Times } from "~/svgs";
+import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
 import { type ArticleData } from "./NewArticleBody";
+import SelectSeries from "./SelectSeries";
 import SelectTags from "./SelectTags";
 
-const NewArticleModal: FC<{
+interface Props {
   publishModal: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
   data: ArticleData;
@@ -23,7 +25,9 @@ const NewArticleModal: FC<{
 
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
-}> = ({
+}
+
+const NewArticleModal: FC<Props> = ({
   publishModal,
   setPublishModal,
   data,
@@ -43,7 +47,7 @@ const NewArticleModal: FC<{
 
   const [requestedTags, setRequestedTags] = React.useState<string[]>([]);
 
-  //TODO: this code is running at page load.
+  //TODO: this code is running at page load to fetch only tags from url.
   const { refetch } = api.tags.getSingle.useQuery(
     {
       slug: requestedTags,
@@ -56,9 +60,36 @@ const NewArticleModal: FC<{
   );
 
   useEffect(() => {
-    //* just for settings tags from url so that i can check if the tags exist or not.
+    //? Getting tag from server if it is in the url or localstorage saved tags.
     const tagsFromUrl = new URLSearchParams(window.location.search).get("tag");
     if (tagsFromUrl) setRequestedTags(tagsFromUrl.split(" "));
+
+    const article = localStorage.getItem("savedData");
+    if (article) {
+      const parsedArticle = JSON.parse(article) as ArticleCard;
+      if (parsedArticle.tags.length > 0) {
+        setRequestedTags(parsedArticle.tags.map((e) => e.slug));
+      }
+    }
+
+    const storedData = localStorage.getItem("savedData");
+    if (storedData) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { tags, ...res } = JSON.parse(storedData) as ArticleData;
+      setData((prev) => ({ ...prev, ...res }));
+      if (tags.length === 0) return;
+      const checkTags = async () => {
+        const { data } = await refetch();
+
+        if (!data) return;
+        setData((prev) => ({
+          ...prev,
+          tags: [...prev.tags, ...data.map((e) => e.name)],
+        }));
+      };
+
+      void checkTags();
+    }
   }, []);
 
   useEffect(() => {
@@ -237,6 +268,33 @@ const NewArticleModal: FC<{
                   </div>
                 ))}
               </div>
+            </div>
+            <div className="mb-8">
+              <label
+                htmlFor="tags"
+                className="mb-2 block text-base font-semibold text-gray-700 dark:text-text-secondary"
+              >
+                Select Article Series
+              </label>
+              <SelectSeries setData={setData} series={data.series} />
+
+              {data.series && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="flex items-center gap-2 rounded-md border border-border-light bg-light-bg px-2 py-1 text-lg text-gray-500 dark:border-border dark:bg-primary-light dark:text-text-primary">
+                    <span>{data.series}</span>
+                    <button
+                      onClick={() => {
+                        setData((prev) => ({
+                          ...prev,
+                          series: undefined,
+                        }));
+                      }}
+                    >
+                      <Times className="h-5 w-5 fill-red" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="relative z-10 mb-8">
               <ImagePlaceholder

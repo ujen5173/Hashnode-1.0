@@ -13,7 +13,8 @@ import ShareOptions from "./ShareOptions";
 const ArticleActions: FC<{
   article: Article;
   setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ article, setCommentsModal }) => {
+  commentsCount: number;
+}> = ({ article, commentsCount, setCommentsModal }) => {
   const [shareOpen, setShareOpen] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setShareOpen(false));
   const { user, bookmarks, updateBookmark } = useContext(C) as ContextValue;
@@ -89,7 +90,7 @@ const ArticleActions: FC<{
           label={`${
             article.disabledComments
               ? "Comments Disabled"
-              : `Comments (${article.commentsCount})`
+              : `Comments (${commentsCount})`
           }`}
           classNames={{
             tooltip: `${
@@ -115,7 +116,7 @@ const ArticleActions: FC<{
               <div className="flex items-center justify-center gap-2">
                 <Comment className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
               </div>
-              <span>{article.commentsCount}</span>
+              <span>{commentsCount}</span>
             </button>
           </div>
         </Tooltip>

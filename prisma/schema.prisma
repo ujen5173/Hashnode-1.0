@@ -182,11 +182,11 @@ model Article {
 
 model Series {
     id          String    @id @default(cuid())
-    title       String
+    title       String    @unique
     description String?
     articles    Article[]
     author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-    authorId    String    @unique
+    authorId    String
     cover_image String?
     slug        String    @unique
     createdAt   DateTime  @default(now())

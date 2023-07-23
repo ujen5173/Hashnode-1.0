@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
+import removeMd from "remove-markdown";
 import { Book, Check, Follow } from "~/svgs";
 import type { Article, Tag, User } from "~/types";
+import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { formatDate } from "./../utils/miniFunctions";
 import ArticleActions from "./ArticleActions";
@@ -10,6 +12,7 @@ import CommentsModal from "./CommentsModal";
 
 const ArticleBody: FC<{ article: Article }> = ({ article }) => {
   const [commentsModal, setCommentsModal] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(article.commentsCount);
 
   useEffect(() => {
     if (commentsModal) {
@@ -97,6 +100,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
           <ArticleActions
             article={article}
             setCommentsModal={setCommentsModal}
+            commentsCount={commentsCount}
           />
           <ArticleTags tags={article.tags} />
           <ArticleAuthor author={article.user} />
@@ -106,7 +110,11 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
               commentsModal={commentsModal}
               authorUsername={article.user.username}
               setCommentsModal={setCommentsModal}
+              setCommentsCount={setCommentsCount}
             />
+          )}
+          {article.series && (
+            <SeriesSection series={article.series} slug={article.slug} />
           )}
         </section>
       </div>
@@ -115,6 +123,72 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 };
 
 export default ArticleBody;
+
+const SeriesSection: FC<{
+  slug: string;
+  series: { title: string; slug: string };
+}> = ({ series, slug }) => {
+  const { data } = api.series.getSeriesOfAuthor.useQuery({
+    slug: series.slug,
+  });
+
+  return (
+    <div className="px-4 py-16">
+      <div className="mx-auto max-w-[1000px] rounded-md border border-border-light dark:border-border">
+        <header className="border-b border-border-light px-6 py-4 dark:border-border">
+          <h1 className="mb-1 text-sm font-bold text-gray-500 dark:text-text-primary">
+            ARTICLE SERIES
+          </h1>
+          <span className="text-lg font-bold text-secondary hover:underline">
+            <Link href={`/series/${series.slug}`}>{series.title}</Link>
+          </span>
+        </header>
+
+        <main className="">
+          {data &&
+            data.map((article, index) => (
+              <div
+                className="flex flex-col gap-4 border-b border-border-light p-4 last:border-none dark:border-border md:flex-row md:items-center"
+                key={article.id}
+              >
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                    article.slug === slug
+                      ? "bg-secondary text-white"
+                      : "bg-slate-200 text-primary"
+                  }`}
+                >
+                  <h1 className="text-lg font-black">{index + 1}</h1>
+                </div>
+                <div className="flex flex-1 items-center gap-4">
+                  <div>
+                    <h1 className="max-height-two mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
+                      {article.title}
+                    </h1>
+                    <h1 className="max-height-two mb-2 text-lg text-gray-500 dark:text-text-primary">
+                      {article?.subtitle || removeMd(article.content)}
+                    </h1>
+                  </div>
+                </div>
+                {!article?.cover_image && (
+                  <div className="w-full md:w-1/4">
+                    <Image
+                      src={article.cover_image || "/hashnode-social-banner.png"}
+                      alt={article.title}
+                      width={1200}
+                      height={800}
+                      draggable={false}
+                      className="w-full overflow-hidden rounded-md object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+        </main>
+      </div>
+    </div>
+  );
+};
 
 const ArticleTags = ({ tags }: { tags: Tag[] }) => {
   return (
@@ -176,7 +250,7 @@ const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
               </button>
             </div>
             {author?.handle?.about && (
-              <div className="mt-4 sm:mt-8">
+              <div className="mt-2 sm:mt-4 md:mt-8">
                 <p className="text-base text-gray-600 dark:text-text-primary">
                   {author.handle.about}
                 </p>

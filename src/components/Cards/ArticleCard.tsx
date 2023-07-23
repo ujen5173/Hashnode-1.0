@@ -9,7 +9,6 @@ import { C, type ContextValue } from "~/utils/context";
 import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 
 const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
-  console.log({ card });
   const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
 
   return (

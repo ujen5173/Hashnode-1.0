@@ -1,28 +1,23 @@
-import Image from "next/image";
-import { useEffect, useRef, useState, type FC } from "react";
+// TODO: REMOVE SERIES POPUP WHEN CLICKED OUTSIDE. THIS ISSUE IS ALSO IN TAGS SECTION.
+
+import Link from "next/link";
+import React, { useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { Hashtag } from "~/svgs";
+import { Series } from "~/svgs";
 import { api } from "~/utils/api";
 import TagLoading from "./Loading/TagLoading";
 import { type ArticleData } from "./NewArticleBody";
 
-const SelectTags: FC<{
-  tags: string[];
+const SelectSeries: FC<{
+  series: string | undefined;
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
-  createTagState: boolean;
-  setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
-  query: string;
-  setQuery: React.Dispatch<React.SetStateAction<string>>;
-}> = ({
-  tags: t,
-  setData,
-  createTagState,
-  setCreateTagState,
-  query,
-  setQuery,
-}) => {
-  const [tags, setTags] = useState<
-    { id: string; name: string; logo: string | null }[]
+}> = ({ series: ser, setData }) => {
+  const [query, setQuery] = useState("");
+  const [series, setSeries] = useState<
+    {
+      id: string;
+      title: string;
+    }[]
   >([]);
 
   const [refetching, setRefetching] = useState(true);
@@ -30,7 +25,7 @@ const SelectTags: FC<{
   const ref = useRef<HTMLDivElement | null>(null);
   const input = useRef<HTMLInputElement | null>(null);
 
-  const { refetch } = api.tags.searchTags.useQuery(
+  const { refetch } = api.series.searchSeries.useQuery(
     {
       query,
     },
@@ -42,7 +37,7 @@ const SelectTags: FC<{
 
   async function search(
     criteria: string
-  ): Promise<{ id: string; name: string; logo: string | null }[]> {
+  ): Promise<{ id: string; title: string }[]> {
     let response;
     if (criteria.trim().length > 0) {
       setRefetching(true);
@@ -58,21 +53,13 @@ const SelectTags: FC<{
     return [];
   }
 
-  useEffect(() => {
-    // This will refetch the tags when the new tag model is closed to insure that the new tag is created
-    if (!createTagState && query.length > 0) {
-      void (async () => {
-        const response = await search(query);
-        const newData = response.filter((tag) => !t.includes(tag.name));
-        setTags(newData);
-      })();
-    }
-  }, [createTagState]);
-
   const debounced = useDebouncedCallback(async (value: string) => {
     const response = await search(value);
-    const newData = response.filter((tag) => !t.includes(tag.name));
-    setTags(newData);
+    const newData = response.filter(
+      (s) => s.title.toLowerCase() !== ser?.toLowerCase()
+    );
+
+    setSeries(newData);
   }, 500);
 
   return (
@@ -84,9 +71,9 @@ const SelectTags: FC<{
           type="text"
           className="input-secondary"
           ref={input}
-          placeholder="Seperate tags with commas"
-          id="tags"
-          name="tags"
+          placeholder="Series"
+          id="series"
+          name="series"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -108,53 +95,42 @@ const SelectTags: FC<{
               <TagLoading variant="non-rounded" />
               <TagLoading variant="non-rounded" />
             </>
-          ) : tags.length > 0 ? (
-            tags.map((tag, index) => (
+          ) : series.length > 0 ? (
+            series.map((s, index) => (
               <div
-                className="flex w-full cursor-pointer items-center gap-2 border-b border-border-light px-2 py-2 text-lg text-gray-500 last:border-none dark:border-border dark:text-text-primary"
+                className="flex w-full cursor-pointer items-center gap-2 border-b border-border-light px-2 py-2 text-lg text-gray-500 last:border-none hover:bg-gray-100 dark:border-border dark:text-text-primary dark:hover:bg-border"
                 onClick={() => {
                   setData((prev) => ({
                     ...prev,
-                    tags: Array.from(new Set([...prev.tags, tag.name])),
+                    series: s.title,
                   }));
                   input.current?.focus();
 
                   setOpened(false);
                   setQuery("");
+                  setData((prev) => ({
+                    ...prev,
+                    series: s.title,
+                  }));
                 }}
                 key={index}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-md bg-white dark:bg-primary-light">
-                  {tag.logo ? (
-                    <Image
-                      src={tag.logo}
-                      alt={tag.name}
-                      width={70}
-                      height={70}
-                      className="h-12 w-12 rounded-md object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
-                      <Hashtag className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
-                    </div>
-                  )}
+                <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
+                  <Series className="mx-auto my-3 h-6 w-6 fill-secondary" />
                 </div>
-
-                <span>{tag.name}</span>
+                <span>{s.title}</span>
               </div>
             ))
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <p className="text-gray-500 dark:text-text-primary">
-                No tags found
+                No series found
               </p>
-              <button
-                aria-label="Create New Tag"
-                onClick={() => setCreateTagState(true)}
-                className="btn-filled"
-              >
-                Create One
-              </button>
+              <Link href="/">
+                <button aria-label="Create New Tag" className="btn-filled">
+                  Create One
+                </button>
+              </Link>
             </div>
           )}
         </div>
@@ -163,4 +139,4 @@ const SelectTags: FC<{
   );
 };
 
-export default SelectTags;
+export default SelectSeries;

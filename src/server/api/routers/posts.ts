@@ -406,6 +406,12 @@ export const postsRouter = createTRPCRouter({
             ],
           },
           include: {
+            series: {
+              select: {
+                title: true,
+                slug: true,
+              },
+            },
             user: {
               select: {
                 id: true,
@@ -420,7 +426,7 @@ export const postsRouter = createTRPCRouter({
                     about: true,
                   },
                 },
-                series: true,
+
                 followers: {
                   select: {
                     id: true,
@@ -487,12 +493,12 @@ export const postsRouter = createTRPCRouter({
           .min(25, "Content should be atleast of 25 characters")
           .trim(),
         tags: z.array(z.string().trim()).optional().default([]),
+        series: z.string().optional().nullable(),
         seoTitle: z.string().trim().optional().nullable(),
         seoDescription: z.string().trim().optional().nullable(),
         seoOgImage: z.string().trim().optional().nullable(),
         cover_image: z.string().trim().optional().nullable(),
         disabledComments: z.boolean().optional().default(false),
-        seriesId: z.string().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -555,7 +561,7 @@ export const postsRouter = createTRPCRouter({
         const createdTags = await Promise.all(tagPromises);
 
         // Create the article with the created tags
-        const { seriesId, ...rest } = input;
+        const { series, ...rest } = input;
         const newArticle = await ctx.prisma.article.create({
           data: {
             ...rest,
@@ -563,10 +569,10 @@ export const postsRouter = createTRPCRouter({
               connect: createdTags.map((tag) => ({ id: tag.id })),
             },
             // somthing is wront in this section
-            ...(seriesId && {
+            ...(series && {
               series: {
                 connect: {
-                  id: seriesId,
+                  title: series,
                 },
               },
             }),

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -10,7 +11,42 @@ const SeriesRouter = createTRPCRouter({
     return series;
   }),
 
-  searchSeries: publicProcedure
+  getSeriesOfAuthor: publicProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const series = await ctx.prisma.series.findFirst({
+        where: {
+          slug: input.slug,
+        },
+        select: {
+          articles: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              subtitle: true,
+              content: true,
+              cover_image: true,
+            },
+          },
+        },
+      });
+
+      if (!series) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Series not found",
+        });
+      }
+
+      return series.articles;
+    }),
+
+  searchSeries: protectedProcedure
     .input(
       z.object({
         query: z.string().trim(),
@@ -19,18 +55,25 @@ const SeriesRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const series = await ctx.prisma.series.findMany({
         where: {
-          OR: [
+          AND: [
             {
-              title: {
-                contains: input.query,
-                mode: "insensitive",
-              },
+              OR: [
+                {
+                  title: {
+                    contains: input.query,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  description: {
+                    contains: input.query,
+                    mode: "insensitive",
+                  },
+                },
+              ],
             },
             {
-              description: {
-                contains: input.query,
-                mode: "insensitive",
-              },
+              authorId: ctx.session.user.id,
             },
           ],
         },

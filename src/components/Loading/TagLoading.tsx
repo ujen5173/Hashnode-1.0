@@ -7,7 +7,7 @@ const TagLoading: FC<{ variant?: "rounded" | "non-rounded" }> = ({
     <div
       className={`loading flex h-16 w-full items-center gap-2 ${
         variant === "rounded" ? "rounded-md" : ""
-      } border border-border-light bg-border-light p-2 dark:border-border dark:bg-border`}
+      } border-b border-border-light bg-white p-2 dark:border-border dark:bg-primary`}
     >
       <div className="loading h-12 w-12 rounded-md bg-border-light dark:bg-primary" />
       <div className="flex-1">

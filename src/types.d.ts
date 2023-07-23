@@ -21,6 +21,7 @@ export interface Article {
   };
   series?: {
     title: string;
+    slug: string;
   };
   content: string;
   read_time: number;

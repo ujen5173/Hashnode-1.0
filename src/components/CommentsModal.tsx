@@ -1,6 +1,6 @@
 import { TRPCClientError } from "@trpc/client";
 import Image from "next/image";
-import React, { useContext, useRef, useState, type FC } from "react";
+import React, { useContext, useEffect, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Times } from "~/svgs";
 import { api } from "~/utils/api";
@@ -12,7 +12,14 @@ const CommentsModal: FC<{
   commentsModal: boolean;
   authorUsername: string;
   setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ id, commentsModal, authorUsername, setCommentsModal }) => {
+  setCommentsCount: React.Dispatch<React.SetStateAction<number>>;
+}> = ({
+  id,
+  commentsModal,
+  setCommentsCount,
+  authorUsername,
+  setCommentsModal,
+}) => {
   const { user } = useContext(C) as ContextValue;
   const [replyingUserDetails, setReplyingUserDetails] = useState<{
     id: string;
@@ -33,6 +40,12 @@ const CommentsModal: FC<{
       refetchOnWindowFocus: false,
     }
   );
+
+  useEffect(() => {
+    if (comments) {
+      setCommentsCount(comments.totalComments);
+    }
+  }, [comments]);
 
   const { mutateAsync: comment, isLoading: publishing } =
     api.comments.newComment.useMutation();

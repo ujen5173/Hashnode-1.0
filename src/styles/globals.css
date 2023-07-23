@@ -16,7 +16,7 @@
   -webkit-line-clamp: 1; /* number of lines to show */
   line-clamp: 1;
   -webkit-box-orient: vertical;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .max-height-two {
@@ -25,7 +25,7 @@
   -webkit-line-clamp: 2; /* number of lines to show */
   line-clamp: 2;
   -webkit-box-orient: vertical;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .max-height-4 {
@@ -34,7 +34,7 @@
   -webkit-line-clamp: 4; /* number of lines to show */
   line-clamp: 4;
   -webkit-box-orient: vertical;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .max-height-3 {
@@ -43,7 +43,7 @@
   -webkit-line-clamp: 3; /* number of lines to show */
   line-clamp: 3;
   -webkit-box-orient: vertical;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .anouncement {
@@ -291,6 +291,7 @@ body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror {
 
 button:focus-visible {
   outline: 1px solid #e2e8f0 !important;
+  color: #2563eb !important;
   background: #e2e8f0 !important;
 }
 

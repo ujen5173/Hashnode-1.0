@@ -6,8 +6,6 @@ import { toast } from "react-toastify";
 import slugify from "slugify";
 import { useDebouncedCallback } from "use-debounce";
 import ImagePreview from "~/svgs/ImagePreview";
-import { type ArticleCard } from "~/types";
-import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
 import ImagePlaceholder from "./ImagePlaceholder";
@@ -22,6 +20,7 @@ export interface ArticleData {
   cover_image?: string;
   tags: string[];
   slug: string;
+  series?: string;
   seoTitle?: string;
   seoDescription?: string;
   seoOgImage?: string;
@@ -56,6 +55,7 @@ const NewArticleBody: FC<{
     subtitle: "",
     content: "",
     cover_image: undefined,
+    series: undefined,
     tags: [],
     slug: "",
     seoTitle: "",
@@ -63,51 +63,6 @@ const NewArticleBody: FC<{
     seoOgImage: "",
     disabledComments: false,
   });
-
-  const [requestedTags, setRequestedTags] = React.useState<string[]>([]);
-
-  const { refetch } = api.tags.getSingle.useQuery(
-    {
-      slug: requestedTags, // not working as it needs window object.
-    },
-    {
-      enabled: false,
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  useEffect(() => {
-    //* just for settings tags from url so that i can check if the tags exist or not.
-    const article = localStorage.getItem("savedData");
-    if (article) {
-      const parsedArticle = JSON.parse(article) as ArticleCard;
-      if (parsedArticle.tags.length > 0) {
-        setRequestedTags(parsedArticle.tags.map((e) => e.slug));
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    // Get Stored data.
-    const storedData = localStorage.getItem("savedData");
-    if (storedData) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { tags, ...res } = JSON.parse(storedData) as ArticleData;
-      setData((prev) => ({ ...prev, ...res }));
-      if (tags.length === 0) return;
-      const checkTags = async () => {
-        const { data } = await refetch();
-
-        if (!data) return;
-        setData((prev) => ({
-          ...prev,
-          tags: [...prev.tags, ...data.map((e) => e.name)],
-        }));
-      };
-
-      void checkTags();
-    }
-  }, []);
 
   const saveData = (): void => {
     setSavedState(false);
