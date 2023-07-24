@@ -3,9 +3,12 @@ import { toast } from "react-toastify";
 import { Add, Pen, Plus, Times } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
+import { isValidURL } from "~/utils/miniFunctions";
 
 const Navbar = () => {
   const { user } = useContext(C) as ContextValue;
+  const [addNewItem, setAddNewItem] = useState(false);
+
   const { data, isLoading, refetch } = api.handles.getNavbarData.useQuery(
     {
       handle: user?.user?.handle?.handle as string,
@@ -42,8 +45,6 @@ const Navbar = () => {
       setAddNewItem(false);
     }
   };
-
-  const [addNewItem, setAddNewItem] = useState(false);
 
   return (
     <section className="relative w-full p-8">
@@ -113,15 +114,17 @@ const NavBarItem: FC<{
   const { user } = useContext(C) as ContextValue;
 
   const saveNavbar = async () => {
+    // add new nav item
     const userHandle = user?.user?.handle?.handle;
+
     if (!userHandle) return;
-    //check if newitemdata.value is valid
-    try {
-      new URL(newItemData.value);
-    } catch (err) {
+
+    const urlChecking = isValidURL(newItemData.value);
+    if (!urlChecking) {
       toast.error("Invalid URL");
       return;
     }
+
     const res = await mutateAsync({
       handle: userHandle,
       tab: newItemData,
@@ -150,6 +153,11 @@ const NavBarItem: FC<{
   });
 
   const editItem = async () => {
+    const urlChecking = isValidURL(newItemData.value);
+    if (!urlChecking) {
+      toast.error("Invalid URL");
+      return;
+    }
     await updateItem({
       handle: editing.id,
       tab: newItemData,
@@ -300,13 +308,13 @@ const NavBarItem: FC<{
                 }}
                 className="btn-icon-large flex items-center gap-2"
               >
-                <Pen className="h-4 w-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+                <Pen className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
               </button>
               <button
                 onClick={() => void removeItem(e.id)}
                 className="btn-icon-large flex items-center gap-2"
               >
-                <Times className="h-4 w-4 fill-gray-700 stroke-none dark:fill-text-secondary" />
+                <Times className="h-5 w-5 fill-gray-700 stroke-none dark:fill-text-secondary" />
               </button>
             </div>
           )
@@ -317,7 +325,9 @@ const NavBarItem: FC<{
             <div className="flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => setAddNewItem(false)}
+                onClick={() => {
+                  setAddNewItem(false);
+                }}
                 className="btn-subtle flex items-center gap-2"
               >
                 <span>Cancel</span>
@@ -335,7 +345,18 @@ const NavBarItem: FC<{
             <div className="flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => setAddNewItem(false)}
+                onClick={() => {
+                  setEditing({
+                    status: false,
+                    id: "",
+                  });
+                  setNewItemData({
+                    label: "",
+                    type: "LINK",
+                    value: "https://",
+                    priority: 0,
+                  });
+                }}
                 className="btn-subtle flex items-center gap-2"
               >
                 <span>Cancel</span>

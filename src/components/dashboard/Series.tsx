@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useContext, type FC } from "react";
 import { Redirect } from "~/svgs";
 import { api } from "~/utils/api";
@@ -16,19 +17,23 @@ const Series = () => {
     }
   );
 
+  console.log({ data });
+
   return (
     <section className="relative w-full p-8">
       <header className="mb-4 flex items-center justify-between">
         <h1 className="text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           Series
         </h1>
-        <button className="btn-outline">
-          <span className="text-secondary">Create new Series</span>
-        </button>
+        <Link href={`/${user?.user.id as string}/dashboard/series/create`}>
+          <button className="btn-outline">
+            <span className="text-secondary">Create new Series</span>
+          </button>
+        </Link>
       </header>
 
       <main>
-        {data && data.length === 0 ? (
+        {data && data.length > 0 ? (
           <div className="">
             {data.map((item) => (
               <SeriesCard item={item} key={item.id} />

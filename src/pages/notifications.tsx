@@ -1,3 +1,4 @@
+import { useViewportSize } from "@mantine/hooks";
 import { type NotificationTypes } from "@prisma/client";
 import { type GetServerSideProps } from "next";
 import { getServerSession, type Session } from "next-auth";
@@ -22,6 +23,7 @@ const Notifications = () => {
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
   const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
+  const { width } = useViewportSize();
 
   useEffect(() => {
     if (session) {
@@ -51,10 +53,14 @@ const Notifications = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen w-full bg-white px-0 py-8 dark:bg-black md:px-4 md:py-16">
-        <div className="mx-auto max-w-[800px] rounded-lg bg-light-bg px-4 dark:bg-primary">
+      <div className="min-h-screen w-full bg-white px-0 py-8 dark:bg-black md:px-4">
+        <div className="mx-auto max-w-[800px] rounded-lg border border-border-light bg-white px-4 dark:border-border dark:bg-primary">
           <div className="mb-4 flex items-center justify-between gap-2 border-b border-border-light p-4 dark:border-border">
-            <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
+            <h1
+              className={`text-xl font-semibold text-gray-800 dark:text-white ${
+                width >= 500 ? "mx-0" : "mx-auto"
+              }`}
+            >
               Notifications
             </h1>
           </div>

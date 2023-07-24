@@ -9,6 +9,7 @@ export const handleRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         about: z.string().optional(),
+        handle: z.string(),
         social: z.object({
           twitter: z.string().default(""),
           mastodon: z.string().default(""),
@@ -39,11 +40,7 @@ export const handleRouter = createTRPCRouter({
         where: {
           userId: ctx.session.user.id,
         },
-        data: {
-          name: input.name,
-          about: input.about,
-          social: input.social,
-        },
+        data: input,
       });
       return !!result;
     }),

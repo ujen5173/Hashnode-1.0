@@ -80,9 +80,9 @@ const TrendingComponent: FC<{
 
       {trendingItems.isLoading ? (
         <>
-          <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
-          <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
-          <div className="my-2 h-6 w-full rounded-md bg-light-bg dark:bg-primary-light"></div>
+          <div className="my-2 h-6 w-full rounded-md bg-border-light dark:bg-border"></div>
+          <div className="my-2 h-6 w-full rounded-md bg-border-light dark:bg-border"></div>
+          <div className="my-2 h-6 w-full rounded-md bg-border-light dark:bg-border"></div>
         </>
       ) : trendingItems.data && trendingItems.data.length > 0 ? (
         trendingItems.data.map((item) => (

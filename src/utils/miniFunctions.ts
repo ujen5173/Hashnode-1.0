@@ -58,3 +58,37 @@ export function formatDate(date: Date): string {
     return date.toLocaleDateString("en-US", options);
   }
 }
+
+export function isValidURL(url: string): boolean {
+  // GPT answer
+  try {
+    // Parse the URL using the URL object
+    const parsedURL = new URL(url);
+
+    // Check if the URL has a valid protocol (http or https)
+    if (parsedURL.protocol !== "http:" && parsedURL.protocol !== "https:") {
+      return false;
+    }
+
+    // Check if the URL has a valid hostname (including subdomains)
+    if (!/^(?:[\w-]+\.)+[a-z]{2,}$/i.test(parsedURL.hostname)) {
+      return false;
+    }
+
+    // Check if the URL has valid query parameters
+    if (parsedURL.searchParams) {
+      // You can perform specific checks for query parameters here if needed
+    }
+
+    // Check if the URL is an IP address URL
+    if (/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(parsedURL.hostname)) {
+      return false;
+    }
+
+    // If all checks pass, return true
+    return true;
+  } catch (error) {
+    // If an error occurs while parsing the URL, it's not valid
+    return false;
+  }
+}

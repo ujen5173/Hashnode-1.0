@@ -217,9 +217,14 @@ export const postsRouter = createTRPCRouter({
 
           select: selectArticleCard,
           take: 15,
-          ...(input?.type === "latest"
-            ? { orderBy: { createdAt: "desc" } }
-            : {}),
+          orderBy:
+            input?.type === "latest"
+              ? { createdAt: "desc" }
+              : [
+                  { likesCount: "desc" },
+                  { commentsCount: "desc" },
+                  { createdAt: "desc" },
+                ],
         });
 
         return await getArticlesWithUserFollowingProfiles(

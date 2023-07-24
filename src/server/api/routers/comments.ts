@@ -22,6 +22,7 @@ export const commentsRouter = createTRPCRouter({
         },
         select: {
           id: true,
+          title: true,
           user: {
             select: {
               id: true,
@@ -113,7 +114,7 @@ export const commentsRouter = createTRPCRouter({
             type: NotificationTypes.COMMENT,
             fromId: ctx.session.user.id,
             userId: article.user.id,
-            title: `${ctx.session.user.name} commented on your article`,
+            title: article.title,
             body:
               input.content.length > 50
                 ? input.content.slice(0, 50) + "..."

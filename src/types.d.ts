@@ -97,8 +97,9 @@ export interface User {
   username: string;
   profile: string;
   handle?: {
-    handle: string;
+    id: string;
     name: string;
+    handle: string;
     about: string;
   } | null;
   bio: string;

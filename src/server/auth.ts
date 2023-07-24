@@ -33,6 +33,7 @@ declare module "next-auth" {
     tagline: string;
     handle?: {
       handle: string;
+      id: string;
       name: string;
       about: string;
       social: BlogSocial;
@@ -55,6 +56,7 @@ export const authOptions: NextAuthOptions = {
         select: {
           handle: true,
           name: true,
+          id: true,
           social: true,
           about: true,
         },

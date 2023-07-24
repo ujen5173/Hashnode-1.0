@@ -143,8 +143,8 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                   <span className="text-gray-900 dark:text-text-primary">
                     <Series className="h-3 w-3 fill-secondary" />
                   </span>
-                  <span className="text-xs font-semibold text-secondary">
-                    {card.series.title}
+                  <span className="max-height-one text-xs font-semibold text-secondary">
+                    {limitText(card.series.title, 20)}
                   </span>
                 </p>
               </Link>
@@ -164,7 +164,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                   </span>
                 </button>
                 {card.commonUsers.length > 0 && (
-                  <div className="flex flex-1">
+                  <div className="hidden flex-1 sm:flex">
                     {card.commonUsers.map((user, index) => (
                       <button
                         className={`relative -ml-2 first:ml-0`}

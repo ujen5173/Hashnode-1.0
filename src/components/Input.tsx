@@ -17,6 +17,7 @@ interface InputTypes {
   max?: number | undefined;
   autoFocus?: boolean;
   opacity?: boolean;
+  description?: string;
   fontSize?: "sm" | "xs" | "lg" | "xl" | "2xl" | "3xl";
 }
 
@@ -34,6 +35,7 @@ const Input: FC<InputTypes> = ({
   pattern = undefined,
   max = undefined,
   autoFocus = false,
+  description,
   fontSize = "sm",
   opacity = false,
 }) => {
@@ -46,6 +48,11 @@ const Input: FC<InputTypes> = ({
         >
           {label} {required && <span className="text-[#dc2626]">*</span>}
         </label>
+      )}
+      {description && (
+        <p className="mb-4 text-sm text-gray-500 dark:text-text-primary">
+          {description}
+        </p>
       )}
       {type === "INPUT" ? (
         <input

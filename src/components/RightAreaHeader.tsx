@@ -1,6 +1,7 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside, useViewportSize } from "@mantine/hooks";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Notification as NotificationSVG, Pen, Sun, Updates } from "~/svgs";
@@ -14,6 +15,7 @@ const RightArea: FC = () => {
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [count, setCount] = useState(0);
   const { width } = useViewportSize();
+  const path = useRouter().pathname;
 
   // notifications are refetched every 15 seconds
   const { data, error } = api.notifications.getCount.useQuery(undefined, {
@@ -83,7 +85,7 @@ const RightArea: FC = () => {
         </button>
       </Tooltip>
 
-      <div className="relative">
+      <div className={`relative ${path === "/notifications" ? "hidden" : ""}`}>
         <Tooltip label="Notifications" position="bottom" withArrow>
           <div>
             <button

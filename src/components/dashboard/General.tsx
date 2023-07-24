@@ -8,6 +8,7 @@ import Input from "../Input";
 const dataFallBack = {
   name: "",
   about: "",
+  handle: "",
   social: {
     twitter: "",
     mastodon: "",
@@ -25,6 +26,7 @@ const General = () => {
   const [data, setData] = useState<{
     name: string;
     about: string;
+    handle: string;
     social: {
       twitter: string;
       mastodon: string;
@@ -74,6 +76,24 @@ const General = () => {
         opacity={true}
         variant="FILLED"
         label="Publication Name"
+      />
+      <Input
+        input_type="text"
+        name="handle"
+        onChange={(e) => {
+          setData((prev) => ({ ...prev, handle: e.target.value }));
+        }}
+        placeholder="Publication Slug"
+        type="INPUT"
+        value={data.handle}
+        autoFocus={false}
+        required={false}
+        opacity={true}
+        description={
+          "This is the slug that will be used in your publication URL. It can only contain lowercase letters, and dashes."
+        }
+        variant="FILLED"
+        label="Publication Slug"
       />
       <Input
         input_type="text"

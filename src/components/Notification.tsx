@@ -24,7 +24,7 @@ const Notification = () => {
   }, []);
 
   return user ? (
-    <div className="relative mt-1 w-full rounded-md border border-border-light bg-white p-4 shadow-lg dark:border-border dark:bg-black md:w-[35rem]">
+    <div className="scroll-area relative mt-1 h-[60vh] max-h-[700px] min-h-[400px] w-full overflow-auto rounded-md border border-border-light bg-white p-4 shadow-lg dark:border-border dark:bg-black md:w-[35rem]">
       <div className="absolute -top-2 right-[0.7rem] h-4 w-4 rotate-45 border-l border-t border-border-light bg-white dark:border-border dark:bg-black" />
       <div className="mb-4 flex items-center justify-between gap-2">
         <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
