@@ -12,6 +12,7 @@ export interface BookmarkInterface {
   read_time: number;
   user: {
     name: string;
+    username: string;
   };
 }
 

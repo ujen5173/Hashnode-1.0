@@ -35,8 +35,11 @@ declare module "next-auth" {
       handle: string;
       id: string;
       name: string;
-      about: string;
+      about: string | null;
       social: BlogSocial;
+      appearance?: {
+        layout: "MAGAZINE" | "STACKED" | "GRID";
+      };
     } | null;
   }
 }
@@ -54,11 +57,12 @@ export const authOptions: NextAuthOptions = {
           userId: user.id,
         },
         select: {
+          id: true,
           handle: true,
           name: true,
-          id: true,
           social: true,
           about: true,
+          appearance: true,
         },
       });
 

@@ -22,7 +22,7 @@ const dataFallBack = {
 };
 
 const General = () => {
-  const { user } = useContext(C) as ContextValue;
+  const { user, setUser } = useContext(C) as ContextValue;
   const [data, setData] = useState<{
     name: string;
     about: string;
@@ -41,7 +41,21 @@ const General = () => {
 
   useEffect(() => {
     if (user?.user.handle) {
-      setData(user?.user.handle);
+      const { appearance, ...rest } = user?.user.handle;
+      setData({
+        ...rest,
+        social: {
+          twitter: rest.social?.twitter || "",
+          mastodon: rest.social?.mastodon || "",
+          instagram: rest.social?.instagram || "",
+          github: rest.social?.github || "",
+          website: rest.social?.website || "",
+          linkedin: rest.social?.linkedin || "",
+          youtube: rest.social?.youtube || "",
+          dailydev: rest.social?.dailydev || "",
+        },
+        about: rest.about || "",
+      });
     }
   }, [user]);
 
@@ -51,6 +65,7 @@ const General = () => {
     const response = await mutateAsync(data);
     if (response) {
       toast.success("Updated successfully");
+      window.location.reload();
     } else {
       toast.error("Something went wrong");
     }

@@ -67,7 +67,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                   card.cover_image
                     ? "max-height-4"
                     : "max-height-3 mb-0 w-full md:mb-3"
-                } break-words break-keep text-sm text-gray-500 dark:text-text-primary`}
+                } break-words text-sm text-gray-500 dark:text-text-primary`}
               >
                 {limitText(removeMd(card.content), 350)}
               </p>

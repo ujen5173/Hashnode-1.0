@@ -18,6 +18,7 @@ export interface UserDetailsInterface {
     handle: string;
     name: string;
     about: string;
+    id: string;
   } | null;
   followersCount: number;
   social: SocialHandles;
@@ -75,6 +76,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           select: {
             handle: true,
             about: true,
+            id: true,
             name: true,
           },
         },

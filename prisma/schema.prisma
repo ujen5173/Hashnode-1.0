@@ -88,6 +88,10 @@ model Handle {
     handle     String      @unique
     createdAt  DateTime    @default(now())
     updatedAt  DateTime    @updatedAt
+    appearance Json?
+    // Apperence JSON data:
+    // layout: MAGAZINE STACKED GRID
+    // CUSTOM LOGO
 
     @@index([userId, handle])
 }

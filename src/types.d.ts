@@ -14,9 +14,10 @@ export interface Article {
     profile: string;
     bio: string;
     handle?: {
+      id: string;
       handle: string;
       name: string;
-      about: string;
+      about?: string;
     } | null;
   };
   series?: {

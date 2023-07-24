@@ -375,6 +375,7 @@ export const postsRouter = createTRPCRouter({
             user: {
               select: {
                 name: true,
+                username: true,
               },
             },
           },
@@ -429,6 +430,7 @@ export const postsRouter = createTRPCRouter({
                     handle: true,
                     name: true,
                     about: true,
+                    id: true,
                   },
                 },
 
@@ -1017,6 +1019,7 @@ export const postsRouter = createTRPCRouter({
             title: true,
             slug: true,
             createdAt: true,
+            content: true,
             read_time: true,
             user: {
               select: {

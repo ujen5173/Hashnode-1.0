@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useContext, type FC } from "react";
 import { Book } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
-import { type DataType } from "../AuthorBlogArticleArea";
+import { type DataType } from "../layout/Magazine";
 
 const AuthorBlogArticleCard: FC<{
   width?: string;

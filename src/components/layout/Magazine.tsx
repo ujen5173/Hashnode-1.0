@@ -3,32 +3,36 @@ import Link from "next/link";
 import { useContext, type FC } from "react";
 import { Pen } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
-import AuthorBlogArticleCard from "./Cards/AuthorBlogArticleCard";
+import AuthorBlogArticleCard from "../Cards/AuthorBlogArticleCard";
 
 export interface DataType {
   id: string;
   title: string;
   slug: string;
   read_time: number;
+  content: string;
   user: {
     profile: string;
     username: string;
   };
   subtitle?: string | null | undefined;
   cover_image?: string | null | undefined;
+  createdAt: Date;
 }
 
-const AuthorBlogArticleArea: FC<{
-  data: DataType[] | undefined; // undefined because this is api based data can can be undefined
+const Magazine: FC<{
+  data: DataType[] | undefined;
   isLoading: boolean;
-  user: {
+  author: {
     name: string;
     profile: string;
     username: string;
-    followers: { id: string }[];
+    handle: {
+      about: string;
+    };
   };
-}> = ({ data, isLoading, user: author }) => {
-  const { user } = useContext(C) as ContextValue;
+}> = ({ data, isLoading, author }) => {
+  const { user, theme } = useContext(C) as ContextValue;
 
   return (
     <>
@@ -71,7 +75,11 @@ const AuthorBlogArticleArea: FC<{
           <div className="w-full bg-light-bg px-4 py-8 dark:bg-primary">
             <div className="mx-auto w-full max-w-[35rem]">
               <Image
-                src="/noArticlesUploaded.avif"
+                src={
+                  theme === "light"
+                    ? "/imagePlaceholder-light.avif"
+                    : "/imagePlaceholder-dark.avif"
+                }
                 alt="No Articles Uploaded By the Author"
                 width={800}
                 height={800}
@@ -120,8 +128,27 @@ const AuthorBlogArticleArea: FC<{
             </div>
           )
         : null}
+      <div className="border-t border-border-light bg-light-bg dark:border-border dark:bg-primary">
+        <div className="mx-auto flex max-w-[1000px] flex-col items-center justify-center px-4 py-16">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Image
+              src={author.profile || ""}
+              width={120}
+              height={120}
+              alt="User Profile"
+              className="h-18 w-18 rounded-full object-cover"
+            />
+            <h1 className="mb-4 text-2xl font-semibold text-gray-900 dark:text-text-secondary">
+              {author.name}
+            </h1>
+            <p className="text-base text-gray-500 dark:text-text-primary">
+              {author.handle.about || "No bio added yet!"}
+            </p>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
 
-export default AuthorBlogArticleArea;
+export default Magazine;

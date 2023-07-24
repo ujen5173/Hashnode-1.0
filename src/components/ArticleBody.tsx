@@ -103,7 +103,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             commentsCount={commentsCount}
           />
           <ArticleTags tags={article.tags} />
-          <ArticleAuthor author={article.user} />
+          {article.user && <ArticleAuthor author={article.user as User} />}
           {commentsModal && (
             <CommentsModal
               id={article.id}
@@ -204,7 +204,7 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
   );
 };
 
-const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
+export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
   const { following, followUser } = useContext(C) as ContextValue;
   return (
     <div className="px-4">

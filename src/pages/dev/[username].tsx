@@ -2,10 +2,12 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useContext, useEffect, type FC } from "react";
+import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { AuthorBlogHeader, Footer } from "~/components";
-import AuthorBlogArticleArea from "~/components/AuthorBlogArticleArea";
+import Grid from "~/components/layout/Grid";
+import Magazine from "~/components/layout/Magazine";
+import Stacked from "~/components/layout/Stacked";
 import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
@@ -35,21 +37,39 @@ export interface CustomTabs {
 
 const AuthorBlogs: NextPage<{
   user: {
+    id: string;
     name: string;
+    username: string;
     profile: string;
+    bio: string;
     handle: {
+      id: string;
       handle: string;
       name: string;
       social: BlogSocial;
+      about: string;
       customTabs: CustomTabs[];
     };
-    username: string;
     followers: { id: string }[];
   };
 }> = ({ user }) => {
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
+  const [appearance, setAppearance] = useState<
+    | {
+        layout: "MAGAZINE" | "STACKED" | "GRID";
+      }
+    | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (session && session.user.handle) {
+      setAppearance(session.user.handle.appearance);
+    }
+  }, [session]);
+
   const router = useRouter();
+
   const { data, isLoading, isError } =
     api.posts.getAuthorArticlesByHandle.useQuery(
       {
@@ -80,9 +100,58 @@ const AuthorBlogs: NextPage<{
     <>
       <AuthorBlog author={user} />
       <AuthorBlogHeader user={user} />
-      <AuthorBlogNavigation tabs={user.handle.customTabs} />{" "}
       {/* Home, Badge, Newsletter */}
-      <AuthorBlogArticleArea data={data} isLoading={isLoading} user={user} />
+      <AuthorBlogNavigation tabs={user.handle.customTabs} />{" "}
+      {/* Show the article according to the layout selected by the user from the dashboard. default is `MAGAZINE` layout. */}
+      {
+        {
+          MAGAZINE: (
+            <Magazine
+              author={(() => {
+                const { followers, handle, ...rest } = user;
+                return {
+                  ...rest,
+                  handle: {
+                    about: handle.about,
+                  },
+                };
+              })()}
+              data={data}
+              isLoading={isLoading}
+            />
+          ),
+          STACKED: (
+            <Stacked
+              author={(() => {
+                const { followers, handle, ...rest } = user;
+                return {
+                  ...rest,
+                  handle: {
+                    about: handle.about,
+                  },
+                };
+              })()}
+              data={data}
+              isLoading={isLoading}
+            />
+          ),
+          GRID: (
+            <Grid
+              author={(() => {
+                const { followers, handle, ...rest } = user;
+                return {
+                  ...rest,
+                  handle: {
+                    about: handle.about,
+                  },
+                };
+              })()}
+              data={data}
+              isLoading={isLoading}
+            />
+          ),
+        }[appearance?.layout || "MAGAZINE"]
+      }
       <Footer />
     </>
   );
@@ -101,14 +170,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
     select: {
-      username: true,
+      id: true,
       name: true,
+      username: true,
       profile: true,
+      bio: true,
       handle: {
         select: {
+          id: true,
           handle: true,
           name: true,
           customTabs: true,
+          about: true,
           social: true,
         },
       },

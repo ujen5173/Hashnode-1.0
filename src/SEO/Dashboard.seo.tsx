@@ -5,7 +5,7 @@ const DashboardSEO = () => {
   const { data: user } = useSession();
   return (
     <Head>
-      <title>{`Dashboard` || "Loading..."} - Hashnode Clone</title>
+      <title>Dashboard - Hashnode Clone</title>
       <meta name="description" content={`Dashboard on Hashnode Clone`} />
 
       {/* Open Graph tags for social media banner */}

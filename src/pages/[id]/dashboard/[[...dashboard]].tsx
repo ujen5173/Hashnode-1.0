@@ -114,8 +114,8 @@ const Dashboard = () => {
             </div>
 
             <div className="flex items-center justify-between gap-4">
-              <Link href={`/dev/@${session?.user.username as string}`}>
-                <div className="flex items-center gap-2">
+              <Link href={`/dev/@${session?.user?.handle?.handle as string}`}>
+                <div className="flex items-center gap-2 rounded-md px-4 py-2 hover:bg-primary-light">
                   <Redirect className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
                   <span className="font-medium text-gray-600 dark:text-text-primary">
                     Visit Blog

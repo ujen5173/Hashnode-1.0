@@ -565,4 +565,9 @@ body.dark .mantine-Tooltip-tooltip.mantine-iu41h {
   color: #111;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 10px 20px rgba(0, 0, 0, 0.1);
   font-weight: 500;
+}
+
+input.appearence-radio-button:checked + label > img {
+  border-color: #4d7ee7;
+  border-width: 3px;
 }/*# sourceMappingURL=globals.css.map */

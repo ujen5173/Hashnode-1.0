@@ -7,19 +7,27 @@ export const handleRouter = createTRPCRouter({
   updateHandle: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
+        name: z.string().optional(),
         about: z.string().optional(),
-        handle: z.string(),
-        social: z.object({
-          twitter: z.string().default(""),
-          mastodon: z.string().default(""),
-          instagram: z.string().default(""),
-          github: z.string().default(""),
-          website: z.string().default(""),
-          linkedin: z.string().default(""),
-          youtube: z.string().default(""),
-          dailydev: z.string().default(""),
-        }),
+        handle: z.string().optional(),
+        social: z
+          .object({
+            twitter: z.string().default(""),
+            mastodon: z.string().default(""),
+            instagram: z.string().default(""),
+            github: z.string().default(""),
+            website: z.string().default(""),
+            linkedin: z.string().default(""),
+            youtube: z.string().default(""),
+            dailydev: z.string().default(""),
+          })
+          .optional(),
+        appearance: z
+          .object({
+            layout: z.string().default("STACKED"),
+            logo: z.string().optional(),
+          })
+          .optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -42,6 +50,7 @@ export const handleRouter = createTRPCRouter({
         },
         data: input,
       });
+
       return !!result;
     }),
 
@@ -71,6 +80,16 @@ export const handleRouter = createTRPCRouter({
       const result = await ctx.prisma.handle.create({
         data: {
           handle: input.handle.domain,
+          name: input.handle.name || ctx.session.user.username,
+          appearance: {
+            layout: "STACKED",
+            logo: null,
+            // @type:
+            // logo: {
+            //   light: "",
+            //   dark: ""
+            // },
+          },
           user: {
             connect: {
               id: ctx.session.user.id,
@@ -86,7 +105,6 @@ export const handleRouter = createTRPCRouter({
             youtube: "",
             dailydev: "",
           },
-          name: input.handle.name || ctx.session.user.username,
         },
       });
       return !!result;
