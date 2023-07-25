@@ -2,7 +2,6 @@ import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
 import Link from "next/link";
-import { type User } from "past/components/ArticleHeader";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import {
@@ -18,10 +17,11 @@ import {
   Settings,
   Sun,
 } from "~/svgs";
+import { type UserSimple } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 
-const ArticleRightArea: FC<{ user: User }> = ({ user: author }) => {
+const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
   const [opened, setOpened] = useState(false); // profile dropdown state
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [notificationOpened, setNotificationOpened] = useState(false); // notification dropdown state

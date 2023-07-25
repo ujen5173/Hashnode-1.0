@@ -1,5 +1,5 @@
 import { useContext, useEffect, type FC } from "react";
-import { type UserDetailsInterface } from "~/pages/u/[username]";
+import { type DetailedUser } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 import ProfileDetail from "./ProfileDetail";
 import UserBlogingArea from "./UserBlogingArea";
@@ -8,7 +8,7 @@ import UserProfileArea from "./UserProfileArea";
 import UserRecentActivities from "./UserRecentActivities";
 
 const ProfileArea: FC<{
-  user: UserDetailsInterface;
+  user: DetailedUser;
 }> = ({ user }) => {
   const { setFollowing } = useContext(C) as ContextValue;
 

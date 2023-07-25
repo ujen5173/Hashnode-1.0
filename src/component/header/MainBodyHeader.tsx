@@ -2,18 +2,18 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, type FC } from "react";
 import { Clock, Filter, Magic, People } from "~/svgs";
+import { type FilterData } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
-import { type FilterData } from "../macroComponent/Home/MainBodyArticles";
 import { FilterSection } from "../macroComponent/Tag";
 
-interface MainBodyHeaderProps {
+interface Props {
   filter: FilterData;
   setFilter: React.Dispatch<React.SetStateAction<FilterData>>;
   applyFilter: () => void;
   clearFilter: () => void;
 }
 
-const MainBodyHeader: FC<MainBodyHeaderProps> = ({
+const MainBodyHeader: FC<Props> = ({
   filter,
   setFilter,
   applyFilter,

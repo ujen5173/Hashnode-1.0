@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type User } from "past/components/ArticleHeader";
 import { type FC } from "react";
 import { Times } from "~/svgs";
+import { type UserSimple } from "~/types";
 import { HashnodeSocials } from "~/utils/constants";
 
 interface Props {
-  user: User | null;
+  user: UserSimple | null;
   menu: boolean;
   setMenu: React.Dispatch<React.SetStateAction<boolean>>;
 }

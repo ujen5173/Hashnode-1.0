@@ -1,5 +1,4 @@
 import { type FC } from "react";
-import { type UserDetailsInterface } from "~/pages/u/[username]";
 import {
   DateSVG,
   Facebook,
@@ -12,14 +11,14 @@ import {
   Web,
   Youtube,
 } from "~/svgs";
+import { type DetailedUser } from "~/types";
 
 const ProfileDetail: FC<{
-  userDetails: UserDetailsInterface | undefined;
+  userDetails: DetailedUser | undefined;
 }> = ({ userDetails }) => {
   return (
     <div className="my-6 flex w-full flex-wrap items-center justify-center gap-4 rounded-md border border-border-light px-6 py-4 dark:border-border md:gap-8 lg:gap-10 lg:py-6">
       <div className="flex items-center gap-2 overflow-hidden">
-        {/*! TODO: Below code is not working properly. :( */}
         {userDetails &&
           userDetails.social &&
           Object.entries(userDetails.social).map((data, index) => {
@@ -54,16 +53,20 @@ const ProfileDetail: FC<{
             );
           })}
       </div>
+
       {userDetails?.location && (
         <div className="flex items-center gap-2">
           <Location className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+
           <span className="text-sm text-gray-700 dark:text-text-primary md:text-base">
             {userDetails?.location}
           </span>
         </div>
       )}
+
       <div className="flex items-center gap-2">
         <DateSVG className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+
         <span className="text-sm text-gray-700 dark:text-text-primary md:text-base">
           Member Since{" "}
           {userDetails?.createdAt &&

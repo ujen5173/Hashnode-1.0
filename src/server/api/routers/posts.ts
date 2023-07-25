@@ -33,9 +33,13 @@ const selectArticleCard = {
       name: true,
       username: true,
       profile: true,
+      bio: true,
       handle: {
         select: {
+          id: true,
           handle: true,
+          name: true,
+          about: true,
         },
       },
     },

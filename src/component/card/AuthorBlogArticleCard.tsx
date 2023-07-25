@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type DataType } from "past/components/layout/Magazine";
 import { useContext, type FC } from "react";
 import { Book } from "~/svgs";
+import { type DataType } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 
 interface Props {

@@ -8,33 +8,9 @@ import { BasicInfo, Header, SocialInfo, UserDetailsOptions } from "~/component";
 import SettingsSEO from "~/SEO/Settings.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
+import { type SocialHandles, type UserDetails } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
-
-export interface UserDetails {
-  name: string;
-  username: string;
-  email: string;
-  location: string;
-  profile: string;
-  tagline: string;
-  available: string;
-  cover_image: string;
-  bio: string;
-  skills: string;
-  social: SocialHandles;
-}
-
-export interface SocialHandles {
-  twitter: string;
-  instagram: string;
-  github: string;
-  stackoverflow: string;
-  facebook: string;
-  website: string;
-  linkedin: string;
-  youtube: string;
-}
 
 const EditProfile: NextPage<{
   user: UserDetails;
@@ -151,7 +127,9 @@ const EditProfile: NextPage<{
   return (
     <>
       <SettingsSEO />
+
       <Header />
+
       <main className="min-h-screen w-full bg-light-bg dark:bg-black">
         <div className="container-body mx-auto max-w-[1550px] gap-4 px-4">
           <div className="container-aside relative hidden min-h-screen py-4 lg:block">

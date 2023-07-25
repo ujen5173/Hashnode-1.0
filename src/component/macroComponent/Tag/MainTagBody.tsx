@@ -1,17 +1,15 @@
 import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type FilterData } from "past/components/MainBodyArticles";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { ArticleCard } from "~/component/card";
 import { ArticleLoading } from "~/component/loading";
 import { Clock, Filter, Fire } from "~/svgs";
-import type { DetailedTag } from "~/types";
+import type { DetailedTag, FilterData } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { TagPageHeader } from "../../header";
-import { type Tag } from "../Home/MainBodyArticles";
 import FilterSection from "./FilterSection";
 
 const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
@@ -30,10 +28,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     { label: "Over 5 min", value: "over_5" },
   ];
 
-  const [newFilterData, setNewFilterData] = useState<{
-    read_time: "Over 5 min" | "5 min" | "Under 5 min" | null | undefined;
-    tags: Tag[];
-  }>({
+  const [newFilterData, setNewFilterData] = useState<FilterData["data"]>({
     read_time: filter.data.read_time,
     tags: filter.data.tags,
   });

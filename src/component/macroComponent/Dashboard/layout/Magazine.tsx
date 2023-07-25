@@ -3,22 +3,8 @@ import Link from "next/link";
 import { useContext, type FC } from "react";
 import { AuthorBlogArticleCard } from "~/component/card";
 import { Pen } from "~/svgs";
+import { type DataType } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
-
-export interface DataType {
-  id: string;
-  title: string;
-  slug: string;
-  read_time: number;
-  content: string;
-  user: {
-    profile: string;
-    username: string;
-  };
-  subtitle?: string | null | undefined;
-  cover_image?: string | null | undefined;
-  createdAt: Date;
-}
 
 const Magazine: FC<{
   data: DataType[] | undefined;

@@ -1,7 +1,18 @@
 import Link from "next/link";
-import { type BookmarkInterface } from "past/components/Bookmarks";
+import { type FC } from "react";
 
-const BookmarkCard = ({ bookmark }: { bookmark: BookmarkInterface }) => {
+interface Props {
+  id: string;
+  title: string;
+  slug: string;
+  read_time: number;
+  user: {
+    name: string;
+    username: string;
+  };
+}
+
+const BookmarkCard: FC<{ bookmark: Props }> = ({ bookmark }) => {
   return (
     <div className="border-b border-border-light py-2 last:border-0 dark:border-border">
       <Link href={`/u/@${bookmark.user.username}/${bookmark.slug}`}>

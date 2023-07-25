@@ -3,7 +3,7 @@ import Link from "next/link";
 import { type FC } from "react";
 import { Like, Multicomment } from "~/svgs";
 
-interface TrendingCardProps {
+interface Props {
   article: {
     id: string;
     title: string;
@@ -19,7 +19,7 @@ interface TrendingCardProps {
   };
 }
 
-const TrendingCard: FC<TrendingCardProps> = ({ article }) => {
+const TrendingCard: FC<Props> = ({ article }) => {
   return (
     <div className="flex items-start gap-4 border-b border-border-light py-4 last:border-0 dark:border-border">
       <Link

@@ -5,6 +5,7 @@ export interface Activity {
   activity_type: "ARTICLE" | "JOINED";
   createdAt: Date;
 }
+
 export function refactorActivityHelper(
   activity: Activity[]
 ): Map<string, Activity[]> {

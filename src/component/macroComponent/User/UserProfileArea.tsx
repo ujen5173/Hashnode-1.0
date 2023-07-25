@@ -2,7 +2,6 @@ import { useClickOutside } from "@mantine/hooks";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useState, type FC } from "react";
-import { type UserDetailsInterface } from "~/pages/u/[username]";
 import {
   Angledown,
   Check,
@@ -12,10 +11,11 @@ import {
   Report,
   Twitter,
 } from "~/svgs";
+import { type DetailedUser } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 
 const UserProfileArea: FC<{
-  userDetails: UserDetailsInterface | undefined;
+  userDetails: DetailedUser | undefined;
 }> = ({ userDetails }) => {
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
@@ -43,6 +43,7 @@ const UserProfileArea: FC<{
               <h1 className="mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
                 {userDetails?.name}
               </h1>
+
               <p className="text-base font-medium text-gray-500 dark:text-text-primary lg:text-lg">
                 @{userDetails?.username}
               </p>
@@ -50,6 +51,7 @@ const UserProfileArea: FC<{
             <p className="mb-4 text-base font-medium text-gray-500 dark:text-text-primary md:mb-6">
               {userDetails?.tagline}
             </p>
+
             <div className="flex gap-4 text-gray-700 dark:text-text-primary">
               <span>
                 {Intl.NumberFormat("en-US", {
@@ -58,6 +60,7 @@ const UserProfileArea: FC<{
                 }).format(+following.followersCount || 0)}{" "}
                 Follower
               </span>
+
               <span>
                 {Intl.NumberFormat("en-US", {
                   notation: "compact",
@@ -76,6 +79,7 @@ const UserProfileArea: FC<{
               >
                 <ProfileShare className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
               </button>
+
               {opened && (
                 <div
                   ref={ref}
@@ -94,10 +98,12 @@ const UserProfileArea: FC<{
                           <span>
                             <Twitter className="h-6 w-6 fill-twitterColor" />
                           </span>
+
                           <span>Twitter</span>
                         </button>
                       </a>
                     </li>
+
                     <li className="w-full text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
                       <a
                         target="_blank"
@@ -110,6 +116,7 @@ const UserProfileArea: FC<{
                           <span>
                             <Linkedin className="h-6 w-6 fill-linkedinColor" />
                           </span>
+
                           <span>Linkedin</span>
                         </button>
                       </a>
@@ -118,6 +125,7 @@ const UserProfileArea: FC<{
                 </div>
               )}
             </div>
+
             <div className="relative">
               <button
                 onClick={() => setOpened2(true)}
@@ -125,6 +133,7 @@ const UserProfileArea: FC<{
               >
                 <Angledown className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
               </button>
+
               {opened2 && (
                 <div
                   ref={ref2}
@@ -136,6 +145,7 @@ const UserProfileArea: FC<{
                         <span>
                           <Report className="h-6 w-6 fill-twitterColor" />
                         </span>
+
                         <span>Report this profile</span>
                       </button>
                     </li>
@@ -161,12 +171,12 @@ const UserProfileArea: FC<{
               {following.status ? (
                 <>
                   <Check className="h-5 w-5 fill-secondary" />
-                  Following
+                  <span>Following</span>
                 </>
               ) : (
                 <>
                   <Follow className="h-5 w-5 fill-secondary" />
-                  Follow User
+                  <span>Follow User</span>
                 </>
               )}
             </button>

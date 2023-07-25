@@ -1,10 +1,10 @@
 import type { FC } from "react";
-import { type UserDetailsInterface } from "~/pages/u/[username]";
+import { type DetailedUser } from "~/types";
 import { Aside } from "../../aside";
 import ProfileArea from "./ProfileArea";
 
 const UserProfileBody: FC<{
-  user: UserDetailsInterface;
+  user: DetailedUser;
 }> = ({ user }) => {
   return (
     <main className="min-h-screen w-full bg-light-bg dark:bg-black">

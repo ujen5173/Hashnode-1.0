@@ -4,42 +4,14 @@ import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useContext, useEffect } from "react";
 import { Header, UserProfileBody } from "~/component";
-import { type SocialHandles } from "~/pages/settings";
 import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
+import { type DetailedUser, type SocialHandles } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 
-export interface UserDetailsInterface {
-  followers: { id: string }[];
-  isFollowing: boolean;
-  handle: {
-    handle: string;
-    name: string;
-    about: string;
-    id: string;
-  } | null;
-  followersCount: number;
-  social: SocialHandles;
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  emailVerified: Date | null;
-  profile: string;
-  tagline: string;
-  cover_image: string;
-  bio: string;
-  skills: string[];
-  location: string;
-  available: string;
-  followingCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 const UserBlog: NextPage<{
-  user: UserDetailsInterface;
+  user: DetailedUser;
 }> = ({ user }) => {
   const { data: session } = useSession();
   const { setUser } = useContext(C) as ContextValue;
@@ -120,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           isFollowing,
           social: JSON.parse(JSON.stringify(user?.social)) as SocialHandles,
         })
-      ) as UserDetailsInterface,
+      ) as DetailedUser,
     },
   };
 };

@@ -5,17 +5,6 @@ import { BookmarkLoading } from "~/component/loading";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 
-export interface BookmarkInterface {
-  id: string;
-  title: string;
-  slug: string;
-  read_time: number;
-  user: {
-    name: string;
-    username: string;
-  };
-}
-
 const Bookmarks = () => {
   const { bookmarks } = useContext(C) as ContextValue;
   const { data: bookmarksData, isFetching } = api.posts.getBookmarks.useQuery(
@@ -34,6 +23,7 @@ const Bookmarks = () => {
         <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
           Bookmarks ({bookmarksData?.length || 0})
         </h1>
+
         <Link href={`/bookmarks`}>
           <button
             aria-label="view all the saved bookmarks"

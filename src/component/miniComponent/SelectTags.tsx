@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { type ArticleData } from "past/components/NewArticleBody";
 import { useEffect, useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Hashtag } from "~/svgs";
 import { api } from "~/utils/api";
 import { TagLoading } from "../loading";
+import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 
 interface Props {
   tags: string[];

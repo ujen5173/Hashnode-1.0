@@ -3,9 +3,9 @@ import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
 import { Book, Pen } from "~/svgs";
+import { type DataType } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 import { formatDate, limitText } from "~/utils/miniFunctions";
-import { type DataType } from "./Magazine";
 
 const Stacked: FC<{
   data: DataType[] | undefined;

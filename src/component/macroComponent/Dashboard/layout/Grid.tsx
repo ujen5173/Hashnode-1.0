@@ -3,9 +3,9 @@ import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
 import { Book, Pen } from "~/svgs";
+import { type DataType } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 import { formatDate, limitText } from "~/utils/miniFunctions";
-import { type DataType } from "./Magazine";
 
 const Grid: FC<{
   data: DataType[] | undefined;
@@ -21,6 +21,7 @@ const Grid: FC<{
   };
 }> = ({ data, isLoading, author }) => {
   const { user, theme } = useContext(C) as ContextValue;
+
   return (
     <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-primary">
       <div className="border-b border-border-light dark:border-border">
@@ -33,9 +34,11 @@ const Grid: FC<{
               alt="User Profile"
               className="h-18 w-18 rounded-full object-cover"
             />
+
             <h1 className="mb-4 text-2xl font-semibold text-gray-900 dark:text-text-secondary">
               {author.name}
             </h1>
+
             <p className="text-base text-gray-500 dark:text-text-primary">
               {author.handle.about || "No bio added yet!"}
             </p>

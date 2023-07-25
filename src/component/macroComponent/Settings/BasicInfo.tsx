@@ -1,7 +1,7 @@
 import React, { type FC } from "react";
 import { Input } from "~/component/miniComponent";
-import { type UserDetails } from "~/pages/settings";
-
+import { type UserDetails } from "~/types";
+ 
 const BasicInfo: FC<{
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

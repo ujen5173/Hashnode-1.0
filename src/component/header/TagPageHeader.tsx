@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { Add, Chain, Check, Feed, Group, Hashtag, Pen, Twitter } from "~/svgs";
 import type { DetailedTag } from "~/types";
 
-interface TagPageHeaderProps {
+interface Props {
   tagDetails: DetailedTag;
   following: {
     status: boolean;
@@ -14,11 +14,7 @@ interface TagPageHeaderProps {
   followTag: (name: string) => void;
 }
 
-const TagPageHeader: FC<TagPageHeaderProps> = ({
-  tagDetails,
-  following,
-  followTag,
-}) => {
+const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
   return (
     <header className="mb-4 flex flex-col items-center justify-center rounded-md border border-border-light bg-white px-6 py-11 text-center dark:border-border dark:bg-primary">
       <div className="flex gap-3">

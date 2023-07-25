@@ -3,9 +3,9 @@ import type { CommentType } from "@prisma/client";
 export interface Article {
   id: string;
   title: string;
-  subtitle?: string | undefined;
+  subtitle: string | null;
   slug: string;
-  cover_image?: string | null;
+  cover_image: string | null;
   disabledComments: boolean;
   user: {
     id: string;
@@ -13,21 +13,21 @@ export interface Article {
     username: string;
     profile: string;
     bio: string;
-    handle?: {
+    handle: {
       id: string;
       handle: string;
       name: string;
-      about?: string;
+      about: string | null;
     } | null;
   };
-  series?: {
+  series: {
     title: string;
     slug: string;
-  };
+  } | null;
   content: string;
   read_time: number;
   tags: {
-    id?: string;
+    id: string;
     name: string;
     slug: string;
   }[];
@@ -38,41 +38,14 @@ export interface Article {
   createdAt: Date;
 }
 
-export interface ArticleCard {
-  id: string;
-  title: string;
-  slug: string;
-  cover_image?: string | null;
-  disabledComments: boolean;
+// here `Omit` is used to remove the `subtitle` property from `Article` type and add `commonUsers` property
+export interface ArticleCard extends Omit<Article, "subtitle" | "comments"> {
   commonUsers: {
-    profile: string;
     id: string;
-  }[];
-  series?: {
-    title: string;
-    slug: string;
-  } | null;
-  user: {
-    name: string;
-    username: string;
     profile: string;
-    handle?: {
-      handle: string;
-    } | null;
-    id?: string;
-  };
-  content: string;
-  read_time: number;
-  tags: {
-    id: string;
-    name: string;
-    slug: string;
   }[];
-  likes: { id: string }[];
-  likesCount: number;
-  commentsCount: number;
-  createdAt: Date;
 }
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ArticleCardRemoveCommonUser
   extends Omit<ArticleCard, "commonUsers"> {}
@@ -180,4 +153,90 @@ interface SearchResults {
         updatedAt: Date;
       }[]
     | null;
+}
+
+export interface UserSimple {
+  id: string;
+  name: string;
+  username: string;
+  profile: string;
+}
+
+export interface DataType {
+  id: string;
+  title: string;
+  slug: string;
+  read_time: number;
+  content: string;
+  subtitle?: string | null | undefined;
+  cover_image?: string | null | undefined;
+  createdAt: Date;
+  user: {
+    profile: string;
+    username: string;
+  };
+}
+
+export interface FilterData {
+  status: boolean;
+  data: {
+    read_time: "Over 5 min" | "5 min" | "Under 5 min" | null | undefined;
+    tags: {
+      id: string;
+      name: string;
+    }[];
+  };
+}
+
+export interface DetailedUser {
+  followers: { id: string }[];
+  isFollowing: boolean;
+  handle: {
+    handle: string;
+    name: string;
+    about: string;
+    id: string;
+  } | null;
+  followersCount: number;
+  social: SocialHandles;
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  emailVerified: Date | null;
+  profile: string;
+  tagline: string;
+  cover_image: string;
+  bio: string;
+  skills: string[];
+  location: string;
+  available: string;
+  followingCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserDetails {
+  name: string;
+  username: string;
+  email: string;
+  location: string;
+  profile: string;
+  tagline: string;
+  available: string;
+  cover_image: string;
+  bio: string;
+  skills: string;
+  social: SocialHandles;
+}
+
+export interface SocialHandles {
+  twitter: string;
+  instagram: string;
+  github: string;
+  stackoverflow: string;
+  facebook: string;
+  website: string;
+  linkedin: string;
+  youtube: string;
 }

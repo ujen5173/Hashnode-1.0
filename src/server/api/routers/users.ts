@@ -1,7 +1,7 @@
 import { NotificationTypes } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { type SocialHandles } from "~/pages/settings";
+import { type SocialHandles } from "~/types";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 

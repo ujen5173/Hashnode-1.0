@@ -3,20 +3,8 @@ import { useEffect, useState } from "react";
 import { MainBodyHeader } from "~/component/header";
 import { ArticleLoading } from "~/component/loading";
 import { ManageData } from "~/component/miniComponent";
+import { type FilterData } from "~/types";
 import { api } from "~/utils/api";
-
-export interface Tag {
-  id: string;
-  name: string;
-}
-
-export interface FilterData {
-  status: boolean;
-  data: {
-    read_time: "Over 5 min" | "5 min" | "Under 5 min" | null | undefined;
-    tags: Tag[];
-  };
-}
 
 const MainBodyArticles = () => {
   const tab = useRouter().query.tab as string | undefined;

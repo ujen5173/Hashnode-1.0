@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type User } from "past/components/ArticleHeader";
 import { useState, type FC } from "react";
 import { ArticleHamburgerMenu } from "~/component/aside";
 import { Angleleft, Hamburger } from "~/svgs";
+import { type UserSimple } from "~/types";
 
-const ArticleLeftArea: FC<{ user: User }> = ({ user }) => {
+const ArticleLeftArea: FC<{ user: UserSimple }> = ({ user }) => {
   const [menu, setMenu] = useState<boolean>(false);
 
   return (

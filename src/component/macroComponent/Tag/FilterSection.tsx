@@ -1,7 +1,7 @@
 import React, { type FC } from "react";
-import { TagsSearchCard } from "~/component/card";
 import { Select } from "~/component/miniComponent";
-import { type FilterData } from "../Home/MainBodyArticles";
+import { type FilterData } from "~/types";
+import Tag from "./Tag";
 
 interface Props {
   filter: FilterData;
@@ -57,7 +57,7 @@ const FilterSection: FC<Props> = ({
             Tags
           </label>
 
-          <TagsSearchCard filter={filter} setFilter={setFilter} />
+          <Tag filter={filter} setFilter={setFilter} />
         </div>
       </div>
 
