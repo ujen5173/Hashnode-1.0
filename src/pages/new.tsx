@@ -2,7 +2,7 @@ import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useContext, useEffect, useState } from "react";
-import { NewArticleBody, NewArticleHeader } from "~/components";
+import { NewArticleBody, NewArticleHeader } from "~/component";
 import NewSEO from "~/SEO/New.seo";
 import { authOptions } from "~/server/auth";
 import { C, type ContextValue } from "~/utils/context";

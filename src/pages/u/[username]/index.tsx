@@ -3,8 +3,7 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useContext, useEffect } from "react";
-import { Header } from "~/components";
-import UserProfileMainBody from "~/components/UserProfileBody";
+import { Header, UserProfileBody } from "~/component";
 import { type SocialHandles } from "~/pages/settings";
 import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
@@ -53,7 +52,7 @@ const UserBlog: NextPage<{
     <>
       <UserBlogSEO user={user} />
       <Header />
-      <UserProfileMainBody user={user} />
+      <UserProfileBody user={user} />
     </>
   );
 };

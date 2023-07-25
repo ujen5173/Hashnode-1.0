@@ -5,8 +5,7 @@ import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Header } from "~/components";
-import ManageData from "~/components/Cards/ManageData";
+import { Header, ManageData } from "~/component";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
@@ -53,6 +52,7 @@ const Notifications = () => {
   return (
     <>
       <Header />
+
       <div className="min-h-screen w-full bg-white px-0 py-8 dark:bg-black md:px-4">
         <div className="mx-auto max-w-[800px] rounded-lg border border-border-light bg-white px-4 dark:border-border dark:bg-primary">
           <div className="mb-4 flex items-center justify-between gap-2 border-b border-border-light p-4 dark:border-border">
@@ -64,6 +64,7 @@ const Notifications = () => {
               Notifications
             </h1>
           </div>
+
           <header className="scroll-area overflow-auto border-b border-border-light dark:border-border">
             <div className="flex w-max items-end justify-center gap-2">
               {notificationNavigation(notificationType).map((type) => (
@@ -102,8 +103,6 @@ export default Notifications;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
-
-  console.log(session?.user);
 
   if (!session?.user) {
     return { props: { session: null }, redirect: { destination: "/" } };

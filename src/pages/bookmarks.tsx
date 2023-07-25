@@ -1,11 +1,12 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
-import { BookmarkMainBody, Header } from "~/components";
+import { useSession } from "next-auth/react";
+import { useContext, useEffect } from "react";
+import { Header } from "~/component";
+import { BookmarkMainBody } from "~/component/macroComponent/Bookmark";
 import BookmarkSEO from "~/SEO/Bookmark.seo";
 import { authOptions } from "~/server/auth";
 import { C, type ContextValue } from "~/utils/context";
-import { useContext, useEffect } from "react";
-import { useSession } from "next-auth/react";
 
 const Bookmark: NextPage = () => {
   const { data: session } = useSession();

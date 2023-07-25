@@ -12,7 +12,7 @@ import Context from "~/utils/context";
 import { useClickOutside } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { SearchBody } from "~/components";
+import { SearchBody } from "~/component";
 import useKeyPress from "~/hooks/use-keypress";
 
 const MyApp: AppType<{ session: Session | null }> = ({
@@ -47,6 +47,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
             "relative bg-white dark:bg-zinc-900 text-neutral-800 dark:text-white flex p-1 min-h-15 rounded-md justify-between overflow-hidden cursor-pointer p-5 border-2 dark:border-zinc-800 :dark:fill:slate-50 mb-4"
           }
         />
+
         <NextTopLoader color="#2563eb" />
 
         <Component {...pageProps} />

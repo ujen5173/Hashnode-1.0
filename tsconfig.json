@@ -29,5 +29,5 @@
     "**/*.cjs",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules", "src/components/Editor/**"]
+  "exclude": ["node_modules", "past/components/Editor/**"]
 }

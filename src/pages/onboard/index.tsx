@@ -1,7 +1,7 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import Divider from "~/components/Divider";
+import { Divider } from "~/component";
 import { Google, Logo } from "~/svgs";
 
 const Onboard = () => {

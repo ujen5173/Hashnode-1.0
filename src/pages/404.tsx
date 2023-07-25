@@ -15,9 +15,11 @@ const PageNotFound = () => {
         />
 
         <h1 className="mb-4 text-6xl font-bold text-gray-700">404</h1>
+
         <h1 className="mb-6 text-2xl font-bold text-gray-500">
           We can&apos;t find the page you&apos;re looking for.
         </h1>
+
         <Link href="/">
           <button className="rounded-full border border-secondary px-4 py-2 text-base font-medium text-secondary shadow-lg outline-none hover:bg-gray-100">
             Take me home

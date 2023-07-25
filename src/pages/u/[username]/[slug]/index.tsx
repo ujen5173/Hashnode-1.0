@@ -2,7 +2,7 @@ import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useContext, useEffect } from "react";
-import { ArticleBody, ArticleHeader, Footer } from "~/components";
+import { ArticleBody, ArticleHeader, Footer } from "~/component";
 import ArticleSEO from "~/SEO/Article.seo";
 import { authOptions } from "~/server/auth";
 import { generateSSGHelper } from "~/server/ssgHelper";

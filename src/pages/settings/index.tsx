@@ -4,12 +4,7 @@ import { useSession } from "next-auth/react";
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { z } from "zod";
-import {
-  BasicInfo,
-  Header,
-  SocialInfo,
-  UserDetailsOptions,
-} from "~/components";
+import { BasicInfo, Header, SocialInfo, UserDetailsOptions } from "~/component";
 import SettingsSEO from "~/SEO/Settings.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
@@ -165,11 +160,14 @@ const EditProfile: NextPage<{
                 User Details
               </h1>
             </div>
+
             <UserDetailsOptions />
           </div>
+
           <main className="container-full-main my-4 min-h-screen rounded-md border border-border-light bg-white p-10 dark:border-border dark:bg-primary">
             <div className="flex flex-col gap-8 md:flex-row">
               <BasicInfo handleChange={handleChange} data={data} />
+
               <SocialInfo
                 data={data}
                 handleChange={handleChange}

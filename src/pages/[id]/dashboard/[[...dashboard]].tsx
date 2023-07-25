@@ -4,18 +4,18 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { Header } from "~/components";
-import CreateNewSeries from "~/components/CreateNewSeries";
 import {
   Advanced,
   Analytics,
   Appearance,
   Articles,
+  CreateNewSeries,
   DashboardPageNotFound,
   Domain,
   Export,
   General,
   GitHub,
+  Header,
   Import,
   Integrations,
   Navbar,
@@ -25,7 +25,7 @@ import {
   Series,
   Sponsors,
   Widgets,
-} from "~/components/dashboard";
+} from "~/component";
 import DashboardSEO from "~/SEO/Dashboard.seo";
 import { authOptions } from "~/server/auth";
 import {
@@ -94,7 +94,9 @@ const Dashboard = () => {
   return (
     <>
       <DashboardSEO />
+
       <Header search={false} />
+
       <div className="bg-light-bg dark:bg-black">
         <div className="mx-auto max-w-[1550px] gap-4 py-8 sm:px-4">
           <div className="mb-6 flex w-full flex-col items-center justify-between rounded-md border border-border-light bg-white px-6 py-8 dark:border-border dark:bg-primary sm:flex-row">
@@ -103,6 +105,7 @@ const Dashboard = () => {
                 <div className="rounded-md bg-white p-1">
                   <LogonoText className="h-6 w-6 fill-secondary" />
                 </div>
+
                 <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
                   {session?.user.name}&apos;s Blog
                 </h1>
@@ -117,6 +120,7 @@ const Dashboard = () => {
               <Link href={`/dev/@${session?.user?.handle?.handle as string}`}>
                 <div className="flex items-center gap-2 rounded-md px-4 py-2 hover:bg-primary-light">
                   <Redirect className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+
                   <span className="font-medium text-gray-600 dark:text-text-primary">
                     Visit Blog
                   </span>
@@ -124,6 +128,7 @@ const Dashboard = () => {
               </Link>
             </div>
           </div>
+
           <div className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
             <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
               Welcome to your new blog! What&apos;s next?
@@ -134,41 +139,52 @@ const Dashboard = () => {
                 <div className="absolute right-4 top-4">
                   <Pen className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
                 </div>
+
                 <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+
                 <div className="flex-1">
                   <h1 className="mb-2  text-xl font-semibold text-secondary">
                     Write your first article
                   </h1>
+
                   <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
                     Share your thoughts, and connect with the community by
                     writing your first article.
                   </p>
                 </div>
               </div>
+
               <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
                 <div className="absolute right-4 top-4">
                   <Customize className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
                 </div>
+
                 <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+
                 <div className="flex-1">
                   <h1 className="mb-2 text-xl  font-semibold text-secondary">
                     Customizing the appearance
                   </h1>
+
                   <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
                     Personalize the design of your blog and showcase your
                     personality.
                   </p>
                 </div>
               </div>
+
               <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
                 <div className="absolute right-4 top-4">
                   <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
                 </div>
+
                 <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+
                 <div className="flex-1">
                   <h1 className="mb-2 text-xl  font-semibold text-secondary">
                     Map a custom domain
                   </h1>
+
                   <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
                     Change your hashnode.dev blog URL to a custom domain of your
                     choice for free!
@@ -228,6 +244,7 @@ const Dashboard = () => {
                         `}
                       >
                         {dashboard.icon(state)}
+
                         <span
                           className={`text-base ${
                             state
@@ -243,6 +260,7 @@ const Dashboard = () => {
                 );
               })}
             </div>
+
             <div className="min-h-[40rem] flex-1 overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
               {dashboardName}
             </div>

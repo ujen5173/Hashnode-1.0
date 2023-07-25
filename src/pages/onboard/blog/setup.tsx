@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
-import { Input } from "~/components";
+import { Input } from "~/component";
 import { authOptions } from "~/server/auth";
 import { Logo } from "~/svgs";
 import { api } from "~/utils/api";
@@ -117,6 +117,7 @@ const Setup = () => {
                 <span className="text-gray-100">Back</span>
               </div>
             </button>
+
             <button
               onClick={() => void handleSubdomain()}
               className={`${
@@ -136,6 +137,7 @@ const Setup = () => {
 };
 
 export default Setup;
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
   if (session?.user.handle) {

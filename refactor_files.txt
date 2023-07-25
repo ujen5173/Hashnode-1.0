@@ -1,0 +1,10 @@
+1) Header
+2) Dropdown
+2) Slider Menu
+4) Asides
+5) Footer
+6) Cards
+7) Input
+8) Popups
+9) Mini Components
+10) Loading
