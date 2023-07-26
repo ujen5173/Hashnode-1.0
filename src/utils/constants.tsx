@@ -34,6 +34,14 @@ import {
   Youtube,
 } from "~/svgs";
 
+export const slugSetting = {
+  lower: true,
+  replacement: "-",
+  strict: true,
+  trim: true,
+  locale: "en",
+};
+
 export const asideItems = [
   {
     name: "Explore",

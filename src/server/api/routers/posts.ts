@@ -16,6 +16,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { type ArticleCardWithComments } from "~/types";
+import { slugSetting } from "~/utils/constants";
 import {
   refactorActivityHelper,
   type Activity,
@@ -515,7 +516,7 @@ export const postsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const { title, tags } = input;
-        const slug = slugify(title, {
+        const titleSlug = slugify(title, {
           lower: true,
           strict: true,
           trim: true,
@@ -526,13 +527,7 @@ export const postsRouter = createTRPCRouter({
         const tagPromises = tags.map(async (tag) => {
           const existingTag = await ctx.prisma.tag.findFirst({
             where: {
-              slug: slugify(tag, {
-                lower: true,
-                strict: true,
-                trim: true,
-                locale: "vi",
-                replacement: "-",
-              }),
+              slug: slugify(tag, slugSetting),
             },
           });
 
@@ -540,13 +535,7 @@ export const postsRouter = createTRPCRouter({
             const createdTag = await ctx.prisma.tag.create({
               data: {
                 name: tag,
-                slug: slugify(tag, {
-                  lower: true,
-                  strict: true,
-                  trim: true,
-                  locale: "vi",
-                  replacement: "-",
-                }),
+                slug: slugify(tag, slugSetting),
                 articlesCount: 1,
               },
             });
@@ -573,6 +562,7 @@ export const postsRouter = createTRPCRouter({
 
         // Create the article with the created tags
         const { series, ...rest } = input;
+
         const newArticle = await ctx.prisma.article.create({
           data: {
             ...rest,
@@ -593,7 +583,7 @@ export const postsRouter = createTRPCRouter({
               },
             },
             read_time: readingTime(input.content).minutes || 1,
-            slug,
+            slug: titleSlug,
             seoTitle: input.seoTitle || title,
             seoDescription:
               input.seoDescription ||

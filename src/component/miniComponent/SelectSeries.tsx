@@ -1,10 +1,11 @@
 // TODO: REMOVE SERIES POPUP WHEN CLICKED OUTSIDE. THIS ISSUE IS ALSO IN TAGS SECTION.
 
 import Link from "next/link";
-import React, { useRef, useState, type FC } from "react";
+import React, { useContext, useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Series } from "~/svgs";
 import { api } from "~/utils/api";
+import { C, type ContextValue } from "~/utils/context";
 import { TagLoading } from "../loading";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 
@@ -24,6 +25,7 @@ const SelectSeries: FC<{
   const [opened, setOpened] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
   const input = useRef<HTMLInputElement | null>(null);
+  const { user } = useContext(C) as ContextValue;
 
   const { refetch } = api.series.searchSeries.useQuery(
     {
@@ -98,7 +100,7 @@ const SelectSeries: FC<{
           ) : series.length > 0 ? (
             series.map((s, index) => (
               <div
-                className="flex w-full cursor-pointer items-center gap-2 border-b border-border-light px-2 py-2 text-lg text-gray-500 last:border-none hover:bg-gray-100 dark:border-border dark:text-text-primary dark:hover:bg-border"
+                className="flex w-full cursor-pointer items-center gap-2  border-b border-border-light px-4 py-2 text-lg text-gray-500 last:border-none hover:bg-light-bg dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
                 onClick={() => {
                   setData((prev) => ({
                     ...prev,
@@ -118,6 +120,7 @@ const SelectSeries: FC<{
                 <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
                   <Series className="mx-auto my-3 h-6 w-6 fill-secondary" />
                 </div>
+                
                 <span>{s.title}</span>
               </div>
             ))
@@ -126,7 +129,10 @@ const SelectSeries: FC<{
               <p className="text-gray-500 dark:text-text-primary">
                 No series found
               </p>
-              <Link href="/">
+
+              <Link
+                href={`/${user?.user.id as string}/dashboard/series/create`}
+              >
                 <button aria-label="Create New Tag" className="btn-filled">
                   Create One
                 </button>

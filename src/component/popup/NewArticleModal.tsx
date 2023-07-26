@@ -16,13 +16,13 @@ interface Props {
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
   data: ArticleData;
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
-  createTagState: boolean;
-  setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
   publishing: boolean;
   setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
 
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
+  // createTagState: boolean;
+  // setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const NewArticleModal: FC<Props> = ({
@@ -32,11 +32,11 @@ const NewArticleModal: FC<Props> = ({
   setData,
   publishing,
   setPublishing,
-  createTagState,
-  setCreateTagState,
 
   query,
   setQuery,
+  // createTagState,
+  // setCreateTagState,
 }) => {
   const { user, handleChange } = useContext(C) as ContextValue;
 
@@ -181,6 +181,7 @@ const NewArticleModal: FC<Props> = ({
             <Times className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
             <span className="text-gray-700 dark:text-white">Close</span>
           </button>
+
           <button
             disabled={publishing}
             onClick={() => void handlePublish()}
@@ -210,12 +211,14 @@ const NewArticleModal: FC<Props> = ({
               >
                 Article Slug
               </label>
+
               <div className="relative flex items-stretch gap-2 rounded-md border border-border-light dark:border-border md:px-4 ">
                 <div className="hidden select-none items-center justify-center border-r border-border-light pr-3 dark:border-border md:flex">
                   <span className="text-gray-500 dark:text-text-primary">
                     /u/@{user?.user.username}/
                   </span>
                 </div>
+
                 <input
                   autoComplete="off"
                   autoCorrect="off"
@@ -230,6 +233,7 @@ const NewArticleModal: FC<Props> = ({
                 />
               </div>
             </div>
+
             <div className="mb-8">
               <label
                 htmlFor="tags"
@@ -237,13 +241,14 @@ const NewArticleModal: FC<Props> = ({
               >
                 Article Tags
               </label>
+
               <SelectTags
                 setData={setData}
                 tags={data.tags}
                 query={query}
                 setQuery={setQuery}
-                createTagState={createTagState}
-                setCreateTagState={setCreateTagState}
+                // createTagState={createTagState}
+                // setCreateTagState={setCreateTagState}
               />
 
               <div className="mt-2 flex flex-wrap gap-2">
@@ -253,6 +258,7 @@ const NewArticleModal: FC<Props> = ({
                     key={index}
                   >
                     <span>{tag}</span>
+
                     <div
                       onClick={() => {
                         setData((prev) => ({
@@ -267,6 +273,7 @@ const NewArticleModal: FC<Props> = ({
                 ))}
               </div>
             </div>
+
             <div className="mb-8">
               <label
                 htmlFor="tags"
@@ -274,12 +281,14 @@ const NewArticleModal: FC<Props> = ({
               >
                 Select Article Series
               </label>
+
               <SelectSeries setData={setData} series={data.series} />
 
               {data.series && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   <div className="flex items-center gap-2 rounded-md border border-border-light bg-light-bg px-2 py-1 text-lg text-gray-500 dark:border-border dark:bg-primary-light dark:text-text-primary">
                     <span>{data.series}</span>
+
                     <button
                       onClick={() => {
                         setData((prev) => ({
@@ -294,6 +303,7 @@ const NewArticleModal: FC<Props> = ({
                 </div>
               )}
             </div>
+
             <div className="relative z-10 mb-8">
               <ImagePlaceholder
                 title="CUSTOM OG IMAGE"
@@ -303,6 +313,7 @@ const NewArticleModal: FC<Props> = ({
                 recommendedText="Recommended dimension is 1600 x 840"
               />
             </div>
+
             <div className="mb-8">
               <label
                 htmlFor="seoTitle"
@@ -310,12 +321,14 @@ const NewArticleModal: FC<Props> = ({
               >
                 SEO TITLE (OPTIONAL)
               </label>
+
               <p className="mb-4 text-sm text-gray-500 dark:text-text-primary">
                 The &quot;SEO Title&quot; will be shown in place of your Title
                 on search engine results pages, such as a Google search. SEO
                 titles between 40 and 50 characters with commonly searched words
                 have the best click-through-rates.
               </p>
+
               <input
                 autoComplete="off"
                 autoCorrect="off"
@@ -328,6 +341,7 @@ const NewArticleModal: FC<Props> = ({
                 onChange={(e) => handleChange(e, setData)}
               />
             </div>
+
             <div className="mb-8">
               <label
                 htmlFor="tags"
@@ -335,6 +349,7 @@ const NewArticleModal: FC<Props> = ({
               >
                 SEO DESCRIPTION (OPTIONAL)
               </label>
+
               <p className="mb-4 text-sm text-gray-500 dark:text-text-primary">
                 The SEO Description will be used in place of your Subtitle on
                 search engine results pages. Good SEO descriptions utilize
@@ -351,6 +366,7 @@ const NewArticleModal: FC<Props> = ({
                 onChange={(e) => handleChange(e, setData)}
               />
             </div>
+
             <div>
               <label
                 htmlFor="tags"
@@ -358,6 +374,7 @@ const NewArticleModal: FC<Props> = ({
               >
                 DISABLE COMMENTS?
               </label>
+
               <p className="mb-4 text-sm text-gray-500 dark:text-text-primary">
                 This will hide the comments section below your article.
               </p>
@@ -375,6 +392,7 @@ const NewArticleModal: FC<Props> = ({
                   id="disableComment"
                   type="checkbox"
                 />
+
                 <label
                   htmlFor="disableComment"
                   className="text-gray-500 dark:text-text-primary"

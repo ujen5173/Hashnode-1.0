@@ -6,8 +6,8 @@ import { toast } from "react-toastify";
 import slugify from "slugify";
 import { useDebouncedCallback } from "use-debounce";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
-import { NewTagModal } from "~/component/popup";
 import ImagePreview from "~/svgs/ImagePreview";
+import { slugSetting } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 import { handleImageChange } from "~/utils/miniFunctions";
 import NewArticleModal from "../../popup/NewArticleModal";
@@ -41,13 +41,13 @@ const NewArticleBody: FC<{
 }) => {
   const { handleChange } = useContext(C) as ContextValue;
   const [query, setQuery] = useState("");
-  const [createTagState, setCreateTagState] = useState(false);
+  // const [createTagState, setCreateTagState] = useState(false);
 
-  useEffect(() => {
-    if (createTagState) {
-      document.querySelector("body")?.setAttribute("style", "overflow:hidden");
-    }
-  }, [createTagState]);
+  // useEffect(() => {
+  //   if (createTagState) {
+  //     document.querySelector("body")?.setAttribute("style", "overflow:hidden");
+  //   }
+  // }, [createTagState]);
 
   const [data, setData] = useState<ArticleData>({
     title: "",
@@ -161,14 +161,7 @@ const NewArticleBody: FC<{
                 handleChange(e, setData);
                 setData((prev) => ({
                   ...prev,
-                  slug: slugify(e.target.value, {
-                    replacement: "-",
-                    remove: undefined,
-                    lower: true,
-                    strict: true,
-                    locale: "vi",
-                    trim: true,
-                  }),
+                  slug: slugify(e.target.value, slugSetting),
                 }));
               }}
               placeholder="Article Title"
@@ -226,20 +219,20 @@ const NewArticleBody: FC<{
         data={data}
         setData={setData}
         publishing={publishing}
-        createTagState={createTagState}
-        setCreateTagState={setCreateTagState}
         setPublishing={setPublishing}
         query={query}
         setQuery={setQuery}
+        // createTagState={createTagState}
+        // setCreateTagState={setCreateTagState}
       />
 
-      {createTagState && (
+      {/* {createTagState && (
         <NewTagModal
           query={query}
           setQuery={setQuery}
           setCreateTagState={setCreateTagState}
         />
-      )}
+      )} */}
     </main>
   );
 };

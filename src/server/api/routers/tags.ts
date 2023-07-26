@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
+import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
@@ -51,7 +52,7 @@ export const tagsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        return await ctx.prisma.tag.findMany({
+        const result = await ctx.prisma.tag.findMany({
           where: {
             name: {
               contains: input.query,
@@ -63,11 +64,24 @@ export const tagsRouter = createTRPCRouter({
           },
           take: 5,
           select: {
-            id: true,
+            // id: true,
             name: true,
+            slug: true,
+            articlesCount: true,
             logo: true,
           },
         });
+
+        if (result.length > 0) return result;
+
+        return [
+          {
+            name: input.query,
+            logo: null,
+            slug: slugify(input.query, slugSetting),
+            articlesCount: 0,
+          },
+        ];
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -75,6 +89,7 @@ export const tagsRouter = createTRPCRouter({
         });
       }
     }),
+
   followTagToggle: protectedProcedure
     .input(
       z.object({
@@ -324,13 +339,7 @@ export const tagsRouter = createTRPCRouter({
               name: input.name,
               logo: input.logo,
               description: input.description,
-              slug: slugify(input.name, {
-                lower: true,
-                replacement: "-",
-                strict: true,
-                trim: true,
-                locale: "en",
-              }),
+              slug: slugify(input.name, slugSetting),
             },
           });
         }

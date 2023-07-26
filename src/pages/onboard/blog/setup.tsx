@@ -10,6 +10,7 @@ import { Input } from "~/component";
 import { authOptions } from "~/server/auth";
 import { Logo } from "~/svgs";
 import { api } from "~/utils/api";
+import { slugSetting } from "~/utils/constants";
 
 const Setup = () => {
   const { data: session } = useSession();
@@ -67,13 +68,7 @@ const Setup = () => {
                 name="name"
                 onChange={(e) =>
                   setHandle({
-                    domain: slugify(e.target.value, {
-                      lower: true,
-                      strict: true,
-                      locale: "en",
-                      replacement: "-",
-                      trim: true,
-                    }),
+                    domain: slugify(e.target.value, slugSetting),
                     name: e.target.value,
                   })
                 }

@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
+import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
@@ -29,15 +30,7 @@ const SeriesRouter = createTRPCRouter({
               id: ctx.session.user.id,
             },
           },
-          slug:
-            input.slug ||
-            slugify(input.title, {
-              lower: true,
-              replacement: "-",
-              locale: "vi",
-              trim: true,
-              strict: true,
-            }),
+          slug: input.slug || slugify(input.title, slugSetting),
         },
       });
 
@@ -161,15 +154,7 @@ const SeriesRouter = createTRPCRouter({
       const series = await ctx.prisma.series.create({
         data: {
           ...input,
-          slug:
-            input.slug ||
-            slugify(input.title, {
-              lower: true,
-              replacement: "-",
-              locale: "vi",
-              trim: true,
-              strict: true,
-            }),
+          slug: input.slug || slugify(input.title, slugSetting),
           author: {
             connect: {
               id: ctx.session.user.id,

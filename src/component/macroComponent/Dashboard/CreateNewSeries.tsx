@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import slugify from "slugify";
 import { Input } from "~/component/miniComponent";
 import { api } from "~/utils/api";
+import { slugSetting } from "~/utils/constants";
 
 const CreateNewSeries = () => {
   const [data, setData] = useState<{
@@ -44,10 +46,15 @@ const CreateNewSeries = () => {
             type="INPUT"
             value={data.title}
             onChange={(e) =>
-              setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+              setData((prev) => {
+                return ({ ...prev, [e.target.name]: e.target.value,
+                  slug: slugify(e.target.value, slugSetting)
+                })
+              })
             }
             variant="FILLED"
             name="title"
+            autoFocus
             required={false}
           />
         </div>
