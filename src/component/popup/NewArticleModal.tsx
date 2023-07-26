@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, type FC } from "react";
 import { toast } from "react-toastify";
+import slugify from "slugify";
 import { Times } from "~/svgs";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
@@ -229,7 +230,18 @@ const NewArticleModal: FC<Props> = ({
                   id="slug"
                   name="slug"
                   value={data.slug}
-                  onChange={(e) => handleChange(e, setData)}
+                  onChange={(e) => {
+                    setData((prev) => ({
+                      ...prev,
+                      slug: slugify(e.target.value, {
+                        lower: true,
+                        replacement: "-",
+                        strict: true,
+                        trim: false,
+                        locale: "en",
+                      }),
+                    }));
+                  }}
                 />
               </div>
             </div>

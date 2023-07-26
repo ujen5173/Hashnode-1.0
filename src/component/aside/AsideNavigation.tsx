@@ -9,7 +9,7 @@ interface Props {
     type: string;
   };
 }
-const Navigation: FC<Props> = ({ item }) => {
+const AsideNavigation: FC<Props> = ({ item }) => {
   return (
     <Tooltip label={item.name} position="right" withArrow>
       <div
@@ -25,4 +25,4 @@ const Navigation: FC<Props> = ({ item }) => {
   );
 };
 
-export default Navigation;
+export default AsideNavigation;

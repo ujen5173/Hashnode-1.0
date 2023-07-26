@@ -35,7 +35,7 @@ const ActivityCard: FC<Props> = ({ index, item, activityLength }) => {
       </div>
 
       {item.activity_type !== "JOINED" && (
-        <Link href={`/u/@${user}/${item.slug}`} className="mb-2" key={uuid()}>
+        <Link href={`/u/${user}/${item.slug}`} className="mb-2">
           <div>
             <span className="text-lg font-semibold text-gray-700 hover:text-gray-500 dark:text-text-secondary dark:hover:text-text-primary">
               {item.title}

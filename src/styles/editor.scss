@@ -84,12 +84,17 @@
     margin: 24px 0;
   }
 
+  li {
+    margin: 18px 0;
+  }
+
   blockquote {
     border-color: #e2e8f0;
     font-style: italic;
     margin: 32px 0;
   }
 }
+
 body.dark {
   color: #fafafa;
   code {

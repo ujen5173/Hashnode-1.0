@@ -24,13 +24,13 @@ const AuthorBlogArticleCard: FC<Props> = ({
       className={type === "non-grid" ? width : "main-block"}
       href={`/u/@${article.user.username}/${article.slug}`}
     >
-      <div className="mb-2 flex min-h-[50%] w-full items-center justify-center overflow-hidden rounded-md border border-border-light bg-light-bg dark:border-primary-light dark:bg-primary">
+      <div className="mb-2 flex max-h-[60%] min-h-[50%] w-full items-center justify-center overflow-hidden rounded-md border border-border-light bg-light-bg dark:border-primary-light dark:bg-primary">
         <Image
           src={
             article.cover_image ||
             (theme === "dark"
-              ? "/imagePlaceholder-light-dark.avif"
-              : "/imagePlaceholder-light-light.avif")
+              ? "/imagePlaceholder-dark.avif"
+              : "/imagePlaceholder-light.avif")
           }
           alt="Error Loading Image!"
           width={1200}
@@ -42,8 +42,8 @@ const AuthorBlogArticleCard: FC<Props> = ({
       <div className="p-2 md:p-4">
         <h1
           className={`mb-3 ${
-            type === "main" ? "text-2xl xl:text-3xl" : "text-xl xl:text-2xl"
-          } font-bold text-gray-700 dark:text-text-secondary`}
+            type === "main" ? "text-2xl" : "text-xl xl:text-2xl"
+          } font-semibold text-gray-700 dark:text-text-secondary`}
         >
           {article.title}
         </h1>

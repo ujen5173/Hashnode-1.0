@@ -1110,3 +1110,78 @@ export const HashnodeSocials = [
     link: "https://instagram.com/ujen_basi/",
   },
 ];
+
+export const selectArticleCard = {
+  id: true,
+  title: true,
+  slug: true,
+  cover_image: true,
+  disabledComments: true,
+  user: {
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      profile: true,
+      bio: true,
+      handle: {
+        select: {
+          id: true,
+          handle: true,
+          name: true,
+          about: true,
+        },
+      },
+    },
+  },
+  series: {
+    select: {
+      slug: true,
+      title: true,
+    },
+  },
+  comments: {
+    select: {
+      user: {
+        select: {
+          id: true,
+          profile: true,
+        },
+      },
+    },
+  },
+  content: true,
+  read_time: true,
+  tags: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+    },
+  },
+  likes: { select: { id: true } },
+  likesCount: true,
+  commentsCount: true,
+  createdAt: true,
+} as const;
+
+export function displayUniqueObjects(
+  objects: Array<{ id: string; profile: string }>
+) {
+  // Create a set to store the unique IDs.
+  const uniqueIds = new Set();
+  // Create an array to store the unique objects.
+  const uniqueObjects = [];
+
+  // Iterate over the objects and add them to the set if they are not already present.
+  for (const object of objects) {
+    const id = object.id;
+    if (!uniqueIds.has(id)) {
+      uniqueIds.add(id);
+      uniqueObjects.push(object);
+    }
+  }
+
+  // Return the list of unique objects.
+  return uniqueObjects;
+}

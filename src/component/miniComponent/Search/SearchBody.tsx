@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { faker } from "@faker-js/faker";
+import React, { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { TagsSearchCard, UserSearchCard } from "~/component/card";
 import { SearchLoading } from "~/component/loading";
@@ -6,6 +10,46 @@ import { Search } from "~/svgs";
 import { type SearchResults } from "~/types";
 import { api } from "~/utils/api";
 import SearchArticle from "./SearchArticle";
+
+interface ArticleSeach {
+  id: string;
+  title: string;
+  user: {
+    name: string;
+    username: string;
+    profile: string;
+    id: string;
+  };
+  cover_image: string;
+  slug: string;
+  read_time: number;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface TagSearch {
+  id: string;
+  name: string;
+  slug: string;
+  isFollowing: boolean;
+}
+
+interface UserSearch {
+  id: string;
+  name: string;
+  username: string;
+  profile: string;
+  isFollowing: boolean;
+}
+const searchNavigation = [
+  "TOP",
+  "LATEST",
+  "ARTICLES",
+  "USERS",
+  "TAGS",
+] as const;
 
 const SearchBody = React.forwardRef<
   HTMLDivElement,
@@ -17,7 +61,7 @@ const SearchBody = React.forwardRef<
   const [type, setType] = useState<
     "TOP" | "LATEST" | "ARTICLES" | "USERS" | "TAGS"
   >("TOP");
-  const { refetch, isFetching } = api.posts.search.useQuery(
+  const { refetch } = api.posts.search.useQuery(
     {
       query,
       type,
@@ -34,21 +78,29 @@ const SearchBody = React.forwardRef<
     users: null,
   });
 
-  const [refetching, setRefetching] = useState(false);
+  const [topResults, setTopResults] = useState<any>([]);
 
-  useEffect(() => {
-    // just to show loading when changing search type (top, latest, articles, users, tags)
-    if (isFetching) {
-      setRefetching(true);
-    }
-  }, [isFetching]);
+  const [refetching, setRefetching] = useState(false);
 
   async function search(criteria: string): Promise<SearchResults> {
     let response;
     if (criteria.trim().length > 0) {
       response = await refetch();
-      setRefetching(false);
+
       if (response.data) {
+        if (type === "TOP") {
+          const data = response.data as SearchResults;
+          const randomizeResponse = faker.helpers.shuffle(
+            [
+              ...(data.articles?.map((e) => ({ ...e, type: "ARTICLES" })) ||
+                []),
+              ...(data.tags?.map((e) => ({ ...e, type: "TAGS" })) || []),
+              ...(data.users?.map((e) => ({ ...e, type: "USERS" })) || []),
+            ].flat()
+          );
+          setTopResults(randomizeResponse);
+        }
+        setData(response.data as SearchResults);
         return response.data as SearchResults;
       } else {
         return {
@@ -67,20 +119,35 @@ const SearchBody = React.forwardRef<
   }
 
   const debounced = useDebouncedCallback(async (value: string) => {
-    return setData(await search(value));
+    setData(await search(value));
+    setRefetching(false);
+    return;
   }, 500);
 
-  const refetchData = async () => {
+  const refetchData = async (
+    currentType: "TOP" | "LATEST" | "ARTICLES" | "USERS" | "TAGS"
+  ) => {
     if (query.trim().length > 0) {
       const res = await refetch();
+      if (currentType === "TOP") {
+        const data = res.data as SearchResults;
+        const randomizeResponse = faker.helpers.shuffle(
+          [
+            ...(data.articles?.map((e) => ({ ...e, type: "ARTICLES" })) || []),
+            ...(data.tags?.map((e) => ({ ...e, type: "TAGS" })) || []),
+            ...(data.users?.map((e) => ({ ...e, type: "USERS" })) || []),
+          ].flat()
+        );
+        setTopResults(randomizeResponse);
+        return;
+      }
       setData(res.data as SearchResults);
-      setRefetching(false);
     } else {
-      return {
+      setData({
         articles: null,
         tags: null,
         users: null,
-      };
+      });
     }
   };
 
@@ -109,7 +176,6 @@ const SearchBody = React.forwardRef<
               onChange={(e) => {
                 setQuery(e.target.value);
                 setRefetching(true);
-
                 void debounced(e.target.value);
               }}
             />
@@ -126,34 +192,25 @@ const SearchBody = React.forwardRef<
           {query.trim() !== "" && (
             <div className="w-full overflow-auto">
               <ul className="scroll-area flex w-full items-center gap-2 border-b border-border-light px-4 dark:border-border">
-                {["TOP", "LATEST", "ARTICLES", "USERS", "TAGS"].map(
-                  (item, index) => (
-                    <li key={index}>
-                      <button
-                        onClick={() => {
-                          setType(
-                            item as
-                              | "TOP"
-                              | "LATEST"
-                              | "ARTICLES"
-                              | "USERS"
-                              | "TAGS"
-                          );
-                          setTimeout(() => {
-                            void refetchData();
-                          }, 200);
-                        }}
-                        className={`${
-                          type === item ? "btn-tab-active" : "btn-tab"
-                        }`}
-                      >
-                        {`${item.slice(0, 1)}${item
-                          .slice(1, item.length)
-                          .toLowerCase()} `}
-                      </button>
-                    </li>
-                  )
-                )}
+                {searchNavigation.map((item, index) => (
+                  <li key={index}>
+                    <button
+                      onClick={() => {
+                        setType(item);
+                        setTimeout(() => {
+                          void refetchData(item);
+                        }, 100);
+                      }}
+                      className={`${
+                        type === item ? "btn-tab-active" : "btn-tab"
+                      }`}
+                    >
+                      {`${item.slice(0, 1)}${item
+                        .slice(1, item.length)
+                        .toLowerCase()} `}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
           )}
@@ -167,7 +224,7 @@ const SearchBody = React.forwardRef<
                 </h1>
               </div>
             ) : (
-              <div className="">
+              <div className="scroll-area max-h-[65vh] min-h-[350px] overflow-auto">
                 {refetching ? (
                   <SearchLoading />
                 ) : type === "USERS" && data.users && data.users.length > 0 ? (
@@ -202,7 +259,9 @@ const SearchBody = React.forwardRef<
                       </div>
                     ))}
                   </ul>
-                ) : data.articles && data.articles.length > 0 ? (
+                ) : (type === "ARTICLES" || type === "LATEST") &&
+                  data.articles &&
+                  data.articles.length > 0 ? (
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.articles.map((article) => (
                       <div
@@ -214,6 +273,43 @@ const SearchBody = React.forwardRef<
                       </div>
                     ))}
                   </ul>
+                ) : type === "TOP" ? (
+                  topResults.map((search: any) => {
+                    const { type, ...rest } = search;
+                    return type === "ARTICLES" ? (
+                      <div
+                        onClick={() => setOpened(false)}
+                        key={rest.id as string}
+                        className="border-b border-border-light dark:border-border"
+                      >
+                        <SearchArticle data={rest as ArticleSeach} />
+                      </div>
+                    ) : type === "TAGS" ? (
+                      <div
+                        // onClick={() => setOpened(false)}
+                        key={rest.id as string}
+                        className="border-b border-border-light dark:border-border"
+                      >
+                        <TagsSearchCard
+                          key={rest.id as string}
+                          tag={rest as TagSearch}
+                          setOpened={setOpened}
+                        />
+                      </div>
+                    ) : type === "USERS" ? (
+                      <div
+                        // onClick={() => setOpened(false)}
+                        key={rest.id as string}
+                        className="border-b border-border-light dark:border-border"
+                      >
+                        <UserSearchCard
+                          key={rest.id as string}
+                          user={rest as UserSearch}
+                          setOpened={setOpened}
+                        />
+                      </div>
+                    ) : null;
+                  })
                 ) : (
                   <div className="flex h-64 items-center justify-center">
                     <p className="text-center text-base font-semibold text-gray-700 dark:text-text-secondary md:text-xl">

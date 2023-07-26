@@ -74,6 +74,9 @@
 .article ol {
   margin: 24px 0;
 }
+.article li {
+  margin: 18px 0;
+}
 .article blockquote {
   border-color: #e2e8f0;
   font-style: italic;

@@ -1,7 +1,7 @@
 import {
   NotificationTypes,
   type Prisma,
-  type PrismaClient,
+  type PrismaClient
 } from "@prisma/client";
 import { type DefaultArgs } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
@@ -13,87 +13,18 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
+  publicProcedure
 } from "~/server/api/trpc";
 import { type ArticleCardWithComments } from "~/types";
-import { slugSetting } from "~/utils/constants";
+import {
+  displayUniqueObjects,
+  selectArticleCard,
+  slugSetting
+} from "~/utils/constants";
 import {
   refactorActivityHelper,
-  type Activity,
+  type Activity
 } from "./../../../utils/microFunctions";
-
-const selectArticleCard = {
-  id: true,
-  title: true,
-  slug: true,
-  cover_image: true,
-  disabledComments: true,
-  user: {
-    select: {
-      id: true,
-      name: true,
-      username: true,
-      profile: true,
-      bio: true,
-      handle: {
-        select: {
-          id: true,
-          handle: true,
-          name: true,
-          about: true,
-        },
-      },
-    },
-  },
-  series: {
-    select: {
-      slug: true,
-      title: true,
-    },
-  },
-  comments: {
-    select: {
-      user: {
-        select: {
-          id: true,
-          profile: true,
-        },
-      },
-    },
-  },
-  content: true,
-  read_time: true,
-  tags: {
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-    },
-  },
-  likes: { select: { id: true } },
-  likesCount: true,
-  commentsCount: true,
-  createdAt: true,
-} as const;
-
-function displayUniqueObjects(objects: Array<{ id: string; profile: string }>) {
-  // Create a set to store the unique IDs.
-  const uniqueIds = new Set();
-  // Create an array to store the unique objects.
-  const uniqueObjects = [];
-
-  // Iterate over the objects and add them to the set if they are not already present.
-  for (const object of objects) {
-    const id = object.id;
-    if (!uniqueIds.has(id)) {
-      uniqueIds.add(id);
-      uniqueObjects.push(object);
-    }
-  }
-
-  // Return the list of unique objects.
-  return uniqueObjects;
-}
 
 const getArticlesWithUserFollowingProfiles = async (
   ctx: {
@@ -148,6 +79,39 @@ const getArticlesWithUserFollowingProfiles = async (
   }
 
   return updatedArticles;
+};
+
+const searchResponseFormater = (
+  tags: {
+    id: string;
+    name: string;
+    slug: string;
+    followers: {
+      id: string;
+    }[];
+  } | null,
+  users: {
+    id: string;
+    name: string;
+    username: string;
+    profile: string;
+    followers: {
+      id: string;
+    }[];
+  } | null,
+  userId: string
+) => {
+  const res = tags || users;
+  if (!res) return;
+  const { followers, ...rest } = res;
+  let isFollowing = false;
+  if (userId) {
+    isFollowing = followers.some((follower) => follower.id === userId);
+  }
+  return {
+    ...rest,
+    isFollowing,
+  };
 };
 
 export const postsRouter = createTRPCRouter({
@@ -505,6 +469,7 @@ export const postsRouter = createTRPCRouter({
           .min(25, "Content should be atleast of 25 characters")
           .trim(),
         tags: z.array(z.string().trim()).optional().default([]),
+        slug: z.string().trim(),
         series: z.string().optional().nullable(),
         seoTitle: z.string().trim().optional().nullable(),
         seoDescription: z.string().trim().optional().nullable(),
@@ -515,13 +480,20 @@ export const postsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { title, tags } = input;
-        const titleSlug = slugify(title, {
-          lower: true,
-          strict: true,
-          trim: true,
-          locale: "vi",
+        const { slug, tags } = input;
+
+        const existingArticle = await ctx.prisma.article.findFirst({
+          where: {
+            slug: slug,
+          },
         });
+
+        if (existingArticle) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Article with this title already exists",
+          });
+        }
 
         // Check if tags exist or create them if necessary
         const tagPromises = tags.map(async (tag) => {
@@ -582,9 +554,9 @@ export const postsRouter = createTRPCRouter({
                 id: ctx.session.user.id,
               },
             },
-            read_time: readingTime(input.content).minutes || 1,
-            slug: titleSlug,
-            seoTitle: input.seoTitle || title,
+            read_time: Math.ceil(readingTime(input.content).minutes) || 1,
+            slug: slug,
+            seoTitle: input.seoTitle || input.title,
             seoDescription:
               input.seoDescription ||
               input.subtitle ||
@@ -624,10 +596,14 @@ export const postsRouter = createTRPCRouter({
           redirectLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
         };
       } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong, try again later",
-        });
+        if (error instanceof TRPCError) {
+          throw error;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong, try again later",
+          });
+        }
       }
     }),
 
@@ -719,17 +695,11 @@ export const postsRouter = createTRPCRouter({
           });
 
           const response = tags.map((e) => {
-            const { followers, ...rest } = e;
-            let isFollowing = false;
-            if (ctx.session?.user) {
-              isFollowing = followers.some(
-                (follower) => follower.id === ctx.session?.user?.id
-              );
-            }
-            return {
-              ...rest,
-              isFollowing,
-            };
+            return searchResponseFormater(
+              e,
+              null,
+              ctx.session?.user?.id as string
+            );
           });
 
           result = {
@@ -762,17 +732,11 @@ export const postsRouter = createTRPCRouter({
           });
 
           const res = users.map((e) => {
-            const { followers, ...rest } = e;
-            let isFollowing = false;
-            if (ctx.session?.user) {
-              isFollowing = followers.some(
-                (follower) => follower.id === ctx.session?.user?.id
-              );
-            }
-            return {
-              ...rest,
-              isFollowing,
-            };
+            return searchResponseFormater(
+              null,
+              e,
+              ctx.session?.user?.id as string
+            );
           });
 
           result = {
@@ -783,7 +747,7 @@ export const postsRouter = createTRPCRouter({
           break;
 
         default:
-          const articles = await ctx.prisma.article.findMany({
+          const articles = ctx.prisma.article.findMany({
             where: {
               OR: [
                 { title: { contains: query, mode: "insensitive" } },
@@ -825,10 +789,67 @@ export const postsRouter = createTRPCRouter({
             ],
           });
 
+          const tagsSearch = ctx.prisma.tag.findMany({
+            where: {
+              OR: [
+                { name: { contains: query } },
+                { slug: { contains: query } },
+                { description: { contains: query } },
+              ],
+            },
+            take: 6,
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              followers: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          });
+
+          const usersSearch = ctx.prisma.user.findMany({
+            where: {
+              OR: [
+                { name: { contains: query, mode: "insensitive" } },
+                { username: { contains: query, mode: "insensitive" } },
+              ],
+            },
+            take: 6,
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile: true,
+              followers: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          });
+
+          const [articlesRes, tagsRes, usersRes] =
+            await ctx.prisma.$transaction([articles, tagsSearch, usersSearch]);
+            
           result = {
-            users: null,
-            tags: null,
-            articles,
+            users: usersRes.map((e) => {
+              return searchResponseFormater(
+                null,
+                e,
+                ctx.session?.user?.id as string
+              );
+            }),
+            tags: tagsRes.map((e) => {
+              return searchResponseFormater(
+                e,
+                null,
+                ctx.session?.user?.id as string
+              );
+            }),
+            articles: articlesRes,
           };
       }
 

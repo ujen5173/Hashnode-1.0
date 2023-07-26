@@ -56,7 +56,7 @@ const Stacked: FC<{
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-[2]">
                     <Link href={`/u/@${e.user.username}/${e.slug}`}>
-                      <h1 className="mb-2 text-3xl font-bold text-gray-700 dark:text-text-secondary">
+                      <h1 className="mb-2 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
                         {e.title}
                       </h1>
                     </Link>
@@ -82,7 +82,7 @@ const Stacked: FC<{
                           e.cover_image
                             ? "max-height-4"
                             : "max-height-3 mb-0 w-full md:mb-3"
-                        } break-words text-base text-gray-500 dark:text-text-primary`}
+                        } break-words text-center text-base text-gray-500 dark:text-text-primary`}
                       >
                         {limitText(removeMd(e.content), 150)}
                       </p>

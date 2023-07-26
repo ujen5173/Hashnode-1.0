@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
 import removeMd from "remove-markdown";
 import { ArticleActions } from "~/component/miniComponent";
@@ -48,6 +49,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             <h1 className="mb-6 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:mb-8 md:w-11/12 md:text-5xl md:leading-tight">
               {article.title}
             </h1>
+
             {article?.subtitle && (
               <h2 className="mx-auto mb-5 w-full text-center text-xl font-normal text-gray-600 dark:text-text-primary sm:w-10/12 md:mb-10 md:text-3xl">
                 {article?.subtitle}
@@ -68,6 +70,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
                   draggable={false}
                   className="h-8 w-8 overflow-hidden rounded-full object-cover"
                 />
+
                 <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
                   {article.user.name}
                 </h1>
@@ -95,15 +98,19 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             <div
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
               className="article mx-auto mb-10 w-full break-words md:w-11/12 lg:w-10/12 xl:w-full"
-            ></div>
+            />
           </div>
+
           <ArticleActions
             article={article}
             setCommentsModal={setCommentsModal}
             commentsCount={commentsCount}
           />
+
           <ArticleTags tags={article.tags} />
+
           {article.user && <ArticleAuthor author={article.user as User} />}
+
           {commentsModal && (
             <CommentsModal
               id={article.id}
@@ -113,6 +120,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
               setCommentsCount={setCommentsCount}
             />
           )}
+
           {article.series && (
             <SeriesSection series={article.series} slug={article.slug} />
           )}
@@ -128,6 +136,8 @@ const SeriesSection: FC<{
   slug: string;
   series: { title: string; slug: string };
 }> = ({ series, slug }) => {
+  const username = useRouter().query.username as string;
+
   const { data } = api.series.getSeriesOfArticle.useQuery({
     slug: series.slug,
   });
@@ -139,6 +149,7 @@ const SeriesSection: FC<{
           <h1 className="mb-1 text-sm font-bold text-gray-500 dark:text-text-primary">
             ARTICLE SERIES
           </h1>
+
           <span className="text-lg font-bold text-secondary hover:underline">
             <Link href={`/series/${series.slug}`}>{series.title}</Link>
           </span>
@@ -160,27 +171,34 @@ const SeriesSection: FC<{
                 >
                   <h1 className="text-lg font-black">{index + 1}</h1>
                 </div>
+
                 <div className="flex flex-1 items-center gap-4">
-                  <div>
+                  <Link target="_blank" href={`/u/${username}/${article.slug}`}>
                     <h1 className="max-height-two mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
                       {article.title}
                     </h1>
-                    <h1 className="max-height-two mb-2 text-lg text-gray-500 dark:text-text-primary">
+
+                    <p className="max-height-two mb-2 text-lg text-gray-500 dark:text-text-primary">
                       {article?.subtitle || removeMd(article.content)}
-                    </h1>
-                  </div>
+                    </p>
+                  </Link>
                 </div>
+
                 {!article?.cover_image && (
-                  <div className="w-full md:w-1/4">
+                  <Link
+                    target="_blank"
+                    className="w-full md:w-1/4"
+                    href={`/u/${username}/${article.slug}`}
+                  >
                     <Image
                       src={article.cover_image || "/hashnode-social-banner.png"}
                       alt={article.title}
                       width={1200}
                       height={800}
                       draggable={false}
-                      className="w-full overflow-hidden rounded-md object-cover"
+                      className="w-full overflow-hidden rounded-md border border-border-light object-cover dark:border-border"
                     />
-                  </div>
+                  </Link>
                 )}
               </div>
             ))}
@@ -195,7 +213,7 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
     <div className="mx-auto my-10 flex w-11/12 flex-wrap items-center justify-center gap-2 lg:w-8/12">
       {tags.map((tag) => (
         <Link href={`/tag/${tag.slug}`} key={tag.id}>
-          <span className="block rounded-md border border-border-light bg-light-bg px-4 py-2 text-sm text-gray-700 hover:shadow-md dark:border-border dark:bg-primary-light dark:text-text-secondary dark:hover:bg-border">
+          <span className="block rounded-md border border-border-light bg-light-bg px-4 py-2 text-sm font-medium text-gray-700 hover:shadow-md dark:border-border dark:bg-primary-light dark:text-text-secondary dark:hover:bg-border">
             {tag.name}
           </span>
         </Link>

@@ -26,6 +26,7 @@ import {
   Sponsors,
   Widgets,
 } from "~/component";
+import { Navigation } from "~/component/macroComponent/Dashboard";
 import DashboardSEO from "~/SEO/Dashboard.seo";
 import { authOptions } from "~/server/auth";
 import {
@@ -37,7 +38,6 @@ import {
   Pen,
   Redirect,
 } from "~/svgs";
-import { dashboardNavigations } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 
 // All dashboard navigations
@@ -99,15 +99,17 @@ const Dashboard = () => {
 
       <div className="bg-light-bg dark:bg-black">
         <div className="mx-auto max-w-[1550px] gap-4 py-8 sm:px-4">
-          <div className="mb-6 flex w-full flex-col items-center justify-between rounded-md border border-border-light bg-white px-6 py-8 dark:border-border dark:bg-primary sm:flex-row">
+          <header className="mb-6 flex w-full flex-col items-center justify-between rounded-md border border-border-light bg-white px-6 py-8 dark:border-border dark:bg-primary sm:flex-row">
             <div className="mb-4 flex w-full max-w-[20rem] cursor-pointer items-center justify-between rounded-full border border-border-light bg-light-bg px-4 py-2 hover:bg-border-light dark:border-border dark:bg-primary-light dark:hover:bg-border sm:mb-0">
               <div className="flex items-center gap-2">
                 <div className="rounded-md bg-white p-1">
                   <LogonoText className="h-6 w-6 fill-secondary" />
                 </div>
 
-                <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
-                  {session?.user.name}&apos;s Blog
+                <h1 className="text-lg font-bold text-gray-700 dark:text-text-secondary">
+                  {session?.user.handle?.name === session?.user.name
+                    ? `${session?.user.handle?.name as string}' Blog`
+                    : session?.user.handle?.name}
                 </h1>
               </div>
 
@@ -127,144 +129,18 @@ const Dashboard = () => {
                 </div>
               </Link>
             </div>
-          </div>
+          </header>
 
-          <div className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
-            <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
-              Welcome to your new blog! What&apos;s next?
-            </h1>
-
-            <div className="flex flex-wrap gap-4">
-              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-                <div className="absolute right-4 top-4">
-                  <Pen className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
-                </div>
-
-                <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
-
-                <div className="flex-1">
-                  <h1 className="mb-2  text-xl font-semibold text-secondary">
-                    Write your first article
-                  </h1>
-
-                  <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-                    Share your thoughts, and connect with the community by
-                    writing your first article.
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-                <div className="absolute right-4 top-4">
-                  <Customize className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
-                </div>
-
-                <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
-
-                <div className="flex-1">
-                  <h1 className="mb-2 text-xl  font-semibold text-secondary">
-                    Customizing the appearance
-                  </h1>
-
-                  <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-                    Personalize the design of your blog and showcase your
-                    personality.
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-                <div className="absolute right-4 top-4">
-                  <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
-                </div>
-
-                <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
-
-                <div className="flex-1">
-                  <h1 className="mb-2 text-xl  font-semibold text-secondary">
-                    Map a custom domain
-                  </h1>
-
-                  <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-                    Change your hashnode.dev blog URL to a custom domain of your
-                    choice for free!
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Roadmap />
 
           {/* main dashboard navigations */}
-          <div className="flex gap-4">
-            <div className="w-[18rem] overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
-              {dashboardNavigations.map((dashboard, index) => {
-                const state = paths.dashboard
-                  ? paths.dashboard[0] === dashboard.name.toLowerCase()
-                    ? true
-                    : false
-                  : dashboard.name === "General"
-                  ? true
-                  : false;
-                return (
-                  <div
-                    key={dashboard.id}
-                    // the className logic is just to add margings in divider navigations.
-                    // You can see the navigations is divided into 3 parts. so to add margin in between them, I have added this logic
-                    className={`
-                      ${
-                        index === 2 ||
-                        index === 5 ||
-                        index === 11 ||
-                        index === 13 ||
-                        index === 15
-                          ? "mb-2 border-b border-border-light dark:border-border"
-                          : ""
-                      }
-                      `}
-                  >
-                    <Link
-                      href={`/${session?.user.id as string}${dashboard.link}`}
-                    >
-                      <div
-                        className={`flex w-full cursor-pointer items-center gap-2 px-6 py-4 
-                        ${
-                          index === 2 ||
-                          index === 5 ||
-                          index === 11 ||
-                          index === 13 ||
-                          index === 15
-                            ? "mb-2"
-                            : ""
-                        }
-                        ${
-                          state
-                            ? "bg-secondary"
-                            : "hover:bg-gray-200 dark:hover:bg-primary-light"
-                        }
-                        `}
-                      >
-                        {dashboard.icon(state)}
-
-                        <span
-                          className={`text-base ${
-                            state
-                              ? "text-white"
-                              : "text-gray-700 dark:text-text-secondary"
-                          }`}
-                        >
-                          {dashboard.name}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                );
-              })}
-            </div>
-
+          <main className="flex gap-4">
+            <Navigation paths={paths} userId={session?.user.id as string} />
+            {/* dashboard component */}
             <div className="min-h-[40rem] flex-1 overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
               {dashboardName}
             </div>
-          </div>
+          </main>
         </div>
       </div>
     </>
@@ -299,4 +175,72 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       session: JSON.parse(JSON.stringify(session)) as Session,
     },
   };
+};
+
+const Roadmap = () => {
+  return (
+    <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
+      <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
+        Welcome to your new blog! What&apos;s next?
+      </h1>
+
+      <div className="flex flex-wrap gap-4">
+        <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+          <div className="absolute right-4 top-4">
+            <Pen className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+          </div>
+
+          <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+
+          <div className="flex-1">
+            <h1 className="mb-2  text-xl font-semibold text-secondary">
+              Write your first article
+            </h1>
+
+            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+              Share your thoughts, and connect with the community by writing
+              your first article.
+            </p>
+          </div>
+        </div>
+
+        <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+          <div className="absolute right-4 top-4">
+            <Customize className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+          </div>
+
+          <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+
+          <div className="flex-1">
+            <h1 className="mb-2 text-xl  font-semibold text-secondary">
+              Customizing the appearance
+            </h1>
+
+            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+              Personalize the design of your blog and showcase your personality.
+            </p>
+          </div>
+        </div>
+
+        <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+          <div className="absolute right-4 top-4">
+            <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+          </div>
+
+          <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+
+          <div className="flex-1">
+            <h1 className="mb-2 text-xl  font-semibold text-secondary">
+              Map a custom domain
+            </h1>
+
+            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+              Change your hashnode.dev blog URL to a custom domain of your
+              choice for free!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };

@@ -4,9 +4,10 @@ import { Trending } from "~/svgs";
 import { api } from "~/utils/api";
 import { asideItems, HashnodeSocials } from "~/utils/constants";
 import { type TrendingTagsTypes } from "~/utils/context";
-import { Navigation, TrendingNavigation } from "../card";
+import { TrendingNavigation } from "../card";
 import { TrendingTextLoading } from "../loading";
 import { Divider } from "../miniComponent";
+import AsideNavigation from "./AsideNavigation";
 
 const Aside = () => {
   const { data: tagsData, isLoading } = api.tags.getTredingTags.useQuery(
@@ -28,6 +29,7 @@ const Aside = () => {
           trendingItems={{ data: tagsData, isLoading: isLoading }}
         />
         <SocialHandles />
+
         <div className="w-4/12 px-4">
           <Divider />
         </div>
@@ -49,14 +51,14 @@ const Navigations = () => {
     <div className="pb-2">
       {asideItems.map((item, index) => {
         return item.type !== "link" ? (
-          <Navigation key={index} item={item} />
+          <AsideNavigation key={index} item={item} />
         ) : (
           <Link
             aria-label={`Go to ${item.name} Page`}
-            href={item.href || ""}
+            href={item.href}
             key={index}
           >
-            <Navigation item={item} />
+            <AsideNavigation item={item} />
           </Link>
         );
       })}
@@ -105,6 +107,8 @@ const SocialHandles = () => {
         <li key={index}>
           <a
             target="_blank"
+            aria-label={`Follow us on ${item.name}`}
+            title={`Follow us on ${item.name}`}
             className={`btn-social-icon flex h-10 w-10 items-center justify-center ${
               item.name === "Twitter"
                 ? "hover:bg-twitterColor"

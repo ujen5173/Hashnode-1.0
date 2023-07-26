@@ -17,8 +17,6 @@ const Series = () => {
     }
   );
 
-  console.log({ data });
-
   return (
     <section className="relative w-full p-8">
       <header className="mb-4 flex items-center justify-between">

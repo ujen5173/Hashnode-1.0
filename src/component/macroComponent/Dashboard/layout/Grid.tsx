@@ -70,9 +70,10 @@ const Grid: FC<{
                   />
                 </div>
               </Link>
+
               <div className="">
                 <Link href={`/u/@${e.user.username}/${e.slug}`}>
-                  <h1 className="mb-2 text-3xl font-bold text-gray-700 dark:text-text-secondary">
+                  <h1 className="mb-2 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
                     {e.title}
                   </h1>
                 </Link>
@@ -84,6 +85,7 @@ const Grid: FC<{
                   <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
                     {formatDate(e.createdAt)}
                   </p>
+
                   <div className="flex items-center gap-2">
                     <Book className="h-4 w-4 fill-secondary" />
                     <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
@@ -94,7 +96,7 @@ const Grid: FC<{
 
                 <Link href={`/u/@${e.user.username}/${e.slug}`}>
                   <p
-                    className={`break-words text-base text-gray-500 dark:text-text-primary`}
+                    className={`break-words text-center text-base text-gray-500 dark:text-text-primary`}
                   >
                     {limitText(removeMd(e.content), 150)}
                   </p>
