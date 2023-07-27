@@ -61,12 +61,18 @@ const Input: FC<Props> = ({
           id={name}
           type={input_type}
           className={`text-${fontSize} ${
+            fontSize === "xl" || fontSize === "2xl"
+              ? "font-semibold"
+              : fontSize === "3xl"
+              ? "font-bold"
+              : "font-medium"
+          } ${
             variant === "FILLED"
               ? "input-filled"
               : variant === "ROUNDED"
               ? "input-primary"
               : variant === "TRANSPARENT"
-              ? "mb-4 w-full bg-transparent py-2 font-bold text-gray-700 outline-none dark:text-text-secondary"
+              ? "mb-4 w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
               : "input-outline"
           } w-full ${opacity ? "input-with-opacity" : ""}`}
           placeholder={placeholder}
@@ -84,6 +90,12 @@ const Input: FC<Props> = ({
         <>
           <textarea
             className={`text-${fontSize} ${
+              fontSize === "xl" || fontSize === "2xl"
+                ? "font-semibold"
+                : fontSize === "3xl"
+                ? "font-bold"
+                : "font-medium"
+            } ${
               variant === "FILLED"
                 ? "input-filled"
                 : variant === "ROUNDED"

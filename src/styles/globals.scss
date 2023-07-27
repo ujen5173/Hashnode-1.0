@@ -516,6 +516,7 @@ body.dark .mantine-Tooltip-tooltip.mantine-iu41h {
   box-shadow: 0 0 0 1px rgba(30, 41, 59, 0.05),
     0px 10px 20px rgba(30, 41, 59, 0.1);
 }
+
 .mantine-Tooltip-tooltip.mantine-iu41h {
   background: #f8fafc;
   color: #111;
@@ -526,4 +527,24 @@ body.dark .mantine-Tooltip-tooltip.mantine-iu41h {
 input.appearence-radio-button:checked + label > img {
   border-color: #4d7ee7;
   border-width: 3px;
+}
+
+.gradient-button {
+  padding: 0.5rem 1rem;
+  border-radius: 45px;
+  &:hover {
+    background: linear-gradient(
+      208.15deg,
+      rgba(52, 102, 246, 0.1) -4.22%,
+      rgba(52, 102, 246, 0.1) -4.21%,
+      rgba(124, 58, 237, 0.1) 102.68%
+    );
+    background-color: transparent !important;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(to bottom right, #2563eb, #9333ea);
+  color: transparent !important;
+  background-clip: text;
 }

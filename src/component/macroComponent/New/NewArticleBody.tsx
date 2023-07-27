@@ -1,15 +1,17 @@
 import { useClickOutside } from "@mantine/hooks";
-import { TRPCClientError } from "@trpc/client";
 import Image from "next/image";
 import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 import { useDebouncedCallback } from "use-debounce";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
+import { Times } from "~/svgs";
 import ImagePreview from "~/svgs/ImagePreview";
+import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { slugSetting } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
-import { handleImageChange } from "~/utils/miniFunctions";
+import { imageToBlogHandler } from "~/utils/miniFunctions";
+import { useUploadThing } from "~/utils/uploadthing";
 import NewArticleModal from "../../popup/NewArticleModal";
 
 export interface ArticleData {
@@ -17,6 +19,7 @@ export interface ArticleData {
   subtitle?: string;
   content: string;
   cover_image?: string;
+  cover_imageKey?: string;
   tags: string[];
   slug: string;
   series?: string;
@@ -39,7 +42,7 @@ const NewArticleBody: FC<{
   setPublishing,
   setSavedState,
 }) => {
-  const { handleChange } = useContext(C) as ContextValue;
+  const { handleChange, theme } = useContext(C) as ContextValue;
   const [query, setQuery] = useState("");
   // const [createTagState, setCreateTagState] = useState(false);
 
@@ -56,10 +59,11 @@ const NewArticleBody: FC<{
     cover_image: undefined,
     series: undefined,
     tags: [],
+    cover_imageKey: undefined,
     slug: "",
     seoTitle: "",
     seoDescription: "",
-    seoOgImage: "",
+    seoOgImage: undefined,
     disabledComments: false,
   });
 
@@ -80,77 +84,88 @@ const NewArticleBody: FC<{
     void debounced();
   }, [data]);
 
-  const [file, setFile] = React.useState<string | null>(null);
-  const [fileModal, setFileModal] = React.useState<boolean>(false); // open and close file upload modal
+  const [fileModal, setFileModal] = React.useState(false); // open and close file upload modal
   const ref = useClickOutside<HTMLDivElement>(() => setFileModal(false));
 
-  useEffect(() => {
-    // useEffect to fill up the cover image
-    if (file) {
-      setData((prev) => ({
-        ...prev,
-        cover_image: file,
-      }));
-    }
-  }, [file]);
-
-  const handleImage = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    try {
-      const fileData = await handleImageChange(file);
-      setFile(fileData);
-      setFileModal(false);
-    } catch (error) {
-      if (error instanceof TRPCClientError) {
-        toast.error(error.message);
-      }
-    }
-  };
+  const { startUpload, isUploading } = useUploadThing("imageUploader");
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto w-full max-w-[1000px] px-4 py-6">
         <div className="relative mb-5 flex items-center gap-2">
-          <button
-            onClick={() => setFileModal((prev) => !prev)}
-            className="btn-subtle flex items-center justify-center gap-2"
-          >
-            <ImagePreview className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
-            <span>{"Add Cover"}</span>
-          </button>
+          {isUploading ? (
+            <span className="flex items-center gap-2 px-4 py-2">
+              <LoadingSpinner className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+              <span className="text-gray-500 dark:text-text-primary">
+                {"Uploading..."}
+              </span>
+            </span>
+          ) : (
+            <>
+              <button
+                onClick={() => setFileModal((prev) => !prev)}
+                className="btn-subtle flex items-center justify-center gap-2"
+              >
+                <ImagePreview className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+                <span className="text-gray-500 dark:text-text-primary">
+                  {"Add Cover"}
+                </span>
+              </button>
 
-          {fileModal && (
-            <div
-              ref={ref}
-              className="absolute left-0 top-full z-30 mt-2 w-full sm:w-96"
-            >
-              <ImagePlaceholder
-                file={file}
-                minHeight={"10rem"}
-                handleChange={async (event) => await handleImage(event)}
-                recommendedText="Recommended dimension is 1600 x 840"
-              />
-            </div>
+              {fileModal && (
+                <div
+                  ref={ref}
+                  className="absolute left-0 top-full z-30 mt-2 w-full sm:w-96"
+                >
+                  <ImagePlaceholder
+                    minHeight={"10rem"}
+                    recommendedText="Recommended dimension is 1600 x 840"
+                    handleChange={async (event) => {
+                      // here we are handling the image upload and preview.
+                      setFileModal(false);
+                      const file = event?.target?.files?.[0];
+                      if (!file) return;
+                      const image = await imageToBlogHandler(file);
+                      if (!image) return;
+                      if (isUploading) {
+                        toast.error("Already uploading");
+                        return;
+                      }
+                      const uploaded = await startUpload([image]);
+                      if (!uploaded) {
+                        toast.error("Error uploading image");
+                        return;
+                      }
+                      setData((prev) => ({
+                        ...prev,
+                        cover_image: uploaded[0]?.fileUrl,
+                        cover_imageKey: uploaded[0]?.fileKey,
+                      }));
+                    }}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
 
-        {file && (
-          <>
-            <div className="mb-5 w-full rounded-md border border-border-light dark:border-border">
-              <Image
-                src={file ? file : "/images/placeholder.png"}
-                alt="cover"
-                width={1600}
-                height={840}
-                className="max-h-[30rem] w-full rounded-md object-cover"
-              />
-            </div>
-          </>
+        {data.cover_image && (
+          <div className="relative mb-5 w-full rounded-md border border-border-light dark:border-border">
+            <button className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2">
+              <Times className="h-5 w-5 fill-gray-700 stroke-none" />
+            </button>
+            <Image
+              src={
+                data.cover_image || theme === "dark"
+                  ? "/imagePlaceholder-dark.avif"
+                  : "/imagePlaceholder-light.avif"
+              }
+              alt="cover"
+              width={1600}
+              height={840}
+              className="max-h-[30rem] w-full rounded-lg object-cover"
+            />
+          </div>
         )}
 
         <section className="px-2">

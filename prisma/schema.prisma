@@ -158,6 +158,7 @@ model Article {
     id               String    @id @default(cuid())
     title            String
     cover_image      String?
+    cover_imageKey   String?
     user             User      @relation("author", fields: [userId], references: [id], onDelete: Cascade)
     userId           String
     content          String

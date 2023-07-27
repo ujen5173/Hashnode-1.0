@@ -1,7 +1,7 @@
 import {
   NotificationTypes,
   type Prisma,
-  type PrismaClient
+  type PrismaClient,
 } from "@prisma/client";
 import { type DefaultArgs } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
@@ -13,18 +13,26 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure
+  publicProcedure,
 } from "~/server/api/trpc";
 import { type ArticleCardWithComments } from "~/types";
 import {
   displayUniqueObjects,
   selectArticleCard,
-  slugSetting
+  slugSetting,
 } from "~/utils/constants";
 import {
   refactorActivityHelper,
-  type Activity
+  type Activity,
 } from "./../../../utils/microFunctions";
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 
 const getArticlesWithUserFollowingProfiles = async (
   ctx: {
@@ -457,8 +465,8 @@ export const postsRouter = createTRPCRouter({
     }),
 
   new: protectedProcedure
-    .input(
-      z.object({
+    .input({
+      ...z.object({
         title: z
           .string()
           .min(5, "Title should be atleset of 5 characters")
@@ -468,16 +476,17 @@ export const postsRouter = createTRPCRouter({
           .string()
           .min(25, "Content should be atleast of 25 characters")
           .trim(),
+        cover_image: z.string().optional(),
+        cover_imageKey: z.string().optional(),
         tags: z.array(z.string().trim()).optional().default([]),
         slug: z.string().trim(),
-        series: z.string().optional().nullable(),
-        seoTitle: z.string().trim().optional().nullable(),
-        seoDescription: z.string().trim().optional().nullable(),
-        seoOgImage: z.string().trim().optional().nullable(),
-        cover_image: z.string().trim().optional().nullable(),
+        series: z.string().optional(),
+        seoTitle: z.string().trim().optional(),
+        seoDescription: z.string().trim().optional(),
+        seoOgImage: z.string().trim().optional(),
         disabledComments: z.boolean().optional().default(false),
-      })
-    )
+      }),
+    })
     .mutation(async ({ ctx, input }) => {
       try {
         const { slug, tags } = input;
@@ -596,6 +605,7 @@ export const postsRouter = createTRPCRouter({
           redirectLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
         };
       } catch (error) {
+        console.log(error);
         if (error instanceof TRPCError) {
           throw error;
         } else {
@@ -833,7 +843,7 @@ export const postsRouter = createTRPCRouter({
 
           const [articlesRes, tagsRes, usersRes] =
             await ctx.prisma.$transaction([articles, tagsSearch, usersSearch]);
-            
+
           result = {
             users: usersRes.map((e) => {
               return searchResponseFormater(

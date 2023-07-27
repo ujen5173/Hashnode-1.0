@@ -136,7 +136,7 @@ const NewArticleModal: FC<Props> = ({
 
   const handlePublish = async () => {
     if (!data.title || !data.content) {
-      alert("Please fill up the title and content");
+      toast.error("Please fill up the title and content");
       return;
     }
 
@@ -164,6 +164,7 @@ const NewArticleModal: FC<Props> = ({
         toast.error(error.message);
       }
     }
+
     setPublishing(false);
   };
 
@@ -320,7 +321,6 @@ const NewArticleModal: FC<Props> = ({
               <ImagePlaceholder
                 title="CUSTOM OG IMAGE"
                 description="Upload an image to display when your article is embedded online or on social network feeds. Recommended dimensions: 1200px X 630px. If you don't have one, your cover image will be used instead."
-                file={file}
                 handleChange={async (event) => await handleImage(event)}
                 recommendedText="Recommended dimension is 1600 x 840"
               />

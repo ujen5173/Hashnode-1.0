@@ -31,9 +31,12 @@ export const wait = (time: number): Promise<void> =>
   new Promise((resolve) => setTimeout(() => resolve(), time * 1000));
 
 export const handleImageChange = (file: File): Promise<string | null> => {
-  return new Promise<string | null>((resolve, reject) => {
-    if (!file) reject("No file uploaded");
-    resolve(URL.createObjectURL(file) || "");
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   });
 };
 
@@ -92,3 +95,34 @@ export function isValidURL(url: string): boolean {
     return false;
   }
 }
+
+export const dataURLToBlob = async (dataUrl: string): Promise<Blob> => {
+  const response = await fetch(dataUrl);
+  const blob = await response.blob();
+  return blob;
+};
+
+export const imageToBlogHandler = (file: File): Promise<File | null> => {
+  return new Promise((resolve, reject) => {
+    if (!file) resolve(null);
+
+    // Create a new FileReader to read the contents of the image
+    const reader = new FileReader();
+
+    // Event listener for when the FileReader has finished reading the image
+    reader.onload = async function (event) {
+      const dataUrl = event.target?.result as string; // Get the data URL representation of the image
+      const blob = await dataURLToBlob(dataUrl); // Convert data URL to Blob
+      const imageFile = new File([blob], file.name, { type: file.type }); // Create a new File object
+      resolve(imageFile);
+    };
+
+    // Event listener for when an error occurs during file reading
+    reader.onerror = function (event) {
+      reject(event.target?.error);
+    };
+
+    // Read the selected image as a data URL
+    reader.readAsDataURL(file);
+  });
+};

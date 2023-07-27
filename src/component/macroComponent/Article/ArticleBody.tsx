@@ -5,7 +5,7 @@ import { useContext, useEffect, useState, type FC } from "react";
 import removeMd from "remove-markdown";
 import { ArticleActions } from "~/component/miniComponent";
 import { CommentsModal } from "~/component/popup";
-import { Book, Check, Follow } from "~/svgs";
+import { Book, Check, Follow, Settings } from "~/svgs";
 import type { Article, Tag, User } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -26,17 +26,14 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
   return (
     <main className="min-h-screen bg-white pb-12 dark:bg-primary">
       <div className="mx-auto max-w-[1200px]">
-        {!article?.cover_image && (
+        {article?.cover_image && (
           <Image
-            src={
-              article?.cover_image ||
-              "https://cdn.hashnode.com/res/hashnode/image/upload/v1688992349190/b3744811-3074-4284-8961-1cc8a052c83e.png?w=1600&h=840&fit=crop&crop=entropy&auto=compress,format&format=webp"
-            }
+            src={article.cover_image}
             alt={article.title}
             width={1200}
             height={800}
             draggable={false}
-            className="mb-16 w-full overflow-hidden rounded-b-md object-cover px-4"
+            className="w-full overflow-hidden rounded-b-md object-cover px-4"
           />
         )}
 
@@ -223,7 +220,8 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
 };
 
 export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
-  const { following, followUser } = useContext(C) as ContextValue;
+  const { user, following, followUser } = useContext(C) as ContextValue;
+
   return (
     <div className="px-4">
       <div className="mx-auto mb-4 mt-10 w-full border-y border-border-light px-4 py-6 dark:border-border md:w-8/12">
@@ -250,25 +248,35 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                   </h1>
                 </Link>
               </div>
-              <button
-                onClick={followUser}
-                className="btn-outline flex w-max items-center justify-center gap-2 text-secondary"
-              >
-                {following.status ? (
-                  <>
-                    <Check className="h-5 w-5 fill-secondary" />
-                    Following
-                  </>
-                ) : (
-                  <>
-                    <Follow className="h-5 w-5 fill-secondary" />
-                    Follow User
-                  </>
-                )}
-              </button>
+
+              {user?.user.username === author.username ? (
+                <Link href={`/${user?.user.id}/dashboard`}>
+                  <button className="btn-filled mx-4 flex w-full items-center justify-center gap-2 text-secondary md:w-max">
+                    <Settings className="h-5 w-5 fill-white" />
+                    Dashboard
+                  </button>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => void followUser()}
+                  className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+                >
+                  {following.status ? (
+                    <>
+                      <Check className="h-5 w-5 fill-secondary" />
+                      <span>Following</span>
+                    </>
+                  ) : (
+                    <>
+                      <Follow className="h-5 w-5 fill-secondary" />
+                      <span>Follow User</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
             {author?.handle?.about && (
-              <div className="mt-2 sm:mt-4 md:mt-8">
+              <div className="mt-2 sm:mt-4">
                 <p className="text-base text-gray-600 dark:text-text-primary">
                   {author.handle.about}
                 </p>

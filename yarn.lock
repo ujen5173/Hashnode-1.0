@@ -844,6 +844,23 @@
     "@typescript-eslint/types" "5.59.6"
     eslint-visitor-keys "^3.3.0"
 
+"@uploadthing/mime-types@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@uploadthing/mime-types/-/mime-types-0.2.0.tgz#71eec4d51b9ecd96ddf5a3fc1483625b1a8a8ae6"
+  integrity sha512-nRcdyM622+GYT9SdaJIVLknqoc8i7krItinfuBPtvmPc+UNGDJ+pMkr4AatYp88cEc4iYtPlN8flJvZ3dNtgrg==
+
+"@uploadthing/react@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@uploadthing/react/-/react-5.2.0.tgz#1951076c5324b85f0392ae256ed53fab2791590a"
+  integrity sha512-kVM/3JZJhMgk2QGvyhyqPA5Zycq9TaqgCg/MNWvWDSgzw5MKeMyiXsEAJEQ7jO1BBjAfZ0O0NCM0VXCXuMLkPQ==
+  dependencies:
+    "@uploadthing/shared" "^5.1.0"
+
+"@uploadthing/shared@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@uploadthing/shared/-/shared-5.1.0.tgz#aa116e4e022c2876ea716e0dd22c60ee70f78db5"
+  integrity sha512-3pt9PFN0QuAvCv2LZyC66Bcn+zDUbh8Ws3noYHIlr2BFIvsH0zs2oVG+WXhb+9Nunu8+DER6iol7frza5rldIA==
+
 acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
@@ -4345,6 +4362,14 @@ update-browserslist-db@^1.0.10:
   dependencies:
     escalade "^3.1.1"
     picocolors "^1.0.0"
+
+uploadthing@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/uploadthing/-/uploadthing-5.2.1.tgz#63dfe657c39966d90917673bd33a544c4c3e1988"
+  integrity sha512-vav6UwvEOzBSoPYHGsM6PksyAmyUoPPylkcveTgAUWVS5kKWaaxcOlgStShveTUo3JnoKD2E9Z2+z1BWXALv8A==
+  dependencies:
+    "@uploadthing/mime-types" "^0.2.0"
+    "@uploadthing/shared" "^5.1.0"
 
 uri-js@^4.2.2:
   version "4.4.1"
