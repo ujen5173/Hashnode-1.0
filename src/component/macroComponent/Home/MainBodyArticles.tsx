@@ -47,8 +47,6 @@ const MainBodyArticles = () => {
     }
   );
 
-  console.log({ data });
-
   const [articles, setArticles] = useState({ data, isLoading: isFetching });
 
   useEffect(() => {

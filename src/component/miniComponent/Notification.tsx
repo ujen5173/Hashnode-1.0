@@ -32,7 +32,7 @@ const Notification = () => {
         </h1>
       </div>
 
-      <header className="scroll-area overflow-auto border-b border-border-light px-4 dark:border-border">
+      <header className="scroll-area relative overflow-auto border-b border-border-light px-4 dark:border-border">
         <div className="flex w-max items-end justify-center gap-2">
           {notificationNavigation(notificationType).map((type) => (
             <button
@@ -50,15 +50,15 @@ const Notification = () => {
         </div>
       </header>
 
-      <section className="relative min-h-[20rem] w-full flex-1 text-center">
+      <section className="min-h-[20rem] w-full flex-1 text-center">
         <NotificationContainer res={notificationType} />
-
-        <div className="sticky bottom-0 left-0 border-t border-border-light bg-white p-4 dark:border-border dark:bg-black">
-          <Link href="/notifications" className="font-semibold text-secondary">
-            See all notifications
-          </Link>
-        </div>
       </section>
+
+      <div className="sticky bottom-0 left-0 border-t border-border-light bg-white p-4 dark:border-border dark:bg-black">
+        <Link href="/notifications" className="font-semibold text-secondary">
+          See all notifications
+        </Link>
+      </div>
     </div>
   ) : (
     <div className="w-72 rounded-md border border-border-light bg-white p-6 shadow-md dark:border-border dark:bg-primary">

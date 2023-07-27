@@ -69,13 +69,13 @@ const SearchArticle: FC<Props> = ({ data }) => {
         </div>
 
         {data.cover_image && (
-          <div className="relative hidden lg:block">
+          <div className="relative hidden sm:block">
             <Image
               src={data.cover_image}
               alt={data.title}
               width={600}
               height={600}
-              className="w-44 select-none overflow-hidden rounded-xl"
+              className="w-52 select-none overflow-hidden rounded-xl"
               draggable={false}
             />
           </div>

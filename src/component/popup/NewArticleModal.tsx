@@ -8,7 +8,7 @@ import { Times } from "~/svgs";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
-import { handleImageChange } from "~/utils/miniFunctions";
+import { imageToBlogHandler } from "~/utils/miniFunctions";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 import { ImagePlaceholder, SelectSeries, SelectTags } from "../miniComponent";
 
@@ -22,6 +22,18 @@ interface Props {
 
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
+  startUpload: (
+    files: File[],
+    input?: undefined
+  ) => Promise<
+    | {
+        fileUrl: string;
+        fileKey: string;
+      }[]
+    | undefined
+  >;
+
+  isUploading: boolean;
   // createTagState: boolean;
   // setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -36,12 +48,13 @@ const NewArticleModal: FC<Props> = ({
 
   query,
   setQuery,
+  startUpload,
+  isUploading,
   // createTagState,
   // setCreateTagState,
 }) => {
   const { user, handleChange } = useContext(C) as ContextValue;
 
-  const [file, setFile] = React.useState<string | null>(null);
   const router = useRouter();
 
   const [requestedTags, setRequestedTags] = React.useState<string[]>([]);
@@ -105,32 +118,6 @@ const NewArticleModal: FC<Props> = ({
       }));
     })();
   }, [requestedTags]);
-
-  const handleImage = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    try {
-      const fileData = await handleImageChange(file);
-      setFile(fileData);
-    } catch (error) {
-      if (error instanceof TRPCClientError) {
-        toast.error(error.message);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (file) {
-      setData((prev) => ({
-        ...prev,
-        seoOgImage: file,
-      }));
-    }
-  }, [file]);
 
   const { mutateAsync } = api.posts.new.useMutation();
 
@@ -320,8 +307,31 @@ const NewArticleModal: FC<Props> = ({
             <div className="relative z-10 mb-8">
               <ImagePlaceholder
                 title="CUSTOM OG IMAGE"
+                image={data.seoOgImage}
+                showImage={true}
+                isUploading={isUploading}
                 description="Upload an image to display when your article is embedded online or on social network feeds. Recommended dimensions: 1200px X 630px. If you don't have one, your cover image will be used instead."
-                handleChange={async (event) => await handleImage(event)}
+                handleChange={async (event) => {
+                  // here we are handling the image upload and preview.
+                  const file = event?.target?.files?.[0];
+                  if (!file) return;
+                  const image = await imageToBlogHandler(file);
+                  if (!image) return;
+                  if (isUploading) {
+                    toast.error("Already uploading");
+                    return;
+                  }
+                  const uploaded = await startUpload([image]);
+                  if (!uploaded) {
+                    toast.error("Error uploading image");
+                    return;
+                  }
+                  setData((prev) => ({
+                    ...prev,
+                    seoOgImage: uploaded[0]?.fileUrl,
+                    seoOgImageKey: uploaded[0]?.fileKey,
+                  }));
+                }}
                 recommendedText="Recommended dimension is 1600 x 840"
               />
             </div>

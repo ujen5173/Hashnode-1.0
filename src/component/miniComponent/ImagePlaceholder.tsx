@@ -1,4 +1,6 @@
+import Image from "next/image";
 import React, { type FC } from "react";
+import LoadingSpinner from "~/svgs/LoadingSpinner";
 import Upload from "~/svgs/Upload";
 
 interface Props {
@@ -8,6 +10,9 @@ interface Props {
   recommendedText?: string;
   minHeight?: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  image?: string;
+  showImage?: boolean;
+  isUploading?: boolean;
 }
 
 const ImagePlaceholder: FC<Props> = ({
@@ -17,6 +22,9 @@ const ImagePlaceholder: FC<Props> = ({
   recommendedText,
   minHeight = "12rem",
   handleChange,
+  image,
+  showImage = false,
+  isUploading = false,
 }) => {
   return (
     <>
@@ -47,16 +55,37 @@ const ImagePlaceholder: FC<Props> = ({
           }}
           className={`relative flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-lg border-2 border-dashed border-border-light bg-light-bg dark:border-border dark:bg-primary-light`}
         >
-          <div className={`flex items-center justify-center gap-2`}>
-            <Upload className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
-            <span className="text-gray-700 dark:text-text-secondary">
-              Upload Image
-            </span>
-          </div>
+          {showImage && image && !isUploading ? (
+            <Image
+              width={1600}
+              height={840}
+              src={image} // it will convert base64 to url
+              alt="preview"
+              className={`${
+                isUploading ? "loading" : ""
+              } h-full w-full rounded-md bg-border-light object-cover dark:bg-border`}
+            />
+          ) : isUploading ? (
+            <div className={`flex items-center justify-center gap-2`}>
+              <LoadingSpinner className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+              <span className="text-gray-700 dark:text-text-secondary">
+                Uploading
+              </span>
+            </div>
+          ) : (
+            <>
+              <div className={`flex items-center justify-center gap-2`}>
+                <Upload className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+                <span className="text-gray-700 dark:text-text-secondary">
+                  Upload Image
+                </span>
+              </div>
 
-          <p className="text-gray-700 dark:text-text-secondary">
-            {recommendedText}
-          </p>
+              <p className="text-gray-700 dark:text-text-secondary">
+                {recommendedText}
+              </p>
+            </>
+          )}
         </div>
       </label>
     </>

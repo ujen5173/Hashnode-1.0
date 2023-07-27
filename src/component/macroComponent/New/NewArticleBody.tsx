@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import slugify from "slugify";
 import { useDebouncedCallback } from "use-debounce";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
+import { NewArticleModal } from "~/component/popup";
 import { Times } from "~/svgs";
 import ImagePreview from "~/svgs/ImagePreview";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
@@ -12,7 +13,6 @@ import { slugSetting } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 import { imageToBlogHandler } from "~/utils/miniFunctions";
 import { useUploadThing } from "~/utils/uploadthing";
-import NewArticleModal from "../../popup/NewArticleModal";
 
 export interface ArticleData {
   title: string;
@@ -26,6 +26,7 @@ export interface ArticleData {
   seoTitle?: string;
   seoDescription?: string;
   seoOgImage?: string;
+  seoOgImageKey?: string;
   disabledComments: boolean;
 }
 
@@ -42,7 +43,7 @@ const NewArticleBody: FC<{
   setPublishing,
   setSavedState,
 }) => {
-  const { handleChange, theme } = useContext(C) as ContextValue;
+  const { handleChange } = useContext(C) as ContextValue;
   const [query, setQuery] = useState("");
   // const [createTagState, setCreateTagState] = useState(false);
 
@@ -64,6 +65,7 @@ const NewArticleBody: FC<{
     seoTitle: "",
     seoDescription: "",
     seoOgImage: undefined,
+    seoOgImageKey: undefined,
     disabledComments: false,
   });
 
@@ -154,16 +156,15 @@ const NewArticleBody: FC<{
             <button className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2">
               <Times className="h-5 w-5 fill-gray-700 stroke-none" />
             </button>
+
             <Image
-              src={
-                data.cover_image || theme === "dark"
-                  ? "/imagePlaceholder-dark.avif"
-                  : "/imagePlaceholder-light.avif"
-              }
+              src={data.cover_image}
               alt="cover"
               width={1600}
               height={840}
-              className="max-h-[30rem] w-full rounded-lg object-cover"
+              className={`${
+                isUploading ? "loading" : ""
+              } max-h-[30rem] w-full rounded-lg object-cover`}
             />
           </div>
         )}
@@ -225,7 +226,7 @@ const NewArticleBody: FC<{
         <div
           className="fixed inset-0 bg-transparent backdrop-blur-[2px]"
           onClick={() => setPublishModal((prev) => !prev)}
-        ></div>
+        />
       )}
 
       <NewArticleModal
@@ -237,6 +238,8 @@ const NewArticleBody: FC<{
         setPublishing={setPublishing}
         query={query}
         setQuery={setQuery}
+        startUpload={startUpload}
+        isUploading={isUploading}
         // createTagState={createTagState}
         // setCreateTagState={setCreateTagState}
       />

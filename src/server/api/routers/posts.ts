@@ -605,7 +605,6 @@ export const postsRouter = createTRPCRouter({
           redirectLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
         };
       } catch (error) {
-        console.log(error);
         if (error instanceof TRPCError) {
           throw error;
         } else {
