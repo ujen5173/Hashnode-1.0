@@ -75,7 +75,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     <header className="border-b border-border-light bg-white px-2 dark:border-border dark:bg-primary sm:px-4 lg:border-none">
       <div className="container mx-auto p-2 sm:px-4">
         <nav className="flex w-full items-center justify-between py-2">
-          <div className="block lg:hidden">
+          <div className="block sm:hidden">
             <button
               arial-label="Hamburger Menu"
               role="button"
@@ -92,7 +92,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
             />
           </div>
 
-          <div className="hidden lg:block">
+          <div className="hidden sm:block">
             <Link
               href={`/u/@${author.username}`}
               className="flex items-center gap-2"
@@ -163,15 +163,15 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
           </div>
         </nav>
 
-        <section className="flex w-full flex-col lg:pb-4 lg:pt-8">
-          <div className="m-4 block lg:hidden">
+        <section className="flex w-full flex-col sm:py-4">
+          <div className="m-4 block sm:hidden">
             <h1 className="text-center text-xl font-semibold text-gray-700 dark:text-text-secondary sm:text-2xl">
               {author.name}&apos;s Blog
             </h1>
           </div>
 
-          <div className="flex w-full flex-col items-center justify-between lg:flex-row-reverse">
-            <div className="mb-4 flex w-full items-center justify-center gap-2 lg:mb-0 lg:w-auto">
+          <div className="flex w-full flex-col items-center justify-between sm:flex-row-reverse">
+            <div className="mb-4 flex w-full items-center justify-center gap-2 sm:mb-0 sm:w-auto">
               {user?.user.username === author.username ? (
                 <Link href={`/${user?.user.id}/dashboard`}>
                   <button className="btn-filled flex w-auto items-center justify-center gap-2 text-secondary md:w-max">

@@ -48,26 +48,35 @@ const UserProfileArea: FC<{
                 @{userDetails?.username}
               </p>
             </div>
+
             <p className="mb-4 text-base font-medium text-gray-500 dark:text-text-primary md:mb-6">
               {userDetails?.tagline}
             </p>
 
             <div className="flex gap-4 text-gray-700 dark:text-text-primary">
-              <span>
-                {Intl.NumberFormat("en-US", {
-                  notation: "compact",
-                  compactDisplay: "short",
-                }).format(+following.followersCount || 0)}{" "}
-                Follower
-              </span>
+              <Link href={`/u/@${userDetails?.username as string}/followers`}>
+                <span className="hover:underline">
+                  <span className="font-medium">
+                    {Intl.NumberFormat("en-US", {
+                      notation: "compact",
+                      compactDisplay: "short",
+                    }).format(+following.followersCount || 0)}{" "}
+                  </span>
+                  Follower
+                </span>
+              </Link>
 
-              <span>
-                {Intl.NumberFormat("en-US", {
-                  notation: "compact",
-                  compactDisplay: "short",
-                }).format(userDetails?.followingCount || 0)}{" "}
-                Following
-              </span>
+              <Link href={`/u/@${userDetails?.username as string}/following`}>
+                <span className="hover:underline">
+                  <span className="font-medium">
+                    {Intl.NumberFormat("en-US", {
+                      notation: "compact",
+                      compactDisplay: "short",
+                    }).format(userDetails?.followingCount || 0)}{" "}
+                  </span>
+                  Following
+                </span>
+              </Link>
             </div>
           </div>
 

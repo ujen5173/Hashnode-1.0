@@ -278,7 +278,7 @@ export const AuthorArea: FC<{
           <h1 className="mb-4 text-2xl font-semibold text-gray-900 dark:text-text-secondary">
             {author.name}
           </h1>
-          <p className="text-center text-base text-gray-500 dark:text-text-primary">
+          <p className="text-center text-lg text-gray-500 dark:text-text-primary">
             {author.handle.about || "No bio added yet!"}
           </p>
         </div>

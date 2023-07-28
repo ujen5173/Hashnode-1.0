@@ -262,6 +262,7 @@ export const usersRouter = createTRPCRouter({
           social: true,
         },
       });
+
       return {
         success: true,
         message: "User Updated",
@@ -272,5 +273,61 @@ export const usersRouter = createTRPCRouter({
           skills: newUser.skills.join(", "),
         },
       };
+    }),
+
+  getFollowersList: protectedProcedure
+    .input(
+      z.object({
+        username: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const followers = await ctx.prisma.user.findMany({
+        where: {
+          following: {
+            some: {
+              username: input.username.slice(1, input.username.length),
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          tagline: true,
+          username: true,
+          profile: true,
+        },
+        take: 20,
+      });
+
+      return followers;
+    }),
+
+  getFollowingList: protectedProcedure
+    .input(
+      z.object({
+        username: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const following = await ctx.prisma.user.findMany({
+        where: {
+          followers: {
+            some: {
+              username: input.username.slice(1, input.username.length),
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          tagline: true,
+          username: true,
+          profile: true,
+        },
+        take: 20,
+      });
+
+      return following;
     }),
 });

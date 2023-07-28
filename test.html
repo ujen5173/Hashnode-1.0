@@ -1,0 +1,386 @@
+<div>
+  <p>
+    Table partitioning is a highly effective technique used to improve the
+    performance of very large database tables. By dividing the table's content
+    into smaller sub-tables, known as partitions, the overall size of the table
+    is reduced, leading to significant performance enhancements.
+  </p>
+  <h2>When should you partition a table?</h2>
+  <ul>
+    <li>
+      <p>
+        If your table is too big for your server's RAM.<br />
+        You should consider partitioning it: when a table reaches a few
+        gigabytes in size, it's time to split it up.
+      </p>
+    </li>
+    <li>
+      <p>
+        If you're working with massive amounts of data<br />
+        Don't bother partitioning until you've got millions of records.
+        Otherwise, you won't see much of a performance boost.
+      </p>
+    </li>
+    <li>
+      <p>
+        If your table can be logically broken down into smaller chunks, Example:
+        you have a table full of server logs. You could split them up by date,
+        so all the logs from the same day are in one single partition. This
+        makes it much easier to do tasks like deleting old logs by just dropping
+        the partition.
+      </p>
+    </li>
+  </ul>
+  <h2><strong>Available partitioning types</strong></h2>
+  <p>
+    Postgres has built-in support for three types of partitioning covering the
+    most common use cases.
+  </p>
+  <h3><strong>Partition by Range</strong></h3>
+  <blockquote>
+    <p>
+      The table is partitioned into “ranges” defined by a key column or a set of
+      columns, with no overlap between the ranges of values assigned to
+      different partitions
+    </p>
+  </blockquote>
+  <p>
+    In the following example, the <em>people</em> table will be partitioned by
+    <em>birth_date</em>
+  </p>
+  <div>
+    <pre><code><span>CREATE</span> <span>TABLE</span> people (
+      <span>id</span> <span>int</span> <span>not</span> <span>null</span>,
+      birth_date <span>date</span> <span>not</span> <span>null</span>,
+      country_code <span>character</span>(<span>2</span>) <span>not</span> <span>null</span>,
+      <span>name</span> <span>text</span>
+  ) <span>PARTITION</span> <span>BY</span> <span>RANGE</span> (birth_date);
+  
+  <span>CREATE</span> <span>TABLE</span> people_y2000 <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>FROM</span> (<span>'2000-01-01'</span>) <span>TO</span> (<span>'2001-01-01'</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_y2001 <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>FROM</span> (<span>'2001-01-01'</span>) <span>TO</span> (<span>'2002-01-01'</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_y2002 <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>FROM</span> (<span>'2002-01-01'</span>) <span>TO</span> (<span>'2003-01-01'</span>);
+  </code></pre>
+  </div>
+  <p>Let’s try it:</p>
+  <div>
+    <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
+     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
+     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
+     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>);
+  &gt; <span>INSERT</span> <span>0</span> <span>3</span>
+  
+  <span>SELECT</span> schemaname,relname,n_live_tup 
+     <span>FROM</span> pg_stat_user_tables 
+     <span>ORDER</span> <span>BY</span> n_live_tup <span>DESC</span>;
+  
+  schemaname  |   relname    | n_live_tup 
+  <span>------------+--------------+------------</span>
+   public     | people_y2000 |          2
+   public     | people_y2001 |          1
+   public     | people_y2002 |          0
+  </code></pre>
+  </div>
+  <p>
+    As you can see we inserted three records into the master table,
+    <em>people.</em> Since the table is partitioned by birth_date, two records
+    have been added to partition <em>people_y2000</em>, one into
+    <em>people_y2001</em> while <em>people_y2002</em> is still empty.
+  </p>
+  <h3><strong>Partition by List</strong></h3>
+  <blockquote>
+    <p>
+      <em
+        >The table is partitioned by explicitly listing which key values appear
+        in each partition.</em
+      >
+    </p>
+  </blockquote>
+  <p>
+    Taking the same example, let’s add a <em>country_code</em> column and use it
+    as the partitioning key
+  </p>
+  <div>
+    <pre><code><span>CREATE</span> <span>TABLE</span> people (
+      <span>id</span> <span>int</span> <span>not</span> <span>null</span>,
+      birth_date <span>date</span> <span>not</span> <span>null</span>,
+      country_code <span>character</span>(<span>2</span>) <span>not</span> <span>null</span>,
+      <span>name</span> <span>text</span>
+  ) <span>PARTITION</span> <span>BY</span> <span>LIST</span> (country_code);
+  
+  <span>-- Partition for people living in Europe</span>
+  <span>CREATE</span> <span>TABLE</span> people_EU <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'AT'</span>, <span>'DE'</span>, <span>'IT'</span>, <span>'FR'</span>, <span>'ES'</span>, ..... );
+  
+  <span>-- Partition for people living in United States</span>
+  <span>CREATE</span> <span>TABLE</span> people_US <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'US'</span>);
+  </code></pre>
+  </div>
+  <p>Let’s try it:</p>
+  <div>
+    <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
+     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
+     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
+     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>);
+  &gt; <span>INSERT</span> <span>0</span> <span>3</span>
+  
+  <span>SELECT</span> schemaname,relname,n_live_tup 
+     <span>FROM</span> pg_stat_user_tables 
+     <span>ORDER</span> <span>BY</span> n_live_tup <span>DESC</span>;
+  
+   schemaname |  relname  | n_live_tup 
+  <span>------------+-----------+------------</span>
+   public     | people_eu |          2
+   public     | people_us |          1
+  </code></pre>
+  </div>
+  <p>Again, PostgreSQL moved every row to the correct partition.</p>
+  <h3><strong>Partition by Hash</strong></h3>
+  <blockquote>
+    <p>
+      <em
+        >The table is partitioned by specifying a modulus and a remainder for
+        each partition. Each partition will hold the rows for which the hash
+        value of the partition key divided by the specified modulus will produce
+        the specified remainder.</em
+      >
+    </p>
+  </blockquote>
+  <p>
+    This type is useful when we can’t logically divide our data, but we can only
+    reduce the table size by spreading rows into many smaller partitions.
+  </p>
+  <p>
+    The following SQL will divide people into three tables, every table will
+    contain (almost) the same number of rows.
+  </p>
+  <div>
+    <pre><code><span>CREATE</span> <span>TABLE</span> people (
+      <span>id</span> <span>int</span> <span>not</span> <span>null</span>,
+      birth_date <span>date</span> <span>not</span> <span>null</span>,
+      country_code <span>character</span>(<span>2</span>) <span>not</span> <span>null</span>,
+      <span>name</span> <span>text</span>
+  ) <span>PARTITION</span> <span>BY</span> <span>HASH</span> (<span>id</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_1 <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>0</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_2 <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>1</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_3 <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>2</span>);
+  </code></pre>
+  </div>
+  <p>Let’s try it:</p>
+  <div>
+    <div>
+      <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
+     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
+     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
+     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>);
+  &gt; <span>INSERT</span> <span>0</span> <span>3</span>
+  
+  <span>SELECT</span> schemaname,relname,n_live_tup 
+     <span>FROM</span> pg_stat_user_tables 
+     <span>ORDER</span> <span>BY</span> n_live_tup <span>DESC</span>;
+  
+   schemaname | relname  | n_live_tup 
+  <span>------------+----------+------------</span>
+   public     | people_1 |          1
+   public     | people_2 |          1
+   public     | people_3 |          1
+  </code></pre>
+    </div>
+    <p>
+      As you can see, the three records have been evenly split across all the
+      partitions available.
+    </p>
+    <h2><strong>Default partition</strong></h2>
+    <p>
+      What happens when you try to insert a record that can’t fit into any
+      partition?
+    </p>
+    <p>
+      Let’s go back to the people table defined in the list partitioning chapter
+      and try to add Linda, from Canada:
+    </p>
+    <div>
+      <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
+    (<span>4</span>, <span>'2002-04-04'</span>, <span>'CA'</span>, <span>'Linda'</span>);
+  
+  ERROR:  no partition of relation "people" found for rowDETAILS: Partition key of the failing row contains (country_code) = (CA).
+  </code></pre>
+    </div>
+    <p>
+      The INSERT will fail because PostgreSQL doesn’t know where to add that
+      record.
+    </p>
+    <p>
+      The most obvious solution would be to add a new partition, but if we have
+      to do it for every country in the world, we would end up with hundreds of
+      tables with a very small number of records. Not really nice.
+    </p>
+    <p>
+      Luckily, it’s possible to define a <strong>DEFAULT</strong> partition!
+    </p>
+    <div>
+      <pre><code><span>CREATE</span> <span>TABLE</span> people_default <span>PARTITION</span> <span>OF</span> people <span>DEFAULT</span>;
+  </code></pre>
+    </div>
+    <p>Trying the same inserts again, it will result in:</p>
+    <div>
+      <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
+     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
+     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
+     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>),
+     (<span>4</span>, <span>'2002-04-04'</span>, <span>'CA'</span>, <span>'Linda'</span>);
+  &gt; <span>INSERT</span> <span>0</span> <span>4</span>
+  
+  schemaname |    relname     | n_live_tup 
+  <span>------------+----------------+------------</span>
+   <span>public</span>     | people_eu      |          <span>2</span>
+   <span>public</span>     | people_us      |          <span>1</span>
+   <span>public</span>     | people_default |          <span>1</span>
+  </code></pre>
+    </div>
+    <p>As you can see, Linda has now been added to <em>people_default</em>.</p>
+    <h2>
+      <strong>Sub Partitioning</strong>
+    </h2>
+    <p>A single partition can also be a partitioned table!</p>
+    <p>
+      Back to the LIST example, we can imagine that people_EU will contain a lot
+      of records, so we may want to subdivide it by hash:
+    </p>
+    <div>
+      <pre><code><span>CREATE</span> <span>TABLE</span> people (
+      <span>id</span> <span>int</span> <span>not</span> <span>null</span>,
+      birth_date <span>date</span> <span>not</span> <span>null</span>,
+      country_code <span>character</span>(<span>2</span>) <span>not</span> <span>null</span>,
+      <span>name</span> <span>text</span>
+  ) <span>PARTITION</span> <span>BY</span> <span>LIST</span> (country_code);
+  
+  <span>CREATE</span> <span>TABLE</span> people_US <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'US'</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_EU <span>PARTITION</span> <span>OF</span> people
+      <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'AT'</span>, <span>'DE'</span>, <span>'IT'</span>, <span>'FR'</span>, <span>'ES'</span>, ..... )
+      <span>PARTITION</span> <span>BY</span> <span>HASH</span> (<span>id</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_EU_1 <span>PARTITION</span> <span>OF</span> people_EU
+      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>0</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_EU_2 <span>PARTITION</span> <span>OF</span> people_EU
+      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>1</span>);
+  
+  <span>CREATE</span> <span>TABLE</span> people_EU_3 <span>PARTITION</span> <span>OF</span> people_EU
+      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>2</span>);
+  </code></pre>
+    </div>
+    <p>This will result in:</p>
+    <div>
+      <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
+     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
+     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
+     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>);
+  &gt; <span>INSERT</span> <span>0</span> <span>3</span>
+  
+  <span>SELECT</span> schemaname,relname,n_live_tup 
+     <span>FROM</span> pg_stat_user_tables 
+     <span>ORDER</span> <span>BY</span> n_live_tup <span>DESC</span>;
+  
+  schemaname |   relname   | n_live_tup 
+  <span>------------+-------------+------------</span>
+   public     | people_eu_2 |          1
+   public     | people_eu_1 |          1
+   public     | people_us   |          1
+   public     | people_eu_3 |          0
+  </code></pre>
+    </div>
+    <h2>
+      <strong>Partition operations</strong>
+    </h2>
+    <h3>
+      <strong>Attaching and detaching partitions</strong>
+    </h3>
+    <p>
+      As we have seen, single partitions can be created and dropped whenever we
+      want, but what if we want to exclude some records from the master table
+      without deleting them?
+    </p>
+    <p>The answer is: <strong>DETACH</strong></p>
+    <div>
+      <pre><code><span>ALTER</span> <span>TABLE</span> people DETACH <span>PARTITION</span> people_us;
+  </code></pre>
+    </div>
+    <p>
+      A detached partition will act as a normal table, so it will be possible to
+      insert records that would violate the partition constraints.
+    </p>
+    <p>The reverse operation, <strong>ATTACH</strong>, is as easy as:</p>
+    <div>
+      <pre><code><span>ALTER</span> <span>TABLE</span> people ATTACH <span>PARTITION</span> people_us <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'US'</span>);
+  </code></pre>
+    </div>
+    <h3>
+      <strong>Indexing</strong>
+    </h3>
+    <p>
+      Too bad, PostgreSQL doesn’t allow to create a single index covering every
+      partition of the table, but you have to create an index for every
+      partition.
+    </p>
+    <p>
+      The bad news about this is that the <strong>primary key</strong>, or any
+      other <strong>unique index</strong>, must include the columns used on the
+      <code>partition by</code> statement.
+    </p>
+    <div>
+      <pre><code><span>-- THIS WON'T WORK</span>
+  
+  <span>CREATE</span> <span>UNIQUE</span> <span>INDEX</span> idx_uniq <span>ON</span> people (<span>id</span>);
+  &gt; ERROR:  insufficient columns in UNIQUE constraint definition
+  &gt; DETAILS: UNIQUE constraint on table "people" lacks column "country_code" which is part of the partition key.
+  
+  
+  <span>-- THIS WORKS!</span>
+  
+  <span>CREATE</span> <span>UNIQUE</span> <span>INDEX</span> idx_uniq <span>ON</span> people (<span>id</span>, country_code);
+  &gt; <span>CREATE</span> <span>INDEX</span>
+  </code></pre>
+    </div>
+    <p>
+      The reason behind this is the fact that every partition is treated as an
+      independent table, so adding the partition key to the index is the only
+      way to grant the uniqueness of a record across the whole table.
+    </p>
+    <p>
+      Note that creating an index on the master table will automatically
+      replicate it to every attached partition:
+    </p>
+    <div>
+      <pre><code>CREATE UNIQUE INDEX idx_uniq ON people (id, country_code);
+  -- Check created indexes
+  
+  SELECT tablename, indexname FROM pg_indexes
+  WHERE schemaname = 'public' ORDER BY tablename, indexname;
+  
+  tablename      | indexname
+  ---------------+-------------------------------------
+  people         | idx_uniq
+  people_default | people_default_id_country_code_idx
+  people_eu      | people_eu_id_country_code_idx
+  </code></pre>
+    </div>
+    <p>
+      And that's all you need to know!<br />Follow me if you liked this article
+      or leave a comment.
+    </p>
+  </div>
+</div>

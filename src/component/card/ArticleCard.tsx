@@ -21,7 +21,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               width={60}
               height={60}
               alt="User Profile"
-              className="mt-2 h-10 w-10 rounded-full object-cover"
+              className="mt-1 h-10 w-10 rounded-full object-cover"
             />
           </div>
         </Link>

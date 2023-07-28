@@ -90,7 +90,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
             <div
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
-              className="article mx-auto w-full break-words pb-10 pt-2 sm:pt-6 md:w-11/12 md:py-10 lg:w-10/12 xl:w-full"
+              className="article mx-auto w-full break-words pb-10 pt-2 sm:pt-6 md:w-11/12 md:py-6 lg:w-10/12 xl:w-full"
             />
           </div>
 
