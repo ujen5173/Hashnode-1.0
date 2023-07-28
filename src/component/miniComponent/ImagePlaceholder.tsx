@@ -68,6 +68,7 @@ const ImagePlaceholder: FC<Props> = ({
           ) : isUploading ? (
             <div className={`flex items-center justify-center gap-2`}>
               <LoadingSpinner className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+
               <span className="text-gray-700 dark:text-text-secondary">
                 Uploading
               </span>
@@ -81,7 +82,7 @@ const ImagePlaceholder: FC<Props> = ({
                 </span>
               </div>
 
-              <p className="text-gray-700 dark:text-text-secondary">
+              <p className="text-center text-gray-700 dark:text-text-secondary">
                 {recommendedText}
               </p>
             </>

@@ -22,15 +22,29 @@ import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 
 const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
-  const [opened, setOpened] = useState(false); // profile dropdown state
-  const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
-  const [notificationOpened, setNotificationOpened] = useState(false); // notification dropdown state
-  const Notificationref = useClickOutside<HTMLDivElement>(() =>
-    setNotificationOpened(false)
-  );
   const { handleTheme, user, setSearchOpen } = useContext(C) as ContextValue;
   const { following, followUser } = useContext(C) as ContextValue;
   const [count, setCount] = useState(0);
+
+  const [opened, setOpened] = useState(false); // notification dropdown state
+  const [control, setControl] = useState<HTMLDivElement | null>(null);
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
+
+  useClickOutside<HTMLDivElement>(() => setOpened(false), null, [
+    control,
+    dropdown,
+  ]);
+
+  const [notificationOpened, setNotificationOpened] = useState(false); // notification dropdown state
+  const [notificationControl, setNotificationControl] =
+    useState<HTMLDivElement | null>(null);
+  const [notificationDropdown, setNotificationDropdown] =
+    useState<HTMLDivElement | null>(null);
+
+  useClickOutside<HTMLDivElement>(() => setNotificationOpened(false), null, [
+    notificationControl,
+    notificationDropdown,
+  ]);
 
   // notifications are refetched every 15 seconds
   const { data, error } = api.notifications.getCount.useQuery(undefined, {
@@ -81,7 +95,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
 
       <div className="relative hidden sm:block">
         <Tooltip label="Notifications" position="bottom" withArrow>
-          <div className="relative">
+          <div className="relative" ref={setNotificationControl}>
             <button
               onClick={() => setNotificationOpened((prev) => !prev)}
               aria-label="icon"
@@ -101,7 +115,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
 
         {notificationOpened && (
           <div
-            ref={Notificationref}
+            ref={setNotificationDropdown}
             className="absolute right-0 top-full z-50 mt-2"
           >
             <Notification />
@@ -142,21 +156,23 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
         role="button"
         className="relative rounded-full"
       >
-        <Image
-          src={user?.user.profile || "/default_user.avif"}
-          alt={user?.user.name || "Guest User"}
-          width={100}
-          height={100}
-          draggable={false}
-          className="h-9 w-9 overflow-hidden rounded-full"
-          onClick={() => setOpened(true)}
-        />
+        <div ref={setControl}>
+          <Image
+            src={user?.user.profile || "/default_user.avif"}
+            alt={user?.user.name || "Guest User"}
+            width={100}
+            height={100}
+            draggable={false}
+            className="h-9 w-9 overflow-hidden rounded-full"
+            onClick={() => setOpened((prev) => !prev)}
+          />
+        </div>
 
         {opened &&
           (!!user ? (
-            <ArticleProfileDropdown ref={ref} />
+            <ArticleProfileDropdown ref={setDropdown} />
           ) : (
-            <NotAuthenticatedProfileDropdown ref={ref} />
+            <NotAuthenticatedProfileDropdown ref={setDropdown} />
           ))}
       </button>
     </div>

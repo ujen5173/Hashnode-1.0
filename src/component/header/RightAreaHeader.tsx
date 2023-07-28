@@ -12,7 +12,14 @@ import { Notification } from "../miniComponent";
 const RightArea: FC = () => {
   const { user, handleTheme } = useContext(C) as ContextValue;
   const [opened, setOpened] = useState(false);
-  const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+
+  const [control, setControl] = useState<HTMLDivElement | null>(null);
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
+
+  useClickOutside<HTMLDivElement>(() => setOpened(false), null, [
+    control,
+    dropdown,
+  ]);
   const [count, setCount] = useState(0);
   const { width } = useViewportSize();
   const path = useRouter().pathname;
@@ -90,14 +97,15 @@ const RightArea: FC = () => {
       <div className={`relative ${path === "/notifications" ? "hidden" : ""}`}>
         <Tooltip label="Notifications" position="bottom" withArrow>
           <div>
-            <button
+            <div
               onClick={() => setOpened((prev) => !prev)}
+              ref={setControl}
               aria-label="icon"
               role="button"
               className="btn-icon hidden h-10 w-10 sm:flex"
             >
               <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
-            </button>
+            </div>
 
             <Link
               className="block sm:hidden"
@@ -123,7 +131,7 @@ const RightArea: FC = () => {
 
         {opened && width >= 640 && (
           <div
-            ref={ref}
+            ref={setDropdown}
             className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
           >
             <Notification />

@@ -23,7 +23,7 @@ const NotificationCard: FC<{ notification: Notification }> = ({
       </div>
 
       <div className="flex-1 text-left">
-        <p className="mb-1 text-base text-gray-500 dark:text-text-primary">
+        <p className="mb-2 text-base text-gray-500 dark:text-text-primary">
           <Link href={`/u/@${notification.articleAuthor as string}`}>
             <span className="mr-1 font-semibold text-gray-700 dark:text-text-secondary">
               {notification.from.name}
@@ -40,7 +40,7 @@ const NotificationCard: FC<{ notification: Notification }> = ({
         </p>
 
         {notification.type === "COMMENT" && (
-          <div className="mb-1 rounded-md border border-border-light bg-light-bg p-3 text-gray-700 dark:border-border dark:bg-primary dark:text-text-secondary">
+          <div className="mb-2 rounded-md border border-border-light bg-light-bg p-3 text-gray-700 dark:border-border dark:bg-primary dark:text-text-secondary">
             {notification.body}
           </div>
         )}

@@ -131,7 +131,7 @@ const EditProfile: NextPage<{
       <Header />
 
       <main className="min-h-screen w-full bg-light-bg dark:bg-black">
-        <div className="container-body mx-auto max-w-[1550px] gap-4 px-4">
+        <div className="container-body mx-auto max-w-[1550px] gap-4 md:px-4">
           <div className="container-aside relative hidden min-h-screen py-4 lg:block">
             <div className="mb-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
               <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
@@ -142,7 +142,7 @@ const EditProfile: NextPage<{
             <UserDetailsOptions />
           </div>
 
-          <main className="container-full-main my-4 min-h-screen rounded-md border border-border-light bg-white p-10 dark:border-border dark:bg-primary">
+          <main className="container-full-main my-4 min-h-screen rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary sm:p-6 md:p-8 lg:p-10">
             <div className="flex flex-col gap-8 md:flex-row">
               <BasicInfo handleChange={handleChange} data={data} />
 

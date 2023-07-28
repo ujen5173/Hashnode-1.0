@@ -117,6 +117,7 @@ const NewArticleBody: FC<{
           {isUploading ? (
             <span className="flex items-center gap-2 px-4 py-2">
               <LoadingSpinner className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+
               <span className="text-gray-500 dark:text-text-primary">
                 {"Uploading..."}
               </span>
@@ -260,9 +261,6 @@ const NewArticleBody: FC<{
         setPublishing={setPublishing}
         query={query}
         setQuery={setQuery}
-        startUpload={startUpload}
-        isUploading={isUploading}
-        deleteImage={deleteImage}
         // createTagState={createTagState}
         // setCreateTagState={setCreateTagState}
       />

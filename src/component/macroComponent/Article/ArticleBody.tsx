@@ -33,7 +33,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             width={1200}
             height={800}
             draggable={false}
-            className="w-full overflow-hidden rounded-b-md object-cover px-4"
+            className="w-full overflow-hidden rounded-b-md object-cover md:px-4"
           />
         )}
 
@@ -49,7 +49,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
               </h2>
             )}
 
-            <div className="mx-auto mb-10 flex w-full flex-col items-center justify-center gap-2 md:w-fit lg:flex-row">
+            <div className="mx-auto mb-6 flex w-full flex-col items-center justify-center gap-2 md:mb-10 md:w-fit lg:flex-row">
               <Link
                 aria-label="Visit Profile"
                 className="mb-10 flex items-center gap-2 lg:mb-0"
@@ -90,7 +90,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
             <div
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
-              className="article mx-auto w-full break-words py-10 md:w-11/12 lg:w-10/12 xl:w-full"
+              className="article mx-auto w-full break-words pb-10 pt-2 sm:pt-6 md:w-11/12 md:py-10 lg:w-10/12 xl:w-full"
             />
           </div>
 
@@ -228,7 +228,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
               alt={author.name}
               width={100}
               height={100}
-              className="obejct-cover h-20 w-20 overflow-hidden rounded-full md:h-16 md:w-16"
+              className="obejct-cover md:h-18 md:w-18 h-14 w-14 overflow-hidden rounded-full sm:h-16 sm:w-16 "
             />
           </Link>
 
@@ -238,6 +238,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                 <h2 className="text-uppercase mb-1 text-sm font-medium text-gray-600 dark:text-text-primary">
                   WRITTEN BY
                 </h2>
+
                 <Link href={`/u/@${author.username}`}>
                   <h1 className="text-uppercase text-lg font-semibold text-gray-800 dark:text-text-secondary">
                     {author?.name}
@@ -255,7 +256,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
               ) : (
                 <button
                   onClick={() => void followUser()}
-                  className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
+                  className="btn-outline hidden w-max items-center justify-center gap-2 text-secondary sm:flex"
                 >
                   {following.status ? (
                     <>
@@ -271,8 +272,9 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                 </button>
               )}
             </div>
+
             {author?.handle?.about && (
-              <div className="mt-2 sm:mt-4">
+              <div className="mt-2 hidden sm:mt-4 sm:block">
                 <p className="text-base text-gray-600 dark:text-text-primary">
                   {author.handle.about}
                 </p>
@@ -280,6 +282,13 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
             )}
           </div>
         </div>
+        {author?.handle?.about && (
+          <div className="mt-4 block sm:mt-4 sm:hidden">
+            <p className="text-base text-gray-600 dark:text-text-primary">
+              {author.handle.about}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

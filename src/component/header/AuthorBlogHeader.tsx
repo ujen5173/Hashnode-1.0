@@ -53,8 +53,13 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
   } = useContext(C) as ContextValue;
   const [opened, setOpened] = useState(false);
   const [menu, setMenu] = useState(false);
-  const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+  const [control, setControl] = useState<HTMLDivElement | null>(null);
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
 
+  useClickOutside<HTMLDivElement>(() => setOpened(false), null, [
+    control,
+    dropdown,
+  ]);
   useEffect(() => {
     if (author && user) {
       setFollowing({
@@ -68,7 +73,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
 
   return (
     <header className="border-b border-border-light bg-white px-2 dark:border-border dark:bg-primary sm:px-4 lg:border-none">
-      <div className="container mx-auto px-2 pb-2 pt-8 sm:px-4">
+      <div className="container mx-auto p-2 sm:px-4">
         <nav className="flex w-full items-center justify-between py-2">
           <div className="block lg:hidden">
             <button
@@ -136,21 +141,23 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
               className="relative rounded-full"
               style={{ cursor: "default!important" }}
             >
-              <Image
-                src={user?.user.profile || "/default_user.avif"}
-                alt={user?.user.name || "user"}
-                width={100}
-                height={100}
-                className="h-10 w-10 cursor-pointer select-none overflow-hidden rounded-full"
-                onClick={() => setOpened(true)}
-                draggable={false}
-              />
+              <div ref={setControl}>
+                <Image
+                  src={user?.user.profile || "/default_user.avif"}
+                  alt={user?.user.name || "user"}
+                  width={100}
+                  height={100}
+                  className="h-10 w-10 cursor-pointer select-none overflow-hidden rounded-full"
+                  onClick={() => setOpened((prev) => !prev)}
+                  draggable={false}
+                />
+              </div>
 
               {opened &&
                 (!!user ? (
-                  <ArticleProfileDropdown ref={ref} />
+                  <ArticleProfileDropdown ref={setDropdown} />
                 ) : (
-                  <NotAuthenticatedProfileDropdown ref={ref} />
+                  <NotAuthenticatedProfileDropdown ref={setDropdown} />
                 ))}
             </button>
           </div>

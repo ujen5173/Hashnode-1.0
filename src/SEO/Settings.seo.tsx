@@ -3,8 +3,8 @@ import Head from "next/head";
 const SettingsSEO = () => {
   return (
     <Head>
-      <title>Change Settings -- Hashnode Clone</title>
-      <meta property="og:title" content="Change Settings -- Hashnode Clone" />
+      <title>Change Settings - Hashnode Clone</title>
+      <meta property="og:title" content="Change Settings - Hashnode Clone" />
       <meta
         name="description"
         content="Share your knowledge and experiences with the community."
@@ -23,7 +23,7 @@ const SettingsSEO = () => {
       />
 
       {/* Twitter card tags for Twitter banner */}
-      <meta name="twitter:title" content="Change Settings -- Hashnode Clone" />
+      <meta name="twitter:title" content="Change Settings - Hashnode Clone" />
       <meta
         name="twitter:description"
         content="Share your knowledge and experiences with the community"

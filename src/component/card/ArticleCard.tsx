@@ -13,15 +13,15 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
 
   return (
     <div className="w-full p-4">
-      <header className="mb-4 flex items-center gap-2">
+      <header className="mb-4 flex gap-2">
         <Link href={`/u/@${card.user.username}`}>
           <div>
             <Image
-              src={card.user.profile || ""}
+              src={card.user.profile}
               width={60}
               height={60}
               alt="User Profile"
-              className="h-10 w-10 rounded-full object-cover"
+              className="mt-2 h-10 w-10 rounded-full object-cover"
             />
           </div>
         </Link>
@@ -34,11 +34,18 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
           </Link>
 
           {card.user.handle && (
-            <p className="flex items-center gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
-              <Link href={`/dev/@${card.user.handle.handle}`}>
-                @{card.user.handle.handle}
+            <p className="flex gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
+              <Link
+                className="hidden xs:block"
+                href={`/dev/@${card.user.handle.handle}`}
+              >
+                <span>@{card.user.handle.handle}</span>
               </Link>
-              <span className="text-gray-900 dark:text-text-primary">·</span>
+
+              <span className="hidden text-gray-900 dark:text-text-primary xs:block">
+                ·
+              </span>
+
               <span>{formatDate(card.createdAt)}</span>
             </p>
           )}
@@ -46,10 +53,10 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
       </header>
 
       <main className="">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col justify-between gap-4 md:flex-row">
           <div className="flex-[2]">
             <Link href={`/u/@${card.user.username}/${card.slug}`}>
-              <h1 className="mb-2 text-xl font-semibold text-gray-700 dark:text-text-secondary">
+              <h1 className="max-height-three mb-2 text-xl font-semibold text-gray-700 dark:text-text-secondary">
                 {card.title}
               </h1>
             </Link>

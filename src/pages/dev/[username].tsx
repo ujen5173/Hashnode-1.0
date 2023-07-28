@@ -231,11 +231,13 @@ const AuthorBlogNavigation: FC<{ tabs: CustomTabs[] }> = ({ tabs }) => {
                 Home
               </span>
             </li>
+
             <li className="py-2">
               <span className="cursor-pointer rounded-md bg-transparent px-4 py-2 text-lg font-medium text-gray-700 hover:bg-gray-100 dark:text-text-secondary dark:hover:bg-primary-light">
                 Badge
               </span>
             </li>
+
             {tabs.map((tab) => (
               <li key={tab.id} className="py-2">
                 <a target="_blank" href={tab.value}>

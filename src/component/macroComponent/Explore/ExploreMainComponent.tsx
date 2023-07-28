@@ -199,7 +199,7 @@ const ExploreSection: FC<{
   return (
     <>
       <div className="flex items-center justify-between p-4 pb-0">
-        <div>
+        <div className="mb-2">
           <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
             {title}
           </h1>
@@ -209,6 +209,7 @@ const ExploreSection: FC<{
             </p>
           )}
         </div>
+
         {showFilter && setFilterState && (
           <div className="max-w-[350px]">
             <Select

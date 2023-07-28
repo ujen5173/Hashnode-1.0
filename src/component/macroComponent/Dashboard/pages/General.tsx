@@ -72,60 +72,65 @@ const General = () => {
   };
 
   return (
-    <section className="relative w-full p-8">
-      <h1 className="mb-8 text-4xl font-semibold text-gray-700 dark:text-text-secondary">
+    <>
+      <h1 className="mb-6 text-2xl font-semibold text-gray-700 dark:text-text-secondary sm:mb-8 md:text-3xl lg:text-4xl">
         General Settings
       </h1>
 
-      <Input
-        input_type="text"
-        name="name"
-        onChange={(e) => {
-          setData((prev) => ({ ...prev, name: e.target.value }));
-        }}
-        placeholder="Publication Name"
-        type="INPUT"
-        value={data.name}
-        autoFocus={false}
-        required={false}
-        opacity={true}
-        variant="FILLED"
-        label="Publication Name"
-      />
-      <Input
-        input_type="text"
-        name="handle"
-        onChange={(e) => {
-          setData((prev) => ({ ...prev, handle: e.target.value }));
-        }}
-        placeholder="Publication Slug"
-        type="INPUT"
-        value={data.handle}
-        autoFocus={false}
-        required={false}
-        opacity={true}
-        description={
-          "This is the slug that will be used in your publication URL. It can only contain lowercase letters, and dashes."
-        }
-        variant="FILLED"
-        label="Publication Slug"
-      />
-      <Input
-        input_type="text"
-        name="about"
-        onChange={(e) => {
-          setData((prev) => ({ ...prev, about: e.target.value }));
-        }}
-        placeholder="Tell the world the best thing about you…"
-        type="TEXTAREA"
-        required={false}
-        opacity={true}
-        value={data.about}
-        variant="FILLED"
-        label="About me"
-      />
-
-      <div className="mb-4 flex flex-wrap gap-4">
+      <div className="mb-4">
+        <Input
+          input_type="text"
+          name="name"
+          onChange={(e) => {
+            setData((prev) => ({ ...prev, name: e.target.value }));
+          }}
+          placeholder="Publication Name"
+          type="INPUT"
+          value={data.name}
+          autoFocus={false}
+          required={false}
+          opacity={true}
+          variant="FILLED"
+          label="Publication Name"
+        />
+      </div>
+      <div className="mb-4">
+        <Input
+          input_type="text"
+          name="handle"
+          onChange={(e) => {
+            setData((prev) => ({ ...prev, handle: e.target.value }));
+          }}
+          placeholder="Publication Slug"
+          type="INPUT"
+          value={data.handle}
+          autoFocus={false}
+          required={false}
+          opacity={true}
+          description={
+            "This is the slug that will be used in your publication URL. It can only contain lowercase letters, and dashes."
+          }
+          variant="FILLED"
+          label="Publication Slug"
+        />
+      </div>
+      <div className="mb-4">
+        <Input
+          input_type="text"
+          name="about"
+          onChange={(e) => {
+            setData((prev) => ({ ...prev, about: e.target.value }));
+          }}
+          placeholder="Tell the world the best thing about you…"
+          type="TEXTAREA"
+          required={false}
+          opacity={true}
+          value={data.about}
+          variant="FILLED"
+          label="About me"
+        />
+      </div>
+      <div className="flex flex-wrap gap-4">
         {generalSettingsSocials.map((e) => (
           <div className="w-full md:w-[calc(100%/2-1rem)]" key={e.id}>
             <label htmlFor={e.name} className="flex items-center gap-2">
@@ -169,7 +174,7 @@ const General = () => {
           {isLoading ? "Updating..." : "Update"}
         </button>
       </div>
-    </section>
+    </>
   );
 };
 export default General;

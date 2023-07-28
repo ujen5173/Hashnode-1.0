@@ -24,7 +24,7 @@ import {
   SEO,
   Series,
   Sponsors,
-  Widgets,
+  Widgets
 } from "~/component";
 import { Navigation } from "~/component/macroComponent/Dashboard";
 import DashboardSEO from "~/SEO/Dashboard.seo";
@@ -36,7 +36,7 @@ import {
   Global,
   LogonoText,
   Pen,
-  Redirect,
+  Redirect
 } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 
@@ -106,7 +106,7 @@ const Dashboard = () => {
                   <LogonoText className="h-6 w-6 fill-secondary" />
                 </div>
 
-                <h1 className="text-lg font-bold text-gray-700 dark:text-text-secondary">
+                <h1 className="text-base md:text-lg font-semibold md:font-bold text-gray-700 dark:text-text-secondary">
                   {session?.user.handle?.name === session?.user.name
                     ? `${session?.user.handle?.name as string}' Blog`
                     : session?.user.handle?.name}
@@ -137,9 +137,9 @@ const Dashboard = () => {
           <main className="flex flex-col gap-4 md:flex-row">
             <Navigation paths={paths} userId={session?.user.id as string} />
             {/* dashboard component */}
-            <div className="min-h-[40rem] flex-1 overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
+            <section className="relative min-h-[40rem] w-full flex-1 overflow-hidden rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary md:px-6 md:py-8 lg:p-8">
               {dashboardName}
-            </div>
+            </section>
           </main>
         </div>
       </div>
@@ -154,18 +154,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (!session) {
     return {
+      props: { session: null },
       redirect: {
         destination: "/login",
-        permanent: false,
+        permanent: true,
       },
     };
   }
 
   if (session.user.id !== context.params?.id) {
     return {
+      props: { session: null },
       redirect: {
         destination: `/`,
-        permanent: false,
+        permanent: true,
+      },
+    };
+  }
+
+  if (session.user.handle === null) {
+    return {
+      props: { session: null },
+      redirect: {
+        destination: "/onboard/blog/setup",
+        parmanent: true,
       },
     };
   }
@@ -186,7 +198,7 @@ const Roadmap = () => {
 
       <div className="flex flex-wrap gap-4">
         <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-          <div className="absolute right-4 top-4">
+          <div className="absolute right-3 top-3 md:right-4 md:top-4">
             <Pen className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
           </div>
 
@@ -205,7 +217,7 @@ const Roadmap = () => {
         </div>
 
         <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-          <div className="absolute right-4 top-4">
+          <div className="absolute right-3 top-3 md:right-4 md:top-4">
             <Customize className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
           </div>
 
@@ -223,7 +235,7 @@ const Roadmap = () => {
         </div>
 
         <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-          <div className="absolute right-4 top-4">
+          <div className="absolute right-3 top-3 md:right-4 md:top-4">
             <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
           </div>
 

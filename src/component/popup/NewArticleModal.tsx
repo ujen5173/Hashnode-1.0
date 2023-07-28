@@ -8,9 +8,8 @@ import { Times } from "~/svgs";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
-import { imageToBlogHandler } from "~/utils/miniFunctions";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
-import { ImagePlaceholder, SelectSeries, SelectTags } from "../miniComponent";
+import { SelectSeries, SelectTags } from "../miniComponent";
 
 interface Props {
   publishModal: boolean;
@@ -22,19 +21,7 @@ interface Props {
 
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
-  startUpload: (
-    files: File[],
-    input?: undefined
-  ) => Promise<
-    | {
-        fileUrl: string;
-        fileKey: string;
-      }[]
-    | undefined
-  >;
 
-  isUploading: boolean;
-  deleteImage: (key: string | undefined) => void;
   // createTagState: boolean;
   // setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -49,9 +36,6 @@ const NewArticleModal: FC<Props> = ({
 
   query,
   setQuery,
-  startUpload,
-  isUploading,
-  deleteImage,
   // createTagState,
   // setCreateTagState,
 }) => {
@@ -304,45 +288,6 @@ const NewArticleModal: FC<Props> = ({
                   </div>
                 </div>
               )}
-            </div>
-
-            <div className="relative z-10 mb-8">
-              <button
-                onClick={() => void deleteImage("seoOgImageKey")}
-                className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
-              >
-                <Times className="h-5 w-5 fill-gray-700 stroke-none" />
-              </button>
-
-              <ImagePlaceholder
-                title="CUSTOM OG IMAGE"
-                image={data.seoOgImage}
-                showImage={true}
-                isUploading={isUploading}
-                description="Upload an image to display when your article is embedded online or on social network feeds. Recommended dimensions: 1200px X 630px. If you don't have one, your cover image will be used instead."
-                handleChange={async (event) => {
-                  // here we are handling the image upload and preview.
-                  const file = event?.target?.files?.[0];
-                  if (!file) return;
-                  const image = await imageToBlogHandler(file);
-                  if (!image) return;
-                  if (isUploading) {
-                    toast.error("Already uploading");
-                    return;
-                  }
-                  const uploaded = await startUpload([image]);
-                  if (!uploaded) {
-                    toast.error("Error uploading image");
-                    return;
-                  }
-                  setData((prev) => ({
-                    ...prev,
-                    seoOgImage: uploaded[0]?.fileUrl,
-                    seoOgImageKey: uploaded[0]?.fileKey,
-                  }));
-                }}
-                recommendedText="Recommended dimension is 1600 x 840"
-              />
             </div>
 
             <div className="mb-8">

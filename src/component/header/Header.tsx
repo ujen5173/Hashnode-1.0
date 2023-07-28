@@ -8,9 +8,16 @@ import SearchArea from "../miniComponent/Search/Search";
 import RightArea from "./RightAreaHeader";
 
 const Header: React.FC<{ search?: boolean }> = ({ search = true }) => {
-  const [opened, setOpened] = useState(false);
-  const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const { user } = useContext(C) as ContextValue;
+  const [opened, setOpened] = useState(false);
+
+  const [control, setControl] = useState<HTMLDivElement | null>(null);
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
+
+  useClickOutside<HTMLDivElement>(() => setOpened(false), null, [
+    control,
+    dropdown,
+  ]);
 
   return (
     <header className="sticky left-0 top-0 z-40 w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
@@ -24,21 +31,27 @@ const Header: React.FC<{ search?: boolean }> = ({ search = true }) => {
           <RightArea />
 
           <div className="relative rounded-full">
-            <Image
-              src={user?.user.profile || "/default_user.avif"}
-              alt={user?.user.name || "user"}
-              width={180}
-              height={180}
-              className="h-7 w-7 cursor-pointer select-none overflow-hidden rounded-full md:h-8 md:w-8 lg:h-9 lg:w-9"
-              onClick={() => setOpened(true)}
-              draggable={false}
-            />
+            <div ref={setControl}>
+              <Image
+                src={user?.user.profile || "/default_user.avif"}
+                alt={user?.user.name || "user"}
+                width={180}
+                height={180}
+                className="h-7 w-7 cursor-pointer select-none overflow-hidden rounded-full md:h-8 md:w-8 lg:h-9 lg:w-9"
+                onClick={() => setOpened((prev) => !prev)}
+                draggable={false}
+              />
+            </div>
 
             {opened &&
               (!!user ? (
-                <ProfileDropdown setOpened={setOpened} user={user} ref={ref} />
+                <ProfileDropdown
+                  setOpened={setOpened}
+                  user={user}
+                  ref={setDropdown}
+                />
               ) : (
-                <NotAuthenticatedProfileDropdown ref={ref} />
+                <NotAuthenticatedProfileDropdown ref={setDropdown} />
               ))}
           </div>
         </div>

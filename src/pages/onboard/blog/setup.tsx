@@ -22,7 +22,7 @@ const Setup = () => {
 
   useEffect(() => {
     if (session) {
-      setHandle((prev) => ({ ...prev, domain: session.user.username }));
+      setHandle({ name: session.user.name, domain: session.user.username });
     }
   }, []);
 
@@ -107,11 +107,13 @@ const Setup = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <button className="btn-outline">
-              <div className="px-4">
-                <span className="text-gray-100">Back</span>
-              </div>
-            </button>
+            <Link href="/">
+              <button className="btn-outline">
+                <div className="px-4">
+                  <span className="text-gray-700 dark:text-gray-100">Back</span>
+                </div>
+              </button>
+            </Link>
 
             <button
               onClick={() => void handleSubdomain()}

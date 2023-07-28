@@ -22,8 +22,13 @@ interface Props {
 
 const Select: FC<Props> = ({ options, defaultText, onChange }) => {
   const [opened, setOpened] = useState(false);
-  const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
+  const [control, setControl] = useState<HTMLDivElement | null>(null);
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
 
+  useClickOutside<HTMLDivElement>(() => setOpened(false), null, [
+    control,
+    dropdown,
+  ]);
   const [select, setSelect] = useState<SelectProps>({
     status: false,
     selected: defaultText,
@@ -40,8 +45,9 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
   return (
     <div
       onClick={() => setOpened(!opened)}
-      className={`relative flex w-full min-w-[130px] cursor-pointer items-center justify-between rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 
-      outline-none transition-[ring] duration-100 focus:bg-light-bg focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary 
+      ref={setControl}
+      className={`relative flex w-full min-w-[130px] cursor-pointer select-none items-center justify-between rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg 
+      text-gray-700 outline-none transition-[ring] duration-100 focus:bg-light-bg focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary 
       hover:dark:border-border dark:focus:bg-primary-light md:min-w-[180px]`}
     >
       <span className="text-base">{select.selected}</span>
@@ -49,7 +55,7 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
 
       {opened && (
         <div
-          ref={ref}
+          ref={setDropdown}
           className="absolute left-0 top-full z-50 mt-2 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-md dark:border-border dark:bg-primary"
         >
           {select.options.map((option, index) => (
