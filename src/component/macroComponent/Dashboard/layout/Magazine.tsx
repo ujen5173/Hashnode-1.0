@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 import { AuthorBlogArticleCard } from "~/component/card";
+import { AuthorArea } from "~/pages/dev/[username]";
 import { Pen } from "~/svgs";
 import { type DataType } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
@@ -24,7 +25,7 @@ const Magazine: FC<{
     <>
       <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-black">
         {isLoading ? (
-          <div className="border-light h-[50%] min-h-[24rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
+          <div className="border-light loading h-[50%] min-h-[24rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
         ) : data && data.length > 0 ? (
           <div className="author-blog-grid mx-auto max-w-[1300px] px-4 py-8">
             <AuthorBlogArticleCard type="main" article={data[0] as DataType} />
@@ -97,7 +98,7 @@ const Magazine: FC<{
         )}
       </div>
       {data
-        ? data?.length > 2 && (
+        ? data?.length > 3 && (
             <div className="border-b border-border-light bg-light-bg px-4 py-16 dark:border-border dark:bg-primary">
               <div className="mx-auto flex max-w-[1300px] items-center justify-center">
                 <div className="flex w-full flex-wrap gap-6">
@@ -114,25 +115,7 @@ const Magazine: FC<{
             </div>
           )
         : null}
-      <div className="border-t border-border-light bg-light-bg dark:border-border dark:bg-primary">
-        <div className="mx-auto flex max-w-[1000px] flex-col items-center justify-center px-4 py-16">
-          <div className="flex flex-col items-center justify-center gap-2">
-            <Image
-              src={author.profile || ""}
-              width={120}
-              height={120}
-              alt="User Profile"
-              className="h-18 w-18 rounded-full object-cover"
-            />
-            <h1 className="mb-4 text-2xl font-semibold text-gray-900 dark:text-text-secondary">
-              {author.name}
-            </h1>
-            <p className="text-center text-base text-gray-500 dark:text-text-primary">
-              {author.handle.about || "No bio added yet!"}
-            </p>
-          </div>
-        </div>
-      </div>
+      <AuthorArea author={author} />
     </>
   );
 };

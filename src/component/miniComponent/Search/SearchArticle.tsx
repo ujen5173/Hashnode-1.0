@@ -35,7 +35,7 @@ const SearchArticle: FC<Props> = ({ data }) => {
 
           <div className="mb-4 flex items-center gap-1">
             <p className="text-base font-medium text-gray-700 dark:text-text-primary">
-              {data.user.username}
+              @{data.user.username}
             </p>
 
             <span className="text-base font-normal text-gray-700 dark:text-text-primary">

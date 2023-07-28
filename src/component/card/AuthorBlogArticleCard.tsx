@@ -24,7 +24,7 @@ const AuthorBlogArticleCard: FC<Props> = ({
       className={type === "non-grid" ? width : "main-block"}
       href={`/u/@${article.user.username}/${article.slug}`}
     >
-      <div className="mb-2 flex max-h-[60%] min-h-[50%] w-full items-center justify-center overflow-hidden rounded-md border border-border-light bg-light-bg dark:border-primary-light dark:bg-primary">
+      <div className="mb-2 flex max-h-[60%] w-full items-center justify-center overflow-hidden rounded-md border border-border-light bg-light-bg dark:border-primary-light dark:bg-primary">
         <Image
           src={
             article.cover_image ||
@@ -35,11 +35,11 @@ const AuthorBlogArticleCard: FC<Props> = ({
           alt="Error Loading Image!"
           width={1200}
           height={1200}
-          className="h-full w-full rounded-md bg-white dark:bg-primary-light"
+          className="h-full w-auto rounded-md bg-white object-cover dark:bg-primary-light"
         />
       </div>
 
-      <div className="p-2 md:p-4">
+      <div className="py-2">
         <h1
           className={`mb-3 ${
             type === "main" ? "text-2xl" : "text-xl xl:text-2xl"

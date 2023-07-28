@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 
 const Appearance = () => {
-  const { mutateAsync } = api.handles.updateHandle.useMutation();
+  const { mutateAsync, isLoading } = api.handles.updateHandle.useMutation();
   const { user } = useContext(C) as ContextValue;
 
   const [appearance, setAppearance] = useState<{
@@ -63,8 +63,14 @@ const Appearance = () => {
           />
         </div>
 
-        <button className="btn-outline" onClick={() => void handleUpdate()}>
-          Update
+        <button
+          disabled={isLoading}
+          className={`btn-outline ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          onClick={() => void handleUpdate()}
+        >
+          {isLoading ? "Updating..." : "Update"}{" "}
         </button>
       </main>
     </section>

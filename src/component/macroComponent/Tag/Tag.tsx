@@ -41,7 +41,7 @@ const Tag: FC<Props> = ({ filter, setFilter }) => {
           <Search className="h-5 w-5 stroke-gray-700 dark:stroke-border-light" />
         </div>
         <input
-          placeholder="Search Tags"
+          placeholder="Tab to select"
           onKeyDownCapture={handleChange}
           className="flex w-full items-center justify-between rounded-md border border-border-light bg-light-bg px-10 py-2 text-base text-gray-700 outline-none transition-[ring] duration-100 focus:bg-light-bg focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary hover:dark:border-border dark:focus:bg-primary-light"
         />

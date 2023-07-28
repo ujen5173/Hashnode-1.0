@@ -23,7 +23,6 @@ export const env = createEnv({
     GITHUB_CLIENT_SECRET: z.string(),
 
     UPLOADTHING_SECRET: z.string(),
-    UPLOADTHING_APP_ID: z.string(),
   },
 
   /**
@@ -55,6 +54,5 @@ export const env = createEnv({
     NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
 
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
-    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
   },
 });

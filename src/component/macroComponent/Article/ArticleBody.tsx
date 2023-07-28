@@ -37,11 +37,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
           />
         )}
 
-        <section
-          className={`relative ${
-            article?.cover_image ? "pt-8 md:pb-0 md:pt-16" : ""
-          }`}
-        >
+        <section className={`relative pt-8 md:pb-0 md:pt-16`}>
           <div className="px-4">
             <h1 className="mb-6 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:mb-8 md:w-11/12 md:text-5xl md:leading-tight">
               {article.title}
@@ -57,11 +53,11 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
               <Link
                 aria-label="Visit Profile"
                 className="mb-10 flex items-center gap-2 lg:mb-0"
-                href={`/u/@${article.user.username}`}
+                href={`/u/@${article?.user.username}`}
               >
                 <Image
-                  src={article.user.profile || ""}
-                  alt={article.user.name}
+                  src={article?.user.profile}
+                  alt={article?.user.name}
                   width={70}
                   height={70}
                   draggable={false}
@@ -69,7 +65,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
                 />
 
                 <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
-                  {article.user.name}
+                  {article?.user.name}
                 </h1>
               </Link>
 
@@ -94,7 +90,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
             <div
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
-              className="article mx-auto mb-10 w-full break-words md:w-11/12 lg:w-10/12 xl:w-full"
+              className="article mx-auto w-full break-words py-10 md:w-11/12 lg:w-10/12 xl:w-full"
             />
           </div>
 

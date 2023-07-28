@@ -120,7 +120,7 @@ const Dashboard = () => {
 
             <div className="flex items-center justify-between gap-4">
               <Link href={`/dev/@${session?.user?.handle?.handle as string}`}>
-                <div className="flex items-center gap-2 rounded-md px-4 py-2 hover:bg-primary-light">
+                <div className="flex items-center gap-2 rounded-md px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
                   <Redirect className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
 
                   <span className="font-medium text-gray-600 dark:text-text-primary">
@@ -134,7 +134,7 @@ const Dashboard = () => {
           <Roadmap />
 
           {/* main dashboard navigations */}
-          <main className="flex gap-4">
+          <main className="flex flex-col gap-4 md:flex-row">
             <Navigation paths={paths} userId={session?.user.id as string} />
             {/* dashboard component */}
             <div className="min-h-[40rem] flex-1 overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">

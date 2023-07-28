@@ -34,6 +34,7 @@ interface Props {
   >;
 
   isUploading: boolean;
+  deleteImage: (key: string | undefined) => void;
   // createTagState: boolean;
   // setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -50,6 +51,7 @@ const NewArticleModal: FC<Props> = ({
   setQuery,
   startUpload,
   isUploading,
+  deleteImage,
   // createTagState,
   // setCreateTagState,
 }) => {
@@ -305,6 +307,13 @@ const NewArticleModal: FC<Props> = ({
             </div>
 
             <div className="relative z-10 mb-8">
+              <button
+                onClick={() => void deleteImage("seoOgImageKey")}
+                className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
+              >
+                <Times className="h-5 w-5 fill-gray-700 stroke-none" />
+              </button>
+
               <ImagePlaceholder
                 title="CUSTOM OG IMAGE"
                 image={data.seoOgImage}

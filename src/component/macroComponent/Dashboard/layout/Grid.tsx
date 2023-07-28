@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
+import { AuthorArea } from "~/pages/dev/[username]";
 import { Book, Pen } from "~/svgs";
 import { type DataType } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
@@ -24,86 +25,68 @@ const Grid: FC<{
 
   return (
     <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-primary">
-      <div className="border-b border-border-light dark:border-border">
-        <div className="mx-auto flex max-w-[1000px] flex-col items-center justify-center px-4 py-16">
-          <div className="flex flex-col items-center justify-center gap-2">
-            <Image
-              src={author.profile || ""}
-              width={120}
-              height={120}
-              alt="User Profile"
-              className="h-18 w-18 rounded-full object-cover"
-            />
-
-            <h1 className="mb-4 text-2xl font-semibold text-gray-900 dark:text-text-secondary">
-              {author.name}
-            </h1>
-
-            <p className="text-base text-gray-500 dark:text-text-primary">
-              {author.handle.about || "No bio added yet!"}
-            </p>
-          </div>
-        </div>
-      </div>
+      <AuthorArea author={author} />
 
       {isLoading ? (
         <div className="border-light h-[50%] min-h-[24rem] rounded-md border border-border-light bg-gray-200 shadow-md dark:border-border dark:bg-primary-light"></div>
       ) : data && data.length > 0 ? (
-        <div className="mx-auto flex max-w-[1000px] flex-wrap gap-6 px-4 py-8">
-          {data.map((e) => (
-            <div className="w-full md:w-[calc(100%/2-1rem)]" key={e.id}>
-              <Link
-                className="mb-4 block"
-                href={`/@${e.user.username}/${e.slug}`}
-              >
-                <div>
-                  <Image
-                    src={
-                      e.cover_image || theme === "light"
-                        ? "/imagePlaceholder-light.avif"
-                        : "/imagePlaceholder-dark.avif"
-                    }
-                    alt={`${e.title} image not found!`}
-                    width={500}
-                    height={300}
-                    className="w-full rounded-md border border-border-light bg-white object-cover text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary"
-                  />
-                </div>
-              </Link>
-
-              <div className="">
-                <Link href={`/u/@${e.user.username}/${e.slug}`}>
-                  <h1 className="mb-2 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
-                    {e.title}
-                  </h1>
-                </Link>
-
+        <div className=" border-t border-border-light dark:border-border">
+          <div className="mx-auto flex max-w-[1000px] flex-wrap gap-6 px-4 py-8">
+            {data.map((e) => (
+              <div className="w-full md:w-[calc(100%/2-1rem)]" key={e.id}>
                 <Link
-                  href={`/u/@${e.user.username}/${e.slug}`}
-                  className="mb-4 flex items-center gap-2"
+                  className="mb-4 block"
+                  href={`/@${e.user.username}/${e.slug}`}
                 >
-                  <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
-                    {formatDate(e.createdAt)}
-                  </p>
-
-                  <div className="flex items-center gap-2">
-                    <Book className="h-4 w-4 fill-secondary" />
-                    <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
-                      {e.read_time} min read
-                    </p>
+                  <div>
+                    <Image
+                      src={
+                        e.cover_image || theme === "light"
+                          ? "/imagePlaceholder-light.avif"
+                          : "/imagePlaceholder-dark.avif"
+                      }
+                      alt={`${e.title} image not found!`}
+                      width={500}
+                      height={300}
+                      className="w-full rounded-md border border-border-light bg-white object-cover text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary"
+                    />
                   </div>
                 </Link>
 
-                <Link href={`/u/@${e.user.username}/${e.slug}`}>
-                  <p
-                    className={`break-words text-center text-base text-gray-500 dark:text-text-primary`}
+                <div className="">
+                  <Link href={`/u/@${e.user.username}/${e.slug}`}>
+                    <h1 className="mb-2 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
+                      {e.title}
+                    </h1>
+                  </Link>
+
+                  <Link
+                    href={`/u/@${e.user.username}/${e.slug}`}
+                    className="mb-4 flex items-center gap-2"
                   >
-                    {limitText(removeMd(e.content), 150)}
-                  </p>
-                </Link>
+                    <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
+                      {formatDate(e.createdAt)}
+                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <Book className="h-4 w-4 fill-secondary" />
+                      <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
+                        {e.read_time} min read
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link href={`/u/@${e.user.username}/${e.slug}`}>
+                    <p
+                      className={`break-words text-base text-gray-500 dark:text-text-primary`}
+                    >
+                      {limitText(removeMd(e.content), 150)}
+                    </p>
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : (
         <div className="w-full bg-light-bg px-4 py-8 dark:bg-primary">

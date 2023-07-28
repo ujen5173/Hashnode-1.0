@@ -16,7 +16,7 @@ const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full z-20 mt-2 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-md dark:border-border dark:bg-primary"
+      className="absolute right-0 top-full z-20 mt-2 w-64 rounded-md border border-border-light bg-gray-50 py-2 text-left shadow-lg dark:border-border dark:bg-primary"
     >
       <Link href={`/u/@${user?.user.username as string} `}>
         <div className="p-2 pb-0">
@@ -79,7 +79,7 @@ const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
       <Link href="/">
         <div className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-gray-200 dark:text-text-primary dark:hover:bg-primary-light">
           <span>
-            <LogonoText className="h-4 w-4 fill-gray-900 dark:fill-text-primary" />
+            <LogonoText className="h-4 w-4 fill-secondary" />
           </span>
           <span className="text-sm font-medium">Back to Hashnode</span>
         </div>

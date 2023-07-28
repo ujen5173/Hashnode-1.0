@@ -91,6 +91,25 @@ const NewArticleBody: FC<{
 
   const { startUpload, isUploading } = useUploadThing("imageUploader");
 
+  const deleteImage = (key: string | undefined): void => {
+    if (!key) return;
+    //! Missing UPLOADTHING_SECRET env variable bug occured!!!
+    // await utapi.deleteFiles(key);
+    if (key === "seoOgImageKey") {
+      setData({
+        ...data,
+        seoOgImage: undefined,
+        seoOgImageKey: undefined,
+      });
+    } else {
+      setData({
+        ...data,
+        cover_image: undefined,
+        cover_imageKey: undefined,
+      });
+    }
+  };
+
   return (
     <main className="relative min-h-screen w-full overflow-hidden border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto w-full max-w-[1000px] px-4 py-6">
@@ -153,7 +172,10 @@ const NewArticleBody: FC<{
 
         {data.cover_image && (
           <div className="relative mb-5 w-full rounded-md border border-border-light dark:border-border">
-            <button className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2">
+            <button
+              onClick={() => void deleteImage("cover_imageKey")}
+              className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
+            >
               <Times className="h-5 w-5 fill-gray-700 stroke-none" />
             </button>
 
@@ -240,6 +262,7 @@ const NewArticleBody: FC<{
         setQuery={setQuery}
         startUpload={startUpload}
         isUploading={isUploading}
+        deleteImage={deleteImage}
         // createTagState={createTagState}
         // setCreateTagState={setCreateTagState}
       />

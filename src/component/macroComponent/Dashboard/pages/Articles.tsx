@@ -4,6 +4,7 @@ import { useContext, useState, type FC } from "react";
 import { Dots } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
+import { limitText } from "~/utils/miniFunctions";
 
 const Articles = () => {
   const { user } = useContext(C) as ContextValue;
@@ -64,7 +65,14 @@ const Articles = () => {
           <div className="px-12"></div>
         </header>
 
-        {data ? (
+        {isLoading ? (
+          <>
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+          </>
+        ) : data ? (
           data.length > 0 ? (
             data.map((article) => (
               <ArticleCard key={article.id} data={article} />
@@ -111,8 +119,8 @@ const ArticleCard: FC<{
     <div className="flex items-center gap-4">
       <div className="flex-1 py-3">
         <Link href={`/u/@${data.user.username}/${data.slug}`}>
-          <h1 className="mb-1 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
-            {data.title}
+          <h1 className="max-height-one mb-1 text-xl font-semibold text-gray-700 dark:text-text-secondary">
+            {limitText(data.title, 100)}
           </h1>
         </Link>
         <p className="text-base text-gray-500 dark:text-text-primary">
@@ -151,6 +159,21 @@ const ArticleCard: FC<{
             </button>
           </div>
         )}
+      </div>
+    </div>
+  );
+};
+
+const ArticleLoading = () => {
+  return (
+    <div className="flex items-center justify-between py-4">
+      <div className="flex-1">
+        <div className="loading mb-2 h-6 w-3/4 rounded-lg bg-gray-200"></div>
+        <div className="loading h-4 w-1/2 rounded-lg bg-gray-200"></div>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="loading h-10 w-32 rounded-lg bg-gray-200"></div>
+        <div className="loading h-10 w-32 rounded-lg bg-gray-200"></div>
       </div>
     </div>
   );

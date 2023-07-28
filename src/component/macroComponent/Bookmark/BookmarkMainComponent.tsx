@@ -12,9 +12,12 @@ const BookmarkMainComponent = () => {
       ids: bookmarks,
     },
     {
+      enabled: !!bookmarks.length,
       refetchOnWindowFocus: false,
     }
   );
+
+  console.log({ bookmark: !!bookmarks.length });
 
   return (
     <section className="container-main my-4 min-h-screen w-full">
@@ -28,11 +31,19 @@ const BookmarkMainComponent = () => {
       </div>
 
       <div className="rounded-md border border-border-light bg-white pt-2 dark:border-border dark:bg-primary">
-        <ManageData
-          loading={<ArticleLoading />}
-          type="ARTICLE"
-          articleData={{ data: bookmarksData, isLoading }}
-        />
+        {!!bookmarks.length ? (
+          <ManageData
+            loading={<ArticleLoading />}
+            type="ARTICLE"
+            articleData={{ data: bookmarksData, isLoading }}
+          />
+        ) : (
+          <div className="p-8 text-center">
+            <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
+              No Articles saved!
+            </h1>
+          </div>
+        )}
       </div>
     </section>
   );

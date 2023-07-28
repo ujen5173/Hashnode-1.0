@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <div className="flex flex-col items-center justify-center bg-light-bg px-4 py-16 dark:bg-black">
+    <div className="flex flex-col items-center justify-center border-t border-border-light bg-light-bg px-4 py-16 dark:border-border dark:bg-black">
       <p className="text-center text-gray-700 dark:text-text-secondary">
         <span>@{new Date().getFullYear()} Hashnode By </span>
         <a

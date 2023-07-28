@@ -245,6 +245,8 @@ export const tagsRouter = createTRPCRouter({
 
         return tagData;
       } catch (err) {
+        if (err instanceof TRPCError) throw err;
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
