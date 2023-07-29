@@ -1,386 +1,525 @@
-<div>
+<div id="post-content-wrapper" class="prose css-vqpwmg">
+  <h4 id="heading-do-not-rely-on-a-weather-api">
+    Do not rely on a weather API
+  </h4>
   <p>
-    Table partitioning is a highly effective technique used to improve the
-    performance of very large database tables. By dividing the table's content
-    into smaller sub-tables, known as partitions, the overall size of the table
-    is reduced, leading to significant performance enhancements.
+    As a windsurfer, I heavily rely on weather forecast apps, and I thought it
+    might be fun to build one myself. To make it more interesting, I decided not
+    to use any of the many weather APIs.
   </p>
-  <h2>When should you partition a table?</h2>
-  <ul>
-    <li>
-      <p>
-        If your table is too big for your server's RAM.<br />
-        You should consider partitioning it: when a table reaches a few
-        gigabytes in size, it's time to split it up.
-      </p>
-    </li>
-    <li>
-      <p>
-        If you're working with massive amounts of data<br />
-        Don't bother partitioning until you've got millions of records.
-        Otherwise, you won't see much of a performance boost.
-      </p>
-    </li>
-    <li>
-      <p>
-        If your table can be logically broken down into smaller chunks, Example:
-        you have a table full of server logs. You could split them up by date,
-        so all the logs from the same day are in one single partition. This
-        makes it much easier to do tasks like deleting old logs by just dropping
-        the partition.
-      </p>
-    </li>
-  </ul>
-  <h2><strong>Available partitioning types</strong></h2>
+  <h4 id="heading-i-like-my-data-raw">I like my data RAW</h4>
   <p>
-    Postgres has built-in support for three types of partitioning covering the
-    most common use cases.
+    I searched for ways to obtain the raw data or, at the very least, weather
+    maps or arrays. During my search, I stumbled upon the website of the DWD
+    (German weather service) and discovered that they provide .grib files
+    containing forecast values. Since I am based in Germany, I wanted to use
+    data that covers this area. Other countries have similar websites that cover
+    their respective regions.
   </p>
-  <h3><strong>Partition by Range</strong></h3>
-  <blockquote>
-    <p>
-      The table is partitioned into “ranges” defined by a key column or a set of
-      columns, with no overlap between the ranges of values assigned to
-      different partitions
-    </p>
-  </blockquote>
+  <h4 id="heading-how-to-obtain-these-files">How to obtain these files</h4>
   <p>
-    In the following example, the <em>people</em> table will be partitioned by
-    <em>birth_date</em>
+    The required files are downloadable via FTP. In my region, the ICON forecast
+    model is highly accurate, so I chose to use it. The files are available at
+    <a target="_blank" href="http://opendata.dwd.de">opendata.dwd.de</a>. Every
+    3 hours, the forecast is updated, and new .grib files become available.
+  </p>
+  <p>Here's the process of getting the .grib files:</p>
+  <ol>
+    <li><p>Check if new .grib files are available</p></li>
+    <li><p>Download the .grib files</p></li>
+    <li><p>Extract the .bz2 archives to get the .grib files</p></li>
+  </ol>
+  <h4 id="heading-now-lets-start-coding">Now, let's start coding!</h4>
+  <p>
+    First, we create a new folder for the project and change the directory to
+    the new folder. Then we initialize a new npm package.
   </p>
   <div>
-    <pre><code><span>CREATE</span> <span>TABLE</span> people (
-      <span>id</span> <span>int</span> <span>not</span> <span>null</span>,
-      birth_date <span>date</span> <span>not</span> <span>null</span>,
-      country_code <span>character</span>(<span>2</span>) <span>not</span> <span>null</span>,
-      <span>name</span> <span>text</span>
-  ) <span>PARTITION</span> <span>BY</span> <span>RANGE</span> (birth_date);
-  
-  <span>CREATE</span> <span>TABLE</span> people_y2000 <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>FROM</span> (<span>'2000-01-01'</span>) <span>TO</span> (<span>'2001-01-01'</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_y2001 <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>FROM</span> (<span>'2001-01-01'</span>) <span>TO</span> (<span>'2002-01-01'</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_y2002 <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>FROM</span> (<span>'2002-01-01'</span>) <span>TO</span> (<span>'2003-01-01'</span>);
-  </code></pre>
-  </div>
-  <p>Let’s try it:</p>
-  <div>
-    <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
-     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
-     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
-     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>);
-  &gt; <span>INSERT</span> <span>0</span> <span>3</span>
-  
-  <span>SELECT</span> schemaname,relname,n_live_tup 
-     <span>FROM</span> pg_stat_user_tables 
-     <span>ORDER</span> <span>BY</span> n_live_tup <span>DESC</span>;
-  
-  schemaname  |   relname    | n_live_tup 
-  <span>------------+--------------+------------</span>
-   public     | people_y2000 |          2
-   public     | people_y2001 |          1
-   public     | people_y2002 |          0
+    <pre><code>mkdir windspotter
+  <span>cd</span> windspotter
+  npm init -y
   </code></pre>
   </div>
   <p>
-    As you can see we inserted three records into the master table,
-    <em>people.</em> Since the table is partitioned by birth_date, two records
-    have been added to partition <em>people_y2000</em>, one into
-    <em>people_y2001</em> while <em>people_y2002</em> is still empty.
-  </p>
-  <h3><strong>Partition by List</strong></h3>
-  <blockquote>
-    <p>
-      <em
-        >The table is partitioned by explicitly listing which key values appear
-        in each partition.</em
-      >
-    </p>
-  </blockquote>
-  <p>
-    Taking the same example, let’s add a <em>country_code</em> column and use it
-    as the partitioning key
+    Now, we create a <em>src</em> folder in which we'll place our
+    <em>index.js</em>.
   </p>
   <div>
-    <pre><code><span>CREATE</span> <span>TABLE</span> people (
-      <span>id</span> <span>int</span> <span>not</span> <span>null</span>,
-      birth_date <span>date</span> <span>not</span> <span>null</span>,
-      country_code <span>character</span>(<span>2</span>) <span>not</span> <span>null</span>,
-      <span>name</span> <span>text</span>
-  ) <span>PARTITION</span> <span>BY</span> <span>LIST</span> (country_code);
-  
-  <span>-- Partition for people living in Europe</span>
-  <span>CREATE</span> <span>TABLE</span> people_EU <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'AT'</span>, <span>'DE'</span>, <span>'IT'</span>, <span>'FR'</span>, <span>'ES'</span>, ..... );
-  
-  <span>-- Partition for people living in United States</span>
-  <span>CREATE</span> <span>TABLE</span> people_US <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'US'</span>);
+    <pre><code>mkdir src
+  touch src/index.js
   </code></pre>
   </div>
-  <p>Let’s try it:</p>
-  <div>
-    <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
-     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
-     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
-     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>);
-  &gt; <span>INSERT</span> <span>0</span> <span>3</span>
-  
-  <span>SELECT</span> schemaname,relname,n_live_tup 
-     <span>FROM</span> pg_stat_user_tables 
-     <span>ORDER</span> <span>BY</span> n_live_tup <span>DESC</span>;
-  
-   schemaname |  relname  | n_live_tup 
-  <span>------------+-----------+------------</span>
-   public     | people_eu |          2
-   public     | people_us |          1
-  </code></pre>
-  </div>
-  <p>Again, PostgreSQL moved every row to the correct partition.</p>
-  <h3><strong>Partition by Hash</strong></h3>
-  <blockquote>
-    <p>
-      <em
-        >The table is partitioned by specifying a modulus and a remainder for
-        each partition. Each partition will hold the rows for which the hash
-        value of the partition key divided by the specified modulus will produce
-        the specified remainder.</em
-      >
-    </p>
-  </blockquote>
   <p>
-    This type is useful when we can’t logically divide our data, but we can only
-    reduce the table size by spreading rows into many smaller partitions.
-  </p>
-  <p>
-    The following SQL will divide people into three tables, every table will
-    contain (almost) the same number of rows.
+    The next step is to edit our <em>package.json</em>. We want to point our
+    start script to the recently created <em>index.js</em>. Later, we can run
+    our application with <code>npm start</code>.
   </p>
   <div>
-    <pre><code><span>CREATE</span> <span>TABLE</span> people (
-      <span>id</span> <span>int</span> <span>not</span> <span>null</span>,
-      birth_date <span>date</span> <span>not</span> <span>null</span>,
-      country_code <span>character</span>(<span>2</span>) <span>not</span> <span>null</span>,
-      <span>name</span> <span>text</span>
-  ) <span>PARTITION</span> <span>BY</span> <span>HASH</span> (<span>id</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_1 <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>0</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_2 <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>1</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_3 <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>2</span>);
+    <pre><code class="lang-json"><span>// package.json</span>
+  ...
+  <span >"scripts"</span>: {
+      <span >"start"</span>: <span >"node ./src/index.js"</span>
+  },
+  ...
   </code></pre>
   </div>
-  <p>Let’s try it:</p>
+  <p>
+    Let's install some npm packages we need to get the .grib files from the FTP
+    server. We'll use <strong>Basic-FTP</strong> for downloading the files and
+    <strong>Decompress</strong> and <strong>Decompress-bzip2</strong> for
+    extracting the <em>.bz2</em> files. While other packages are available, I
+    chose Basic-FTP for its simplicity and Decompress because I don't want to
+    deal with streams.
+  </p>
   <div>
-    <div>
-      <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
-     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
-     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
-     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>);
-  &gt; <span>INSERT</span> <span>0</span> <span>3</span>
-  
-  <span>SELECT</span> schemaname,relname,n_live_tup 
-     <span>FROM</span> pg_stat_user_tables 
-     <span>ORDER</span> <span>BY</span> n_live_tup <span>DESC</span>;
-  
-   schemaname | relname  | n_live_tup 
-  <span>------------+----------+------------</span>
-   public     | people_1 |          1
-   public     | people_2 |          1
-   public     | people_3 |          1
+    <pre><code>npm install basic-ftp decompress decompress-bzip2
   </code></pre>
-    </div>
-    <p>
-      As you can see, the three records have been evenly split across all the
-      partitions available.
-    </p>
-    <h2><strong>Default partition</strong></h2>
-    <p>
-      What happens when you try to insert a record that can’t fit into any
-      partition?
-    </p>
-    <p>
-      Let’s go back to the people table defined in the list partitioning chapter
-      and try to add Linda, from Canada:
-    </p>
-    <div>
-      <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
-    (<span>4</span>, <span>'2002-04-04'</span>, <span>'CA'</span>, <span>'Linda'</span>);
-  
-  ERROR:  no partition of relation "people" found for rowDETAILS: Partition key of the failing row contains (country_code) = (CA).
+  </div>
+  <h4 id="heading-effortless-organization-for-smooth-sailing">
+    Effortless Organization for Smooth Sailing!
+  </h4>
+  <p>
+    To stay organized, we will create a few more folders and files. I prefer to
+    have different tasks handled in separate modules. While it's possible to
+    code everything in one file, I like to tackle the problems one step at a
+    time.
+  </p>
+  <div>
+    <pre><code>mkdir src/ftp src/config grib_data
+  touch src/ftp/index.js src/config/index.js
   </code></pre>
-    </div>
-    <p>
-      The INSERT will fail because PostgreSQL doesn’t know where to add that
-      record.
-    </p>
-    <p>
-      The most obvious solution would be to add a new partition, but if we have
-      to do it for every country in the world, we would end up with hundreds of
-      tables with a very small number of records. Not really nice.
-    </p>
-    <p>
-      Luckily, it’s possible to define a <strong>DEFAULT</strong> partition!
-    </p>
-    <div>
-      <pre><code><span>CREATE</span> <span>TABLE</span> people_default <span>PARTITION</span> <span>OF</span> people <span>DEFAULT</span>;
+  </div>
+  <h4 id="heading-easy-maintenance">Easy Maintenance</h4>
+  <p>
+    We create a config file so that we have all the values that might change
+    over time in one place.
+  </p>
+  <p>
+    <strong>DataValues</strong> is an array with the measured values that we
+    need for our forecast.
+  </p>
+  <p>
+    The measured values can be displayed on different grids. We use the
+    regular-lat-lon model where the grid follows the geographic coordinate
+    system. This makes it easy for us to search the measured values for specific
+    coordinates.
+  </p>
+  <p>
+    The vertical level is described by <strong>FcHeight</strong>, which consists
+    of 65 layers. Layer 0 is the highest, and layer 65 is closest to the ground.
+    We want the values that were determined close to the ground, which is why we
+    have _<em>65</em>_ here. In other forecast models, the number of layers may
+    vary.
+  </p>
+  <div>
+    <pre><code ><span>// src/config/index.js</span>
+  <span>const</span> dataValues = [<span >'t'</span>, <span >'v'</span>, <span >'u'</span>];
+  <span>const</span> fCModel = <span >'regular-lat-lon_model'</span>;
+  <span>const</span> fCHeight = <span >'_65_'</span>;
+  
+  <span>module</span>.exports = {
+    dataValues,
+    fCModel,
+    fCHeight,
+  };
   </code></pre>
-    </div>
-    <p>Trying the same inserts again, it will result in:</p>
-    <div>
-      <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
-     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
-     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
-     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>),
-     (<span>4</span>, <span>'2002-04-04'</span>, <span>'CA'</span>, <span>'Linda'</span>);
-  &gt; <span>INSERT</span> <span>0</span> <span>4</span>
+  </div>
+  <h3 id="heading-list-download-extract-repeat">
+    List, Download, Extract, Repeat
+  </h3>
+  <p>
+    We create a new asynchronous function with the name
+    <code>downloadFiles</code>. Later, we will pass the latest update time
+    (databaseTimestamp) as an argument. The fallback value for databaseTimestamp
+    is a timestamp with the date 0 (January 01, 1970).
+  </p>
+  <h4 id="heading-try-and-hopefully-never-catch">
+    Try and Hopefully Never Catch
+  </h4>
+  <p>
+    We initiate the FTP connection in a try-catch block. This way, if anything
+    goes wrong, we can catch the error and continue to run the code.
+  </p>
+  <p>
+    After connecting to the server with <code>client.access</code>, we obtain a
+    list of folders for our given path. The names of these folders represent the
+    update times of the forecast model.
+  </p>
+  <h4 id="heading-pick-the-right-time">Pick the right time</h4>
+  <p>
+    Now, we need to determine which folder is the most current one at runtime.
+    For now, we will pass the <code>folderList</code> to a function. Later, we
+    will create that function. Let's assume that we get back the name of the
+    folder with the latest forecast.
+  </p>
+  <p>
+    We change the directory to the one with the latest forecast and retrieve a
+    list of files from the folder. Once again, we will pass that list to a
+    function. This function will give us back the update time of those files.
+  </p>
+  <h4 id="heading-check-if-the-database-is-up-to-date">
+    Check If the Database Is Up to Date
+  </h4>
+  <p>
+    In the last step, we will check if the update time of the forecast is newer
+    than our database update time. If the files on the server are more recent,
+    we will start to download those files.
+  </p>
+  <h4 id="heading-look-what-we-have-so-far">Look What We Have So Far.</h4>
+  <div>
+    <pre><code ><span>// src/ftp/index.js</span>
+  <span>const</span> ftp = <span>require</span>(<span >'basic-ftp'</span>);
+  <span>const</span> { dataValues, fCModel, fCHeight } = <span>require</span>(<span >'../config'</span>);
   
-  schemaname |    relname     | n_live_tup 
-  <span>------------+----------------+------------</span>
-   <span>public</span>     | people_eu      |          <span>2</span>
-   <span>public</span>     | people_us      |          <span>1</span>
-   <span>public</span>     | people_default |          <span>1</span>
+  ...
+  
+  const downloadFiles = <span>async</span> (databaseTimestamp = <span>new</span> <span>Date</span>(<span >0</span>)) =&gt; {
+    <span>const</span> server = <span >'opendata.dwd.de'</span>;
+    <span>const</span> dict = <span >'weather/nwp/icon-d2/grib'</span>;
+    <span>const</span> client = <span>new</span> ftp.Client();
+  
+    <span>try</span> {
+      <span>await</span> client.access({
+        <span >host</span>: server,
+      });
+      <span>// get a list of folders from the given ftp path</span>
+      <span>const</span> dirList = <span>await</span> client.list(dict);
+      <span>const</span> forecastTimes = dirList.map(<span >(<span >folderInfo</span>) =&gt;</span> folderInfo.name);
+      <span>// get the latest forecast folder name</span>
+      <span>const</span> nextForecastTime = getNextForecastTime(forecastTimes);
+      <span>await</span> client.cd(<span >`<span >${dict}</span>/<span >${nextForecastTime}</span>`</span>);
+      <span>const</span> fileList = <span>await</span> client.list();
+      <span>// get the last update time from the requested files</span>
+      <span>const</span> serverTimestamp = getServerTimestamp(fileList);
+      <span>// check if the files are older than the data in our database</span>
+      <span>if</span> (
+        serverTimestamp.get &lt; databaseTimestamp ||
+        <span>new</span> <span>Date</span>() - serverTimestamp &lt; <span >5</span> * <span >60</span> * <span >1000</span>
+      ) {
+        <span>console</span>.log(<span >'database is up to date'</span>);
+        client.close();
+        <span>return</span> <span class="hljs-literal">false</span>;
+      }
+      <span>// create a list of the files und download them</span>
+  
+      ...
+  
+      client.close();
+      <span>return</span> nextForecastTime; 
+    } <span>catch</span> (err) {
+      <span>console</span>.log(err);
+      <span>return</span> <span class="hljs-literal">false</span>;
+    }
+  };
   </code></pre>
-    </div>
-    <p>As you can see, Linda has now been added to <em>people_default</em>.</p>
-    <h2>
-      <strong>Sub Partitioning</strong>
-    </h2>
-    <p>A single partition can also be a partitioned table!</p>
-    <p>
-      Back to the LIST example, we can imagine that people_EU will contain a lot
-      of records, so we may want to subdivide it by hash:
-    </p>
-    <div>
-      <pre><code><span>CREATE</span> <span>TABLE</span> people (
-      <span>id</span> <span>int</span> <span>not</span> <span>null</span>,
-      birth_date <span>date</span> <span>not</span> <span>null</span>,
-      country_code <span>character</span>(<span>2</span>) <span>not</span> <span>null</span>,
-      <span>name</span> <span>text</span>
-  ) <span>PARTITION</span> <span>BY</span> <span>LIST</span> (country_code);
-  
-  <span>CREATE</span> <span>TABLE</span> people_US <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'US'</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_EU <span>PARTITION</span> <span>OF</span> people
-      <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'AT'</span>, <span>'DE'</span>, <span>'IT'</span>, <span>'FR'</span>, <span>'ES'</span>, ..... )
-      <span>PARTITION</span> <span>BY</span> <span>HASH</span> (<span>id</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_EU_1 <span>PARTITION</span> <span>OF</span> people_EU
-      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>0</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_EU_2 <span>PARTITION</span> <span>OF</span> people_EU
-      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>1</span>);
-  
-  <span>CREATE</span> <span>TABLE</span> people_EU_3 <span>PARTITION</span> <span>OF</span> people_EU
-      <span>FOR</span> <span>VALUES</span> <span>WITH</span> (MODULUS <span>3</span>, <span>REMAINDER</span> <span>2</span>);
+  </div>
+  <h4 id="heading-what-happens-in-the-blackbox">
+    <a
+      class="permalink-heading-button"
+      title="Permalink"
+      href="#heading-what-happens-in-the-blackbox"
+      data-clipboard-text="https://stonehagen.hashnode.dev/embracing-grib-files-and-freeing-ourselves-from-weather-apis#heading-what-happens-in-the-blackbox"
+      style="height: 32px"
+      ><span class="css-eivff4">Permalink</span
+      ><svg class="css-oyi044" viewBox="0 0 512 512">
+        <path
+          d="M301.148 394.702l-79.2 79.19c-50.778 50.799-133.037 50.824-183.84 0-50.799-50.778-50.824-133.037 0-183.84l79.19-79.2a132.833 132.833 0 013.532-3.403c7.55-7.005 19.795-2.004 20.208 8.286.193 4.807.598 9.607 1.216 14.384.481 3.717-.746 7.447-3.397 10.096-16.48 16.469-75.142 75.128-75.3 75.286-36.738 36.759-36.731 96.188 0 132.94 36.759 36.738 96.188 36.731 132.94 0l79.2-79.2.36-.36c36.301-36.672 36.14-96.07-.37-132.58-8.214-8.214-17.577-14.58-27.585-19.109-4.566-2.066-7.426-6.667-7.134-11.67a62.197 62.197 0 012.826-15.259c2.103-6.601 9.531-9.961 15.919-7.28 15.073 6.324 29.187 15.62 41.435 27.868 50.688 50.689 50.679 133.17 0 183.851zm-90.296-93.554c12.248 12.248 26.362 21.544 41.435 27.868 6.388 2.68 13.816-.68 15.919-7.28a62.197 62.197 0 002.826-15.259c.292-5.003-2.569-9.604-7.134-11.67-10.008-4.528-19.371-10.894-27.585-19.109-36.51-36.51-36.671-95.908-.37-132.58l.36-.36 79.2-79.2c36.752-36.731 96.181-36.738 132.94 0 36.731 36.752 36.738 96.181 0 132.94-.157.157-58.819 58.817-75.3 75.286-2.651 2.65-3.878 6.379-3.397 10.096a163.156 163.156 0 011.216 14.384c.413 10.291 12.659 15.291 20.208 8.286a131.324 131.324 0 003.532-3.403l79.19-79.2c50.824-50.803 50.799-133.062 0-183.84-50.802-50.824-133.062-50.799-183.84 0l-79.2 79.19c-50.679 50.682-50.688 133.163 0 183.851z"
+        ></path></svg></a
+    >What Happens in the Blackbox?
+  </h4>
+  <p>
+    Let's write our <code>getNextForecastTime()</code> function. The purpose of
+    this function is to find the update hour that is the least in the past.
+  </p>
+  <p>
+    First, we need to convert our Array of Strings to an Array of Numbers. Next,
+    we get the current hour when the code is executed. I have to work in UTC +0
+    because the DWD Forecast is also in UTC +0.
+  </p>
+  <p>
+    The next step is to filter the Array and remove all values that are higher
+    than our current hour. Using <code>Math.max()</code>, we get the highest
+    value of the resulting array.
+  </p>
+  <p>We convert the number to a string with a leading '0' and return it.</p>
+  <div>
+    <pre><code ><span>// src/ftp/index.js</span>
+  ...
+  const getNextForecastTime = <span >(<span >forecastTimes</span>) =&gt;</span> {
+    <span>// convert Strings into Numbers</span>
+    <span>const</span> forecastTimesNumbers = forecastTimes.map(<span >(<span >hour</span>) =&gt;</span> <span>parseInt</span>(hour, <span >10</span>));
+    <span>// get the hour of the current time</span>
+    <span>const</span> hourNow = <span>new</span> <span>Date</span>().getUTCHours();
+    <span>// get the latest forcastTime to hour current time</span>
+    <span>const</span> nextForecastTime = <span>Math</span>.max(
+      ...forecastTimesNumbers.filter(<span >(<span >hour</span>) =&gt;</span> hour &lt;= hourNow),
+    );
+    <span>// return the number as string with leading zeros</span>
+    <span>return</span> <span>String</span>(nextForecastTime).padStart(<span >2</span>, <span >'0'</span>);
+  };
+  ...
   </code></pre>
-    </div>
-    <p>This will result in:</p>
-    <div>
-      <pre><code><span>INSERT</span> <span>INTO</span> people (<span>id</span>, birth_date, country_code, <span>name</span>) <span>VALUES</span>
-     (<span>1</span>, <span>'2000-01-01'</span>, <span>'US'</span>, <span>'John'</span>),
-     (<span>2</span>, <span>'2000-02-02'</span>, <span>'IT'</span>, <span>'Jane'</span>),
-     (<span>3</span>, <span>'2001-03-03'</span>, <span>'FR'</span>, <span>'Bob'</span>);
-  &gt; <span>INSERT</span> <span>0</span> <span>3</span>
-  
-  <span>SELECT</span> schemaname,relname,n_live_tup 
-     <span>FROM</span> pg_stat_user_tables 
-     <span>ORDER</span> <span>BY</span> n_live_tup <span>DESC</span>;
-  
-  schemaname |   relname   | n_live_tup 
-  <span>------------+-------------+------------</span>
-   public     | people_eu_2 |          1
-   public     | people_eu_1 |          1
-   public     | people_us   |          1
-   public     | people_eu_3 |          0
+  </div>
+  <h4 id="heading-are-we-up-to-date">Are We Up to Date?</h4>
+  <p>
+    In the <code>getFileTimestamps()</code> function, we will return the times
+    when the files have been updated.
+  </p>
+  <p>
+    We have to convert the <code>modifiedAt</code> string of the file to a
+    timestamp. The special thing here is that there is no year in that
+    timestamp. To fix this problem, we will take the current year from
+    <code>new Date()</code>.
+  </p>
+  <p>
+    However, taking the current year poses a corner case. On January 01 in each
+    year, it is possible that we want to get the files from December 31 in the
+    previous year. By setting the current year, we will produce a timestamp in
+    the future. To prevent this behaviour, we will check if the server timestamp
+    is newer than the current date. If so, we will subtract one year from the
+    timestamp.
+  </p>
+  <p>
+    After mapping the generated timestamps into the array, we will return the
+    new array.
+  </p>
+  <div>
+    <pre><code ><span>// src/ftp/index.js</span>
+  ...
+  const getFileTimestamps = <span >(<span >files</span>) =&gt;</span> {
+    <span>const</span> dateNow = <span>new</span> <span>Date</span>();
+    <span>return</span> files.map(<span >(<span >file</span>) =&gt;</span> {
+      <span>// split the date Sting and create a timestamp from it</span>
+      <span>const</span> modDateArr = file.rawModifiedAt.split(<span >' '</span>);
+      <span>const</span> timestamp = <span>new</span> <span>Date</span>(
+        <span >`<span >${modDateArr[<span >0</span>]}</span> <span >${modDateArr[<span >1</span>]}</span>, <span >${dateNow.getFullYear()}</span> <span >${
+          modDateArr[<span >2</span>]
+        }</span>+00:00`</span>,
+      );
+      <span>// Jan 01 cornercase</span>
+      <span>if</span> (timestamp &gt; dateNow) {
+        timestamp.setFullYear(timestamp.getFullYear() - <span >1</span>);
+      }
+      <span>return</span> timestamp;
+    });
+  };
+  ...
   </code></pre>
-    </div>
-    <h2>
-      <strong>Partition operations</strong>
-    </h2>
-    <h3>
-      <strong>Attaching and detaching partitions</strong>
-    </h3>
-    <p>
-      As we have seen, single partitions can be created and dropped whenever we
-      want, but what if we want to exclude some records from the master table
-      without deleting them?
-    </p>
-    <p>The answer is: <strong>DETACH</strong></p>
-    <div>
-      <pre><code><span>ALTER</span> <span>TABLE</span> people DETACH <span>PARTITION</span> people_us;
+  </div>
+  <h4 id="heading-finally-our-loop">Finally, Our Loop:</h4>
+  <p>
+    Now that we have created all the necessary functions and variables, we can
+    start to download the files. We loop over our array of
+    <code>dataValues</code> and change the directory to the present value. We
+    will generate a list of all files in this directory and filter out the
+    required files by their names.
+  </p>
+  <p>
+    Finally, we also loop over these filenames and start downloading file by
+    file. Right after the download of one file is finished, we will decompress
+    these files before moving to the next one. The decompression is done by the
+    <code>decompressFile()</code> function. We pass in the file name and the
+    directory of the file, and the function will do its magic.
+  </p>
+  <div>
+    <pre><code ><span>// src/ftp/index.js</span>
+  ...
+  <span>// create a list of the files und download them</span>
+      <span>for</span> (<span>const</span> value <span>of</span> dataValues) {
+        <span>let</span> clientList = <span>await</span> client.list(<span >`./<span >${value}</span>`</span>);
+        <span>// filter out the unwanted files</span>
+        clientList = clientList
+          .map(<span >(<span >file</span>) =&gt;</span> file.name)
+          .filter(<span >(<span >name</span>) =&gt;</span> name.includes(fCModel) &amp;&amp; name.includes(fCHeight));
+        <span>// download file per file</span>
+        <span>for</span> (<span>const</span> file <span>of</span> clientList) {
+          <span>await</span> client.downloadTo(<span >`./grib_data/<span >${file}</span>`</span>, <span >`./<span >${value}</span>/<span >${file}</span>`</span>);
+          <span>await</span> decompressFile(file, <span >'./grib_data/'</span>);
+        }
+      }
+  ...
   </code></pre>
-    </div>
-    <p>
-      A detached partition will act as a normal table, so it will be possible to
-      insert records that would violate the partition constraints.
-    </p>
-    <p>The reverse operation, <strong>ATTACH</strong>, is as easy as:</p>
-    <div>
-      <pre><code><span>ALTER</span> <span>TABLE</span> people ATTACH <span>PARTITION</span> people_us <span>FOR</span> <span>VALUES</span> <span>IN</span> (<span>'US'</span>);
+  </div>
+  <h4 id="heading-decompress-the-bz2">Decompress the .bz2</h4>
+  <p>
+    In the asynchronous function <code>decompressFile()</code>, the filenames
+    and the path will be concatenated and passed into the
+    <code>decompress</code> method from the <code>decompress</code> module. As a
+    plugin, we specify the <code>decompressBzip2</code> module.
+  </p>
+  <p>
+    After decompressing, we delete the source .bz2 file, and we are done with
+    the magic.
+  </p>
+  <div>
+    <pre><code ><span>// src/ftp/index.js</span>
+  ...
+  const fs = <span>require</span>(<span >'fs'</span>);
+  <span>const</span> decompress = <span>require</span>(<span >'decompress'</span>);
+  <span>const</span> decompressBzip2 = <span>require</span>(<span >'decompress-bzip2'</span>);
+  ...
+  const decompressFile = <span>async</span> (file, path) =&gt; {
+    <span>const</span> regex = <span >/.*(?=.bz2)/</span>;
+    <span>await</span> decompress(<span >`<span >${path}</span>/<span >${file}</span>`</span>, <span >'./'</span>, {
+      <span >plugins</span>: [
+        decompressBzip2({
+          <span >path</span>: <span >`<span >${path}</span>/<span >${file.match(regex)[<span >0</span>]}</span>`</span>,
+        }),
+      ],
+    });
+    <span>await</span> fs.unlinkSync(<span >`<span >${path}</span>/<span >${file}</span>`</span>);
+    fs.chmodSync(<span >`<span >${path}</span>/<span >${file.match(regex)[<span >0</span>]}</span>`</span>, <span >0o755</span>);
+  };
+  ...
   </code></pre>
-    </div>
-    <h3>
-      <strong>Indexing</strong>
-    </h3>
-    <p>
-      Too bad, PostgreSQL doesn’t allow to create a single index covering every
-      partition of the table, but you have to create an index for every
-      partition.
-    </p>
-    <p>
-      The bad news about this is that the <strong>primary key</strong>, or any
-      other <strong>unique index</strong>, must include the columns used on the
-      <code>partition by</code> statement.
-    </p>
-    <div>
-      <pre><code><span>-- THIS WON'T WORK</span>
+  </div>
+  <h4 id="heading-conclusion">Conclusion</h4>
+  <p>
+    In this blog post, I shared the first part of my journey in building a
+    weather forecast app, without relying on weather APIs. Instead, I utilized
+    free .grib files from the DWD (German weather service) through FTP.
+  </p>
+  <p>
+    By leveraging the raw data provided by .grib files, I started creating a
+    weather forecasting App. With the help of npm packages like Basic-FTP and
+    Decompress, I managed to download and decompress the desired .grib files.
+  </p>
+  <p>
+    At this stage, the weather app has completed the crucial step of downloading
+    the forecast files. However, we are only getting started. In the upcoming
+    parts of this series, we will delve into processing the downloaded .grib
+    files, converting them to JSON, and storing the essential forecast
+    information in MongoDB. With each of these developments, we come a step
+    closer to achieving a fully functional weather forecast app.
+  </p>
+  <p>
+    Stay tuned for the next part of the series as we continue to build our
+    weather forecast app! Your comments and feedback are most welcome as I
+    embark on this exciting endeavour to learn and grow.
+  </p>
+  <h4 id="heading-the-code">THE CODE:</h4>
+  <div>
+    <pre><code ><span>// src/ftp/index.js</span>
+  <span>const</span> fs = <span>require</span>(<span >'fs'</span>);
+  <span>const</span> ftp = <span>require</span>(<span >'basic-ftp'</span>);
+  <span>const</span> decompress = <span>require</span>(<span >'decompress'</span>);
+  <span>const</span> decompressBzip2 = <span>require</span>(<span >'decompress-bzip2'</span>);
   
-  <span>CREATE</span> <span>UNIQUE</span> <span>INDEX</span> idx_uniq <span>ON</span> people (<span>id</span>);
-  &gt; ERROR:  insufficient columns in UNIQUE constraint definition
-  &gt; DETAILS: UNIQUE constraint on table "people" lacks column "country_code" which is part of the partition key.
+  <span>const</span> { dataValues, fCModel, fCHeight } = <span>require</span>(<span >'../config'</span>);
   
+  <span>const</span> getNextForecastTime = <span >(<span >forecastTimes</span>) =&gt;</span> {
+    <span>// convert Strings into Numbers</span>
+    <span>const</span> forecastTimesNumbers = forecastTimes.map(<span >(<span >hour</span>) =&gt;</span> <span>parseInt</span>(hour, <span >10</span>));
+    <span>// get the hour of the current time</span>
+    <span>const</span> hourNow = <span>new</span> <span>Date</span>().getUTCHours();
+    <span>// get the latest forcastTime to hour current time</span>
+    <span>const</span> nextForecastTime = <span>Math</span>.max(
+      ...forecastTimesNumbers.filter(<span >(<span >hour</span>) =&gt;</span> hour &lt;= hourNow),
+    );
+    <span>// return the number as string with leading zeros</span>
+    <span>return</span> <span>String</span>(nextForecastTime).padStart(<span >2</span>, <span >'0'</span>);
+  };
   
-  <span>-- THIS WORKS!</span>
+  <span>const</span> getFileTimestamps = <span >(<span >files</span>) =&gt;</span> {
+    <span>const</span> dateNow = <span>new</span> <span>Date</span>();
+    <span>return</span> files.map(<span >(<span >file</span>) =&gt;</span> {
+      <span>// split the date Sting and create a timestamp from it</span>
+      <span>const</span> modDateArr = file.rawModifiedAt.split(<span >' '</span>);
+      <span>const</span> timestamp = <span>new</span> <span>Date</span>(
+        <span >`<span >${modDateArr[<span >0</span>]}</span> <span >${modDateArr[<span >1</span>]}</span>, <span >${dateNow.getFullYear()}</span> <span >${
+          modDateArr[<span >2</span>]
+        }</span>+00:00`</span>,
+      );
+      <span>// Jan 01 cornercase</span>
+      <span>if</span> (timestamp &gt; dateNow) {
+        timestamp.setFullYear(timestamp.getFullYear() - <span >1</span>);
+      }
+      <span>return</span> timestamp;
+    });
+  };
   
-  <span>CREATE</span> <span>UNIQUE</span> <span>INDEX</span> idx_uniq <span>ON</span> people (<span>id</span>, country_code);
-  &gt; <span>CREATE</span> <span>INDEX</span>
+  <span>const</span> decompressFile = <span>async</span> (file, path) =&gt; {
+    <span>const</span> regex = <span >/.*(?=.bz2)/</span>;
+    <span>await</span> decompress(<span >`<span >${path}</span>/<span >${file}</span>`</span>, <span >'./'</span>, {
+      <span >plugins</span>: [
+        decompressBzip2({
+          <span >path</span>: <span >`<span >${path}</span>/<span >${file.match(regex)[<span >0</span>]}</span>`</span>,
+        }),
+      ],
+    });
+    <span>await</span> fs.unlinkSync(<span >`<span >${path}</span>/<span >${file}</span>`</span>);
+    fs.chmodSync(<span >`<span >${path}</span>/<span >${file.match(regex)[<span >0</span>]}</span>`</span>, <span >0o755</span>);
+  };
+  
+  <span>const</span> getServerTimestamp = <span >(<span >fileList</span>) =&gt;</span> {
+    <span>// reduce array to only get the required values</span>
+    <span>const</span> sortedFiles = fileList.filter(<span >(<span >file</span>) =&gt;</span> dataValues.includes(file.name));
+    <span>const</span> fileTimestamps = getFileTimestamps(sortedFiles);
+    <span>// return latest Timestamp from folder</span>
+    <span>return</span> <span>new</span> <span>Date</span>(<span>Math</span>.max(...fileTimestamps));
+  };
+  
+  <span>const</span> downloadFiles = <span>async</span> (databaseTimestamp = <span>new</span> <span>Date</span>(<span >0</span>)) =&gt; {
+    <span>const</span> server = <span >'opendata.dwd.de'</span>;
+    <span>const</span> dict = <span >'weather/nwp/icon-d2/grib'</span>;
+    <span>const</span> client = <span>new</span> ftp.Client();
+  
+    <span>try</span> {
+      <span>await</span> client.access({
+        <span >host</span>: server,
+      });
+      <span>// get a list of folders from the given ftp path</span>
+      <span>const</span> dirList = <span>await</span> client.list(dict);
+      <span>// convert list of folders to list of folderNames (forecastTimes)</span>
+      <span>const</span> forecastTimes = dirList.map(<span >(<span >folderInfo</span>) =&gt;</span> folderInfo.name);
+      <span>// get the latest forecast folder name</span>
+      <span>const</span> nextForecastTime = getNextForecastTime(forecastTimes);
+      <span>await</span> client.cd(<span >`<span >${dict}</span>/<span >${nextForecastTime}</span>`</span>);
+      <span>const</span> fileList = <span>await</span> client.list();
+      <span>// get the last update time from the requested files</span>
+      <span>const</span> serverTimestamp = getServerTimestamp(fileList);
+      <span>// check if the files are older than the data in our database</span>
+      <span>if</span> (
+        serverTimestamp.get &lt; databaseTimestamp ||
+        <span>new</span> <span>Date</span>() - serverTimestamp &lt; <span >5</span> * <span >60</span> * <span >1000</span>
+      ) {
+        <span>console</span>.log(<span >'database is up to date'</span>);
+        client.close();
+        <span>return</span> <span class="hljs-literal">null</span>;
+      }
+  
+      <span>// create a list of the files und download them</span>
+      <span>for</span> (<span>const</span> value <span>of</span> dataValues) {
+        <span>let</span> clientList = <span>await</span> client.list(<span >`./<span >${value}</span>`</span>);
+        <span>// filter out the unwanted files</span>
+        clientList = clientList
+          .map(<span >(<span >file</span>) =&gt;</span> file.name)
+          .filter(<span >(<span >name</span>) =&gt;</span> name.includes(fCModel) &amp;&amp; name.includes(fCHeight));
+        <span>// download file per file</span>
+        <span>for</span> (<span>const</span> file <span>of</span> clientList) {
+          <span>await</span> client.downloadTo(<span >`./grib_data/<span >${file}</span>`</span>, <span >`./<span >${value}</span>/<span >${file}</span>`</span>);
+          <span>await</span> decompressFile(file, <span >'./grib_data/'</span>);
+        }
+      }
+      <span>console</span>.log(<span >'download complete'</span>);
+      client.close();
+      <span>return</span> nextForecastTime;
+    } <span>catch</span> (err) {
+      <span>console</span>.log(err);
+      <span>return</span> <span class="hljs-literal">false</span>;
+    }
+  };
+  
+  <span>module</span>.exports = {
+    downloadFiles,
+  };
   </code></pre>
-    </div>
-    <p>
-      The reason behind this is the fact that every partition is treated as an
-      independent table, so adding the partition key to the index is the only
-      way to grant the uniqueness of a record across the whole table.
-    </p>
-    <p>
-      Note that creating an index on the master table will automatically
-      replicate it to every attached partition:
-    </p>
-    <div>
-      <pre><code>CREATE UNIQUE INDEX idx_uniq ON people (id, country_code);
-  -- Check created indexes
+  </div>
+  <div>
+    <pre><code ><span>// src/index.js</span>
+  <span>const</span> { downloadFiles } = <span>require</span>(<span >'./ftp'</span>);
   
-  SELECT tablename, indexname FROM pg_indexes
-  WHERE schemaname = 'public' ORDER BY tablename, indexname;
-  
-  tablename      | indexname
-  ---------------+-------------------------------------
-  people         | idx_uniq
-  people_default | people_default_id_country_code_idx
-  people_eu      | people_eu_id_country_code_idx
+  downloadFiles();
   </code></pre>
-    </div>
-    <p>
-      And that's all you need to know!<br />Follow me if you liked this article
-      or leave a comment.
-    </p>
   </div>
 </div>

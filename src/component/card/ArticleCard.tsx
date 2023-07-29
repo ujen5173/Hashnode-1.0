@@ -74,8 +74,8 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               <p
                 className={`${
                   card.cover_image
-                    ? "max-height-4"
-                    : "max-height-3 mb-0 w-full md:mb-3"
+                    ? "max-height-four"
+                    : "max-height-three mb-0 w-full md:mb-3"
                 } break-words text-sm text-gray-500 dark:text-text-primary`}
               >
                 {limitText(removeMd(card.content), 350)}
@@ -158,7 +158,11 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
   return (
     <div className="flex items-center">
       {card.series && (
-        <Link href={`/series/${card.series.slug}`}>
+        <Link
+          href={`/dev/@${card.user?.handle?.handle as string}/series/${
+            card.series.slug
+          }`}
+        >
           <p className="mr-2 flex items-center gap-1 rounded-full bg-secondary bg-opacity-10 px-2 py-1">
             <span className="text-gray-900 dark:text-text-primary">
               <Series className="h-3 w-3 fill-secondary" />

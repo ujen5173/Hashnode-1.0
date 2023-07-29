@@ -99,7 +99,7 @@ const AuthorBlogs: NextPage<{
       <AuthorBlog author={user} />
       <AuthorBlogHeader user={user} />
       {/* Home, Badge, Newsletter */}
-      <AuthorBlogNavigation tabs={user.handle.customTabs} />{" "}
+      <AuthorBlogNavigation tabs={user.handle.customTabs} />
       {/* Show the article according to the layout selected by the user from the dashboard. default is `MAGAZINE` layout. */}
       {
         {
@@ -220,7 +220,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const AuthorBlogNavigation: FC<{ tabs: CustomTabs[] }> = ({ tabs }) => {
+export const AuthorBlogNavigation: FC<{ tabs: CustomTabs[] }> = ({ tabs }) => {
   return (
     <section className="hidden border-b border-border-light bg-white dark:border-border dark:bg-primary lg:block">
       <div className="mx-auto flex max-w-[1300px] items-center justify-center px-4">

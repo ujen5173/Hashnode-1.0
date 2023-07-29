@@ -15,6 +15,7 @@ const Articles = () => {
     },
     {
       enabled: !!user?.user,
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -23,7 +24,7 @@ const Articles = () => {
   );
 
   return (
-    <section className="relative w-full p-8">
+    <section className="relative w-full">
       <header className="mb-4 flex items-center justify-between">
         <h1 className="text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           {isLoading
@@ -130,6 +131,7 @@ const ArticleCard: FC<{
           </span>
         </p>
       </div>
+
       <div>
         <button
           type="button"
@@ -138,6 +140,7 @@ const ArticleCard: FC<{
           PUBLISHED
         </button>
       </div>
+
       <div className="relative px-6">
         <button
           onClick={() => setOpened((prev) => !prev)}
@@ -146,6 +149,7 @@ const ArticleCard: FC<{
         >
           <Dots className="h-4 w-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
         </button>
+
         {opened && (
           <div
             ref={ref}

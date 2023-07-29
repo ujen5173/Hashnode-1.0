@@ -52,7 +52,7 @@ const NewArticleModal: FC<Props> = ({
     },
     {
       refetchOnMount: false,
-      enabled: false,
+      enabled: requestedTags.length > 0,
       refetchOnWindowFocus: false,
     }
   );

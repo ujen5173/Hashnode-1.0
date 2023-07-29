@@ -168,8 +168,8 @@ export interface DataType {
   slug: string;
   read_time: number;
   content: string;
-  subtitle?: string | null | undefined;
-  cover_image?: string | null | undefined;
+  subtitle: string | null;
+  cover_image: string | null;
   createdAt: Date;
   user: {
     profile: string;

@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
@@ -20,17 +21,20 @@ const CreateNewSeries = () => {
 
   const { mutateAsync, isLoading } = api.series.new.useMutation();
 
+  const router = useRouter();
+
   const handleSubmit = async () => {
     const res = await mutateAsync(data);
     if (res) {
       toast.success("Series created successfully");
+      void router.push(`/${router.query.id as string}/dashboard/series`);
     } else {
       toast.error("Something went wrong");
     }
   };
 
   return (
-    <section className="relative w-full p-8">
+    <section className="relative w-full">
       <header className="mb-4 flex items-center justify-between">
         <h1 className="text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           New Series
@@ -47,9 +51,11 @@ const CreateNewSeries = () => {
             value={data.title}
             onChange={(e) =>
               setData((prev) => {
-                return ({ ...prev, [e.target.name]: e.target.value,
-                  slug: slugify(e.target.value, slugSetting)
-                })
+                return {
+                  ...prev,
+                  [e.target.name]: e.target.value,
+                  slug: slugify(e.target.value, slugSetting),
+                };
               })
             }
             variant="FILLED"

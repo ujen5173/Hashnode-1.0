@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
+import { ArticleLoading } from "~/component/loading";
 import { Redirect } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -8,7 +9,7 @@ import { C, type ContextValue } from "~/utils/context";
 const Series = () => {
   const { user } = useContext(C) as ContextValue;
 
-  const { data } = api.series.getSeriesOfAuthor.useQuery(
+  const { data, isLoading } = api.series.getSeriesOfAuthor.useQuery(
     {
       username: user?.user.username as string,
     },
@@ -18,11 +19,12 @@ const Series = () => {
   );
 
   return (
-    <section className="relative w-full p-8">
+    <section className="relative w-full">
       <header className="mb-4 flex items-center justify-between">
         <h1 className="text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           Series
         </h1>
+
         <Link href={`/${user?.user.id as string}/dashboard/series/create`}>
           <button className="btn-outline">
             <span className="text-secondary">Create new Series</span>
@@ -31,7 +33,14 @@ const Series = () => {
       </header>
 
       <main>
-        {data && data.length > 0 ? (
+        {isLoading ? (
+          <>
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+          </>
+        ) : data && data.length > 0 ? (
           <div className="">
             {data.map((item) => (
               <SeriesCard item={item} key={item.id} />
@@ -68,21 +77,27 @@ const SeriesCard: FC<{
       key={item.id}
       className="flex items-center justify-between border-b border-border-light py-4 dark:border-border"
     >
-      <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
-        {item.title}
-      </h1>
+      <div className="flex-1">
+        <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
+          {item.title}
+        </h1>
+      </div>
+
       <div className="flex items-center gap-2">
         <button className="flex items-center gap-2 rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
           <Redirect className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
+
           <span className="font-medium text-gray-500 dark:text-text-primary">
             View Series
           </span>
         </button>
+
         <button className="rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
           <span className="font-medium text-gray-500 dark:text-text-primary">
             Edit Series
           </span>
         </button>
+
         <button className="rounded-md px-3 py-1 font-medium text-gray-500 hover:bg-gray-200 hover:text-[#dc2626!important] dark:text-text-primary dark:hover:bg-primary-light">
           Delete
         </button>

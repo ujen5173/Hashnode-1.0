@@ -129,9 +129,10 @@ const SeriesSection: FC<{
   slug: string;
   series: { title: string; slug: string };
 }> = ({ series, slug }) => {
+  const { user } = useContext(C) as ContextValue;
   const username = useRouter().query.username as string;
 
-  const { data } = api.series.getSeriesOfArticle.useQuery({
+  const { data, isLoading } = api.series.getSeriesOfArticle.useQuery({
     slug: series.slug,
   });
 
@@ -143,14 +144,26 @@ const SeriesSection: FC<{
             ARTICLE SERIES
           </h1>
 
-          <span className="text-lg font-bold text-secondary hover:underline">
-            <Link href={`/series/${series.slug}`}>{series.title}</Link>
-          </span>
+          {isLoading ? (
+            <div className="loading h-3 w-36 rounded-full bg-border-light dark:bg-border" />
+          ) : (
+            data && (
+              <span className="text-lg font-bold text-secondary hover:underline">
+                <Link
+                  href={`/dev/@${
+                    user?.user?.handle?.handle as string
+                  }/series/${slug}`}
+                >
+                  {data.title}
+                </Link>
+              </span>
+            )
+          )}
         </header>
 
         <main className="">
           {data &&
-            data.map((article, index) => (
+            data.articles.map((article, index) => (
               <div
                 className="flex flex-col gap-4 border-b border-border-light p-4 last:border-none dark:border-border md:flex-row md:items-center"
                 key={article.id}
@@ -172,7 +185,7 @@ const SeriesSection: FC<{
                     </h1>
 
                     <p className="max-height-two mb-2 text-lg text-gray-500 dark:text-text-primary">
-                      {article?.subtitle || removeMd(article.content)}
+                      {removeMd(article.content)}
                     </p>
                   </Link>
                 </div>

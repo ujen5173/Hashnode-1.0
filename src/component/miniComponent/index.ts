@@ -8,6 +8,7 @@ export { default as ImagePlaceholder } from "./ImagePlaceholder";
 export { default as Input } from "./Input";
 export { default as LeftArea } from "./LeftArea";
 export { default as ManageData } from "./ManageData";
+export { default as NoArticlesUploadedError } from "./NoArticlesUploadedError";
 export { default as Notification } from "./Notification";
 export { default as Others } from "./Others";
 export { default as ReplyDetails } from "./ReplyDetails";

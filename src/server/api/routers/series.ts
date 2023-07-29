@@ -32,9 +32,12 @@ const SeriesRouter = createTRPCRouter({
           },
           slug: input.slug || slugify(input.title, slugSetting),
         },
+        select: {
+          slug: true,
+        },
       });
 
-      return !!series;
+      return series;
     }),
 
   getSeriesOfArticle: publicProcedure
@@ -49,14 +52,24 @@ const SeriesRouter = createTRPCRouter({
           slug: input.slug,
         },
         select: {
+          title: true,
+          slug: true,
+          description: true,
+          cover_image: true,
           articles: {
             select: {
               id: true,
               title: true,
               slug: true,
-              subtitle: true,
               content: true,
               cover_image: true,
+              read_time: true,
+              createdAt: true,
+              user: {
+                select: {
+                  username: true,
+                },
+              },
             },
           },
         },
@@ -69,7 +82,7 @@ const SeriesRouter = createTRPCRouter({
         });
       }
 
-      return series.articles;
+      return series;
     }),
 
   getSeriesOfAuthor: publicProcedure

@@ -275,7 +275,7 @@ export const usersRouter = createTRPCRouter({
       };
     }),
 
-  getFollowersList: protectedProcedure
+  getFollowersList: publicProcedure
     .input(
       z.object({
         username: z.string().trim(),
@@ -303,7 +303,7 @@ export const usersRouter = createTRPCRouter({
       return followers;
     }),
 
-  getFollowingList: protectedProcedure
+  getFollowingList: publicProcedure
     .input(
       z.object({
         username: z.string().trim(),

@@ -49,6 +49,7 @@ const SelectTags: FC<Props> = ({
     let response;
     if (criteria.trim().length > 0) {
       response = await refetch();
+
       if (response.data) {
         return response.data;
       } else {
@@ -129,7 +130,7 @@ const SelectTags: FC<Props> = ({
                   {Intl.NumberFormat("en-US", {
                     notation: "compact",
                     compactDisplay: "short",
-                  }).format(0)}
+                  }).format(tag.articlesCount)}{" "}
                   &nbsp;posts
                 </p>
               </div>

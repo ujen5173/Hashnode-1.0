@@ -1,10 +1,11 @@
 export { default as ActivityCard } from "./ActivityCard";
 export { default as ArticleCard } from "./ArticleCard";
-export { default as AuthorBlogArticleCard } from "./AuthorBlogArticleCard";
 export { default as BookmarkCard } from "./BookmarkCard";
 export { default as CommentCard } from "./CommentCard";
 export { default as DraftCard } from "./DraftCard";
 export { default as NotificationCard } from "./NotificationCard";
+export { default as SimpleArticleCard } from "./SimpleArticleCard";
+export { default as StackedArticleCard } from "./StackedArticleCard";
 export { default as TagCard } from "./TagCard";
 export { default as TagsSearchCard } from "./TagsSearchCard";
 export { default as TrendingCard } from "./TrendingCard";

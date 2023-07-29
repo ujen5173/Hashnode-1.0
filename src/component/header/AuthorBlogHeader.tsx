@@ -6,6 +6,7 @@ import { useContext, useEffect, useState, type FC } from "react";
 import { v4 as uuid } from "uuid";
 import { type BlogSocial } from "~/pages/dev/[username]";
 import {
+  Angleleft,
   Check,
   Dailydev,
   Follow,
@@ -91,25 +92,44 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
               setMenu={setMenu}
             />
           </div>
+          <div className="flex items-center gap-4">
+            <div className="">
+              <Link href="/">
+                <button
+                  arial-label="Back to home Menu"
+                  role="button"
+                  className="btn-icon-large flex"
+                >
+                  <Angleleft className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+                </button>
+              </Link>
 
-          <div className="hidden sm:block">
-            <Link
-              href={`/u/@${author.username}`}
-              className="flex items-center gap-2"
-            >
-              <Image
-                src={author.profile}
-                alt={author.name}
-                width={100}
-                height={100}
-                className="h-10 w-10 cursor-pointer select-none overflow-hidden rounded-full"
-                draggable={false}
+              <ArticleHamburgerMenu
+                user={user?.user || null}
+                menu={menu}
+                setMenu={setMenu}
               />
+            </div>
 
-              <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
-                {author.name}&apos;s Blog
-              </h3>
-            </Link>
+            <div className="hidden sm:block">
+              <Link
+                href={`/u/@${author.username}`}
+                className="flex items-center gap-2"
+              >
+                <Image
+                  src={author.profile}
+                  alt={author.name}
+                  width={100}
+                  height={100}
+                  className="h-10 w-10 cursor-pointer select-none overflow-hidden rounded-full"
+                  draggable={false}
+                />
+
+                <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
+                  {author.name}&apos;s Blog
+                </h3>
+              </Link>
+            </div>
           </div>
 
           <div className="flex items-center justify-between gap-4">
