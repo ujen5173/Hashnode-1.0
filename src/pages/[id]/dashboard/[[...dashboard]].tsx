@@ -24,20 +24,22 @@ import {
   SEO,
   Series,
   Sponsors,
-  Widgets
+  Widgets,
 } from "~/component";
 import { Navigation } from "~/component/macroComponent/Dashboard";
 import DashboardSEO from "~/SEO/Dashboard.seo";
 import { authOptions } from "~/server/auth";
 import {
+  BlankCircle,
   BoardedDownArrow,
   CheckFilled,
   Customize,
   Global,
   LogonoText,
   Pen,
-  Redirect
+  Redirect,
 } from "~/svgs";
+import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 
 // All dashboard navigations
@@ -106,7 +108,7 @@ const Dashboard = () => {
                   <LogonoText className="h-6 w-6 fill-secondary" />
                 </div>
 
-                <h1 className="text-base md:text-lg font-semibold md:font-bold text-gray-700 dark:text-text-secondary">
+                <h1 className="text-base font-semibold text-gray-700 dark:text-text-secondary md:text-lg md:font-bold">
                   {session?.user.handle?.name === session?.user.name
                     ? `${session?.user.handle?.name as string}' Blog`
                     : session?.user.handle?.name}
@@ -190,6 +192,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const Roadmap = () => {
+  const router = useRouter();
+  const { user } = useContext(C) as ContextValue;
+  const { data } = api.users.getUserDashboardRoadmapDetails.useQuery();
+
   return (
     <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
@@ -197,12 +203,25 @@ const Roadmap = () => {
       </h1>
 
       <div className="flex flex-wrap gap-4">
-        <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+        <div
+          onClick={() => {
+            if (data?.articles && data?.articles.length > 0) {
+              return;
+            } else {
+              void router.push("/new");
+            }
+          }}
+          className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
+        >
           <div className="absolute right-3 top-3 md:right-4 md:top-4">
             <Pen className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
           </div>
 
-          <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+          {data?.articles && data?.articles.length > 0 ? (
+            <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+          ) : (
+            <BlankCircle className="h-5 w-5 fill-gray-500 dark:fill-text-primary md:h-7 md:w-7" />
+          )}
 
           <div className="flex-1">
             <h1 className="mb-2  text-xl font-semibold text-secondary">
@@ -216,13 +235,31 @@ const Roadmap = () => {
           </div>
         </div>
 
-        <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+        <div
+          onClick={() => {
+            if (data?.articles && data?.articles.length > 0) {
+              return;
+            } else {
+              const appearanceLocation = `/${
+                user?.user.id as string
+              }/dashboard/appearance`;
+
+              console.log({ appearanceLocation });
+
+              void router.push(appearanceLocation);
+            }
+          }}
+          className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
+        >
           <div className="absolute right-3 top-3 md:right-4 md:top-4">
             <Customize className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
           </div>
 
-          <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
-
+          {data?.handle?.appearance ? (
+            <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+          ) : (
+            <BlankCircle className="h-5 w-5 fill-gray-500 dark:fill-text-primary md:h-7 md:w-7" />
+          )}
           <div className="flex-1">
             <h1 className="mb-2 text-xl  font-semibold text-secondary">
               Customizing the appearance
@@ -235,6 +272,9 @@ const Roadmap = () => {
         </div>
 
         <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+          <div className="absolute bottom-3 right-3 w-max rounded-md bg-[#ef4444] px-3 py-1 text-xs font-medium md:bottom-4 md:right-4">
+            UPCOMMING
+          </div>
           <div className="absolute right-3 top-3 md:right-4 md:top-4">
             <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
           </div>

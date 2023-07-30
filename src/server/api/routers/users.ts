@@ -330,4 +330,28 @@ export const usersRouter = createTRPCRouter({
 
       return following;
     }),
+
+    getUserDashboardRoadmapDetails: protectedProcedure
+    .query(async ({ ctx }) => {
+      const data = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          articles: {
+            select: {
+              id: true,
+            },
+            take: 1,
+          },
+          handle: {
+            select: {
+              appearance: true,
+            }
+          }
+        }
+      });
+
+      return data;
+    }),
 });
