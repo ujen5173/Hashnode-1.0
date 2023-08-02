@@ -1,3 +1,16 @@
+import { type DefaultEditorContent } from "~/types";
+
+import Blockquote from "@tiptap/extension-blockquote";
+import Bold from "@tiptap/extension-bold";
+import Code from "@tiptap/extension-code";
+import Document from "@tiptap/extension-document";
+import Heading from "@tiptap/extension-heading";
+import Highlight from "@tiptap/extension-highlight";
+import Italic from "@tiptap/extension-italic";
+import Paragraph from "@tiptap/extension-paragraph";
+import Text from "@tiptap/extension-text";
+import { generateHTML } from "@tiptap/react";
+
 export const limitTags = (
   tags: {
     name: string;
@@ -127,16 +140,16 @@ export const imageToBlogHandler = (file: File): Promise<File | null> => {
   });
 };
 
-// export const formattedContent = (content: DefaultEditorContent) =>
-//   generateHTML(content, [
-//     Document,
-//     Text,
-//     Paragraph,
-//     Heading,
-//     Bold,
-//     Italic,
-//     Code,
-//     Heading,
-//     Blockquote,
-//     Highlight,
-//   ]);
+export const formattedContent = (content: DefaultEditorContent) =>
+  generateHTML(content, [
+    Document,
+    Text,
+    Paragraph,
+    Heading,
+    Bold,
+    Italic,
+    Code,
+    Heading,
+    Blockquote,
+    Highlight,
+  ]);
