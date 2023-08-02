@@ -4,13 +4,11 @@ import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 import { useDebouncedCallback } from "use-debounce";
-import Editor from "~/component/Editor";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
 import { NewArticleModal } from "~/component/popup";
 import { Times } from "~/svgs";
 import ImagePreview from "~/svgs/ImagePreview";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
-import { type DefaultEditorContent } from "~/types";
 import { slugSetting } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 import { imageToBlogHandler } from "~/utils/miniFunctions";
@@ -19,7 +17,7 @@ import { useUploadThing } from "~/utils/uploadthing";
 export interface ArticleData {
   title: string;
   subtitle?: string;
-  content: DefaultEditorContent;
+  content: string;
   cover_image?: string;
   cover_imageKey?: string;
   tags: string[];
@@ -51,13 +49,7 @@ const NewArticleBody: FC<{
     const [data, setData] = useState<ArticleData>({
       title: "",
       subtitle: "",
-      content: {
-        type: "doc",
-        content: [{
-          type: "paragraph",
-          text: "",
-        }]
-      },
+      content: "",
       cover_image: undefined,
       series: undefined,
       tags: [],
@@ -228,32 +220,21 @@ const NewArticleBody: FC<{
             />
 
             <div className="relative">
-              <Editor
+
+
+              <Input
                 value={data.content}
-                onChange={(value) => {
-                  setData((prev) => ({
-                    ...prev,
-                    content: value,
-                  }));
+                onChange={(e) => {
+                  handleChange(e, setData);
                 }}
                 placeholder="Start writing your story..."
-                minHeight="min-h-[500px]"
-                showBubbleMenu={true}
+                input_type="text"
+                variant="TRANSPARENT"
+                fontSize="lg"
+                name="content"
+                type="TEXTAREA"
+                required={true}
               />
-
-              {/* <Input
-              value={data.content}
-              onChange={(e) => {
-                handleChange(e, setData);
-              }}
-              placeholder="Start writing your story..."
-              input_type="text"
-              variant="TRANSPARENT"
-              fontSize="lg"
-              name="content"
-              type="TEXTAREA"
-              required={true}
-            /> */}
             </div>
           </section>
         </div>

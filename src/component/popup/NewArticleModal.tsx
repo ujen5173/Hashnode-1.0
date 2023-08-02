@@ -7,7 +7,6 @@ import { Times } from "~/svgs";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
-import { formattedContent } from "~/utils/miniFunctions";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 import { SelectSeries, SelectTags } from "../miniComponent";
 
@@ -102,8 +101,8 @@ const NewArticleModal: FC<Props> = ({
 
   const { mutateAsync } = api.posts.new.useMutation();
 
-  const handlePublish = async () => {
-    const content = formattedContent(data.content);
+  const handlePublish = () => {
+    // const content = formattedContent(data.content);
 
     if (!data.title || !data.content) {
       toast.error("Please fill up the title and content");
@@ -114,14 +113,13 @@ const NewArticleModal: FC<Props> = ({
       toast.error("Title should be at least 5 characters long");
       return;
     }
-    if (content.length < 25) {
-      toast.error("Content should be at least 25 characters long");
-      return;
-    }
+    // if (content.length < 25) {
+    //   toast.error("Content should be at least 25 characters long");
+    //   return;
+    // }
 
     setPublishing(true);
 
-    console.log({ ...data, content })
 
     // try {
     //   const res = await mutateAsync({ ...data, content });
