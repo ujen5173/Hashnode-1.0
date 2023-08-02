@@ -33,22 +33,23 @@ const NotificationCard: FC<{ notification: Notification }> = ({
           {notification.type === "COMMENT"
             ? "commented on your article"
             : notification.type === "LIKE"
-            ? "liked your article"
-            : notification.type === "NEW_ARTICLE"
-            ? "published a new article"
-            : "followed you"}
+              ? "liked your article"
+              : notification.type === "NEW_ARTICLE"
+                ? "published a new article"
+                : "followed you"}
         </p>
 
         {notification.type === "COMMENT" && (
           <div className="mb-2 rounded-md border border-border-light bg-light-bg p-3 text-gray-700 dark:border-border dark:bg-primary dark:text-text-secondary">
-            {notification.body}
+            <div
+              dangerouslySetInnerHTML={{ __html: notification.body || "" }}
+            />
           </div>
         )}
 
         <Link
-          href={`/u/@${notification.articleAuthor as string}/${
-            notification.slug as string
-          }`}
+          href={`/u/@${notification.articleAuthor as string}/${notification.slug as string
+            }`}
         >
           <h1 className="max-height-one mb-1 text-lg font-semibold text-secondary">
             {notification.title}

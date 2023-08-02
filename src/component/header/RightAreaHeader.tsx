@@ -132,7 +132,7 @@ const RightArea: FC = () => {
         {opened && width >= 640 && (
           <div
             ref={setDropdown}
-            className="absolute right-0 top-full z-50 mt-2 hidden sm:block"
+            className="absolute -right-2 top-full z-50 mt-2 hidden sm:block"
           >
             <Notification />
           </div>

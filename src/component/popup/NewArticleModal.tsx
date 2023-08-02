@@ -1,3 +1,4 @@
+import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, type FC } from "react";
@@ -7,6 +8,7 @@ import { Times } from "~/svgs";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
+import { formattedContent } from "~/utils/miniFunctions";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 import { SelectSeries, SelectTags } from "../miniComponent";
 
@@ -101,10 +103,11 @@ const NewArticleModal: FC<Props> = ({
 
   const { mutateAsync } = api.posts.new.useMutation();
 
-  const handlePublish = () => {
-    // const content = formattedContent(data.content);
+  const handlePublish = async () => {
+    const content = formattedContent(data.content);
+    console.log({ ...data, content })
 
-    if (!data.title || !data.content) {
+    if (!data.title || !content) {
       toast.error("Please fill up the title and content");
       return;
     }
@@ -113,27 +116,21 @@ const NewArticleModal: FC<Props> = ({
       toast.error("Title should be at least 5 characters long");
       return;
     }
-    // if (content.length < 25) {
-    //   toast.error("Content should be at least 25 characters long");
-    //   return;
-    // }
 
     setPublishing(true);
-
-
-    // try {
-    //   const res = await mutateAsync({ ...data, content });
-    //   if (res.success) {
-    //     setPublishModal(false);
-    //     localStorage.removeItem("savedData");
-    //     await router.push(res.redirectLink);
-    //     toast.success("Article published successfully");
-    //   }
-    // } catch (error) {
-    //   if (error instanceof TRPCClientError) {
-    //     toast.error(error.message);
-    //   }
-    // }
+    try {
+      const res = await mutateAsync({ ...data, content });
+      if (res.success) {
+        setPublishModal(false);
+        localStorage.removeItem("savedData");
+        await router.push(res.redirectLink);
+        toast.success("Article published successfully");
+      }
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        toast.error(error.message);
+      }
+    }
 
     setPublishing(false);
   };

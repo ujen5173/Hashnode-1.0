@@ -230,22 +230,13 @@ const NewArticleBody: FC<{
             <div className="relative">
               <Editor
                 value={data.content}
-                onChange={(e) => console.log(e)}
-              />
-              {/* 
-              <Input
-                value={data.content}
                 onChange={(e) => {
-                  handleChange(e, setData);
+                  setData((prev) => ({
+                    ...prev,
+                    content: e,
+                  }));
                 }}
-                placeholder="Start writing your story..."
-                input_type="text"
-                variant="TRANSPARENT"
-                fontSize="lg"
-                name="content"
-                type="TEXTAREA"
-                required={true}
-              /> */}
+              />
             </div>
           </section>
         </div>

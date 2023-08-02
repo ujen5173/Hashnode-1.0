@@ -50,7 +50,10 @@
   text-decoration: underline;
 }
 .article code {
-  color: #000000;
+  background: #1e293b;
+  color: #e5e7eb;
+  padding: 0.2rem 0.5rem;
+  border-radius: 7px;
   font-weight: 400;
   font-size: 16px;
   line-height: 29px;
@@ -59,7 +62,7 @@
 .article pre {
   background: #1e293b;
   color: #e5e7eb;
-  border-radius: 7px;
+  border-radius: 5px;
   border: 1px solid #1f2937;
   margin: 32px 0;
   padding: 20px;
@@ -83,12 +86,12 @@
   margin: 32px 0;
 }
 
-body.dark {
+body.dark * {
   color: #fafafa;
 }
 body.dark code {
-  background: #24292e;
-  color: #fafafa;
+  background: #1e293b;
+  color: #e5e7eb;
 }
 body.dark pre {
   background: #1e293b;

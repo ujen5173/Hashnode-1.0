@@ -2,7 +2,7 @@ import { TRPCClientError } from "@trpc/client";
 import Image from "next/image";
 import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import type { Comment } from "~/types";
+import type { Comment, DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { formatDate } from "~/utils/miniFunctions";
@@ -12,7 +12,7 @@ interface Props {
   comment: Comment;
   type: "REPLY" | "COMMENT";
   authorUsername: string;
-  commentFunc: (type: "REPLY" | "COMMENT", content: string) => Promise<void>;
+  commentFunc: (type: "REPLY" | "COMMENT", content: DefaultEditorContent) => Promise<void>;
   publishing: boolean;
   replyingUserDetails: {
     id: string;
@@ -25,6 +25,8 @@ interface Props {
     } | null>
   >;
   replyComment: (data: { id: string; username: string }) => void;
+  emptyEditor: boolean;
+  setEmptyEditor: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const CommentCard: FC<Props> = ({
@@ -36,11 +38,19 @@ export const CommentCard: FC<Props> = ({
   replyingUserDetails,
   setReplyingUserDetails,
   replyComment,
+  emptyEditor,
+  setEmptyEditor
 }) => {
   const { user } = useContext(C) as ContextValue;
   const { mutate: likeComment } = api.comments.likeComment.useMutation();
   const [showReplies, setShowReplies] = useState<boolean>(false);
-  const [replyText, setReplyText] = useState<string>("");
+  const [replyText, setReplyText] = useState<DefaultEditorContent>({
+    type: "doc",
+    content: [{
+      type: "paragraph",
+      text: "",
+    }]
+  });
   const [replies, setReplies] = useState<{
     totalReplies: number;
     replies: Comment[];
@@ -120,7 +130,14 @@ export const CommentCard: FC<Props> = ({
           );
           setReplyingUserDetails(null);
           setShowReplies(true);
-          setReplyText("");
+          setReplyText({
+            type: "doc",
+            content: [{
+              type: "paragraph",
+              text: "",
+            }]
+          });
+          setEmptyEditor(true);
         })
         .catch(() => {
           toast.error("Something went wrong, please try again later");
@@ -131,7 +148,14 @@ export const CommentCard: FC<Props> = ({
   const cancelReply = () => {
     setReplyingUserDetails(null);
     setShowReplies(false);
-    setReplyText("");
+    setReplyText({
+      type: "doc",
+      content: [{
+        type: "paragraph",
+        text: "",
+      }]
+    });
+    setEmptyEditor(true);
   };
 
   const ShowRepliesSection = () => {
@@ -155,11 +179,10 @@ export const CommentCard: FC<Props> = ({
 
   return (
     <div
-      className={`relative px-4 ${
-        type === "REPLY"
-          ? "pt-6"
-          : "border-b border-border-light py-3 last:border-none dark:border-border"
-      }`}
+      className={`relative px-4 ${type === "REPLY"
+        ? "pt-6"
+        : "border-b border-border-light py-3 last:border-none dark:border-border"
+        }`}
     >
       {type === "REPLY" && (
         <div className="absolute left-[2.15rem] top-0 h-6 w-[1.7px] bg-gray-400 dark:bg-[#475569]" />
@@ -194,9 +217,10 @@ export const CommentCard: FC<Props> = ({
       </div>
 
       <div className="">
-        <p className="mb-4 text-base text-gray-700 dark:text-text-secondary">
-          {comment?.body}
-        </p>
+        <div
+          dangerouslySetInnerHTML={{ __html: comment.body || "" }}
+          className="w-full break-words"
+        />
 
         {replyingUserDetails && replyingUserDetails.id === comment.id && (
           <ReplyDetails
@@ -205,6 +229,7 @@ export const CommentCard: FC<Props> = ({
             replyingUserDetails={replyingUserDetails}
             publishing={publishing}
             cancelReply={cancelReply}
+            emptyEditor={emptyEditor}
             handleReply={handleReply}
             commentId={comment.id}
           />
@@ -224,7 +249,7 @@ export const CommentCard: FC<Props> = ({
         <div>
           {replies.replies?.map((reply, index) =>
             replyingUserDetails?.id === reply.id &&
-            replyingUserDetails?.id === comment.id ? (
+              replyingUserDetails?.id === comment.id ? (
               <div key={index} className="">
                 <CommentCard
                   commentFunc={commentFunc}
@@ -235,11 +260,14 @@ export const CommentCard: FC<Props> = ({
                   replyingUserDetails={replyingUserDetails}
                   replyComment={replyComment}
                   publishing={publishing}
+                  setEmptyEditor={setEmptyEditor}
                   authorUsername={authorUsername}
+                  emptyEditor={emptyEditor}
                 />
 
                 <div className="relative pl-4 pt-7">
                   <ReplyDetails
+                    emptyEditor={emptyEditor}
                     replyText={replyText}
                     setReplyText={setReplyText}
                     replyingUserDetails={replyingUserDetails}
@@ -253,6 +281,7 @@ export const CommentCard: FC<Props> = ({
             ) : (
               <CommentCard
                 commentFunc={commentFunc}
+                setEmptyEditor={setEmptyEditor}
                 comment={reply}
                 key={reply.id}
                 type="REPLY"
@@ -260,6 +289,7 @@ export const CommentCard: FC<Props> = ({
                 replyingUserDetails={replyingUserDetails}
                 replyComment={replyComment}
                 publishing={publishing}
+                emptyEditor={emptyEditor}
                 authorUsername={authorUsername}
               />
             )

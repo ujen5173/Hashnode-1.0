@@ -10,8 +10,6 @@ interface Props {
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
-  // createTagState: boolean;
-  // setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface Tag {
@@ -26,8 +24,6 @@ const SelectTags: FC<Props> = ({
   setData,
   query,
   setQuery,
-  // createTagState,
-  // setCreateTagState,
 }) => {
   const [tags, setTags] = useState<Tag[]>([]);
 
@@ -59,17 +55,6 @@ const SelectTags: FC<Props> = ({
 
     return [];
   }
-
-  // useEffect(() => {
-  //   // This will refetch the tags when the new tag model is closed to insure that the new tag is created
-  //   if (!createTagState && query.length > 0) {
-  //     void (async () => {
-  //       const response = await search(query);
-  //       const newData = response.filter((tag) => !t.includes(tag.name));
-  //       setTags(newData);
-  //     })();
-  //   }
-  // }, [createTagState]);
 
   const debounced = useDebouncedCallback(async (value: string) => {
     const response = await search(value);
@@ -130,7 +115,7 @@ const SelectTags: FC<Props> = ({
                   {Intl.NumberFormat("en-US", {
                     notation: "compact",
                     compactDisplay: "short",
-                  }).format(tag.articlesCount)}{" "}
+                  }).format(tag.articlesCount)}
                   &nbsp;posts
                 </p>
               </div>

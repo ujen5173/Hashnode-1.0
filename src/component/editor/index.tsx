@@ -13,7 +13,8 @@ const Editor: FC<{
   placeholder?: string | null,
   showBubbleMenu?: boolean
   minHeight?: string;
-}> = ({ minHeight = "min-h-[500px]", renderLocalStorageData = true, value, onChange, showBubbleMenu = true, placeholder = null }) => {
+  emptyEditor?: boolean;
+}> = ({ minHeight = "min-h-[500px]", emptyEditor = false, renderLocalStorageData = true, value, onChange, showBubbleMenu = true, placeholder = null }) => {
   const [hydrated, setHydrated] = useState(false);
 
   const editor = useEditor({
@@ -33,7 +34,7 @@ const Editor: FC<{
     onUpdate: (e) => {
       onChange(e.editor.getJSON() as DefaultEditorContent);
     },
-    autofocus: "end",
+    // autofocus: "end",
   });
 
   // Hydrate the editor with the content from localStorage.
@@ -44,6 +45,22 @@ const Editor: FC<{
       setHydrated(true);
     }
   }, [editor, hydrated]);
+
+  useEffect(() => {
+    if (editor && emptyEditor) {
+      editor.commands.setContent({
+        type: "doc",
+        content: [{
+          type: "paragraph",
+          content: [{
+            type: "text",
+            text: "",
+          }],
+        }],
+      });
+
+    }
+  }, [emptyEditor]);
 
   return (
     <div

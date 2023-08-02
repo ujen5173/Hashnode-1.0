@@ -57,7 +57,10 @@
   }
 
   code {
-    color: #000000;
+    background: #1e293b;
+    color: #e5e7eb;
+    padding: 0.2rem 0.5rem;
+    border-radius: 7px;
     font-weight: 400;
     font-size: 16px;
     line-height: 29px;
@@ -67,7 +70,7 @@
   pre {
     background: #1e293b;
     color: #e5e7eb;
-    border-radius: 7px;
+    border-radius: 5px;
     border: 1px solid #1f2937;
     margin: 32px 0;
     padding: 20px;
@@ -96,10 +99,13 @@
 }
 
 body.dark {
-  color: #fafafa;
-  code {
-    background: #24292e;
+  * {
     color: #fafafa;
+  }
+
+  code {
+    background: #1e293b;
+    color: #e5e7eb;
   }
 
   pre {
@@ -110,11 +116,13 @@ body.dark {
     }
   }
 }
+
 @media screen and (max-width: 1024px) {
   .article {
     font-size: 18px;
     line-height: 32px;
   }
+  
   h1 {
     font-size: 34px;
     line-height: 44px;

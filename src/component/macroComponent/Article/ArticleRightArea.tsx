@@ -6,7 +6,7 @@ import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import {
   ArticleProfileDropdown,
-  NotAuthenticatedProfileDropdown,
+  NotAuthenticatedProfileDropdown
 } from "~/component/dropdown";
 import { Notification } from "~/component/miniComponent";
 import {
@@ -15,7 +15,7 @@ import {
   Notification as NotificationSVG,
   Search,
   Settings,
-  Sun,
+  Sun
 } from "~/svgs";
 import { type UserSimple } from "~/types";
 import { api } from "~/utils/api";
@@ -116,7 +116,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
         {notificationOpened && (
           <div
             ref={setNotificationDropdown}
-            className="absolute right-0 top-full z-50 mt-2"
+            className="absolute -right-2 top-full z-50 mt-2"
           >
             <Notification />
           </div>
