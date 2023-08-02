@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import url("editor.css");
+@import url("prosemirror.css");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -28,20 +29,20 @@
   word-break: break-word;
 }
 
-.max-height-four {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 4; /* number of lines to show */
-  line-clamp: 4;
-  -webkit-box-orient: vertical;
-  word-break: break-word;
-}
-
 .max-height-three {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3; /* number of lines to show */
   line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.max-height-four {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* number of lines to show */
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   word-break: break-word;
 }
@@ -235,25 +236,19 @@ body.dark .input-secondary.input-with-opacity::-moz-placeholder {
   border-color: rgba(212, 215, 218, 0.8);
 }
 
-body.dark
-  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k {
+body.dark .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k {
   border-color: #2c3646;
 }
 
-body.dark
-  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k
-  svg {
+body.dark .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k svg {
   stroke: #94a3b8;
 }
 
-body.dark
-  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover {
+body.dark .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover {
   background: #1e293b;
 }
 
-body.dark
-  .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover
-  svg {
+body.dark .mantine-UnstyledButton-root.mantine-RichTextEditor-control.mantine-f6e83k:hover svg {
   stroke: #f8fafc;
 }
 
@@ -275,11 +270,7 @@ body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror pre {
   color: #e2e8f0 !important;
 }
 
-body.dark
-  .mantine-RichTextEditor-content.mantine-1drwy5n
-  .ProseMirror
-  pre
-  code {
+body.dark .mantine-RichTextEditor-content.mantine-1drwy5n .ProseMirror pre code {
   background: transparent !important;
 }
 
@@ -343,7 +334,7 @@ body.dark .article code {
   display: flex;
   width: 6rem;
   --tw-text-opacity: 1;
-  color: rgb(226 232 240 / var(--tw-text-opacity));
+  color: rgb(226 232 240/var(--tw-text-opacity));
 }
 
 .activity_date_dots {
@@ -353,7 +344,7 @@ body.dark .article code {
   border-width: 1px;
   border-style: dashed;
   --tw-border-opacity: 1;
-  border-color: rgb(147 197 253 / var(--tw-border-opacity));
+  border-color: rgb(147 197 253/var(--tw-border-opacity));
 }
 
 .scroll-area::-webkit-scrollbar {
@@ -382,19 +373,19 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
 }
 
 .container-aside {
-  grid-column: span 2 / span 2;
+  grid-column: span 2/span 2;
 }
 
 .container-main {
-  grid-column: span 7 / span 7;
+  grid-column: span 7/span 7;
 }
 
 .container-full-main {
-  grid-column: span 10 / span 10;
+  grid-column: span 10/span 10;
 }
 
 .container-right-aside {
-  grid-column: span 3 / span 3;
+  grid-column: span 3/span 3;
 }
 
 @media screen and (max-width: 768px) {
@@ -409,12 +400,11 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
 }
 .loading {
   -webkit-animation: animate-loading 2000ms linear infinite;
-  animation: animate-loading 2000ms linear infinite;
+          animation: animate-loading 2000ms linear infinite;
 }
 
 @-webkit-keyframes animate-loading {
-  from,
-  to {
+  from, to {
     opacity: 0.4;
   }
   50% {
@@ -423,8 +413,7 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
 }
 
 @keyframes animate-loading {
-  from,
-  to {
+  from, to {
     opacity: 0.4;
   }
   50% {
@@ -433,7 +422,7 @@ body.dark .scroll-area::-webkit-scrollbar-thumb {
 }
 .commentsModal {
   -webkit-animation: animate-comments 300ms ease-in-out;
-  animation: animate-comments 300ms ease-in-out;
+          animation: animate-comments 300ms ease-in-out;
 }
 
 @-webkit-keyframes animate-comments {
@@ -547,30 +536,29 @@ body.dark .mantine-RichTextEditor-root.mantine-3eqw8l {
   }
 }
 .main-block {
-  grid-column: span 1 / span 1;
+  grid-column: span 1/span 1;
 }
 
 @media (min-width: 768px) {
   .main-block {
-    grid-row: span 2 / span 2;
-    grid-column: span 1 / span 1;
+    grid-row: span 2/span 2;
+    grid-column: span 1/span 1;
   }
 }
 @media (min-width: 1280px) {
   .main-block {
-    grid-row: span 2 / span 2;
-    grid-column: span 2 / span 2;
+    grid-row: span 2/span 2;
+    grid-column: span 2/span 2;
   }
 }
 .child-block {
-  grid-column: span 1 / span 1;
+  grid-column: span 1/span 1;
 }
 
 body.dark .mantine-Tooltip-tooltip.mantine-iu41h {
   background: rgb(30, 41, 59);
   color: #fafafa;
-  box-shadow: 0 0 0 1px rgba(30, 41, 59, 0.05),
-    0px 10px 20px rgba(30, 41, 59, 0.1);
+  box-shadow: 0 0 0 1px rgba(30, 41, 59, 0.05), 0px 10px 20px rgba(30, 41, 59, 0.1);
 }
 
 .mantine-Tooltip-tooltip.mantine-iu41h {
@@ -590,12 +578,7 @@ input.appearence-radio-button:checked + label > img {
   border-radius: 45px;
 }
 .gradient-button:hover {
-  background: linear-gradient(
-    208.15deg,
-    rgba(52, 102, 246, 0.1) -4.22%,
-    rgba(52, 102, 246, 0.1) -4.21%,
-    rgba(124, 58, 237, 0.1) 102.68%
-  );
+  background: linear-gradient(208.15deg, rgba(52, 102, 246, 0.1) -4.22%, rgba(52, 102, 246, 0.1) -4.21%, rgba(124, 58, 237, 0.1) 102.68%);
   background-color: transparent !important;
 }
 
@@ -603,7 +586,7 @@ input.appearence-radio-button:checked + label > img {
   background: linear-gradient(to bottom right, #2563eb, #9333ea);
   color: transparent !important;
   -webkit-background-clip: text;
-  background-clip: text;
+          background-clip: text;
 }
 
 body.dark .hr-line-between-text::before {
@@ -636,4 +619,4 @@ body.dark .hr-line-between-text::after {
   height: 1px;
   width: 40%;
   background: rgba(212, 215, 218, 0.8);
-} /*# sourceMappingURL=globals.css.map */
+}/*# sourceMappingURL=globals.css.map */

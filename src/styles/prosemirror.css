@@ -1,0 +1,27 @@
+.ProseMirror .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #6b7280;
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror * {
+  margin-bottom: 0.833333em;
+}
+
+.ProseMirror {
+  min-height: 150px !important;
+}
+
+.ProseMirror .is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #6b7280;
+  pointer-events: none;
+  height: 0;
+}
+
+.tippy-box {
+  max-width: 400px !important;
+}/*# sourceMappingURL=prosemirror.css.map */

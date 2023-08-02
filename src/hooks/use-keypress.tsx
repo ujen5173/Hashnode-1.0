@@ -18,10 +18,9 @@ const useKeyPress = (callback: Callback): void => {
       if (isTypingArea) {
         isTyping = true;
       } else {
-        const isSlash = event.key === "/";
         const isCtrlK = event.key === "k" && (event.ctrlKey || event.metaKey);
 
-        if (!isTyping && (isSlash || isCtrlK)) {
+        if (!isTyping && isCtrlK) {
           event.preventDefault();
           callback();
         }

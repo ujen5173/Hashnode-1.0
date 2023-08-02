@@ -1,4 +1,3 @@
-import { TRPCClientError } from "@trpc/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, type FC } from "react";
@@ -8,6 +7,7 @@ import { Times } from "~/svgs";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
+import { formattedContent } from "~/utils/miniFunctions";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 import { SelectSeries, SelectTags } from "../miniComponent";
 
@@ -21,9 +21,6 @@ interface Props {
 
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
-
-  // createTagState: boolean;
-  // setCreateTagState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const NewArticleModal: FC<Props> = ({
@@ -36,8 +33,6 @@ const NewArticleModal: FC<Props> = ({
 
   query,
   setQuery,
-  // createTagState,
-  // setCreateTagState,
 }) => {
   const { user, handleChange } = useContext(C) as ContextValue;
 
@@ -108,6 +103,8 @@ const NewArticleModal: FC<Props> = ({
   const { mutateAsync } = api.posts.new.useMutation();
 
   const handlePublish = async () => {
+    const content = formattedContent(data.content);
+
     if (!data.title || !data.content) {
       toast.error("Please fill up the title and content");
       return;
@@ -117,35 +114,36 @@ const NewArticleModal: FC<Props> = ({
       toast.error("Title should be at least 5 characters long");
       return;
     }
-    if (data.content.length < 25) {
+    if (content.length < 25) {
       toast.error("Content should be at least 25 characters long");
       return;
     }
 
     setPublishing(true);
 
-    try {
-      const res = await mutateAsync(data);
-      if (res.success) {
-        setPublishModal(false);
-        localStorage.removeItem("savedData");
-        await router.push(res.redirectLink);
-        toast.success("Article published successfully");
-      }
-    } catch (error) {
-      if (error instanceof TRPCClientError) {
-        toast.error(error.message);
-      }
-    }
+    console.log({ ...data, content })
+
+    // try {
+    //   const res = await mutateAsync({ ...data, content });
+    //   if (res.success) {
+    //     setPublishModal(false);
+    //     localStorage.removeItem("savedData");
+    //     await router.push(res.redirectLink);
+    //     toast.success("Article published successfully");
+    //   }
+    // } catch (error) {
+    //   if (error instanceof TRPCClientError) {
+    //     toast.error(error.message);
+    //   }
+    // }
 
     setPublishing(false);
   };
 
   return (
     <section
-      className={`${
-        !publishModal ? "translate-x-full" : "translate-x-0"
-      } transition-ease scroll-area fixed right-0 top-0 z-50 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
+      className={`${!publishModal ? "translate-x-full" : "translate-x-0"
+        } transition-ease scroll-area fixed right-0 top-0 z-50 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
     >
       <div className="h-max">
         <header className="sticky left-0 top-0 z-30 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
@@ -233,8 +231,6 @@ const NewArticleModal: FC<Props> = ({
                 tags={data.tags}
                 query={query}
                 setQuery={setQuery}
-                // createTagState={createTagState}
-                // setCreateTagState={setCreateTagState}
               />
 
               <div className="mt-2 flex flex-wrap gap-2">

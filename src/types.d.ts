@@ -240,3 +240,26 @@ export interface SocialHandles {
   linkedin: string;
   youtube: string;
 }
+
+interface ContentNode {
+  type: string;
+  attrs?: Record<string, any>;
+  content?: ContentNode[];
+  marks?: Mark[];
+  text?: string;
+  checked?: boolean;
+  src?: string;
+  alt?: string;
+  title?: string;
+}
+
+interface Mark {
+  type: string;
+  attrs?: Record<string, any>;
+  text?: string;
+}
+
+export interface DefaultEditorContent {
+  type: string;
+  content: ContentNode[];
+}
