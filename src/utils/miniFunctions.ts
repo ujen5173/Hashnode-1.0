@@ -8,6 +8,7 @@ import Heading from "@tiptap/extension-heading";
 import Highlight from "@tiptap/extension-highlight";
 import Italic from "@tiptap/extension-italic";
 import Paragraph from "@tiptap/extension-paragraph";
+import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 import { generateHTML } from "@tiptap/react";
 
@@ -152,4 +153,5 @@ export const formattedContent = (content: DefaultEditorContent) =>
     Heading,
     Blockquote,
     Highlight,
+    Strike,
   ]);

@@ -36,6 +36,7 @@
     "@tiptap/extension-link": "^2.0.4",
     "@tiptap/extension-paragraph": "^2.0.4",
     "@tiptap/extension-placeholder": "^2.0.4",
+    "@tiptap/extension-strike": "^2.0.4",
     "@tiptap/extension-text": "^2.0.4",
     "@tiptap/pm": "^2.0.4",
     "@tiptap/react": "^2.0.4",

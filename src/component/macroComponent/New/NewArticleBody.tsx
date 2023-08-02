@@ -4,11 +4,13 @@ import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 import { useDebouncedCallback } from "use-debounce";
+import Editor from "~/component/editor";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
 import { NewArticleModal } from "~/component/popup";
 import { Times } from "~/svgs";
 import ImagePreview from "~/svgs/ImagePreview";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
+import { type DefaultEditorContent } from "~/types";
 import { slugSetting } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 import { imageToBlogHandler } from "~/utils/miniFunctions";
@@ -17,7 +19,7 @@ import { useUploadThing } from "~/utils/uploadthing";
 export interface ArticleData {
   title: string;
   subtitle?: string;
-  content: string;
+  content: DefaultEditorContent;
   cover_image?: string;
   cover_imageKey?: string;
   tags: string[];
@@ -49,7 +51,13 @@ const NewArticleBody: FC<{
     const [data, setData] = useState<ArticleData>({
       title: "",
       subtitle: "",
-      content: "",
+      content: {
+        type: "doc",
+        content: [{
+          type: "paragraph",
+          text: "",
+        }]
+      },
       cover_image: undefined,
       series: undefined,
       tags: [],
@@ -220,8 +228,11 @@ const NewArticleBody: FC<{
             />
 
             <div className="relative">
-
-
+              <Editor
+                value={data.content}
+                onChange={(e) => console.log(e)}
+              />
+              {/* 
               <Input
                 value={data.content}
                 onChange={(e) => {
@@ -234,7 +245,7 @@ const NewArticleBody: FC<{
                 name="content"
                 type="TEXTAREA"
                 required={true}
-              />
+              /> */}
             </div>
           </section>
         </div>
@@ -255,17 +266,7 @@ const NewArticleBody: FC<{
           setPublishing={setPublishing}
           query={query}
           setQuery={setQuery}
-        // createTagState={createTagState}
-        // setCreateTagState={setCreateTagState}
         />
-
-        {/* {createTagState && (
-        <NewTagModal
-          query={query}
-          setQuery={setQuery}
-          setCreateTagState={setCreateTagState}
-        />
-      )} */}
       </main>
     );
   };
