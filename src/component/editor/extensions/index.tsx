@@ -5,6 +5,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "tiptap-markdown";
 
 import { InputRule } from "@tiptap/core";
+import SlashCommand from "./slash-command";
 
 export const TiptapExtensions = [
   StarterKit.configure({
@@ -86,7 +87,7 @@ export const TiptapExtensions = [
         "text-text-primary dark:text-text-secondary underline underline-offset-[3px] hover:text-secondary transition-colors cursor-pointer",
     },
   }),
-  // SlashCommand,
+  SlashCommand,
   Highlight.configure({
     multicolor: true,
   }),
