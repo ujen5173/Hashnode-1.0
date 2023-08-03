@@ -26,14 +26,6 @@ import {
   type Activity,
 } from "./../../../utils/microFunctions";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
 const getArticlesWithUserFollowingProfiles = async (
   ctx: {
     session: Session | null;
@@ -1064,5 +1056,71 @@ export const postsRouter = createTRPCRouter({
           message: "Something went wrong, try again later",
         });
       }
+    }),
+  read: protectedProcedure
+    .input(
+      z.object({
+        slug: z.string().trim(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const article = await ctx.prisma.article.findFirst({
+          where: {
+            slug: input.slug,
+          },
+          select: {
+            id: true,
+            readers: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        if (!article) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Article not found",
+          });
+        }
+
+        const hasRead = article.readers.some(
+          (reader) => reader.id === ctx.session?.user?.id
+        );
+
+        console.log("Read function called");
+
+        if (!hasRead) {
+          await ctx.prisma.article.update({
+            where: {
+              id: article.id,
+            },
+            data: {
+              readers: {
+                ...(hasRead
+                  ? undefined
+                  : {
+                      connect: {
+                        id: ctx.session?.user?.id,
+                      },
+                    }),
+              },
+              readCount: {
+                ...(hasRead
+                  ? undefined
+                  : {
+                      increment: 1,
+                    }),
+              },
+            },
+          });
+        }
+
+        return {
+          success: true,
+        };
+      } catch (err) {}
     }),
 });

@@ -119,8 +119,9 @@ const ProfileDropdown = React.forwardRef<
       </div>
       <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
       <button
-        onClick={() => void logout()}
-        className="flex w-full items-center gap-2 px-4 py-3 text-red hover:bg-gray-200 dark:hover:bg-primary-light"
+        onClick={() => {
+          void logout();
+        }} className="flex w-full items-center gap-2 px-4 py-3 text-red hover:bg-gray-200 dark:hover:bg-primary-light"
       >
         <span>
           <Exit className="h-4 w-4 fill-red" />

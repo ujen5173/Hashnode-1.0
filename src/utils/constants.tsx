@@ -96,11 +96,10 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Comments",
       icon: (name: string) => (
         <Comment
-          className={`h-4 w-4 fill-none ${
-            notificationType === name
-              ? "stroke-secondary"
-              : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+          className={`h-4 w-4 fill-none ${notificationType === name
+            ? "stroke-secondary"
+            : "stroke-gray-700 dark:stroke-text-secondary"
+            }`}
         />
       ),
     },
@@ -110,11 +109,10 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Likes",
       icon: (name: string) => (
         <Heart
-          className={`h-4 w-4 fill-none ${
-            notificationType === name
-              ? "stroke-secondary"
-              : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+          className={`h-4 w-4 fill-none ${notificationType === name
+            ? "stroke-secondary"
+            : "stroke-gray-700 dark:stroke-text-secondary"
+            }`}
         />
       ),
     },
@@ -124,11 +122,10 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Articles",
       icon: (name: string) => (
         <Document
-          className={`h-4 w-4 fill-none ${
-            notificationType === name
-              ? "stroke-secondary"
-              : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+          className={`h-4 w-4 fill-none ${notificationType === name
+            ? "stroke-secondary"
+            : "stroke-gray-700 dark:stroke-text-secondary"
+            }`}
         />
       ),
     },
@@ -818,9 +815,8 @@ export const dashboardNavigations = [
     name: "General",
     icon: (state: boolean) => (
       <Settings
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/general",
@@ -830,9 +826,8 @@ export const dashboardNavigations = [
     name: "Appearance",
     icon: (state: boolean) => (
       <Customize
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/appearance",
@@ -842,9 +837,8 @@ export const dashboardNavigations = [
     name: "Navbar",
     icon: (state: boolean) => (
       <Navbar
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/navbar",
@@ -854,9 +848,8 @@ export const dashboardNavigations = [
     name: "Articles",
     icon: (state: boolean) => (
       <Feed
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/articles",
@@ -866,9 +859,8 @@ export const dashboardNavigations = [
     name: "Series",
     icon: (state: boolean) => (
       <Series
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/series",
@@ -878,9 +870,8 @@ export const dashboardNavigations = [
     name: "Pages",
     icon: (state: boolean) => (
       <Pages
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/pages",
@@ -890,9 +881,8 @@ export const dashboardNavigations = [
     name: "Sponsors",
     icon: (state: boolean) => (
       <Sponsors
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/sponsors",
@@ -902,9 +892,8 @@ export const dashboardNavigations = [
     name: "Analytics",
     icon: (state: boolean) => (
       <Analytics
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/analytics",
@@ -914,9 +903,8 @@ export const dashboardNavigations = [
     name: "Widgets",
     icon: (state: boolean) => (
       <Widgets
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/widgets",
@@ -926,9 +914,8 @@ export const dashboardNavigations = [
     name: "Newsletter",
     icon: (state: boolean) => (
       <Newsletter
-        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/newsletter",
@@ -938,9 +925,8 @@ export const dashboardNavigations = [
     name: "Integrations",
     icon: (state: boolean) => (
       <Integrations
-        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/integrations",
@@ -950,9 +936,8 @@ export const dashboardNavigations = [
     name: "SEO",
     icon: (state: boolean) => (
       <Seo
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/seo",
@@ -962,9 +947,8 @@ export const dashboardNavigations = [
     name: "Domain",
     icon: (state: boolean) => (
       <Global
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/domain",
@@ -974,9 +958,8 @@ export const dashboardNavigations = [
     name: "GitHub",
     icon: (state: boolean) => (
       <Github
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/github",
@@ -986,9 +969,8 @@ export const dashboardNavigations = [
     name: "Import",
     icon: (state: boolean) => (
       <ImportFile
-        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/import",
@@ -998,9 +980,8 @@ export const dashboardNavigations = [
     name: "Export",
     icon: (state: boolean) => (
       <ExportFile
-        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/export",
@@ -1010,9 +991,8 @@ export const dashboardNavigations = [
     name: "Advanced",
     icon: (state: boolean) => (
       <Tools
-        className={`h-5 w-5 ${
-          state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-        }`}
+        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+          }`}
       />
     ),
     link: "/dashboard/advanced",
@@ -1117,6 +1097,7 @@ export const selectArticleCard = {
   slug: true,
   cover_image: true,
   disabledComments: true,
+  readCount: true,
   user: {
     select: {
       id: true,

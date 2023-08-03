@@ -14,6 +14,8 @@ import { formatDate } from "~/utils/miniFunctions";
 const ArticleBody: FC<{ article: Article }> = ({ article }) => {
   const [commentsModal, setCommentsModal] = useState(false);
   const [commentsCount, setCommentsCount] = useState(article.commentsCount);
+  const { mutate } = api.posts.read.useMutation();
+  console.log("Article Body Re-rendered")
 
   useEffect(() => {
     if (commentsModal) {
@@ -22,6 +24,38 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
       document.body.style.overflow = "unset";
     }
   }, [commentsModal]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      mutate({
+        slug: article.slug,
+      });
+    }, 5000) // 5 seconds
+  }, []);
+
+  useEffect(() => {
+    // Add copy button inside pre element
+    const allCodeBlocks = document.querySelectorAll("pre");
+    const copy = [...allCodeBlocks];
+    allCodeBlocks.forEach((codeBlock, i) => {
+      const parentContainer = document.createElement("div");
+      parentContainer.className = "relative";
+      codeBlock.parentNode?.replaceChild(parentContainer, codeBlock);
+      parentContainer.appendChild(codeBlock);
+      const copyButton = document.createElement("button");
+      const copyButtonElements = `
+        <span class="text-sm text-[#e2e8f0!important]">Copy</span>
+          <svg width=20 height=20 fill="#e2e8f0" viewBox="0 0 384 512"><path d="M336 64h-88.6c.4-2.6.6-5.3.6-8 0-30.9-25.1-56-56-56s-56 25.1-56 56c0 2.7.2 5.4.6 8H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM192 32c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm160 432c0 8.8-7.2 16-16 16H48c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h48v20c0 6.6 5.4 12 12 12h168c6.6 0 12-5.4 12-12V96h48c8.8 0 16 7.2 16 16z"></path></svg>
+        `
+      copyButton.className = "absolute top-2 right-2 flex items-center justify-center gap-1";
+      copyButton.innerHTML = copyButtonElements;
+      copyButton.addEventListener("click", () => {
+        void navigator.clipboard.writeText(copy[i]?.textContent || "");
+      });
+
+      parentContainer.appendChild(copyButton);
+    });
+  }, []);
 
   return (
     <main className="min-h-screen bg-white pb-12 dark:bg-primary">
@@ -33,11 +67,11 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             width={1200}
             height={800}
             draggable={false}
-            className="w-full overflow-hidden rounded-b-md object-cover md:px-4"
+            className="w-full md:w-10/12 lg:w-full mx-auto overflow-hidden rounded-b-md object-cover md:px-4"
           />
         )}
 
-        <section className={`relative pt-8 md:pb-0 md:pt-16`}>
+        <section className={`relative pt-8 md:pb-0 md:pt-14`}>
           <div className="px-4">
             <h1 className="mb-6 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:mb-8 md:w-11/12 md:text-5xl md:leading-tight">
               {article.title}
@@ -150,9 +184,8 @@ const SeriesSection: FC<{
             data && (
               <span className="text-lg font-bold text-secondary hover:underline">
                 <Link
-                  href={`/dev/@${
-                    user?.user?.handle?.handle as string
-                  }/series/${slug}`}
+                  href={`/dev/@${user?.user?.handle?.handle as string
+                    }/series/${slug}`}
                 >
                   {data.title}
                 </Link>
@@ -169,11 +202,10 @@ const SeriesSection: FC<{
                 key={article.id}
               >
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                    article.slug === slug
-                      ? "bg-secondary text-white"
-                      : "bg-slate-200 text-primary"
-                  }`}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${article.slug === slug
+                    ? "bg-secondary text-white"
+                    : "bg-slate-200 text-primary"
+                    }`}
                 >
                   <h1 className="text-lg font-black">{index + 1}</h1>
                 </div>

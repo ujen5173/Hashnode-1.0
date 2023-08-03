@@ -7,6 +7,7 @@ export interface Article {
   slug: string;
   cover_image: string | null;
   disabledComments: boolean;
+  readCount: number;
   user: {
     id: string;
     name: string;
@@ -142,6 +143,8 @@ interface SearchResults {
           id: string;
         };
         cover_image: string;
+        readCount: number;
+
         series?: {
           title: string;
         };

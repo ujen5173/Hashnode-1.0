@@ -102,24 +102,23 @@ const TrendingComponent: FC<{
 
 const SocialHandles = () => {
   return (
-    <ul className="mb-4 flex flex-wrap gap-2 px-4 pb-4">
+    <ul className="flex flex-wrap gap-2 px-4 pb-4">
       {HashnodeSocials.map((item, index) => (
         <li key={index}>
           <a
             target="_blank"
             aria-label={`Follow us on ${item.name}`}
             title={`Follow us on ${item.name}`}
-            className={`btn-social-icon flex h-10 w-10 items-center justify-center ${
-              item.name === "Twitter"
-                ? "hover:bg-twitterColor"
-                : item.name === "Discord"
+            className={`btn-social-icon flex h-8 w-8 items-center justify-center ${item.name === "Twitter"
+              ? "hover:bg-twitterColor"
+              : item.name === "Discord"
                 ? "hover:bg-discordColor"
                 : item.name === "Instagram"
-                ? "hover:bg-instaColor"
-                : item.name === "Linkedin"
-                ? "hover:bg-linkedinColor"
-                : ""
-            }`}
+                  ? "hover:bg-instaColor"
+                  : item.name === "Linkedin"
+                    ? "hover:bg-linkedinColor"
+                    : ""
+              }`}
             href={`/${item.link}`}
           >
             {item.icon}

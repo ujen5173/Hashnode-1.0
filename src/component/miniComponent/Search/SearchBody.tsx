@@ -179,12 +179,6 @@ const SearchBody = React.forwardRef<
                 void debounced(e.target.value);
               }}
             />
-
-            <span className="absolute right-4 top-1/2 -translate-y-1/2">
-              <span className="rounded-md border border-border-light bg-gray-200 px-2 py-1 text-xs text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary">
-                CTRL + K
-              </span>
-            </span>
           </div>
         </header>
 
@@ -197,13 +191,14 @@ const SearchBody = React.forwardRef<
                     <button
                       onClick={() => {
                         setType(item);
+                        setRefetching(true);
                         setTimeout(() => {
                           void refetchData(item);
                         }, 100);
+                        setRefetching(false);
                       }}
-                      className={`${
-                        type === item ? "btn-tab-active" : "btn-tab"
-                      }`}
+                      className={`${type === item ? "btn-tab-active" : "btn-tab"
+                        }`}
                     >
                       {`${item.slice(0, 1)}${item
                         .slice(1, item.length)
@@ -227,7 +222,7 @@ const SearchBody = React.forwardRef<
               <div className="scroll-area max-h-[65vh] min-h-[350px] overflow-auto">
                 {refetching ? (
                   <SearchLoading />
-                ) : type === "USERS" && data.users && data.users.length > 0 ? (
+                ) : type === "USERS" ? data.users && data.users.length > 0 ? (
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.users.map((user) => (
                       <div
@@ -243,7 +238,7 @@ const SearchBody = React.forwardRef<
                       </div>
                     ))}
                   </ul>
-                ) : type === "TAGS" && data.tags && data.tags.length > 0 ? (
+                ) : <NoSearchResults /> : type === "TAGS" ? data.tags && data.tags.length > 0 ? (
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.tags.map((tag) => (
                       <div
@@ -259,64 +254,60 @@ const SearchBody = React.forwardRef<
                       </div>
                     ))}
                   </ul>
-                ) : (type === "ARTICLES" || type === "LATEST") &&
+                ) : <NoSearchResults /> : (type === "ARTICLES" || type === "LATEST") ?
                   data.articles &&
-                  data.articles.length > 0 ? (
-                  <ul className="scroll-area max-h-[20rem] overflow-auto">
-                    {data.articles.map((article) => (
-                      <div
-                        onClick={() => setOpened(false)}
-                        key={article.id}
-                        className="border-b border-border-light dark:border-border"
-                      >
-                        <SearchArticle data={article} />
-                      </div>
-                    ))}
-                  </ul>
-                ) : type === "TOP" ? (
-                  topResults.map((search: any) => {
-                    const { type, ...rest } = search;
-                    return type === "ARTICLES" ? (
-                      <div
-                        onClick={() => setOpened(false)}
-                        key={rest.id as string}
-                        className="border-b border-border-light dark:border-border"
-                      >
-                        <SearchArticle data={rest as ArticleSeach} />
-                      </div>
-                    ) : type === "TAGS" ? (
-                      <div
-                        // onClick={() => setOpened(false)}
-                        key={rest.id as string}
-                        className="border-b border-border-light dark:border-border"
-                      >
-                        <TagsSearchCard
+                    data.articles.length > 0 ? (
+                    <ul className="scroll-area max-h-[20rem] overflow-auto">
+                      {data.articles.map((article) => (
+                        <div
+                          onClick={() => setOpened(false)}
+                          key={article.id}
+                          className="border-b border-border-light dark:border-border"
+                        >
+                          <SearchArticle data={article} />
+                        </div>
+                      ))}
+                    </ul>
+                  ) : <NoSearchResults /> : type === "TOP" ? (
+                    topResults.length > 0 ? topResults.map((search: any) => {
+                      const { type, ...rest } = search;
+                      return type === "ARTICLES" ? (
+                        <div
+                          onClick={() => setOpened(false)}
                           key={rest.id as string}
-                          tag={rest as TagSearch}
-                          setOpened={setOpened}
-                        />
-                      </div>
-                    ) : type === "USERS" ? (
-                      <div
-                        // onClick={() => setOpened(false)}
-                        key={rest.id as string}
-                        className="border-b border-border-light dark:border-border"
-                      >
-                        <UserSearchCard
+                          className="border-b border-border-light dark:border-border"
+                        >
+                          <SearchArticle data={rest as ArticleSeach} />
+                        </div>
+                      ) : type === "TAGS" ? (
+                        <div
+                          // onClick={() => setOpened(false)}
                           key={rest.id as string}
-                          user={rest as UserSearch}
-                          setOpened={setOpened}
-                        />
-                      </div>
-                    ) : null;
-                  })
-                ) : (
-                  <div className="flex h-64 items-center justify-center">
-                    <p className="text-center text-base font-semibold text-gray-700 dark:text-text-secondary md:text-xl">
-                      Whoops! No results found. Try a new keyword or phrase.
-                    </p>
-                  </div>
-                )}
+                          className="border-b border-border-light dark:border-border"
+                        >
+                          <TagsSearchCard
+                            key={rest.id as string}
+                            tag={rest as TagSearch}
+                            setOpened={setOpened}
+                          />
+                        </div>
+                      ) : type === "USERS" ? (
+                        <div
+                          // onClick={() => setOpened(false)}
+                          key={rest.id as string}
+                          className="border-b border-border-light dark:border-border"
+                        >
+                          <UserSearchCard
+                            key={rest.id as string}
+                            user={rest as UserSearch}
+                            setOpened={setOpened}
+                          />
+                        </div>
+                      ) : null;
+                    }) : <NoSearchResults />
+                  ) : (
+                    <NoSearchResults />
+                  )}
               </div>
             )}
           </section>
@@ -329,3 +320,9 @@ const SearchBody = React.forwardRef<
 SearchBody.displayName = "SearchBody";
 
 export default SearchBody;
+
+const NoSearchResults = () => <div className="flex h-64 items-center justify-center">
+  <p className="text-center text-base font-semibold text-gray-700 dark:text-text-secondary md:text-xl">
+    Whoops! No results found. Try a new keyword or phrase.
+  </p>
+</div>

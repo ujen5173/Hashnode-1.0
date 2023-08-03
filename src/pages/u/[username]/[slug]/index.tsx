@@ -2,8 +2,8 @@ import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useContext, useEffect } from "react";
-import { ArticleBody, ArticleHeader, Footer } from "~/component";
 import ArticleSEO from "~/SEO/Article.seo";
+import { ArticleBody, ArticleHeader, Footer } from "~/component";
 import { authOptions } from "~/server/auth";
 import { generateSSGHelper } from "~/server/ssgHelper";
 import { type Article } from "~/types";
@@ -62,8 +62,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           : null,
         article: data
           ? (JSON.parse(JSON.stringify(data)) as Article & {
-              isFollowing: boolean;
-            })
+            isFollowing: boolean;
+          })
           : null,
       },
     };

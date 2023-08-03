@@ -6,7 +6,7 @@ import { Bookmarkalt, Exit, LogonoText, Pen, Settings, User } from "~/svgs";
 import { C, type ContextValue } from "~/utils/context";
 import { Divider } from "../miniComponent";
 
-const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
+const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
   const { user } = useContext(C) as ContextValue;
 
   const logout = async () => {
@@ -93,7 +93,9 @@ const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
       <Divider />
 
       <div
-        onClick={() => void logout()}
+        onClick={() => {
+          void logout();
+        }}
         className="flex items-center gap-2 px-4 py-3 text-red hover:bg-gray-200 dark:hover:bg-primary-light"
       >
         <span>

@@ -7,6 +7,7 @@ import { type FilterData } from "~/types";
 import { api } from "~/utils/api";
 
 const MainBodyArticles = () => {
+  console.log("Main Body Re-rendered");
   const tab = useRouter().query.tab as string | undefined;
 
   const [filter, setFilter] = useState<FilterData>({
@@ -35,8 +36,8 @@ const MainBodyArticles = () => {
         tags: newFilterData.tags,
         read_time: newFilterData.read_time
           ? (read_time_options.find(
-              (option) => option.label === newFilterData.read_time
-            )?.value as "over_5" | "5" | "under_5" | null | undefined)
+            (option) => option.label === newFilterData.read_time
+          )?.value as "over_5" | "5" | "under_5" | null | undefined)
           : null,
       },
     },
@@ -47,7 +48,10 @@ const MainBodyArticles = () => {
     }
   );
 
+
+
   const [articles, setArticles] = useState({ data, isLoading: isFetching });
+  console.log({ articles })
 
   useEffect(() => {
     setArticles({ data, isLoading: isFetching });

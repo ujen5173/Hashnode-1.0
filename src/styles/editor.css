@@ -1,3 +1,11 @@
+.article :first-child {
+  margin-top: 0 !important;
+}
+
+.article :last-child {
+  margin-bottom: 0 !important;
+}
+
 .article {
   line-height: 36px;
   font-weight: 400;
@@ -86,18 +94,18 @@
   margin: 32px 0;
 }
 
-body.dark * {
+body.dark .article * {
   color: #fafafa;
 }
-body.dark code {
+body.dark .article code {
   background: #1e293b;
   color: #e5e7eb;
 }
-body.dark pre {
+body.dark .article pre {
   background: #1e293b;
   color: #e5e7eb;
 }
-body.dark pre code {
+body.dark .article pre code {
   background: transparent !important;
 }
 

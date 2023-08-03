@@ -1,3 +1,9 @@
+.article :first-child {
+  margin-top: 0 !important;
+}
+.article :last-child {
+  margin-bottom: 0 !important;
+}
 .article {
   line-height: 36px;
   font-weight: 400;
@@ -98,7 +104,7 @@
   }
 }
 
-body.dark {
+body.dark .article {
   * {
     color: #fafafa;
   }
@@ -122,7 +128,7 @@ body.dark {
     font-size: 18px;
     line-height: 32px;
   }
-  
+
   h1 {
     font-size: 34px;
     line-height: 44px;

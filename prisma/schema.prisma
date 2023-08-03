@@ -63,6 +63,7 @@ model User {
     articles       Article[] @relation("author")
     likedArticles  Article[]
     likedComments  Comment[] @relation("CommentToUser")
+    readArticles   Article[] @relation("ReadArticle")
 
     series Series[]
 
@@ -175,6 +176,8 @@ model Article {
     slug             String    @unique
     comments         Comment[]
     commentsCount    Int       @default(0)
+    readCount        Int       @default(0)
+    readers          User[]    @relation("ReadArticle")
 
     series   Series? @relation(fields: [seriesId], references: [id], onDelete: Cascade)
     seriesId String?
