@@ -7,7 +7,6 @@ import { type FilterData } from "~/types";
 import { api } from "~/utils/api";
 
 const MainBodyArticles = () => {
-  console.log("Main Body Re-rendered");
   const tab = useRouter().query.tab as string | undefined;
 
   const [filter, setFilter] = useState<FilterData>({
@@ -47,8 +46,6 @@ const MainBodyArticles = () => {
       refetchOnWindowFocus: false,
     }
   );
-
-
 
   const [articles, setArticles] = useState({ data, isLoading: isFetching });
   console.log({ articles })

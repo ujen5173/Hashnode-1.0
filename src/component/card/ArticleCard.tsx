@@ -72,11 +72,10 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
 
             <Link href={`/u/@${card.user.username}/${card.slug}`}>
               <p
-                className={`${
-                  card.cover_image
-                    ? "max-height-four"
-                    : "max-height-three mb-0 w-full md:mb-3"
-                } break-words text-sm text-gray-500 dark:text-text-primary`}
+                className={`${card.cover_image
+                  ? "max-height-four"
+                  : "max-height-three mb-0 w-full md:mb-3"
+                  } break-words text-sm text-gray-500 dark:text-text-primary`}
               >
                 {limitText(removeMd(card.content), 350)}
               </p>
@@ -107,11 +106,10 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               aria-label="icon"
               onClick={() => updateBookmark(card.id)}
               role="button"
-              className={`${
-                bookmarks.find((bookmark) => bookmark.id === card.id)
-                  ? "bg-secondary bg-opacity-20"
-                  : ""
-              } btn-icon-large flex w-max items-center justify-center`}
+              className={`${bookmarks.find((bookmark) => bookmark.id === card.id)
+                ? "bg-secondary bg-opacity-20"
+                : ""
+                } btn-icon-large flex w-max items-center justify-center`}
             >
               {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
                 <Bookmarked className="h-5 w-5" />
@@ -119,6 +117,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                 <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
               )}
             </button>
+
 
             <div className="flex flex-wrap items-center gap-2">
               {limitTags(card.tags, 13).map((tag, index) =>
@@ -157,11 +156,16 @@ export default ArticleCard;
 const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
   return (
     <div className="flex items-center">
+      {
+        card.readCount > 0 && (
+          <span className="px-2 py-1 rounded-md bg-gray-200 dark:bg-primary-light text-gray-500 inline-flex mr-2 dark:text-text-primary text-sm">{card.readCount} reads</span>
+        )
+      }
+
       {card.series && (
         <Link
-          href={`/dev/@${card.user?.handle?.handle as string}/series/${
-            card.series.slug
-          }`}
+          href={`/dev/@${card.user?.handle?.handle as string}/series/${card.series.slug
+            }`}
         >
           <p className="mr-2 flex items-center gap-1 rounded-full bg-secondary bg-opacity-10 px-2 py-1">
             <span className="text-gray-900 dark:text-text-primary">

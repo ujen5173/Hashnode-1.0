@@ -1,12 +1,12 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 
 const Appearance = () => {
   const { mutateAsync, isLoading } = api.handles.updateHandle.useMutation();
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   const [appearance, setAppearance] = useState<{
     layout: "MAGAZINE" | "STACKED" | "GRID";
@@ -65,9 +65,8 @@ const Appearance = () => {
 
         <button
           disabled={isLoading}
-          className={`btn-outline ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
+          className={`btn-outline ${isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
           onClick={() => void handleUpdate()}
         >
           {isLoading ? "Updating..." : "Update"}{" "}

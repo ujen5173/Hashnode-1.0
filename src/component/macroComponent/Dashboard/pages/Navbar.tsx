@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState, type FC } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Add, Pen, Plus, Times } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 import { isValidURL } from "~/utils/miniFunctions";
 
 const Navbar = () => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const [addNewItem, setAddNewItem] = useState(false);
 
   const { data, isLoading, refetch } = api.handles.getNavbarData.useQuery(
@@ -111,7 +111,7 @@ const NavBarItem: FC<{
     priority: 0,
   });
 
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   const saveNavbar = async () => {
     // add new nav item
@@ -365,9 +365,8 @@ const NavBarItem: FC<{
                 type="button"
                 disabled={isUpdating}
                 onClick={() => void editItem()}
-                className={`btn-outline flex items-center gap-2 ${
-                  isUpdating ? "cursor-not-allowed opacity-40" : ""
-                }}`}
+                className={`btn-outline flex items-center gap-2 ${isUpdating ? "cursor-not-allowed opacity-40" : ""
+                  }}`}
               >
                 <span>{isUpdating ? "Updating" : "Update"}</span>
               </button>

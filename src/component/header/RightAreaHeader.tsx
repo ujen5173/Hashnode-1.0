@@ -1,5 +1,6 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside, useViewportSize } from "@mantine/hooks";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
@@ -10,7 +11,8 @@ import { C, type ContextValue } from "~/utils/context";
 import { Notification } from "../miniComponent";
 
 const RightArea: FC = () => {
-  const { user, handleTheme } = useContext(C) as ContextValue;
+  const { handleTheme } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const [opened, setOpened] = useState(false);
 
   const [control, setControl] = useState<HTMLDivElement | null>(null);

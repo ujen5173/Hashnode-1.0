@@ -1,14 +1,14 @@
 import { TRPCClientError } from "@trpc/client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { ArticleCard } from "~/component/card";
 import { ArticleLoading } from "~/component/loading";
 import { Clock, Filter, Fire } from "~/svgs";
 import type { DetailedTag, FilterData } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 import { TagPageHeader } from "../../header";
 import FilterSection from "./FilterSection";
 
@@ -40,7 +40,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     followersCount: "0",
   });
   const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const { data: tags, isLoading } = api.posts.getArticlesUsingTag.useQuery(
     {
       name: tagDetails.name,
@@ -49,8 +49,8 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
         tags: newFilterData.tags,
         read_time: newFilterData.read_time
           ? (read_time_options.find(
-              (option) => option.label === newFilterData.read_time
-            )?.value as "over_5" | "5" | "under_5" | null | undefined)
+            (option) => option.label === newFilterData.read_time
+          )?.value as "over_5" | "5" | "under_5" | null | undefined)
           : null,
       },
     },
@@ -135,18 +135,16 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                 <button
                   aria-label="icon"
                   role="button"
-                  className={`${
-                    tab === undefined || tab === "hot"
-                      ? "btn-tab-active"
-                      : "btn-tab"
-                  }`}
+                  className={`${tab === undefined || tab === "hot"
+                    ? "btn-tab-active"
+                    : "btn-tab"
+                    }`}
                 >
                   <Fire
-                    className={`h-4 w-4  ${
-                      tab === undefined || tab === "hot"
-                        ? "fill-secondary"
-                        : "fill-gray-700 dark:fill-text-primary"
-                    }`}
+                    className={`h-4 w-4  ${tab === undefined || tab === "hot"
+                      ? "fill-secondary"
+                      : "fill-gray-700 dark:fill-text-primary"
+                      }`}
                   />
                   <span className={`text-sm font-semibold`}>Hot</span>
                 </button>
@@ -158,11 +156,10 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                   className={`${tab === "new" ? "btn-tab-active" : "btn-tab"}`}
                 >
                   <Clock
-                    className={`h-4 w-4 fill-none ${
-                      tab === "new"
-                        ? "stroke-secondary"
-                        : "stroke-gray-700 dark:stroke-text-primary"
-                    }`}
+                    className={`h-4 w-4 fill-none ${tab === "new"
+                      ? "stroke-secondary"
+                      : "stroke-gray-700 dark:stroke-text-primary"
+                      }`}
                   />
                   <span className={`text-sm font-semibold`}>New</span>
                 </button>
@@ -185,21 +182,19 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                   className="relative flex items-center justify-center"
                 >
                   <Filter
-                    className={`h-4 w-4 ${
-                      filter.data.read_time !== null ||
+                    className={`h-4 w-4 ${filter.data.read_time !== null ||
                       filter.data.tags.length > 0
-                        ? "fill-secondary stroke-secondary"
-                        : ""
-                    } fill-gray-700 dark:fill-text-primary`}
+                      ? "fill-secondary stroke-secondary"
+                      : ""
+                      } fill-gray-700 dark:fill-text-primary`}
                   />
                 </button>
                 <span
-                  className={`${
-                    filter.data.read_time !== null ||
+                  className={`${filter.data.read_time !== null ||
                     filter.data.tags.length > 0
-                      ? "text-secondary"
-                      : "text-gray-700 dark:text-text-primary"
-                  }`}
+                    ? "text-secondary"
+                    : "text-gray-700 dark:text-text-primary"
+                    }`}
                 >
                   Filter
                 </span>

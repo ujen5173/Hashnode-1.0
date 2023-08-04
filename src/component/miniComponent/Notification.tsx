@@ -1,10 +1,10 @@
 import { type NotificationTypes } from "@prisma/client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useContext, useEffect, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
-import { C, type ContextValue } from "~/utils/context";
 import ManageData from "./ManageData";
 
 enum Type {
@@ -16,7 +16,7 @@ enum Type {
 
 const Notification = () => {
   const [notificationType, setNotificationType] = useState<Type>(Type.all);
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
 
   useEffect(() => {

@@ -1,14 +1,14 @@
 import { useClickOutside } from "@mantine/hooks";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useContext, useState } from "react";
-import { C, type ContextValue } from "~/utils/context";
+import React, { useState } from "react";
 import { NotAuthenticatedProfileDropdown, ProfileDropdown } from "../dropdown";
 import { LeftArea } from "../miniComponent";
 import SearchArea from "../miniComponent/Search/Search";
 import RightArea from "./RightAreaHeader";
 
 const Header: React.FC<{ search?: boolean }> = ({ search = true }) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const [opened, setOpened] = useState(false);
 
   const [control, setControl] = useState<HTMLDivElement | null>(null);

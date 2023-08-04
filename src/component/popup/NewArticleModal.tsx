@@ -1,4 +1,5 @@
 import { TRPCClientError } from "@trpc/client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, type FC } from "react";
@@ -35,7 +36,8 @@ const NewArticleModal: FC<Props> = ({
   query,
   setQuery,
 }) => {
-  const { user, handleChange } = useContext(C) as ContextValue;
+  const { handleChange } = useContext(C) as ContextValue;
+  const { data: user } = useSession()
 
   const router = useRouter();
 

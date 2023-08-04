@@ -2,23 +2,16 @@ import { type User } from "@prisma/client";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useContext, useEffect } from "react";
 import { Header, UserProfileBody } from "~/component";
 import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import { type DetailedUser, type SocialHandles } from "~/types";
-import { C, type ContextValue } from "~/utils/context";
 
 const UserBlog: NextPage<{
   user: DetailedUser;
 }> = ({ user }) => {
   const { data: session } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
-
-  useEffect(() => {
-    setUser(session);
-  }, []);
 
   return (
     <>

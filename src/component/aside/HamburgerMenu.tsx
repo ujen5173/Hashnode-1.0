@@ -1,26 +1,25 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useContext, type FC } from "react";
+import { type FC } from "react";
 import { Logo, Magic, Times } from "~/svgs";
 import { asideItems } from "~/utils/constants";
-import { C, type ContextValue } from "~/utils/context";
 
 const HamburgerMenu: FC<{
   menu: boolean;
   setMenu: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ menu, setMenu }) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
+
   return (
     <>
       <div
         onClick={() => setMenu(false)}
-        className={`fixed inset-0 z-20 bg-gray-400 bg-opacity-40 ${
-          menu ? "block" : "hidden"
-        }`}
+        className={`fixed inset-0 z-20 bg-gray-400 bg-opacity-40 ${menu ? "block" : "hidden"
+          }`}
       />
       <section
-        className={`hamburger_menu ${
-          menu ? "active" : "inactive"
-        } fixed left-0 top-0 z-50 h-screen w-full max-w-[16rem] overflow-auto`}
+        className={`hamburger_menu ${menu ? "active" : "inactive"
+          } fixed left-0 top-0 z-50 h-screen w-full max-w-[16rem] overflow-auto`}
       >
         <div className="flex min-h-screen w-full flex-col">
           <header className="flex items-center justify-between border-b border-border border-border-light bg-light-bg p-6 py-4 shadow-md dark:border-border dark:bg-primary">

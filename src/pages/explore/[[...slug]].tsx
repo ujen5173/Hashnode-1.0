@@ -1,19 +1,10 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
-import { useSession } from "next-auth/react";
-import { useContext, useEffect } from "react";
 import { ExploreMainBody, Header } from "~/component";
 import ExploreSEO from "~/SEO/Explore.seo";
 import { authOptions } from "~/server/auth";
-import { C, type ContextValue } from "~/utils/context";
 
 const ExplorePage: NextPage = () => {
-  const { data: session } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
-
-  useEffect(() => {
-    setUser(session);
-  }, []);
 
   return (
     <>

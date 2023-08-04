@@ -1,4 +1,5 @@
 import { useClickOutside } from "@mantine/hooks";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useState, type FC } from "react";
@@ -21,7 +22,8 @@ const UserProfileArea: FC<{
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [opened2, setOpened2] = useState(false);
   const ref2 = useClickOutside<HTMLDivElement>(() => setOpened2(false));
-  const { user, following, followUser } = useContext(C) as ContextValue;
+  const { following, followUser } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   return (
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
@@ -99,9 +101,8 @@ const UserProfileArea: FC<{
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`https://twitter.com/intent/tweet?text=${
-                          process.env.NEXT_PUBLIC_VERCEL_URL as string
-                        }u/@${userDetails?.username || ""}`}
+                        href={`https://twitter.com/intent/tweet?text=${process.env.NEXT_PUBLIC_VERCEL_URL as string
+                          }u/@${userDetails?.username || ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
@@ -117,9 +118,8 @@ const UserProfileArea: FC<{
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${
-                          process.env.NEXT_PUBLIC_VERCEL_URL as string
-                        }u/@${userDetails?.username || ""}`}
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${process.env.NEXT_PUBLIC_VERCEL_URL as string
+                          }u/@${userDetails?.username || ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
@@ -174,7 +174,7 @@ const UserProfileArea: FC<{
         ) : (
           <div className="max-w-[250px]">
             <button
-              onClick={() => void followUser()}
+              onClick={() => void followUser(user)}
               className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
             >
               {following.status ? (

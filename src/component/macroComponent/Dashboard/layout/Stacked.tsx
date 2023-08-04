@@ -1,9 +1,9 @@
-import { useContext, type FC } from "react";
+import { useSession } from "next-auth/react";
+import { type FC } from "react";
 import { StackedArticleCard } from "~/component/card";
 import { NoArticlesUploadedError } from "~/component/miniComponent";
 import { AuthorArea } from "~/pages/dev/[username]";
 import { type DataType } from "~/types";
-import { C, type ContextValue } from "~/utils/context";
 
 export interface LayoutProps {
   data: DataType[] | undefined;
@@ -20,7 +20,7 @@ export interface LayoutProps {
 }
 
 const Stacked: FC<LayoutProps> = ({ data, isLoading, author }) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   return (
     <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-primary">
       <AuthorArea author={author} />

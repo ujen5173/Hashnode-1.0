@@ -1,11 +1,11 @@
 // TODO: REMOVE SERIES POPUP WHEN CLICKED OUTSIDE. THIS ISSUE IS ALSO IN TAGS SECTION.
 
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useContext, useRef, useState, type FC } from "react";
+import React, { useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Series } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 import { TagLoading } from "../loading";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 
@@ -25,7 +25,7 @@ const SelectSeries: FC<{
   const [opened, setOpened] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
   const input = useRef<HTMLInputElement | null>(null);
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   const { refetch } = api.series.searchSeries.useQuery(
     {
@@ -120,7 +120,7 @@ const SelectSeries: FC<{
                 <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
                   <Series className="mx-auto my-3 h-6 w-6 fill-secondary" />
                 </div>
-                
+
                 <span>{s.title}</span>
               </div>
             ))

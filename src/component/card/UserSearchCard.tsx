@@ -1,10 +1,10 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Check, Follow } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 
 interface Props {
   user: {
@@ -18,7 +18,7 @@ interface Props {
 }
 
 const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   const [isFollowing, setIsFollowing] = useState<boolean>(
     searchedUser.isFollowing

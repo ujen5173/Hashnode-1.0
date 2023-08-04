@@ -1,13 +1,13 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, type FC } from "react";
+import { type FC } from "react";
 import { ArticleLoading } from "~/component/loading";
 import { Redirect } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 
 const Series = () => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   const { data, isLoading } = api.series.getSeriesOfAuthor.useQuery(
     {

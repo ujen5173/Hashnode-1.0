@@ -1,9 +1,9 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, type FC } from "react";
+import { type FC } from "react";
 import { Clock, Filter, Magic, People } from "~/svgs";
 import { type FilterData } from "~/types";
-import { C, type ContextValue } from "~/utils/context";
 import { FilterSection } from "../macroComponent/Tag";
 
 interface Props {
@@ -20,7 +20,7 @@ const MainBodyHeader: FC<Props> = ({
   clearFilter,
 }) => {
   const { tab } = useRouter().query;
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   return (
     <>
@@ -31,18 +31,16 @@ const MainBodyHeader: FC<Props> = ({
               <button
                 aria-label="icon"
                 role="button"
-                className={`${
-                  tab === undefined || tab === "personalized"
-                    ? "btn-tab-active"
-                    : "btn-tab"
-                }`}
+                className={`${tab === undefined || tab === "personalized"
+                  ? "btn-tab-active"
+                  : "btn-tab"
+                  }`}
               >
                 <Magic
-                  className={`h-4 w-4  ${
-                    tab === undefined || tab === "personalized"
-                      ? "fill-secondary"
-                      : "fill-gray-700 dark:fill-text-secondary"
-                  }`}
+                  className={`h-4 w-4  ${tab === undefined || tab === "personalized"
+                    ? "fill-secondary"
+                    : "fill-gray-700 dark:fill-text-secondary"
+                    }`}
                 />
 
                 <span className="text-sm font-semibold">Personalized</span>
@@ -54,16 +52,14 @@ const MainBodyHeader: FC<Props> = ({
                 <button
                   aria-label="icon"
                   role="button"
-                  className={`${
-                    tab === "following" ? "btn-tab-active" : "btn-tab"
-                  }`}
+                  className={`${tab === "following" ? "btn-tab-active" : "btn-tab"
+                    }`}
                 >
                   <People
-                    className={`h-4 w-4 fill-none ${
-                      tab === "following"
-                        ? "stroke-secondary"
-                        : "stroke-gray-700 dark:stroke-text-secondary"
-                    }`}
+                    className={`h-4 w-4 fill-none ${tab === "following"
+                      ? "stroke-secondary"
+                      : "stroke-gray-700 dark:stroke-text-secondary"
+                      }`}
                   />
 
                   <span className="text-sm font-semibold">Following</span>
@@ -78,11 +74,10 @@ const MainBodyHeader: FC<Props> = ({
                 className={`${tab === "latest" ? "btn-tab-active" : "btn-tab"}`}
               >
                 <Clock
-                  className={`h-4 w-4 fill-none ${
-                    tab === "latest"
-                      ? "stroke-secondary"
-                      : "stroke-gray-700 dark:stroke-text-secondary"
-                  }`}
+                  className={`h-4 w-4 fill-none ${tab === "latest"
+                    ? "stroke-secondary"
+                    : "stroke-gray-700 dark:stroke-text-secondary"
+                    }`}
                 />
 
                 <span className="text-sm font-semibold">Latest</span>
@@ -106,21 +101,19 @@ const MainBodyHeader: FC<Props> = ({
                 className="relative flex items-center justify-center"
               >
                 <Filter
-                  className={`h-4 w-4 ${
-                    filter.data.read_time !== null ||
+                  className={`h-4 w-4 ${filter.data.read_time !== null ||
                     filter.data.tags.length > 0
-                      ? "fill-secondary stroke-secondary"
-                      : ""
-                  } fill-gray-700 dark:fill-text-secondary`}
+                    ? "fill-secondary stroke-secondary"
+                    : ""
+                    } fill-gray-700 dark:fill-text-secondary`}
                 />
               </button>
 
               <span
-                className={`${
-                  filter.data.read_time !== null || filter.data.tags.length > 0
-                    ? "text-secondary"
-                    : "text-gray-700 dark:text-text-secondary"
-                }`}
+                className={`${filter.data.read_time !== null || filter.data.tags.length > 0
+                  ? "text-secondary"
+                  : "text-gray-700 dark:text-text-secondary"
+                  }`}
               >
                 Filter
               </span>

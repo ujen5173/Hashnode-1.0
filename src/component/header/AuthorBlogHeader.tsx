@@ -1,5 +1,6 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
@@ -45,7 +46,6 @@ interface Props {
 
 const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
   const {
-    user,
     handleTheme,
     setSearchOpen,
     following,
@@ -56,6 +56,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
   const [menu, setMenu] = useState(false);
   const [control, setControl] = useState<HTMLDivElement | null>(null);
   const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
+  const { data: user } = useSession();
 
   useClickOutside<HTMLDivElement>(() => setOpened(false), null, [
     control,
@@ -201,7 +202,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                 </Link>
               ) : (
                 <button
-                  onClick={() => void followUser()}
+                  onClick={() => void followUser(user)}
                   className="btn-outline flex w-auto items-center justify-center gap-2 text-secondary md:w-max"
                 >
                   {following.status ? (

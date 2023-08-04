@@ -1,11 +1,11 @@
 import { TRPCClientError } from "@trpc/client";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useContext, useEffect, useRef, useState, type FC } from "react";
+import React, { useEffect, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Times } from "~/svgs";
 import { type DefaultEditorContent } from '~/types';
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 import { formattedContent } from "~/utils/miniFunctions";
 import { CommentCard } from "../card";
 import Editor from "../editor";
@@ -23,7 +23,7 @@ const CommentsModal: FC<{
   authorUsername,
   setCommentsModal,
 }) => {
-    const { user } = useContext(C) as ContextValue;
+    const { data: user } = useSession();
     const [replyingUserDetails, setReplyingUserDetails] = useState<{
       id: string;
       username: string;

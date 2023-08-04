@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -15,7 +16,6 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
   const [commentsModal, setCommentsModal] = useState(false);
   const [commentsCount, setCommentsCount] = useState(article.commentsCount);
   const { mutate } = api.posts.read.useMutation();
-  console.log("Article Body Re-rendered")
 
   useEffect(() => {
     if (commentsModal) {
@@ -163,11 +163,13 @@ const SeriesSection: FC<{
   slug: string;
   series: { title: string; slug: string };
 }> = ({ series, slug }) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const username = useRouter().query.username as string;
 
   const { data, isLoading } = api.series.getSeriesOfArticle.useQuery({
     slug: series.slug,
+  }, {
+    refetchOnWindowFocus: false,
   });
 
   return (
@@ -261,7 +263,8 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
 };
 
 export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
-  const { user, following, followUser } = useContext(C) as ContextValue;
+  const { following, followUser } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   return (
     <div className="px-4">
@@ -300,7 +303,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                 </Link>
               ) : (
                 <button
-                  onClick={() => void followUser()}
+                  onClick={() => void followUser(user)}
                   className="btn-outline hidden w-max items-center justify-center gap-2 text-secondary sm:flex"
                 >
                   {following.status ? (

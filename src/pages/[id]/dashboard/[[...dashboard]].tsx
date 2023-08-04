@@ -3,7 +3,7 @@ import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Advanced,
   Analytics,
@@ -40,7 +40,6 @@ import {
   Redirect,
 } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 
 // All dashboard navigations
 const componentMap = {
@@ -68,11 +67,7 @@ const componentMap = {
 const Dashboard = () => {
   const paths = useRouter().query;
   const { data: session } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
 
-  useEffect(() => {
-    setUser(session);
-  }, []);
 
   const [dashboardName, setDashboardName] = useState<React.ReactNode>(
     componentMap.general
@@ -82,13 +77,13 @@ const Dashboard = () => {
     // set dashboard component based on the path. if path is incorrect, set 404 component else set respective component and if path is undefined, set general component
     setDashboardName(
       componentMap[
-        Object.keys(componentMap).includes(
-          (paths?.dashboard as string[])?.join("/") ?? "general"
-        )
-          ? ((paths?.dashboard as string[])?.join(
-              "/"
-            ) as keyof typeof componentMap) ?? "general"
-          : "404"
+      Object.keys(componentMap).includes(
+        (paths?.dashboard as string[])?.join("/") ?? "general"
+      )
+        ? ((paths?.dashboard as string[])?.join(
+          "/"
+        ) as keyof typeof componentMap) ?? "general"
+        : "404"
       ]
     );
   }, [paths.dashboard]);
@@ -193,7 +188,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const Roadmap = () => {
   const router = useRouter();
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const { data } = api.users.getUserDashboardRoadmapDetails.useQuery();
 
   return (
@@ -240,9 +235,8 @@ const Roadmap = () => {
             if (data?.articles && data?.articles.length > 0) {
               return;
             } else {
-              const appearanceLocation = `/${
-                user?.user.id as string
-              }/dashboard/appearance`;
+              const appearanceLocation = `/${user?.user.id as string
+                }/dashboard/appearance`;
 
               console.log({ appearanceLocation });
 

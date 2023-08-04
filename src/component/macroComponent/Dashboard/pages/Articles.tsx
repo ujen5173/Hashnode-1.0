@@ -1,13 +1,13 @@
 import { useClickOutside } from "@mantine/hooks";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useContext, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { Dots } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 import { limitText } from "~/utils/miniFunctions";
 
 const Articles = () => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   const { data, isLoading } = api.posts.getAuthorArticles.useQuery(
     {
@@ -29,9 +29,8 @@ const Articles = () => {
         <h1 className="text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           {isLoading
             ? "Fetching your articles..."
-            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${
-                data?.length as number
-              })`}
+            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${data?.length as number
+            })`}
         </h1>
 
         <div className="flex items-center gap-2">
@@ -41,9 +40,8 @@ const Articles = () => {
                 setType(item as "Published" | "Scheduled" | "Deleted")
               }
               key={item}
-              className={`rounded-lg bg-transparent px-4 py-1 text-base font-medium hover:bg-gray-100 dark:hover:bg-primary-light ${
-                type === item ? "text-secondary" : ""
-              }`}
+              className={`rounded-lg bg-transparent px-4 py-1 text-base font-medium hover:bg-gray-100 dark:hover:bg-primary-light ${type === item ? "text-secondary" : ""
+                }`}
             >
               {item}
             </button>

@@ -3,12 +3,10 @@ import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, useEffect } from "react";
 import { Header } from "~/component";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import { DateSVG, Pen } from "~/svgs";
-import { C, type ContextValue } from "~/utils/context";
 import { FollowArea, FollowHeader } from "./followers";
 
 const Following: NextPage<{
@@ -22,11 +20,7 @@ const Following: NextPage<{
   };
 }> = ({ user }) => {
   const { data: session } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
 
-  useEffect(() => {
-    setUser(session);
-  }, []);
 
   return (
     <>
@@ -136,13 +130,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         : null,
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-            name: string;
-            username: string;
-            profile: string;
-            createdAt: Date;
-            followersCount: number;
-            followingCount: number;
-          })
+          name: string;
+          username: string;
+          profile: string;
+          createdAt: Date;
+          followersCount: number;
+          followingCount: number;
+        })
         : null,
     },
   };

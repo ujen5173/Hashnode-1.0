@@ -1,9 +1,7 @@
-import { signIn } from "next-auth/react";
-import { useContext } from "react";
-import { C, type ContextValue } from "~/utils/context";
+import { signIn, useSession } from "next-auth/react";
 
 const AuthCheck = () => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   return (
     <div className="border-b border-border-light bg-light-bg p-4 text-center text-gray-700 dark:border-border dark:bg-primary dark:text-text-secondary">

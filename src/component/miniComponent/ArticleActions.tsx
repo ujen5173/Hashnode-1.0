@@ -1,6 +1,7 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import { TRPCClientError } from "@trpc/client";
+import { useSession } from "next-auth/react";
 import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Bookmarkplus, Comment, Heart, Report, Share } from "~/svgs";
@@ -23,7 +24,8 @@ const ArticleActions: FC<Props> = ({
 }) => {
   const [shareOpen, setShareOpen] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setShareOpen(false));
-  const { user, bookmarks, updateBookmark } = useContext(C) as ContextValue;
+  const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const { mutate: LikeArticle } = api.likes.likeArticle.useMutation();
   const [like, setLike] = useState({
     hasLiked: false,
@@ -81,11 +83,10 @@ const ArticleActions: FC<Props> = ({
           >
             <div className="flex items-center justify-center gap-2">
               <Heart
-                className={`h-5 w-5 fill-none ${
-                  like.hasLiked
+                className={`h-5 w-5 fill-none ${like.hasLiked
                     ? "fill-red stroke-red"
                     : "stroke-border dark:stroke-text-primary"
-                }  md:h-6 md:w-6`}
+                  }  md:h-6 md:w-6`}
               />
             </div>
 
@@ -96,17 +97,15 @@ const ArticleActions: FC<Props> = ({
         <div className="h-6 w-[2px] bg-border-light dark:bg-border" />
 
         <Tooltip
-          label={`${
-            article.disabledComments
+          label={`${article.disabledComments
               ? "Comments Disabled"
               : `Comments (${commentsCount})`
-          }`}
+            }`}
           classNames={{
-            tooltip: `${
-              article.disabledComments
+            tooltip: `${article.disabledComments
                 ? "bg-[#dc2626!important] text-[#fafafa!important] dark:text-[#fff!important]"
                 : ""
-            }`,
+              }`,
           }}
           withArrow
         >
@@ -115,9 +114,8 @@ const ArticleActions: FC<Props> = ({
             role="button"
             onClick={() => !article.disabledComments && setCommentsModal(true)}
             disabled={article.disabledComments}
-            className={`${
-              article.disabledComments ? "cursor-not-allowed opacity-70" : ""
-            } flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border`}
+            className={`${article.disabledComments ? "cursor-not-allowed opacity-70" : ""
+              } flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border`}
           >
             <div className="flex items-center justify-center gap-2">
               <Comment className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
@@ -134,11 +132,10 @@ const ArticleActions: FC<Props> = ({
             aria-label="icon"
             onClick={() => updateBookmark(article.id)}
             role="button"
-            className={`${
-              bookmarks.find((bookmark) => bookmark.id === article.id)
+            className={`${bookmarks.find((bookmark) => bookmark.id === article.id)
                 ? "bg-secondary bg-opacity-20"
                 : ""
-            } btn-icon-large flex w-max items-center justify-center`}
+              } btn-icon-large flex w-max items-center justify-center`}
           >
             {bookmarks.find((bookmark) => bookmark.id === article.id) ? (
               <Bookmarked className="h-5 w-5" />

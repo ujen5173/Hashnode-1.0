@@ -1,13 +1,12 @@
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useContext } from "react";
+import React from "react";
 import { Bookmarkalt, Exit, LogonoText, Pen, Settings, User } from "~/svgs";
-import { C, type ContextValue } from "~/utils/context";
 import { Divider } from "../miniComponent";
 
 const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   const logout = async () => {
     await signOut({ callbackUrl: "/" });

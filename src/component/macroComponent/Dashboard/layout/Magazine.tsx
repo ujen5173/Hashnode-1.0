@@ -1,13 +1,13 @@
-import { useContext, type FC } from "react";
+import { useSession } from "next-auth/react";
+import { type FC } from "react";
 import { SimpleArticleCard } from "~/component/card";
 import { NoArticlesUploadedError } from "~/component/miniComponent";
 import { AuthorArea } from "~/pages/dev/[username]";
 import { type DataType } from "~/types";
-import { C, type ContextValue } from "~/utils/context";
 import { type LayoutProps } from "./Stacked";
 
 const Magazine: FC<LayoutProps> = ({ data, isLoading, author }) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   return (
     <>
@@ -52,20 +52,20 @@ const Magazine: FC<LayoutProps> = ({ data, isLoading, author }) => {
       ) : null}
       {data
         ? data?.length > 3 && (
-            <div className="border-b border-border-light bg-light-bg px-4 py-16 dark:border-border dark:bg-primary">
-              <div className="mx-auto flex max-w-[1300px] items-center justify-center">
-                <div className="flex w-full flex-wrap gap-4">
-                  {data?.slice(3, data.length).map((article) => (
-                    <SimpleArticleCard
-                      key={article.id}
-                      article={article}
-                      perRow={3}
-                    />
-                  ))}
-                </div>
+          <div className="border-b border-border-light bg-light-bg px-4 py-16 dark:border-border dark:bg-primary">
+            <div className="mx-auto flex max-w-[1300px] items-center justify-center">
+              <div className="flex w-full flex-wrap gap-4">
+                {data?.slice(3, data.length).map((article) => (
+                  <SimpleArticleCard
+                    key={article.id}
+                    article={article}
+                    perRow={3}
+                  />
+                ))}
               </div>
             </div>
-          )
+          </div>
+        )
         : null}
       <AuthorArea author={author} />
       {data?.length === 0 && (

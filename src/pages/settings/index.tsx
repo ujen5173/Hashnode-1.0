@@ -1,7 +1,6 @@
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
-import { useSession } from "next-auth/react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { BasicInfo, Header, SocialInfo, UserDetailsOptions } from "~/component";
@@ -10,18 +9,11 @@ import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import { type SocialHandles, type UserDetails } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 
 const EditProfile: NextPage<{
   user: UserDetails;
 }> = ({ user }) => {
-  const { data: userData } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
   const { mutateAsync, isLoading } = api.users.updateUser.useMutation();
-
-  useEffect(() => {
-    setUser(userData);
-  }, [userData]);
 
   const [data, setData] = useState<UserDetails>(user);
 

@@ -65,9 +65,7 @@ export interface ContextValue extends Options {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     setState: Dispatch<SetStateAction<any>>
   ) => void;
-  user: Session | null;
   theme: "light" | "dark";
-  setUser: Dispatch<SetStateAction<Session | null>>;
   bookmarks: { id: string }[];
   updateBookmark: (id: string) => void;
   following: {
@@ -80,16 +78,14 @@ export interface ContextValue extends Options {
       followersCount: string;
     }>
   >;
-  followUser: () => void;
+  followUser: (user: Session | null) => void;
 }
 
 export const C = createContext<ContextValue | undefined>(undefined);
 
 const Context = ({ children, options }: Props) => {
-  const [user, setUser] = useState<Session | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
-  // eslint-disable-next-line @typescript-eslint/unbound-method
 
   useEffect(() => {
     const savedBookmarks = localStorage.getItem("bookmarks");
@@ -154,7 +150,7 @@ const Context = ({ children, options }: Props) => {
 
   const { mutate: followToggle } = api.users.followUserToggle.useMutation();
 
-  const followUser = () => {
+  const followUser = (user: Session | null) => {
     const username = new URL(window.location.href).pathname
       .split("/")[2]
       ?.replace("@", "") as string;
@@ -187,8 +183,6 @@ const Context = ({ children, options }: Props) => {
         theme,
         handleTheme,
         handleChange,
-        user,
-        setUser,
 
         following,
         setFollowing,

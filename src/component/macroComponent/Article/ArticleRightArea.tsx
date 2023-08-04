@@ -1,5 +1,6 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
@@ -22,7 +23,8 @@ import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 
 const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
-  const { handleTheme, user, setSearchOpen } = useContext(C) as ContextValue;
+  const { handleTheme, setSearchOpen } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const { following, followUser } = useContext(C) as ContextValue;
   const [count, setCount] = useState(0);
 
@@ -133,7 +135,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
           </Link>
         ) : (
           <button
-            onClick={() => void followUser()}
+            onClick={() => void followUser(user)}
             className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
           >
             {following.status ? (

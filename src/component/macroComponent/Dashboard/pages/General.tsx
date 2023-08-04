@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Input } from "~/component/miniComponent";
 import { api } from "~/utils/api";
 import { generalSettingsSocials } from "~/utils/constants";
-import { C, type ContextValue } from "~/utils/context";
 
 const dataFallBack = {
   name: "",
@@ -22,7 +22,7 @@ const dataFallBack = {
 };
 
 const General = () => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const [data, setData] = useState<{
     name: string;
     about: string;
@@ -167,9 +167,8 @@ const General = () => {
         <button
           disabled={isLoading}
           onClick={() => void handleUpdate()}
-          className={`btn-outline flex gap-2 ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
+          className={`btn-outline flex gap-2 ${isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
         >
           {isLoading ? "Updating..." : "Update"}
         </button>

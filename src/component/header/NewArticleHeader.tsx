@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useContext, type FC } from "react";
 import { Angleleft, Cloud, LogonoText, Sun } from "~/svgs";
@@ -15,7 +16,8 @@ const NewArticleHeader: FC<Props> = ({
   setPublishModal,
   publishing,
 }) => {
-  const { user, handleTheme } = useContext(C) as ContextValue;
+  const { handleTheme } = useContext(C) as ContextValue;
+  const { data: user } = useSession()
 
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">

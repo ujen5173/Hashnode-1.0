@@ -1,9 +1,9 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useContext, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Check, Follow } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 
 interface Props {
   tag: {
@@ -17,7 +17,7 @@ interface Props {
 
 const TagsSearchCard: FC<Props> = ({ tag, setOpened }) => {
   const [isFollowing, setIsFollowing] = useState<boolean>(tag.isFollowing);
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
 

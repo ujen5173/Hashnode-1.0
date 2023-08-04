@@ -1,10 +1,10 @@
 import { TRPCClientError } from "@trpc/client";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useContext, useEffect, useState, type FC } from "react";
+import React, { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import type { Comment, DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 import { formatDate } from "~/utils/miniFunctions";
 import { CommentFooter, ReplyDetails } from "../miniComponent";
 
@@ -41,7 +41,7 @@ export const CommentCard: FC<Props> = ({
   emptyEditor,
   setEmptyEditor
 }) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
   const { mutate: likeComment } = api.comments.likeComment.useMutation();
   const [showReplies, setShowReplies] = useState<boolean>(false);
   const [replyText, setReplyText] = useState<DefaultEditorContent>({

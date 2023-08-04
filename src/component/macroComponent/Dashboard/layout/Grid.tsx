@@ -1,12 +1,12 @@
-import { useContext, type FC } from "react";
+import { useSession } from "next-auth/react";
+import { type FC } from "react";
 import { SimpleArticleCard } from "~/component/card";
 import { NoArticlesUploadedError } from "~/component/miniComponent";
 import { AuthorArea } from "~/pages/dev/[username]";
-import { C, type ContextValue } from "~/utils/context";
 import { type LayoutProps } from "./Stacked";
 
 const Grid: FC<LayoutProps> = ({ data, isLoading, author }) => {
-  const { user } = useContext(C) as ContextValue;
+  const { data: user } = useSession();
 
   return (
     <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-primary">

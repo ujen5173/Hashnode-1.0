@@ -3,14 +3,13 @@ import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
 import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 
 export interface BlogSocial {
   twitter: string;
@@ -52,11 +51,10 @@ const AuthorBlogs: NextPage<{
   };
 }> = ({ user }) => {
   const { data: session } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
   const [appearance, setAppearance] = useState<
     | {
-        layout: "MAGAZINE" | "STACKED" | "GRID";
-      }
+      layout: "MAGAZINE" | "STACKED" | "GRID";
+    }
     | undefined
   >(undefined);
 
@@ -73,9 +71,9 @@ const AuthorBlogs: NextPage<{
       {
         handle: router.query.username
           ? (router.query?.username.slice(
-              1,
-              router.query?.username.length
-            ) as string) || ""
+            1,
+            router.query?.username.length
+          ) as string) || ""
           : "",
       },
       {
@@ -84,9 +82,7 @@ const AuthorBlogs: NextPage<{
       }
     );
 
-  useEffect(() => {
-    setUser(session);
-  }, []);
+
 
   useEffect(() => {
     if (isError) {
@@ -202,16 +198,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-            username: string;
-            profile: string;
-            handle: {
-              handle: string;
-              name: string;
-              social: BlogSocial;
-              customTabs: CustomTabs[];
-            };
-            followers: { id: string }[];
-          })
+          username: string;
+          profile: string;
+          handle: {
+            handle: string;
+            name: string;
+            social: BlogSocial;
+            customTabs: CustomTabs[];
+          };
+          followers: { id: string }[];
+        })
         : null,
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)

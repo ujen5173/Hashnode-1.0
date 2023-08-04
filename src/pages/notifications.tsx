@@ -3,13 +3,12 @@ import { type NotificationTypes } from "@prisma/client";
 import { type GetServerSideProps } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Header, ManageData } from "~/component";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
-import { C, type ContextValue } from "~/utils/context";
 
 enum Type {
   all = "all",
@@ -20,14 +19,12 @@ enum Type {
 
 const Notifications = () => {
   const { data: session } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
   const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
   const { width } = useViewportSize();
 
   useEffect(() => {
     if (session) {
       mutate();
-      setUser(session);
     }
   }, []);
 
@@ -57,9 +54,8 @@ const Notifications = () => {
         <div className="mx-auto max-w-[800px] rounded-lg border border-border-light bg-white px-4 dark:border-border dark:bg-primary">
           <div className="mb-4 flex items-center justify-between gap-2 border-b border-border-light p-4 dark:border-border">
             <h1
-              className={`text-xl font-semibold text-gray-800 dark:text-white ${
-                width >= 500 ? "mx-0" : "mx-auto"
-              }`}
+              className={`text-xl font-semibold text-gray-800 dark:text-white ${width >= 500 ? "mx-0" : "mx-auto"
+                }`}
             >
               Notifications
             </h1>
@@ -71,11 +67,10 @@ const Notifications = () => {
                 <button
                   key={type.id}
                   onClick={() => setNotificationType(type.name as Type)}
-                  className={`${
-                    notificationType === type.name
+                  className={`${notificationType === type.name
                       ? "btn-tab-active"
                       : "btn-tab-secondary"
-                  }`}
+                    }`}
                 >
                   {type.icon && type.icon(type.name)}
                   {type.label}

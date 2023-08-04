@@ -4,13 +4,12 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, type FC } from "react";
+import { type FC } from "react";
 import { Header, TagLoading } from "~/component";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import { Add, DateSVG, Pen } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 
 const Followers: NextPage<{
   user: {
@@ -23,11 +22,7 @@ const Followers: NextPage<{
   };
 }> = ({ user }) => {
   const { data: session } = useSession();
-  const { setUser } = useContext(C) as ContextValue;
 
-  useEffect(() => {
-    setUser(session);
-  }, []);
 
   return (
     <>
@@ -137,13 +132,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         : null,
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-            name: string;
-            username: string;
-            profile: string;
-            createdAt: Date;
-            followersCount: number;
-            followingCount: number;
-          })
+          name: string;
+          username: string;
+          profile: string;
+          createdAt: Date;
+          followersCount: number;
+          followingCount: number;
+        })
         : null,
     },
   };
@@ -277,9 +272,8 @@ export const FollowHeader: FC<{
     <header className="flex gap-1 border-b border-border-light px-3 dark:border-border">
       <Link href={`/u/@${user.username}/followers`}>
         <button
-          className={`${
-            path.pathname?.includes("followers") ? "btn-tab-active" : "btn-tab"
-          } font-semibold`}
+          className={`${path.pathname?.includes("followers") ? "btn-tab-active" : "btn-tab"
+            } font-semibold`}
         >
           Followers ({user.followersCount})
         </button>
@@ -287,9 +281,8 @@ export const FollowHeader: FC<{
 
       <Link href={`/u/@${user.username}/following`}>
         <button
-          className={`${
-            path.pathname?.includes("following") ? "btn-tab-active" : "btn-tab"
-          } font-semibold`}
+          className={`${path.pathname?.includes("following") ? "btn-tab-active" : "btn-tab"
+            } font-semibold`}
         >
           Following ({user.followingCount})
         </button>
