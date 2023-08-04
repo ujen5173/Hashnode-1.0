@@ -34,7 +34,7 @@ const Editor: FC<{
     onUpdate: (e) => {
       onChange(e.editor.getJSON() as DefaultEditorContent);
     },
-    // autofocus: "end",
+    autofocus: "end",
   });
 
   // Hydrate the editor with the content from localStorage.

@@ -6,6 +6,7 @@ import Blockquote from "@tiptap/extension-blockquote";
 import Bold from "@tiptap/extension-bold";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Document from "@tiptap/extension-document";
 import Heading from "@tiptap/extension-heading";
 import Highlight from "@tiptap/extension-highlight";
@@ -155,6 +156,7 @@ export const formattedContent = (content: DefaultEditorContent) =>
     Italic,
     Code,
     CodeBlock,
+    CodeBlockLowlight,
     Heading,
     Blockquote,
     Highlight,

@@ -153,15 +153,14 @@ const getSuggestionItems = ({ query }: { query: string }) => {
           .deleteRange(range)
           .toggleNode("paragraph", "paragraph")
           .toggleBlockquote()
-          .run(),
+          .run()
     },
     {
       title: "Code",
       description: "Capture a code snippet.",
       searchTerms: ["codeblock"],
       icon: <Code className="w-4 h-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />,
-      command: ({ editor, range }: CommandProps) =>
-        editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
+      command: ({ editor, range }: CommandProps) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run()
     },
   ].filter((item) => {
     if (typeof query === "string" && query.length > 0) {

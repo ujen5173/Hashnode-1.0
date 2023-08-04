@@ -50,13 +50,13 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
       text-gray-700 outline-none transition-[ring] duration-100 focus:bg-light-bg focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary 
       hover:dark:border-border dark:focus:bg-primary-light md:min-w-[180px]`}
     >
-      <span className="text-base">{select.selected}</span>
-      <Angledown className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+      <span className="text-base mb-0">{select.selected}</span>
+      <Angledown className="h-5 mb-0 w-5 fill-gray-700 dark:fill-text-primary" />
 
       {opened && (
         <div
           ref={setDropdown}
-          className="absolute left-0 top-full z-50 mt-2 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-md dark:border-border dark:bg-primary"
+          className="absolute left-0 max-h-[300px] overflow-y-auto scroll-area top-full z-50 mt-2 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-md dark:border-border dark:bg-primary"
         >
           {select.options.map((option, index) => (
             <button
