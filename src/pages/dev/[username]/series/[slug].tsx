@@ -2,13 +2,13 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import {
   AuthorBlogHeader,
   Footer,
   SimpleArticleCard,
   SimpleArticleCardLoading,
 } from "~/component";
-import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import { Pen } from "~/svgs";
@@ -93,16 +93,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-            username: string;
-            profile: string;
-            handle: {
-              handle: string;
-              name: string;
-              social: BlogSocial;
-              customTabs: CustomTabs[];
-            };
-            followers: { id: string }[];
-          })
+          username: string;
+          profile: string;
+          handle: {
+            handle: string;
+            name: string;
+            social: BlogSocial;
+            customTabs: CustomTabs[];
+          };
+          followers: { id: string }[];
+        })
         : null,
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)
@@ -122,8 +122,6 @@ const SeriesContainer = () => {
       refetchOnWindowFocus: false,
     }
   );
-
-  console.log({ data });
 
   return (
     <div className="w-full bg-white dark:bg-primary">

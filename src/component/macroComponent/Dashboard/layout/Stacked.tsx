@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
-import { type FC } from "react";
+import React from "react";
 import { StackedArticleCard } from "~/component/card";
+import { SimpleArticleCardLoading } from "~/component/loading";
 import { NoArticlesUploadedError } from "~/component/miniComponent";
 import { AuthorArea } from "~/pages/dev/[username]";
 import { type DataType } from "~/types";
@@ -17,9 +18,10 @@ export interface LayoutProps {
       about: string;
     };
   };
+  isFetchingNextPage: boolean;
 }
 
-const Stacked: FC<LayoutProps> = ({ data, isLoading, author }) => {
+const Stacked = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNextPage, data, isLoading, author }, bottomRef) => {
   const { data: user } = useSession();
   return (
     <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-primary">
@@ -33,13 +35,29 @@ const Stacked: FC<LayoutProps> = ({ data, isLoading, author }) => {
             {data.map((e) => (
               <StackedArticleCard key={e.id} article={e} />
             ))}
+            {
+              isFetchingNextPage && (
+                <>
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                </>
+              )
+            }
           </div>
         </div>
       ) : (
         <NoArticlesUploadedError user={user} author={author} />
       )}
+      <div ref={bottomRef} />
     </div>
   );
-};
+});
+Stacked.displayName = "Stacked";
 
 export default Stacked;

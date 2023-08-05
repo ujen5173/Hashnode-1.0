@@ -44,7 +44,6 @@ export const NewTagModal: FC<Props> = ({
       setCreateTagState(false);
     } catch (err) {
       if (err instanceof TRPCClientError) {
-        console.log({ err });
         toast.error(err.message);
       }
     }
@@ -141,9 +140,8 @@ export const NewTagModal: FC<Props> = ({
               <button
                 arial-label="Create New Tag"
                 onClick={() => void handleCreateNew()}
-                className={`btn-filled ${
-                  isLoading ? "cursor-not-allowed opacity-40" : ""
-                }`}
+                className={`btn-filled ${isLoading ? "cursor-not-allowed opacity-40" : ""
+                  }`}
               >
                 {isLoading ? "Creating..." : "Create"}
               </button>

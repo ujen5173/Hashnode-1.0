@@ -21,7 +21,7 @@ interface Props {
 
 const TrendingCard: FC<Props> = ({ article }) => {
   return (
-    <div className="flex items-start gap-4 border-b border-border-light py-4 last:border-0 dark:border-border">
+    <div className="flex items-start gap-4 py-4">
       <Link
         href={`/u/@${article.user.username}/${article.slug}`}
         className="block"

@@ -94,11 +94,13 @@
 .article pre code {
   background: transparent !important;
   color: #e5e7eb;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 .ProseMirror pre code *,
 .article pre code * {
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 .ProseMirror pre code .hljs-comment,
 .ProseMirror pre code .hljs-quote,

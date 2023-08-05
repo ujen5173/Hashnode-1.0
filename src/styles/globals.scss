@@ -574,3 +574,7 @@ body.dark .hr-line-between-text {
     background: #d4d7dacc;
   }
 }
+
+.manageData-container > .articleCard:last-child {
+  border: none !important;
+}

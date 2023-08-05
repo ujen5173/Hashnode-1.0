@@ -25,7 +25,7 @@ const ManageData: FC<Props> = ({
   filter,
 }) => {
   return (
-    <>
+    <div className="manageData-container">
       {type === "TAG" ? (
         tagsData?.isLoading ? (
           <div className="flex w-full flex-wrap gap-4 p-4">
@@ -79,7 +79,7 @@ const ManageData: FC<Props> = ({
             return (
               <div
                 key={item.id}
-                className="border-b border-border-light last:border-none dark:border-border"
+                className="border-b border-border-light articleCard dark:border-border"
               >
                 {type === "ARTICLE" ? (
                   <ArticleCard card={item} />
@@ -142,7 +142,7 @@ const ManageData: FC<Props> = ({
           </div>
         )
       ) : null}
-    </>
+    </div>
   );
 };
 

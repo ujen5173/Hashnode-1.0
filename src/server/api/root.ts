@@ -1,14 +1,14 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import {
   commentsRouter,
+  handleRouter,
   likesRouter,
   notificationRouter,
   postsRouter,
+  seriesRouter,
   tagsRouter,
   usersRouter,
 } from "./routers";
-import handleRouter from "./routers/handle";
-import SeriesRouter from "./routers/series";
 
 export const appRouter = createTRPCRouter({
   posts: postsRouter,
@@ -18,7 +18,7 @@ export const appRouter = createTRPCRouter({
   comments: commentsRouter,
   notifications: notificationRouter,
   handles: handleRouter,
-  series: SeriesRouter,
+  series: seriesRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -117,33 +117,32 @@ const searchResponseFormater = (
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(
-      z
-        .object({
-          filter: z
-            .object({
-              read_time: z
-                .enum(["over_5", "5", "under_5"])
-                .nullable()
-                .optional(),
-              tags: z.array(
-                z.object({
-                  id: z.string().trim(),
-                  name: z.string().trim(),
-                })
-              ),
-            })
-            .optional()
-            .nullable(),
-          type: z
-            .enum(["personalized", "following", "latest"])
-            .optional()
-            .default("personalized"),
-        })
-        .optional()
+      z.object({
+        limit: z.number().optional().default(6),
+        skip: z.number().optional(),
+        cursor: z.string().nullable().optional(),
+        filter: z
+          .object({
+            read_time: z.enum(["over_5", "5", "under_5"]).nullable().optional(),
+            tags: z.array(
+              z.object({
+                id: z.string().trim(),
+                name: z.string().trim(),
+              })
+            ),
+          })
+          .optional()
+          .nullable(),
+        type: z
+          .enum(["personalized", "following", "latest"])
+          .optional()
+          .default("personalized"),
+      })
     )
     .query(async ({ ctx, input }) => {
       try {
-        const data = await ctx.prisma.article.findMany({
+        const { cursor, skip, limit } = input;
+        const articles = await ctx.prisma.article.findMany({
           where: {
             ...((input?.filter?.tags || input?.filter?.read_time) && {
               ...(input?.filter?.read_time && {
@@ -183,9 +182,10 @@ export const postsRouter = createTRPCRouter({
                 },
               }),
           },
-
           select: selectArticleCard,
-          take: 15,
+          take: (limit || 6) + 1,
+          skip: skip,
+          cursor: cursor ? { id: cursor } : undefined,
           orderBy:
             input?.type === "latest"
               ? { createdAt: "desc" }
@@ -196,13 +196,23 @@ export const postsRouter = createTRPCRouter({
                 ],
         });
 
-        return await getArticlesWithUserFollowingProfiles(
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (articles.length > limit) {
+          const nextItem = articles.pop(); // return the last item from the array
+          nextCursor = nextItem?.id;
+        }
+
+        const formattedPosts = await getArticlesWithUserFollowingProfiles(
           {
             session: ctx.session,
             prisma: ctx.prisma,
           },
-          data
+          articles
         );
+        return {
+          posts: formattedPosts,
+          nextCursor,
+        };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -227,69 +237,88 @@ export const postsRouter = createTRPCRouter({
           })
           .optional()
           .nullable(),
+        limit: z.number().optional().default(6),
+        skip: z.number().optional(),
+        cursor: z.string().nullable().optional(),
         type: z.enum(["hot", "new"]).optional().default("new"),
       })
     )
     .query(async ({ ctx, input }) => {
-      return await getArticlesWithUserFollowingProfiles(
+      const { cursor, skip, limit } = input;
+
+      const articles = await ctx.prisma.article.findMany({
+        where: {
+          ...((input?.filter?.tags || input?.filter?.read_time) && {
+            ...(input?.filter?.read_time && {
+              read_time:
+                input?.filter?.read_time === "over_5"
+                  ? { gt: 5 }
+                  : input?.filter?.read_time === "under_5"
+                  ? { lt: 5 }
+                  : input?.filter?.read_time === "5"
+                  ? { equals: 5 }
+                  : undefined,
+            }),
+            ...(input?.filter?.tags &&
+              input.filter.tags.length > 0 && {
+                tags: {
+                  some: {
+                    name: {
+                      in: input?.filter?.tags
+                        ? input?.filter?.tags.length > 0
+                          ? input?.filter?.tags.map((tag) => tag.name)
+                          : undefined
+                        : undefined,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              }),
+          }),
+          tags: {
+            some: {
+              name: input.name,
+            },
+          },
+        },
+        select: selectArticleCard,
+        take: (limit || 6) + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy:
+          input.type === "hot"
+            ? [
+                {
+                  likesCount: "desc",
+                },
+                {
+                  commentsCount: "desc",
+                },
+              ]
+            : input.type === "new"
+            ? {
+                createdAt: "desc",
+              }
+            : undefined,
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (articles.length > limit) {
+        const nextItem = articles.pop(); // return the last item from the array
+        nextCursor = nextItem?.id;
+      }
+
+      const formattedPosts = await getArticlesWithUserFollowingProfiles(
         {
           session: ctx.session,
           prisma: ctx.prisma,
         },
-        await ctx.prisma.article.findMany({
-          where: {
-            ...((input?.filter?.tags || input?.filter?.read_time) && {
-              ...(input?.filter?.read_time && {
-                read_time:
-                  input?.filter?.read_time === "over_5"
-                    ? { gt: 5 }
-                    : input?.filter?.read_time === "under_5"
-                    ? { lt: 5 }
-                    : input?.filter?.read_time === "5"
-                    ? { equals: 5 }
-                    : undefined,
-              }),
-              ...(input?.filter?.tags &&
-                input.filter.tags.length > 0 && {
-                  tags: {
-                    some: {
-                      name: {
-                        in: input?.filter?.tags
-                          ? input?.filter?.tags.length > 0
-                            ? input?.filter?.tags.map((tag) => tag.name)
-                            : undefined
-                          : undefined,
-                        mode: "insensitive",
-                      },
-                    },
-                  },
-                }),
-            }),
-            tags: {
-              some: {
-                name: input.name,
-              },
-            },
-          },
-          select: selectArticleCard,
-          take: 15,
-          orderBy:
-            input.type === "hot"
-              ? [
-                  {
-                    likesCount: "desc",
-                  },
-                  {
-                    commentsCount: "desc",
-                  },
-                ]
-              : input.type === "new"
-              ? {
-                  createdAt: "desc",
-                }
-              : undefined,
-        })
+        articles
       );
+      return {
+        posts: formattedPosts,
+        nextCursor,
+      };
     }),
 
   getMany: publicProcedure
@@ -860,12 +889,15 @@ export const postsRouter = createTRPCRouter({
   trendingArticles: publicProcedure
     .input(
       z.object({
-        limit: z.number().default(6),
+        limit: z.number().optional().default(6),
+        skip: z.number().optional(),
+        cursor: z.string().nullable().optional(),
         variant: z.enum(["week", "month", "year", "any"]).default("any"),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
+        const { cursor, skip, limit } = input;
         const startDate = new Date();
         const endDate = new Date();
 
@@ -887,7 +919,10 @@ export const postsRouter = createTRPCRouter({
                   },
                 },
               }),
-          take: input?.limit || 6,
+
+          take: (limit || 6) + 1,
+          skip: skip,
+          cursor: cursor ? { id: cursor } : undefined,
           select: selectArticleCard,
           orderBy: [
             { likesCount: "desc" },
@@ -896,13 +931,24 @@ export const postsRouter = createTRPCRouter({
           ],
         });
 
-        return await getArticlesWithUserFollowingProfiles(
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (articles.length > limit) {
+          const nextItem = articles.pop(); // return the last item from the array
+          nextCursor = nextItem?.id;
+        }
+
+        const formattedPosts = await getArticlesWithUserFollowingProfiles(
           {
             session: ctx.session,
             prisma: ctx.prisma,
           },
           articles
         );
+
+        return {
+          posts: formattedPosts,
+          nextCursor,
+        };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -914,12 +960,16 @@ export const postsRouter = createTRPCRouter({
   getFollowingArticles: protectedProcedure
     .input(
       z.object({
+        limit: z.number().optional().default(6),
+        skip: z.number().optional(),
+        cursor: z.string().nullable().optional(),
         variant: z.enum(["week", "month", "year", "any"]).default("any"),
-        limit: z.number().default(6),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
+        const { cursor, skip, limit } = input;
+
         const startDate = new Date();
         const endDate = new Date();
 
@@ -949,7 +999,10 @@ export const postsRouter = createTRPCRouter({
                   },
                 }),
           },
-          take: input?.limit || 6,
+
+          take: (limit || 6) + 1,
+          skip: skip,
+          cursor: cursor ? { id: cursor } : undefined,
           select: selectArticleCard,
           orderBy: [
             { likesCount: "desc" },
@@ -958,13 +1011,24 @@ export const postsRouter = createTRPCRouter({
           ],
         });
 
-        return await getArticlesWithUserFollowingProfiles(
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (articles.length > limit) {
+          const nextItem = articles.pop(); // return the last item from the array
+          nextCursor = nextItem?.id;
+        }
+
+        const formattedPosts = await getArticlesWithUserFollowingProfiles(
           {
             session: ctx.session,
             prisma: ctx.prisma,
           },
           articles
         );
+
+        return {
+          posts: formattedPosts,
+          nextCursor,
+        };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -1018,11 +1082,16 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         handle: z.string().trim(),
+        limit: z.number().optional().default(6),
+        skip: z.number().optional(),
+        cursor: z.string().nullable().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        return await ctx.prisma.article.findMany({
+        const { cursor, skip, limit } = input;
+
+        const articles = await ctx.prisma.article.findMany({
           where: {
             user: {
               handle: {
@@ -1046,10 +1115,25 @@ export const postsRouter = createTRPCRouter({
             subtitle: true,
             cover_image: true,
           },
+
+          take: (limit || 6) + 1,
+          skip: skip,
+          cursor: cursor ? { id: cursor } : undefined,
           orderBy: {
             createdAt: "desc",
           },
         });
+
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (articles.length > limit) {
+          const nextItem = articles.pop(); // return the last item from the array
+          nextCursor = nextItem?.id;
+        }
+
+        return {
+          posts: articles,
+          nextCursor,
+        };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -1057,6 +1141,7 @@ export const postsRouter = createTRPCRouter({
         });
       }
     }),
+
   read: protectedProcedure
     .input(
       z.object({
@@ -1071,6 +1156,11 @@ export const postsRouter = createTRPCRouter({
           },
           select: {
             id: true,
+            user: {
+              select: {
+                id: true,
+              },
+            },
             readers: {
               select: {
                 id: true,
@@ -1086,11 +1176,13 @@ export const postsRouter = createTRPCRouter({
           });
         }
 
+        if (ctx.session?.user?.id === article.user.id) {
+          return;
+        }
+
         const hasRead = article.readers.some(
           (reader) => reader.id === ctx.session?.user?.id
         );
-
-        console.log("Read function called");
 
         if (!hasRead) {
           await ctx.prisma.article.update({

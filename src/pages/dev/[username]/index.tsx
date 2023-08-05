@@ -3,9 +3,10 @@ import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
+import useOnScreen from "~/hooks/useOnScreen";
 import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
@@ -66,8 +67,8 @@ const AuthorBlogs: NextPage<{
 
   const router = useRouter();
 
-  const { data, isLoading, isError } =
-    api.posts.getAuthorArticlesByHandle.useQuery(
+  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    api.posts.getAuthorArticlesByHandle.useInfiniteQuery(
       {
         handle: router.query.username
           ? (router.query?.username.slice(
@@ -79,10 +80,9 @@ const AuthorBlogs: NextPage<{
       {
         enabled: !!router.query.username,
         refetchOnWindowFocus: false,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
       }
     );
-
-
 
   useEffect(() => {
     if (isError) {
@@ -90,6 +90,18 @@ const AuthorBlogs: NextPage<{
     }
   }, [isError]);
 
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+  }, [reachedBottom]);
+
+  const articles = useMemo(
+    () => data?.pages.flatMap((page) => page.posts),
+    [data]
+  );
   return (
     <>
       <AuthorBlog author={user} />
@@ -110,8 +122,10 @@ const AuthorBlogs: NextPage<{
                   },
                 };
               })()}
-              data={data}
+              data={articles}
               isLoading={isLoading}
+              isFetchingNextPage={isFetchingNextPage}
+              ref={bottomRef}
             />
           ),
           STACKED: (
@@ -125,8 +139,10 @@ const AuthorBlogs: NextPage<{
                   },
                 };
               })()}
-              data={data}
+              data={articles}
               isLoading={isLoading}
+              isFetchingNextPage={isFetchingNextPage}
+              ref={bottomRef}
             />
           ),
           GRID: (
@@ -140,12 +156,15 @@ const AuthorBlogs: NextPage<{
                   },
                 };
               })()}
-              data={data}
+              data={articles}
               isLoading={isLoading}
+              isFetchingNextPage={isFetchingNextPage}
+              ref={bottomRef}
             />
           ),
         }[appearance?.layout || "MAGAZINE"]
       }
+
       <Footer />
     </>
   );

@@ -16,14 +16,12 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
     <>
       <div
         onClick={() => setMenu(false)}
-        className={`fixed inset-0 z-20 bg-gray-400 bg-opacity-40 ${
-          menu ? "block" : "hidden"
-        }`}
+        className={`fixed inset-0 z-20 bg-gray-400 bg-opacity-40 ${menu ? "block" : "hidden"
+          }`}
       />
       <section
-        className={`hamburger_menu ${
-          menu ? "active" : "inactive"
-        } fixed left-0 top-0 z-50 h-screen w-full max-w-[18rem] overflow-auto md:max-w-[20rem]`}
+        className={`hamburger_menu ${menu ? "active" : "inactive"
+          } fixed left-0 top-0 z-50 h-screen w-full max-w-[18rem] overflow-auto md:max-w-[20rem]`}
       >
         <div className="flex min-h-screen w-full flex-col">
           <header className="flex items-center justify-between border-b border-border border-border-light bg-light-bg p-6 shadow-md dark:border-border dark:bg-primary">
@@ -81,6 +79,8 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
                       target="_blank"
                       className="btn-icon-large flex"
                       href={`/${item.link}`}
+                      aria-label={`Follow us on ${item.name}`}
+                      title={`Follow us on ${item.name}`}
                     >
                       {item.icon}
                     </a>

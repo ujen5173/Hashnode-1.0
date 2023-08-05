@@ -2,10 +2,11 @@ import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { ArticleCard } from "~/component/card";
 import { ArticleLoading } from "~/component/loading";
+import useOnScreen from "~/hooks/useOnScreen";
 import { Clock, Filter, Fire } from "~/svgs";
 import type { DetailedTag, FilterData } from "~/types";
 import { api } from "~/utils/api";
@@ -39,12 +40,14 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     status: false,
     followersCount: "0",
   });
+
   const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
   const { data: user } = useSession();
-  const { data: tags, isLoading } = api.posts.getArticlesUsingTag.useQuery(
+  const { data: articlesData, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getArticlesUsingTag.useInfiniteQuery(
     {
       name: tagDetails.name,
       type: (tab || "hot") as "hot" | "new",
+      limit: 2,
       filter: {
         tags: newFilterData.tags,
         read_time: newFilterData.read_time
@@ -56,8 +59,11 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     },
     {
       refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
+
+  const articles = useMemo(() => articlesData?.pages.flatMap((page) => page.posts), [articlesData])
 
   const applyFilter = () => {
     setNewFilterData((prev) => ({ ...prev, ...filter.data }));
@@ -118,6 +124,17 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       }
     }
   };
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const reachedBottom = useOnScreen(bottomRef);
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+  }, [reachedBottom]);
+
 
   return (
     <section className="container-main my-4 min-h-screen w-full">
@@ -228,7 +245,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
               })}
           </div>
         ) : (
-          tags?.map((article) => (
+          articles?.map((article) => (
             <div
               key={article.id}
               className="w-full border-b border-border-light last:border-none dark:border-border"
@@ -237,6 +254,15 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
             </div>
           ))
         )}
+        {
+          isFetchingNextPage && (
+            <>
+              <ArticleLoading />
+              <ArticleLoading />
+            </>
+          )
+        }
+        <div ref={bottomRef} />
       </main>
     </section>
   );

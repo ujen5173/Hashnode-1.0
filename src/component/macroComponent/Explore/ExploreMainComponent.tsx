@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
-import { useState, type Dispatch, type FC, type SetStateAction } from "react";
+import { useEffect, useMemo, useRef, useState, type Dispatch, type FC, type SetStateAction } from "react";
 import { ArticleLoading, TagLoading } from "~/component/loading";
 import { ManageData, Select } from "~/component/miniComponent";
+import useOnScreen from "~/hooks/useOnScreen";
 import { api } from "~/utils/api";
 import {
   type TrendingArticleTypes,
@@ -16,7 +17,7 @@ const ExploreMainComponent = () => {
   >("Any");
   const trendingTagsData = api.tags.getTredingTags.useQuery(
     {
-      limit: 10,
+      limit: 6,
       variant: filter.toLowerCase().replace("this ", "") as
         | "week"
         | "month"
@@ -28,9 +29,9 @@ const ExploreMainComponent = () => {
       refetchOnWindowFocus: false,
     }
   );
-  const trendingArticlesData = api.posts.trendingArticles.useQuery(
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.trendingArticles.useInfiniteQuery(
     {
-      limit: 10,
+      limit: 6,
       variant: filter.toLowerCase().replace("this ", "") as
         | "week"
         | "month"
@@ -43,11 +44,12 @@ const ExploreMainComponent = () => {
           ? true
           : slug.includes("tags") || slug.includes("articles"),
       refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
   const followingTagsData = api.tags.getFollowingTags.useQuery(
     {
-      limit: 10,
+      limit: 6,
       variant: filter.toLowerCase().replace("this ", "") as
         | "week"
         | "any"
@@ -59,9 +61,9 @@ const ExploreMainComponent = () => {
       refetchOnWindowFocus: false,
     }
   );
-  const followingArticlesData = api.posts.getFollowingArticles.useQuery(
+  const { data: followingData, isLoading: followingLoading, fetchNextPage: followingNextPage, isFetchingNextPage: followingIsFetchingNextPage, hasNextPage: followingHasNextPage } = api.posts.getFollowingArticles.useInfiniteQuery(
     {
-      limit: 10,
+      limit: 6,
       variant: filter.toLowerCase().replace("this ", "") as
         | "week"
         | "month"
@@ -71,8 +73,31 @@ const ExploreMainComponent = () => {
     {
       enabled: slug === undefined ? true : slug.includes("articles-following"),
       refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
+
+  const trendingArticles = useMemo(
+    () => data?.pages.flatMap((page) => page.posts),
+    [data]
+  );
+  const followingArticles = useMemo(
+    () => followingData?.pages.flatMap((page) => page.posts),
+    [followingData]
+  );
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      if (slug?.includes("articles-following")) {
+        void followingNextPage();
+        return;
+      }
+      void fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reachedBottom]);
+
 
   return (
     <section className="container-main my-4 min-h-screen w-full">
@@ -110,8 +135,8 @@ const ExploreMainComponent = () => {
                   title="Trending Articles"
                   type="ARTICLE"
                   articlesData={{
-                    data: trendingArticlesData.data,
-                    isLoading: trendingArticlesData.isFetching,
+                    data: trendingArticles,
+                    isLoading: isLoading,
                   }}
                   filter={filter}
                 />
@@ -133,8 +158,8 @@ const ExploreMainComponent = () => {
                 title="Articles You Follow"
                 type="ARTICLE"
                 articlesData={{
-                  data: followingArticlesData.data,
-                  isLoading: followingArticlesData.isFetching,
+                  data: followingArticles,
+                  isLoading: followingLoading,
                 }}
                 filter={filter}
               />
@@ -144,8 +169,8 @@ const ExploreMainComponent = () => {
                 title="Trending Articles"
                 type="ARTICLE"
                 articlesData={{
-                  data: trendingArticlesData.data,
-                  isLoading: trendingArticlesData.isFetching,
+                  data: trendingArticles,
+                  isLoading: isLoading,
                 }}
                 setFilterState={setFilter}
                 showFilter={true}
@@ -168,6 +193,15 @@ const ExploreMainComponent = () => {
             ),
           }[(slug ? slug[0] : "default") as string]
         }
+        {
+          isFetchingNextPage || followingIsFetchingNextPage && (
+            <>
+              <ArticleLoading />
+              <ArticleLoading />
+            </>
+          )
+        }
+        <div ref={bottomRef} />
       </div>
     </section>
   );
@@ -196,61 +230,61 @@ const ExploreSection: FC<{
   showFilter = false,
   filter,
 }) => {
-  return (
-    <>
-      <div className="flex items-center justify-between p-4 pb-0">
-        <div className="mb-2">
-          <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="text-base font-normal text-gray-500 dark:text-text-primary">
-              {subtitle}
-            </p>
+    return (
+      <>
+        <div className="flex items-center justify-between p-4 pb-0">
+          <div className="mb-2">
+            <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="text-base font-normal text-gray-500 dark:text-text-primary">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {showFilter && setFilterState && (
+            <div className="max-w-[350px]">
+              <Select
+                onChange={(value) => {
+                  setFilterState(
+                    value.label as "This week" | "This month" | "This year"
+                  );
+                }}
+                defaultText="Any"
+                options={[
+                  {
+                    label: "This week",
+                    value: "week",
+                  },
+                  {
+                    label: "This month",
+                    value: "month",
+                  },
+                  {
+                    label: "This year",
+                    value: "year",
+                  },
+                  {
+                    label: "Any",
+                    value: "any",
+                  },
+                ]}
+              />
+            </div>
           )}
         </div>
 
-        {showFilter && setFilterState && (
-          <div className="max-w-[350px]">
-            <Select
-              onChange={(value) => {
-                setFilterState(
-                  value.label as "This week" | "This month" | "This year"
-                );
-              }}
-              defaultText="Any"
-              options={[
-                {
-                  label: "This week",
-                  value: "week",
-                },
-                {
-                  label: "This month",
-                  value: "month",
-                },
-                {
-                  label: "This year",
-                  value: "year",
-                },
-                {
-                  label: "Any",
-                  value: "any",
-                },
-              ]}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className="">
-        <ManageData
-          type={type}
-          loading={type === "TAG" ? <TagLoading /> : <ArticleLoading />}
-          articleData={articlesData}
-          tagsData={tagsData}
-          filter={filter}
-        />
-      </div>
-    </>
-  );
-};
+        <div className="">
+          <ManageData
+            type={type}
+            loading={type === "TAG" ? <TagLoading /> : <ArticleLoading />}
+            articleData={articlesData}
+            tagsData={tagsData}
+            filter={filter}
+          />
+        </div>
+      </>
+    );
+  };

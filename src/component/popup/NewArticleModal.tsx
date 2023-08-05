@@ -107,7 +107,6 @@ const NewArticleModal: FC<Props> = ({
 
   const handlePublish = async () => {
     const content = formattedContent(data.content);
-    console.log({ ...data, content })
 
     if (!data.title || !content) {
       toast.error("Please fill up the title and content");

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
+import { toast } from "react-toastify";
 import removeMd from "remove-markdown";
 import { ArticleActions } from "~/component/miniComponent";
 import { CommentsModal } from "~/component/popup";
@@ -51,6 +52,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
       copyButton.innerHTML = copyButtonElements;
       copyButton.addEventListener("click", () => {
         void navigator.clipboard.writeText(copy[i]?.textContent || "");
+        toast.success("Copied to clipboard");
       });
 
       parentContainer.appendChild(copyButton);
@@ -124,7 +126,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
             <div
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
-              className="article mx-auto w-full break-words pb-10 pt-2 sm:pt-6 md:w-11/12 md:py-6 lg:w-10/12 xl:w-full"
+              className="article mx-auto w-full break-words text-gray-700 dark:text-text-secondary pb-10 pt-2 sm:pt-6 md:w-11/12 md:py-6 lg:w-10/12 xl:w-full"
             />
           </div>
 
@@ -204,7 +206,7 @@ const SeriesSection: FC<{
                 key={article.id}
               >
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full ${article.slug === slug
+                  className={`flex  h-10 w-10 items-center justify-center rounded-full ${article.slug === slug
                     ? "bg-secondary text-white"
                     : "bg-slate-200 text-primary"
                     }`}
@@ -212,34 +214,36 @@ const SeriesSection: FC<{
                   <h1 className="text-lg font-black">{index + 1}</h1>
                 </div>
 
-                <div className="flex flex-1 items-center gap-4">
-                  <Link target="_blank" href={`/u/${username}/${article.slug}`}>
-                    <h1 className="max-height-two mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
-                      {article.title}
-                    </h1>
+                <div className="flex items-center gap-8 flex-1">
+                  <div className="flex flex-1 items-center gap-4">
+                    <Link target="_blank" href={`/u/${username}/${article.slug}`}>
+                      <h1 className="max-height-two mb-1 text-xl font-bold text-gray-700 dark:text-text-secondary">
+                        {article.title}
+                      </h1>
 
-                    <p className="max-height-two mb-2 text-lg text-gray-500 dark:text-text-primary">
-                      {removeMd(article.content)}
-                    </p>
-                  </Link>
+                      <p className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${article?.cover_image ? "" : "w-[95%]"}`}>
+                        {removeMd(article.content)}
+                      </p>
+                    </Link>
+                  </div>
+
+                  {article?.cover_image && (
+                    <Link
+                      target="_blank"
+                      className="w-full md:w-1/4"
+                      href={`/u/${username}/${article.slug}`}
+                    >
+                      <Image
+                        src={article.cover_image}
+                        alt={article.title}
+                        width={1200}
+                        height={800}
+                        draggable={false}
+                        className="w-full overflow-hidden rounded-md border border-border-light object-cover dark:border-border"
+                      />
+                    </Link>
+                  )}
                 </div>
-
-                {!article?.cover_image && (
-                  <Link
-                    target="_blank"
-                    className="w-full md:w-1/4"
-                    href={`/u/${username}/${article.slug}`}
-                  >
-                    <Image
-                      src={article.cover_image || "/hashnode-social-banner.png"}
-                      alt={article.title}
-                      width={1200}
-                      height={800}
-                      draggable={false}
-                      className="w-full overflow-hidden rounded-md border border-border-light object-cover dark:border-border"
-                    />
-                  </Link>
-                )}
               </div>
             ))}
         </main>

@@ -219,7 +219,7 @@ export const CommentCard: FC<Props> = ({
       <div className="">
         <div
           dangerouslySetInnerHTML={{ __html: comment.body || "" }}
-          className="w-full break-words"
+          className="w-full break-words text-gray-700 dark:text-text-secondary"
         />
 
         {replyingUserDetails && replyingUserDetails.id === comment.id && (

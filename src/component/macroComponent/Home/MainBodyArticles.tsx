@@ -1,10 +1,12 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MainBodyHeader } from "~/component/header";
 import { ArticleLoading } from "~/component/loading";
 import { ManageData } from "~/component/miniComponent";
+import useOnScreen from "~/hooks/useOnScreen";
 import { type FilterData } from "~/types";
 import { api } from "~/utils/api";
+import { type TrendingArticleTypes } from "~/utils/context";
 
 const MainBodyArticles = () => {
   const tab = useRouter().query.tab as string | undefined;
@@ -28,36 +30,52 @@ const MainBodyArticles = () => {
     tags: filter.data.tags,
   });
 
-  const { data, isFetching, refetch } = api.posts.getAll.useQuery(
+  const filterData = {
+    type: (tab || "personalized") as "personalized" | "latest" | "following",
+    filter: {
+      tags: newFilterData.tags,
+      read_time: newFilterData.read_time
+        ? (read_time_options.find(
+          (option) => option.label === newFilterData.read_time
+        )?.value as "over_5" | "5" | "under_5" | null | undefined)
+        : null,
+    },
+  };
+
+  const { data, isLoading, refetch, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getAll.useInfiniteQuery(
     {
-      type: (tab || "personalized") as "personalized" | "latest" | "following",
-      filter: {
-        tags: newFilterData.tags,
-        read_time: newFilterData.read_time
-          ? (read_time_options.find(
-            (option) => option.label === newFilterData.read_time
-          )?.value as "over_5" | "5" | "under_5" | null | undefined)
-          : null,
-      },
+      ...filterData,
+      limit: 4,
     },
     {
       enabled: true,
       refetchOnMount: true,
       refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
 
-  const [articles, setArticles] = useState({ data, isLoading: isFetching });
-  console.log({ articles })
+  const [articles, setArticles] = useState<TrendingArticleTypes>({ data: [], isLoading: true });
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
 
   useEffect(() => {
-    setArticles({ data, isLoading: isFetching });
-  }, [isFetching]);
+    if (data) {
+      setArticles({ data: data?.pages.flatMap((page) => page.posts), isLoading: isLoading });
+    }
+  }, [data, isLoading]);
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+  }, [reachedBottom]);
 
   useEffect(() => {
     void (async () => {
       const { data } = await refetch();
-      setArticles({ data, isLoading: isFetching });
+      setArticles({ data: data?.pages.flatMap((page) => page.posts), isLoading: isLoading });
     })();
   }, [tab, newFilterData]);
 
@@ -94,6 +112,17 @@ const MainBodyArticles = () => {
         type="ARTICLE"
         articleData={articles}
       />
+
+      {
+        isFetchingNextPage && (
+          <>
+            <ArticleLoading />
+            <ArticleLoading />
+          </>
+        )
+      }
+      <div ref={bottomRef} />
+
     </section>
   );
 };

@@ -585,4 +585,8 @@ body.dark .hr-line-between-text::after {
   height: 1px;
   width: 40%;
   background: rgba(212, 215, 218, 0.8);
+}
+
+.manageData-container > .articleCard:last-child {
+  border: none !important;
 }/*# sourceMappingURL=globals.css.map */

@@ -1,6 +1,11 @@
-const SimpleArticleCardLoading = () => {
+import { type FC } from 'react';
+
+const SimpleArticleCardLoading: FC<{ number?: 2 | 3 }> = ({ number = 2 }) => {
   return (
-    <div className="w-full rounded-md border border-border-light p-4 dark:border-border md:w-[calc(100%/2-0.5rem)]">
+    <div className={`w-full rounded-md border border-border-light p-4 dark:border-border 
+    ${number === 2 ? "md:w-[calc(100%/2-0.5rem)]" : "md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-1rem)]"
+      }
+    `}>
       <div className="loading mb-4 h-44 w-full rounded-md bg-border-light dark:bg-border"></div>
 
       <div>

@@ -17,8 +17,6 @@ const BookmarkMainComponent = () => {
     }
   );
 
-  console.log({ bookmark: !!bookmarks.length });
-
   return (
     <section className="container-main my-4 min-h-screen w-full">
       <div className="mb-4 rounded-md border border-border-light bg-white px-3 py-12 dark:border-border dark:bg-primary md:px-6">

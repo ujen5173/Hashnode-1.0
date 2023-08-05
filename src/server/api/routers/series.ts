@@ -5,7 +5,7 @@ import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
-const SeriesRouter = createTRPCRouter({
+export const seriesRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const series = await ctx.prisma.series.findMany();
 
@@ -195,5 +195,3 @@ const SeriesRouter = createTRPCRouter({
       return !!series;
     }),
 });
-
-export default SeriesRouter;

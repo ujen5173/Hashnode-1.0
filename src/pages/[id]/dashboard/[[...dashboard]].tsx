@@ -238,8 +238,6 @@ const Roadmap = () => {
               const appearanceLocation = `/${user?.user.id as string
                 }/dashboard/appearance`;
 
-              console.log({ appearanceLocation });
-
               void router.push(appearanceLocation);
             }
           }}
