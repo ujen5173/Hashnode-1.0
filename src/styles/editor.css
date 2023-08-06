@@ -216,6 +216,13 @@ body.dark .ProseMirror pre code {
     font-size: 18px;
     line-height: 32px;
   }
+  .article p,
+  .article span,
+  .articleProseMirror p,
+  .articleProseMirror span {
+    font-size: 18px;
+    line-height: 32px;
+  }
   h1 {
     font-size: 34px;
     line-height: 44px;

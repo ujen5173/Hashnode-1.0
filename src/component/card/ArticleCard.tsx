@@ -158,7 +158,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
     <div className="flex items-center">
       {
         card.readCount > 0 && (
-          <span className="px-2 py-1 rounded-md bg-gray-200 dark:bg-primary-light text-gray-500 inline-flex mr-2 dark:text-text-primary text-sm">{card.readCount} reads</span>
+          <span className="px-2 hidden md:inline-flex py-1 rounded-md bg-gray-200 dark:bg-primary-light text-gray-500 mr-2 dark:text-text-primary text-sm">{card.readCount} reads</span>
         )
       }
 

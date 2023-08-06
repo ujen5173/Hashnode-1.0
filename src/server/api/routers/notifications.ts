@@ -17,7 +17,9 @@ export const notificationRouter = createTRPCRouter({
   get: protectedProcedure
     .input(
       z.object({
-        limit: z.number().default(6).optional(),
+        limit: z.number().optional().default(6),
+        skip: z.number().optional(),
+        cursor: z.string().nullable().optional(),
         type: z.enum([
           "ALL",
           "COMMENT",
@@ -29,12 +31,16 @@ export const notificationRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const result = await ctx.prisma.notification.findMany({
+      const { cursor, skip, limit } = input;
+
+      const notifications = await ctx.prisma.notification.findMany({
         where: {
           userId: ctx.session.user.id,
           type: input.type === "ALL" ? undefined : input.type,
         },
-        take: input.limit,
+        take: (limit || 6) + 1,
+        skip: skip,
+        cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
           createdAt: "desc",
         },
@@ -56,7 +62,15 @@ export const notificationRouter = createTRPCRouter({
         },
       });
 
-      return result;
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (notifications.length > limit) {
+        const nextItem = notifications.pop(); // return the last item from the array
+        nextCursor = nextItem?.id;
+      }
+      return {
+        notifications,
+        nextCursor,
+      };
     }),
 
   markAsRead: protectedProcedure.mutation(async ({ ctx }) => {

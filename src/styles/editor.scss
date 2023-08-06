@@ -189,6 +189,11 @@ body.dark .ProseMirror {
   .articleProseMirror {
     font-size: 18px;
     line-height: 32px;
+    p,
+    span {
+      font-size: 18px;
+      line-height: 32px;
+    }
   }
 
   h1 {

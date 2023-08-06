@@ -919,7 +919,6 @@ export const postsRouter = createTRPCRouter({
                   },
                 },
               }),
-
           take: (limit || 6) + 1,
           skip: skip,
           cursor: cursor ? { id: cursor } : undefined,

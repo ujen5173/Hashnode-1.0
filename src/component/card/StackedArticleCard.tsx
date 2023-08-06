@@ -11,11 +11,11 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
   const { theme } = useContext(C) as ContextValue;
   return (
     <div
-      className="w-full border-b border-border-light p-4 last:border-none dark:border-border"
+      className="w-full border-b-0 sm:border-b border-border-light sm:py-4 last:border-none dark:border-border"
       key={article.id}
     >
       <main className="">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
           <div className="flex-[2]">
             <Link href={`/u/@${article.user.username}/${article.slug}`}>
               <h1 className="max-height-two mb-2 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
@@ -40,11 +40,10 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
 
             <Link href={`/u/@${article.user.username}/${article.slug}`}>
               <p
-                className={`${
-                  article.cover_image
-                    ? "max-height-four"
-                    : "max-height-three mb-0 w-full md:mb-3"
-                } break-words text-base text-gray-500 dark:text-text-primary`}
+                className={`${article.cover_image
+                  ? "max-height-four"
+                  : "max-height-three mb-0 w-full md:mb-3"
+                  } break-words text-base text-gray-500 dark:text-text-primary`}
               >
                 {limitText(removeMd(article.content), 150)}
               </p>
@@ -53,7 +52,7 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
 
           <Link
             className="flex-1"
-            href={`/@${article.user.username}/${article.slug}`}
+            href={`/u/@${article.user.username}/${article.slug}`}
           >
             <div>
               <Image
@@ -61,8 +60,8 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
                   article.cover_image
                     ? article.cover_image
                     : theme === "light"
-                    ? "/imagePlaceholder-light.avif"
-                    : "/imagePlaceholder-dark.avif"
+                      ? "/imagePlaceholder-light.avif"
+                      : "/imagePlaceholder-dark.avif"
                 }
                 alt={`${article.title} image not found!`}
                 width={500}

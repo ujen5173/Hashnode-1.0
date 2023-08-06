@@ -101,7 +101,7 @@ export const TiptapExtensions = [
     }
   }).configure({
     lowlight,
-    defaultLanguage: 'plaintext',
+    // defaultLanguage: "plaintext",
   }),
   TiptapLink.configure({
     openOnClick: false,

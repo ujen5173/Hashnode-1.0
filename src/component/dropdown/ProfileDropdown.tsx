@@ -2,15 +2,12 @@ import type { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from 'next/router';
 import React, { useContext } from "react";
 import {
-  Bookmarkalt,
-  Exit,
-  Feed,
-  Manage,
-  Search,
-  User as UserSVG,
+  Feed
 } from "~/svgs";
+import { profileDropdownList } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 
 const ProfileDropdown = React.forwardRef<
@@ -21,9 +18,12 @@ const ProfileDropdown = React.forwardRef<
   }
 >(({ user, setOpened }, ref) => {
   const { setSearchOpen } = useContext(C) as ContextValue;
+  const router = useRouter();
+
   const logout = async () => {
     await signOut({ callbackUrl: "/" });
   };
+
 
   return (
     <div
@@ -50,7 +50,9 @@ const ProfileDropdown = React.forwardRef<
           </div>
         </div>
       </Link>
+
       <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
+
       {user?.user && user?.user.handle ? (
         <div>
           <h1 className="mb-1 px-4 text-xs font-semibold text-gray-500 dark:text-text-primary">
@@ -79,55 +81,39 @@ const ProfileDropdown = React.forwardRef<
           </div>
         </Link>
       )}
-      <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
-      <Link href="/bookmarks">
-        <div className="flex cursor-pointer items-center gap-2 px-4 py-3 text-gray-700  hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
-          <span>
-            <Bookmarkalt className="h-4 w-4 fill-gray-900 dark:fill-text-secondary" />
-          </span>
-          <span className="text-sm font-medium">My Bookmarks</span>
-        </div>
-      </Link>
-      <Link href="/settings">
-        <div className="flex cursor-pointer items-center gap-2 px-4 py-3 text-gray-700  hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
-          <span>
-            <UserSVG className="h-4 w-4 fill-gray-900 dark:fill-text-secondary" />
-          </span>
-          <span className="text-sm font-medium">Account Settings</span>
-        </div>
-      </Link>
-      {/*?? ↘️ forced as string because this component will only mount to authenticated users. */}
-      <Link href={`/${user?.user.id as string}/dashboard`}>
-        <div className="flex cursor-pointer items-center gap-2 px-4 py-3 text-gray-700  hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
-          <span>
-            <Manage className="h-4 w-4 fill-none stroke-gray-900 dark:stroke-text-secondary" />
-          </span>
-          <span className="text-sm font-medium">Manage your blogs</span>
-        </div>
-      </Link>
-      <div
-        onClick={() => {
-          setOpened(false);
-          setSearchOpen(true);
-        }}
-        className="flex cursor-pointer items-center gap-2 px-4 py-3 text-gray-700  hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light lg:hidden"
-      >
-        <span>
-          <Search className="h-4 w-4 stroke-gray-900 dark:stroke-text-primary" />
-        </span>
-        <span className="text-sm font-medium">Search</span>
-      </div>
-      <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
-      <button
-        onClick={() => {
-          void logout();
-        }} className="flex w-full items-center gap-2 px-4 py-3 text-red hover:bg-gray-200 dark:hover:bg-primary-light"
-      >
-        <span>
-          <Exit className="h-4 w-4 fill-red" />
-        </span>
-        <span>Log out</span>
-      </button>
+
+      {
+        profileDropdownList.map((item, index) => (
+          <>
+            {item?.type ? (
+              <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
+            ) : <div className={`${item.hiddenItem ? "block lg:hidden" : ""} cursor-pointer`}
+              onClick={() => {
+                if (item.danger) {
+                  void logout();
+                } else if (item.link && user?.user.id) {
+                  const link = item.link(user?.user.id);
+                  void router.push(link);
+                  setOpened(false);
+                } else if (item.onClick) {
+                  item.onClick(
+                    setOpened,
+                    setSearchOpen,
+                  );
+                }
+              }}
+              key={index}>
+              <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
+                <span>
+                  {item.icon}
+                </span>
+                <span className={`${item.danger ? "text-red" : ""} text-sm font-medium`}>{item.name}</span>
+              </div>
+            </div>
+            }
+          </>
+        ))
+      }
     </div>
   );
 });

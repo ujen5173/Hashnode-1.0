@@ -18,7 +18,7 @@ const Magazine = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNext
         </div>
       ) : data && data.length > 0 ? (
         <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-black">
-          <div className="author-blog-grid mx-auto max-w-[1300px] px-4 py-8">
+          <div className="author-blog-grid mx-auto max-w-[1300px] px-4 py-4 sm:py-8">
             <SimpleArticleCard type="main" article={data[0] as DataType} />
             {data.length === 1 ? (
               <>

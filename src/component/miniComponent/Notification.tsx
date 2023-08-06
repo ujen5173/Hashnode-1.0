@@ -1,10 +1,12 @@
 import { type NotificationTypes } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
+import useOnScreen from "~/hooks/useOnScreen";
 import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
+import { NotificationLoading } from "../loading";
 import ManageData from "./ManageData";
 
 enum Type {
@@ -87,13 +89,14 @@ export default Notification;
 export const NotificationContainer: FC<{
   res: "all" | "comment" | "like" | "new_article" | "follow";
 }> = ({ res }) => {
-  const { data, isLoading, isError } = api.notifications.get.useQuery(
+  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } = api.notifications.get.useInfiniteQuery(
     {
       limit: 6,
       type: res.toLocaleUpperCase() as NotificationTypes,
     },
     {
       refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
 
@@ -103,6 +106,22 @@ export const NotificationContainer: FC<{
     }
   }, [isError]);
 
+  const notifications = useMemo(
+    () => data?.pages.flatMap((page) => page.notifications),
+    [data]
+  );
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reachedBottom]);
+
+
   return (
     <div className="scroll-area min-h-[19.25rem] overflow-auto px-4">
       <ManageData
@@ -110,8 +129,17 @@ export const NotificationContainer: FC<{
           <div className="loading h-24 w-full border-b border-border-light py-4 dark:border-border"></div>
         }
         type="NOTIFICATION"
-        notificationData={{ data, isLoading, type: "ALL" }}
+        notificationData={{ data: notifications, isLoading, type: "ALL" }}
       />
+      {
+        isFetchingNextPage && (
+          <>
+            <NotificationLoading />
+            <NotificationLoading />
+          </>
+        )
+      }
+      <div ref={bottomRef} />
     </div>
   );
 };

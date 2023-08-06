@@ -40,8 +40,10 @@ const Editor: FC<{
   // Hydrate the editor with the content from localStorage.
   useEffect(() => {
     if (renderLocalStorageData && editor && !hydrated) {
-      editor.commands.
-        setContent(value);
+      setTimeout(() => {
+        editor.commands.
+          setContent(value);
+      });
       setHydrated(true);
     }
   }, [editor, hydrated]);

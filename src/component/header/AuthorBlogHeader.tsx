@@ -77,23 +77,24 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     <header className="border-b border-border-light bg-white px-2 dark:border-border dark:bg-primary sm:px-4 lg:border-none">
       <div className="container mx-auto p-2 sm:px-4">
         <nav className="flex w-full items-center justify-between py-2">
-          <div className="block sm:hidden">
-            <button
-              arial-label="Hamburger Menu"
-              role="button"
-              onClick={() => setMenu(true)}
-              className="btn-icon-large flex"
-            >
-              <Hamburger className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
-            </button>
+          <div className="flex items-center">
+            <div className="block sm:hidden">
+              <button
+                arial-label="Hamburger Menu"
+                role="button"
+                onClick={() => setMenu(true)}
+                className="btn-icon-large flex"
+              >
+                <Hamburger className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+              </button>
 
-            <ArticleHamburgerMenu
-              user={user?.user || null}
-              menu={menu}
-              setMenu={setMenu}
-            />
-          </div>
-          <div className="flex items-center gap-4">
+              <ArticleHamburgerMenu
+                user={user?.user || null}
+                menu={menu}
+                setMenu={setMenu}
+              />
+            </div>
+
             <div className="">
               <Link href="/">
                 <button

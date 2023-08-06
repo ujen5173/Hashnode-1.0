@@ -45,8 +45,8 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
       parentContainer.appendChild(codeBlock);
       const copyButton = document.createElement("button");
       const copyButtonElements = `
-        <span class="text-sm text-[#e2e8f0!important]">Copy</span>
-          <svg width=20 height=20 fill="#e2e8f0" viewBox="0 0 384 512"><path d="M336 64h-88.6c.4-2.6.6-5.3.6-8 0-30.9-25.1-56-56-56s-56 25.1-56 56c0 2.7.2 5.4.6 8H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM192 32c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm160 432c0 8.8-7.2 16-16 16H48c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h48v20c0 6.6 5.4 12 12 12h168c6.6 0 12-5.4 12-12V96h48c8.8 0 16 7.2 16 16z"></path></svg>
+        <span class="text-xs sm:text-sm text-[#e2e8f0!important]">Copy</span>
+          <svg class="w-4 h-4 fill-[#e2e8f0]" viewBox="0 0 384 512"><path d="M336 64h-88.6c.4-2.6.6-5.3.6-8 0-30.9-25.1-56-56-56s-56 25.1-56 56c0 2.7.2 5.4.6 8H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM192 32c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm160 432c0 8.8-7.2 16-16 16H48c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h48v20c0 6.6 5.4 12 12 12h168c6.6 0 12-5.4 12-12V96h48c8.8 0 16 7.2 16 16z"></path></svg>
         `
       copyButton.className = "absolute top-2 right-2 flex items-center justify-center gap-1";
       copyButton.innerHTML = copyButtonElements;
@@ -69,7 +69,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             width={1200}
             height={800}
             draggable={false}
-            className="w-full md:w-10/12 lg:w-full mx-auto overflow-hidden rounded-b-md object-cover md:px-4"
+            className="w-full md:w-10/12 lg:w-full mx-auto overflow-hidden md:rounded-b-md object-cover md:px-4"
           />
         )}
 
@@ -214,7 +214,7 @@ const SeriesSection: FC<{
                   <h1 className="text-lg font-black">{index + 1}</h1>
                 </div>
 
-                <div className="flex items-center gap-8 flex-1">
+                <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8 flex-1">
                   <div className="flex flex-1 items-center gap-4">
                     <Link target="_blank" href={`/u/${username}/${article.slug}`}>
                       <h1 className="max-height-two mb-1 text-xl font-bold text-gray-700 dark:text-text-secondary">
@@ -285,8 +285,8 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
           </Link>
 
           <div className={"flex-1"}>
-            <div className="flex w-full items-start justify-between">
-              <div className="">
+            <div className="flex flex-col sm:flex-row w-full items-start justify-between">
+              <div className="mb-3 sm:mb-0">
                 <h2 className="text-uppercase mb-1 text-sm font-medium text-gray-600 dark:text-text-primary">
                   WRITTEN BY
                 </h2>
@@ -300,7 +300,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
 
               {user?.user.username === author.username ? (
                 <Link href={`/${user?.user.id}/dashboard`}>
-                  <button className="btn-filled mx-4 flex w-full items-center justify-center gap-2 text-secondary md:w-max">
+                  <button className="btn-filled flex w-full items-center justify-center gap-2 text-secondary md:w-max">
                     <Settings className="h-5 w-5 fill-white" />
                     Dashboard
                   </button>

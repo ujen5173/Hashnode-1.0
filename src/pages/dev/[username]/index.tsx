@@ -281,19 +281,19 @@ export const AuthorArea: FC<{
 }> = ({ author }) => {
   return (
     <div className="bg-white dark:bg-primary">
-      <div className="mx-auto flex max-w-[1000px] flex-col items-center justify-center px-4 py-16">
+      <div className="mx-auto flex max-w-[1000px] flex-col items-center justify-center px-4 py-14 md:py-16">
         <div className="flex flex-col items-center justify-center gap-2">
           <Image
             src={author.profile || ""}
             width={120}
             height={120}
             alt="User Profile"
-            className="h-18 w-18 rounded-full object-cover"
+            className="h-16 md:h-20 w-16 md:w-20 rounded-full object-cover"
           />
           <h1 className="mb-4 text-2xl font-semibold text-gray-900 dark:text-text-secondary">
             {author.name}
           </h1>
-          <p className="text-center text-lg text-gray-500 dark:text-text-primary">
+          <p className="text-center text-base text-gray-500 dark:text-text-primary">
             {author.handle.about || "No bio added yet!"}
           </p>
         </div>

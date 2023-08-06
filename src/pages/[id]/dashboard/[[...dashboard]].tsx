@@ -64,6 +64,22 @@ const componentMap = {
   "404": <DashboardPageNotFound />,
 };
 
+const upCommingComponents = [
+  "sponsors",
+  "analytics",
+  "widgets",
+  "newsletter",
+  "integrations",
+  "seo",
+  "domain",
+  "gitHub",
+  "import",
+  "export",
+  "pages",
+  "github",
+  "advanced",
+]
+
 const Dashboard = () => {
   const paths = useRouter().query;
   const { data: session } = useSession();
@@ -75,16 +91,32 @@ const Dashboard = () => {
 
   useEffect(() => {
     // set dashboard component based on the path. if path is incorrect, set 404 component else set respective component and if path is undefined, set general component
-    setDashboardName(
-      componentMap[
-      Object.keys(componentMap).includes(
-        (paths?.dashboard as string[])?.join("/") ?? "general"
-      )
-        ? ((paths?.dashboard as string[])?.join(
-          "/"
-        ) as keyof typeof componentMap) ?? "general"
-        : "404"
-      ]
+    setDashboardName(upCommingComponents.includes(
+      (paths?.dashboard as string[])?.join("/") ?? "general"
+    ) ? (
+      <div className="flex flex-col items-center justify-center py-16">
+        <h1 className="text-3xl mb-2 font-semibold text-gray-700 dark:text-text-secondary">
+          {`🚧 ${(
+            paths?.dashboard as string[]
+          )?.join("/").charAt(0).toUpperCase() + (
+            paths?.dashboard as string[]
+          )?.join("/")?.slice(1)
+            } is under construction`}
+        </h1>
+
+        <p className="text-sm text-gray-500 dark:text-text-primary">
+          We are working on it. Please check back later.
+        </p>
+      </div>
+    ) : componentMap[
+    Object.keys(componentMap).includes(
+      (paths?.dashboard as string[])?.join("/") ?? "general"
+    )
+      ? ((paths?.dashboard as string[])?.join(
+        "/"
+      ) as keyof typeof componentMap) ?? "general"
+      : "404"
+    ]
     );
   }, [paths.dashboard]);
 
