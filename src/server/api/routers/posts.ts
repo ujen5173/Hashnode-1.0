@@ -144,6 +144,7 @@ export const postsRouter = createTRPCRouter({
         const { cursor, skip, limit } = input;
         const articles = await ctx.prisma.article.findMany({
           where: {
+            isDeleted: false,
             ...((input?.filter?.tags || input?.filter?.read_time) && {
               ...(input?.filter?.read_time && {
                 read_time:
@@ -248,6 +249,7 @@ export const postsRouter = createTRPCRouter({
 
       const articles = await ctx.prisma.article.findMany({
         where: {
+          isDeleted: false,
           ...((input?.filter?.tags || input?.filter?.read_time) && {
             ...(input?.filter?.read_time && {
               read_time:
@@ -338,6 +340,8 @@ export const postsRouter = createTRPCRouter({
         },
         await ctx.prisma.article.findMany({
           where: {
+            isDeleted: false,
+
             id: {
               in: input.ids.map((id) => id.id),
             },
@@ -361,6 +365,7 @@ export const postsRouter = createTRPCRouter({
       try {
         const res = await ctx.prisma.article.findMany({
           where: {
+            isDeleted: false,
             id: {
               in: input.ids.map((id) => id.id),
             },
@@ -406,6 +411,9 @@ export const postsRouter = createTRPCRouter({
                 user: {
                   username: input.username.slice(1, input.username.length),
                 },
+              },
+              {
+                isDeleted: false,
               },
             ],
           },
@@ -659,6 +667,8 @@ export const postsRouter = createTRPCRouter({
           user: {
             username: input.username.slice(1, input.username.length),
           },
+
+          isDeleted: false,
         },
         select: {
           id: true,
@@ -779,6 +789,8 @@ export const postsRouter = createTRPCRouter({
         default:
           const articles = ctx.prisma.article.findMany({
             where: {
+              isDeleted: false,
+
               OR: [
                 { title: { contains: query, mode: "insensitive" } },
                 { slug: { contains: query, mode: "insensitive" } },
@@ -913,6 +925,8 @@ export const postsRouter = createTRPCRouter({
             ? {}
             : {
                 where: {
+                  isDeleted: false,
+
                   createdAt: {
                     gte: startDate,
                     lte: endDate,
@@ -982,6 +996,8 @@ export const postsRouter = createTRPCRouter({
 
         const articles = await ctx.prisma.article.findMany({
           where: {
+            isDeleted: false,
+
             user: {
               followers: {
                 some: {
@@ -1040,16 +1056,43 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         username: z.string().trim(),
+        limit: z.number().optional().default(6),
+        skip: z.number().optional(),
+        cursor: z.string().nullable().optional(),
+        type: z
+          .enum(["PUBLISHED", "SCHEDULED", "DELETED"])
+          .optional()
+          .default("PUBLISHED"),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        return await ctx.prisma.article.findMany({
+        if (input.type === "SCHEDULED") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Scheduled articles are not available for public",
+          });
+        }
+
+        const { cursor, skip, limit } = input;
+
+        const articles = await ctx.prisma.article.findMany({
           where: {
+            isDeleted: false,
+
             user: {
               username: input.username,
             },
+            ...(input.type === "DELETED" && {
+              isDeleted: true,
+            }),
+            ...(input.type === "PUBLISHED" && {
+              isDeleted: false,
+            }),
           },
+          take: (limit || 6) + 1,
+          skip: skip,
+          cursor: cursor ? { id: cursor } : undefined,
           select: {
             id: true,
             title: true,
@@ -1069,7 +1112,21 @@ export const postsRouter = createTRPCRouter({
             createdAt: "desc",
           },
         });
+
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (articles.length > limit) {
+          const nextItem = articles.pop(); // return the last item from the array
+          nextCursor = nextItem?.id;
+        }
+
+        return {
+          posts: articles,
+          nextCursor,
+        };
       } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -1092,6 +1149,8 @@ export const postsRouter = createTRPCRouter({
 
         const articles = await ctx.prisma.article.findMany({
           where: {
+            isDeleted: false,
+
             user: {
               handle: {
                 handle: input.handle,
@@ -1213,5 +1272,132 @@ export const postsRouter = createTRPCRouter({
           success: true,
         };
       } catch (err) {}
+    }),
+
+  deleteTemporarily: protectedProcedure
+    .input(
+      z.object({
+        slug: z.string().trim(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const article = await ctx.prisma.article.findFirst({
+          where: {
+            slug: input.slug,
+          },
+          select: {
+            id: true,
+            isDeleted: true,
+            user: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        if (article?.isDeleted) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Article already deleted",
+          });
+        }
+
+        if (!article) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Article not found",
+          });
+        }
+
+        if (ctx.session?.user?.id === article.user.id) {
+          await ctx.prisma.article.update({
+            where: {
+              id: article.id,
+            },
+            data: {
+              isDeleted: true,
+            },
+          });
+          return {
+            success: true,
+          };
+        }
+
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to perform this action",
+        });
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong, try again later",
+          });
+        }
+      }
+    }),
+
+  restoreArticle: protectedProcedure
+    .input(
+      z.object({
+        slug: z.string().trim(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const article = await ctx.prisma.article.findFirst({
+          where: {
+            slug: input.slug,
+          },
+          select: {
+            id: true,
+            isDeleted: true,
+            user: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        if (!article?.isDeleted) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Article already restored",
+          });
+        }
+
+        if (ctx.session?.user?.id === article.user.id) {
+          await ctx.prisma.article.update({
+            where: {
+              id: article.id,
+            },
+            data: {
+              isDeleted: false,
+            },
+          });
+          return {
+            success: true,
+          };
+        }
+
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to perform this action",
+        });
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong, try again later",
+          });
+        }
+      }
     }),
 });

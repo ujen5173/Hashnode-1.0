@@ -296,9 +296,6 @@ const Roadmap = () => {
         </div>
 
         <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-          <div className="absolute bottom-3 right-3 w-max rounded-md bg-[#ef4444] px-3 py-1 text-xs font-medium md:bottom-4 md:right-4">
-            UPCOMMING
-          </div>
           <div className="absolute right-3 top-3 md:right-4 md:top-4">
             <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
           </div>

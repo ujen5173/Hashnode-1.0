@@ -81,12 +81,15 @@ const ExploreMainComponent = () => {
     () => data?.pages.flatMap((page) => page.posts),
     [data]
   );
+
   const followingArticles = useMemo(
     () => followingData?.pages.flatMap((page) => page.posts),
     [followingData]
   );
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const reachedBottom = useOnScreen(bottomRef);
+
   useEffect(() => {
     if (reachedBottom && hasNextPage) {
       if (slug?.includes("articles-following")) {

@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import removeMd from "remove-markdown";
+import { StackedArticleLoading } from "~/component/loading";
 import { ArticleActions } from "~/component/miniComponent";
 import { CommentsModal } from "~/component/popup";
 import { Book, Check, Follow, Settings } from "~/svgs";
@@ -183,7 +184,13 @@ const SeriesSection: FC<{
           </h1>
 
           {isLoading ? (
-            <div className="loading h-3 w-36 rounded-full bg-border-light dark:bg-border" />
+            <>
+              <StackedArticleLoading />
+              <StackedArticleLoading />
+              <StackedArticleLoading />
+              <StackedArticleLoading />
+              <StackedArticleLoading />
+            </>
           ) : (
             data && (
               <span className="text-lg font-bold text-secondary hover:underline">

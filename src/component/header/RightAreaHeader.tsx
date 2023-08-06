@@ -22,6 +22,7 @@ const RightArea: FC = () => {
     control,
     dropdown,
   ]);
+
   const [count, setCount] = useState(0);
   const { width } = useViewportSize();
   const path = useRouter().pathname;

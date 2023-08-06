@@ -4,7 +4,7 @@ import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { Bookmarkplus, Comment, Heart, Report, Share } from "~/svgs";
+import { Bookmarkplus, Comment, Dots, Heart, Share } from "~/svgs";
 import Bookmarked from "~/svgs/Bookmarked";
 import type { Article } from "~/types";
 import { api } from "~/utils/api";
@@ -23,7 +23,23 @@ const ArticleActions: FC<Props> = ({
   setCommentsModal,
 }) => {
   const [shareOpen, setShareOpen] = useState(false);
-  const ref = useClickOutside<HTMLDivElement>(() => setShareOpen(false));
+  const [control, setControl] = useState<HTMLDivElement | null>(null);
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
+
+  useClickOutside<HTMLDivElement>(() => setShareOpen(false), null, [
+    control,
+    dropdown,
+  ]);
+
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [optionsControl, setOptionsControl] = useState<HTMLDivElement | null>(null);
+  const [optionsDropdown, setOptionsDropdown] = useState<HTMLDivElement | null>(null);
+
+  useClickOutside<HTMLDivElement>(() => setOptionsOpen(false), null, [
+    optionsControl,
+    optionsDropdown,
+  ]);
+
   const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
   const { data: user } = useSession();
   const { mutate: LikeArticle } = api.likes.likeArticle.useMutation();
@@ -84,8 +100,8 @@ const ArticleActions: FC<Props> = ({
             <div className="flex items-center justify-center gap-2">
               <Heart
                 className={`h-5 w-5 fill-none ${like.hasLiked
-                    ? "fill-red stroke-red"
-                    : "stroke-border dark:stroke-text-primary"
+                  ? "fill-red stroke-red"
+                  : "stroke-border dark:stroke-text-primary"
                   }  md:h-6 md:w-6`}
               />
             </div>
@@ -98,13 +114,13 @@ const ArticleActions: FC<Props> = ({
 
         <Tooltip
           label={`${article.disabledComments
-              ? "Comments Disabled"
-              : `Comments (${commentsCount})`
+            ? "Comments Disabled"
+            : `Comments (${commentsCount})`
             }`}
           classNames={{
             tooltip: `${article.disabledComments
-                ? "bg-[#dc2626!important] text-[#fafafa!important] dark:text-[#fff!important]"
-                : ""
+              ? "bg-[#dc2626!important] text-[#fafafa!important] dark:text-[#fff!important]"
+              : ""
               }`,
           }}
           withArrow
@@ -133,8 +149,8 @@ const ArticleActions: FC<Props> = ({
             onClick={() => updateBookmark(article.id)}
             role="button"
             className={`${bookmarks.find((bookmark) => bookmark.id === article.id)
-                ? "bg-secondary bg-opacity-20"
-                : ""
+              ? "bg-secondary bg-opacity-20"
+              : ""
               } btn-icon-large flex w-max items-center justify-center`}
           >
             {bookmarks.find((bookmark) => bookmark.id === article.id) ? (
@@ -154,40 +170,146 @@ const ArticleActions: FC<Props> = ({
                 title: article.title,
                 by: article.user.username,
               }}
-              ref={ref}
+              ref={setDropdown}
               setShareOpen={setShareOpen}
             />
           )}
 
           <Tooltip label="Share" withArrow>
-            <button
-              aria-label="icon"
-              role="button"
-              onClick={() => void setShareOpen((prev) => !prev)}
-              className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
+            <div
+              ref={setControl}
             >
-              <div className="flex items-center justify-center gap-2">
-                <Share className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
-              </div>
-            </button>
+              <button
+                aria-label="icon"
+                role="button"
+                onClick={() => void setShareOpen((prev) => !prev)}
+                className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Share className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
+                </div>
+              </button>
+            </div>
           </Tooltip>
         </div>
 
         <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
-        <Tooltip label="Report" withArrow>
-          <button
-            aria-label="icon"
-            role="button"
-            className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
-          >
-            <div className="flex items-center justify-center gap-2">
-              <Report className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+
+        <div className="relative">
+
+          <Tooltip label="More Options" withArrow position="bottom">
+            <div
+              ref={setOptionsControl}
+            >
+              <button
+                aria-label="icon"
+                role="button"
+                onClick={() => void setOptionsOpen((prev) => !prev)}
+                className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Dots className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+                </div>
+              </button>
             </div>
-          </button>
-        </Tooltip>
+          </Tooltip>
+          {optionsOpen && (
+            <MoreOptions
+              ref={setOptionsDropdown}
+              setOptionsOpen={setOptionsOpen}
+              slug={article.slug}
+              user={user?.user.username === article.user.username}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default ArticleActions;
+
+const MoreOptions = React.forwardRef<
+  HTMLDivElement,
+  {
+    setOptionsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    user: boolean;
+    slug: string
+  }
+>(({ setOptionsOpen, slug, user }, ref) => {
+  const { mutateAsync: deleteArticle } = api.posts.deleteTemporarily.useMutation();
+  const userActions = [
+    "Edit",
+    "Delete",
+    "Disable Comments",
+    "Pin to your blog",
+    "Report",
+  ]
+
+  const guestActions = [
+    "Report",
+    "Follow",
+  ]
+
+
+  const actionControler = async (name: string) => {
+    switch (name) {
+      case "Delete":
+        try {
+          const res = await deleteArticle({
+            slug,
+          });
+
+          if (res.success) {
+            toast.success("Article deleted successfully");
+          } else {
+            toast.error("Failed to delete article");
+          }
+        } catch (err) {
+          if (err instanceof TRPCClientError) {
+            toast.error(err.message);
+          } else {
+            toast.error("Failed to delete article");
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  return (
+    <div
+      ref={ref}
+      className="absolute -right-full top-full mt-2 min-w-[190px] rounded-md border border-border-light bg-white shadow-md dark:border-border dark:bg-primary md:-left-2"
+    >
+      <ul className="py-2">
+        {user ? userActions.map((option, index) => (
+          <li
+            onClick={() => {
+              void actionControler(option)
+              setOptionsOpen(false)
+            }}
+            className="flex w-full cursor-pointer items-center justify-start gap-3 px-4 py-2 pr-4 text-sm text-gray-700 hover:bg-gray-100 dark:text-text-secondary dark:hover:bg-border"
+            key={index}
+          >
+            {option}
+          </li>
+        )) : guestActions.map((option, index) => (
+          <li
+            onClick={() => {
+              void actionControler(option)
+              setOptionsOpen(false)
+            }
+            }
+            className="flex w-full cursor-pointer items-center justify-start gap-3 px-4 py-2 pr-4 text-sm text-gray-700 hover:bg-gray-100 dark:text-text-secondary dark:hover:bg-border"
+            key={index}
+          >
+            {option}
+          </li>
+        ))}
+      </ul>
+    </div>)
+});
+
+MoreOptions.displayName = "MoreOptions";

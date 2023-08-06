@@ -178,6 +178,7 @@ model Article {
     commentsCount    Int       @default(0)
     readCount        Int       @default(0)
     readers          User[]    @relation("ReadArticle")
+    isDeleted        Boolean   @default(false)
 
     series   Series? @relation(fields: [seriesId], references: [id], onDelete: Cascade)
     seriesId String?

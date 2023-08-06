@@ -1,7 +1,10 @@
 import { useClickOutside } from "@mantine/hooks";
+import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState, type FC } from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
+import { toast } from "react-toastify";
+import useOnScreen from "~/hooks/useOnScreen";
 import { Dots } from "~/svgs";
 import { api } from "~/utils/api";
 import { limitText } from "~/utils/miniFunctions";
@@ -9,38 +12,55 @@ import { limitText } from "~/utils/miniFunctions";
 const Articles = () => {
   const { data: user } = useSession();
 
-  const { data, isLoading } = api.posts.getAuthorArticles.useQuery(
+  const [type, setType] = useState<"PUBLISHED" | "DELETED">(
+    "PUBLISHED"
+  );
+
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getAuthorArticles.useInfiniteQuery(
     {
       username: user?.user.username as string,
+      limit: 10,
+      type,
     },
     {
       enabled: !!user?.user,
       refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
 
-  const [type, setType] = useState<"Published" | "Scheduled" | "Deleted">(
-    "Published"
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+
+  const articles = useMemo(
+    () => data?.pages.flatMap((page) => page.posts),
+    [data]
   );
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+  }, [reachedBottom]);
 
   return (
     <section className="relative w-full">
       <header className="mb-4 flex items-center justify-between">
-        <h1 className="text-4xl font-semibold text-gray-700 dark:text-text-secondary">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           {isLoading
             ? "Fetching your articles..."
-            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${data?.length as number
+            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${articles?.length as number
             })`}
         </h1>
 
-        <div className="flex items-center gap-2">
-          {["Published", "Scheduled", "Deleted"].map((item) => (
+        <div className="hidden md:flex items-center gap-2">
+          {["PUBLISHED", "DELETED"].map((item) => (
             <button
               onClick={() =>
-                setType(item as "Published" | "Scheduled" | "Deleted")
+                setType(item as "PUBLISHED" | "DELETED")
               }
               key={item}
-              className={`rounded-lg bg-transparent px-4 py-1 text-base font-medium hover:bg-gray-100 dark:hover:bg-primary-light ${type === item ? "text-secondary" : ""
+              className={`rounded-lg px-2 py-1 text-base font-medium  ${type === item ? "text-secondary bg-border-light dark:bg-border" : "text-gray-700 dark:text-text-secondary hover:bg-gray-100 dark:hover:bg-primary-light"
                 }`}
             >
               {item}
@@ -56,7 +76,7 @@ const Articles = () => {
               Article
             </h1>
           </div>
-          <div>
+          <div className="hidden sm:block">
             <h1 className="text-lg font-semibold text-gray-700 dark:text-text-secondary">
               Status
             </h1>
@@ -71,10 +91,10 @@ const Articles = () => {
             <ArticleLoading />
             <ArticleLoading />
           </>
-        ) : data ? (
-          data.length > 0 ? (
-            data.map((article) => (
-              <ArticleCard key={article.id} data={article} />
+        ) : articles ? (
+          articles.length > 0 ? (
+            articles.map((article) => (
+              <ArticleCard type={type} key={article.id} data={article} />
             ))
           ) : (
             <div className="flex items-center justify-center px-4 py-8">
@@ -90,6 +110,15 @@ const Articles = () => {
             </h1>
           </div>
         )}
+        {
+          isFetchingNextPage && (
+            <>
+              <ArticleLoading />
+              <ArticleLoading />
+            </>
+          )
+        }
+        <div ref={bottomRef} />
       </main>
     </section>
   );
@@ -110,19 +139,48 @@ const ArticleCard: FC<{
     subtitle: string | null;
     cover_image: string | null;
   };
-}> = ({ data }) => {
+  type: "PUBLISHED" | "DELETED";
+}> = ({ data, type }) => {
   const [opened, setOpened] = useState(false);
-  const ref = useClickOutside<HTMLDivElement>(() => setOpened((prev) => !prev));
+  const [control, setControl] = useState<HTMLDivElement | null>(null);
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
+
+  useClickOutside<HTMLDivElement>(() => setOpened(false), null, [
+    control,
+    dropdown,
+  ]);
+  const { mutateAsync } = api.posts.restoreArticle.useMutation()
+
+  const restoreArticle = async () => {
+    try {
+
+      const res = await mutateAsync({
+        slug: data.slug
+      });
+
+      if (res) {
+        toast.success("Article restored successfully");
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (err) {
+      if (err instanceof TRPCClientError) {
+        toast.error(err.message)
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
+  }
 
   return (
     <div className="flex items-center gap-4">
       <div className="flex-1 py-3">
         <Link href={`/u/@${data.user.username}/${data.slug}`}>
-          <h1 className="max-height-one mb-1 text-xl font-semibold text-gray-700 dark:text-text-secondary">
+          <h1 className="max-height-one mb-1 text-lg md:text-xl font-semibold text-gray-700 dark:text-text-secondary">
             {limitText(data.title, 100)}
           </h1>
         </Link>
-        <p className="text-base text-gray-500 dark:text-text-primary">
+        <p className="text-sm md:text-base text-gray-500 dark:text-text-primary">
           {data.read_time} min read - Published on{" "}
           <span className="font-semibold">
             {new Date(data.createdAt).toDateString()}
@@ -130,35 +188,52 @@ const ArticleCard: FC<{
         </p>
       </div>
 
-      <div>
+      <div className="hidden sm:block">
         <button
           type="button"
-          className="cursor-default rounded-lg border border-border-light bg-slate-200 px-4 py-2 text-sm font-bold uppercase tracking-wider text-black dark:border-border"
+          className="cursor-default rounded-lg border border-border-light bg-slate-200 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm font-bold uppercase tracking-wider text-black dark:border-border"
         >
           PUBLISHED
         </button>
       </div>
 
       <div className="relative px-6">
-        <button
+        <div
           onClick={() => setOpened((prev) => !prev)}
-          type="button"
-          className="rounded-md border border-border-light px-2 py-2 text-sm font-semibold uppercase hover:bg-light-bg dark:border-border dark:hover:bg-primary-light"
+          ref={setControl}
+          className="rounded-md border cursor-pointer border-border-light px-2 py-2 text-sm font-semibold uppercase hover:bg-light-bg dark:border-border dark:hover:bg-primary-light"
         >
           <Dots className="h-4 w-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
-        </button>
+        </div>
 
         {opened && (
           <div
-            ref={ref}
-            className="absolute right-6 top-full mt-2 w-44 rounded-md border border-border-light bg-light-bg shadow-md dark:border-border dark:bg-primary"
+            ref={setDropdown}
+            className="absolute py-2 select-none z-10 right-6 top-full mt-2 w-44 rounded-md border border-border-light bg-light-bg shadow-md dark:border-border dark:bg-primary"
           >
-            <button className="w-full px-4 py-2 text-left hover:bg-gray-200 dark:hover:bg-primary-light">
-              Edit
-            </button>
-            <button className="w-full px-4 py-2 text-left hover:bg-gray-200 dark:hover:bg-primary-light">
-              <span className="text-red">Delete</span>
-            </button>
+            {
+              type === "PUBLISHED" ? (
+                <>
+                  <button className="w-full px-4 py-2 text-left text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-primary-light">
+                    Edit
+                  </button>
+                  <button className="w-full px-4 py-2 text-left hover:bg-gray-200 dark:hover:bg-primary-light">
+                    <span className="text-red">Delete</span>
+                  </button></>
+              ) : (
+                <>
+                  <button onClick={() => void restoreArticle()} className="w-full px-4 py-2 text-left text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-primary-light">
+                    Restore
+                  </button>
+                  <button onClick={() => {
+                    alert("Are you sure to delete this parmanently?")
+                    // void restoreArticle()
+                  }} className="w-full px-4 py-2 text-left text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-primary-light">
+                    Delete
+                  </button>
+                </>
+              )
+            }
           </div>
         )}
       </div>
@@ -170,12 +245,12 @@ const ArticleLoading = () => {
   return (
     <div className="flex items-center justify-between py-4">
       <div className="flex-1">
-        <div className="loading mb-2 h-6 w-3/4 rounded-lg bg-gray-200"></div>
-        <div className="loading h-4 w-1/2 rounded-lg bg-gray-200"></div>
+        <div className="loading mb-2 h-4 w-3/4 rounded-lg bg-border-light dark:bg-border"></div>
+        <div className="loading h-4 w-1/2 rounded-lg bg-border-light dark:bg-border"></div>
       </div>
       <div className="flex items-center gap-2">
-        <div className="loading h-10 w-32 rounded-lg bg-gray-200"></div>
-        <div className="loading h-10 w-32 rounded-lg bg-gray-200"></div>
+        <div className="loading h-8 w-32 rounded-lg bg-border-light dark:bg-border"></div>
+        <div className="loading h-8 w-12 rounded-lg bg-border-light dark:bg-border"></div>
       </div>
     </div>
   );

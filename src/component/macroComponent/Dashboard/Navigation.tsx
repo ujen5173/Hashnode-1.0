@@ -26,7 +26,7 @@ const Navigation: FC<{
         className="flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-border-light bg-white px-4 py-2 dark:border-border dark:bg-primary md:hidden"
       >
         <Hamburger className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
-        <span className="font-medium">Dashboard Menu</span>
+        <span className="text-gray-700 dark:text-text-primary font-medium">Dashboard Menu</span>
       </div>
 
       {opened && (
@@ -59,50 +59,44 @@ const NavigationList: FC<{
             ? true
             : false
           : dashboard.name === "General"
-          ? true
-          : false;
+            ? true
+            : false;
 
         return (
           <div
             key={dashboard.id}
             // the className logic is just to add margings in divider navigations.
             // You can see the navigations is divided into 3 parts. so to add margin in between them, I have added this logic
-            className={`
-      ${
-        index === 2 ||
-        index === 5 ||
-        index === 11 ||
-        index === 13 ||
-        index === 15
-          ? "mb-2 border-b border-border-light dark:border-border"
-          : ""
-      }
-      `}
+            className={`${index === 2 ||
+              index === 5 ||
+              index === 11 ||
+              index === 13 ||
+              index === 15
+              ? "mb-2 border-b border-border-light dark:border-border"
+              : ""
+              }`}
           >
             <Link href={`/${userId as string}${dashboard.link}`}>
               <div
-                className={`flex w-full cursor-pointer items-center gap-2 px-4 py-3 md:px-6 md:py-4 ${
-                  index === 2 ||
+                className={`flex w-full cursor-pointer items-center gap-2 px-4 py-3 md:px-6 md:py-4 ${index === 2 ||
                   index === 5 ||
                   index === 11 ||
                   index === 13 ||
                   index === 15
-                    ? "mb-2"
-                    : ""
-                } ${
-                  state
+                  ? "mb-2"
+                  : ""
+                  } ${state
                     ? "bg-secondary"
                     : "hover:bg-gray-200 dark:hover:bg-primary-light"
-                }`}
+                  }`}
               >
                 {dashboard.icon(state)}
 
                 <span
-                  className={`text-sm font-medium md:text-base md:font-semibold ${
-                    state
-                      ? "text-white"
-                      : "text-gray-700 dark:text-text-secondary"
-                  }`}
+                  className={`text-sm font-medium md:text-base md:font-semibold ${state
+                    ? "text-white"
+                    : "text-gray-700 dark:text-text-secondary"
+                    }`}
                 >
                   {dashboard.name}
                 </span>

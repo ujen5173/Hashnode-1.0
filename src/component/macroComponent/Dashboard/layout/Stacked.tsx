@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import React from "react";
 import { StackedArticleCard } from "~/component/card";
-import { SimpleArticleCardLoading } from "~/component/loading";
+import { StackedArticleLoading } from "~/component/loading";
 import { NoArticlesUploadedError } from "~/component/miniComponent";
 import { AuthorArea } from "~/pages/dev/[username]";
 import { type DataType } from "~/types";
@@ -38,16 +38,12 @@ const Stacked = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNextP
             {
               isFetchingNextPage && (
                 <>
-                  <SimpleArticleCardLoading number={3} />
-                  <SimpleArticleCardLoading number={3} />
-                  <SimpleArticleCardLoading number={3} />
-                  <SimpleArticleCardLoading number={3} />
-                  <SimpleArticleCardLoading number={3} />
-                  <SimpleArticleCardLoading number={3} />
-                  <SimpleArticleCardLoading number={3} />
-                  <SimpleArticleCardLoading number={3} />
-                </>
-              )
+                  <StackedArticleLoading />
+                  <StackedArticleLoading />
+                  <StackedArticleLoading />
+                  <StackedArticleLoading />
+                  <StackedArticleLoading />
+                </>)
             }
           </div>
         </div>
