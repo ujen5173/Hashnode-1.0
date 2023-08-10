@@ -31,6 +31,7 @@ declare module "next-auth" {
     profile: string;
     emailVerified: Date | null;
     tagline: string;
+    stripeSubscriptionStatus: string | null;
     handle?: {
       handle: string;
       id: string;
@@ -77,6 +78,7 @@ export const authOptions: NextAuthOptions = {
           emailVerified: user.emailVerified,
           tagline: user.tagline,
           handle: handle,
+          stripeSubscriptionStatus: user.stripeSubscriptionStatus,
         },
       };
     },
@@ -137,6 +139,7 @@ export const authOptions: NextAuthOptions = {
           ),
           email: profile.email,
           profile: profile.picture,
+          stripeSubscriptionStatus: null,
           emailVerified: profile.email_verified ? new Date() : null,
           tagline: "Software Devloper",
         };

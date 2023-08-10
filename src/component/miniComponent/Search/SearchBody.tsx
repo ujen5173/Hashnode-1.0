@@ -15,10 +15,11 @@ interface ArticleSeach {
   id: string;
   title: string;
   user: {
+    id: string;
     name: string;
     username: string;
     profile: string;
-    id: string;
+    stripeSubscriptionStatus: string | null;
   };
   cover_image: string;
   slug: string;
@@ -42,6 +43,7 @@ interface UserSearch {
   username: string;
   profile: string;
   isFollowing: boolean;
+  stripeSubscriptionStatus: string | null;
 }
 const searchNavigation = [
   "TOP",

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Rocket } from "~/svgs";
 
 const Anouncement = () => {
@@ -18,13 +19,15 @@ const Anouncement = () => {
       </p>
 
       <div className="flex flex-col gap-2">
-        <button
-          role="button"
-          aria-label="upgrade plan"
-          className="btn-tertiary w-fit"
-        >
-          Upgrade now
-        </button>
+        <Link href="/settings/pro">
+          <button
+            role="button"
+            aria-label="upgrade plan"
+            className="btn-tertiary w-fit"
+          >
+            Upgrade now
+          </button>
+        </Link>
         <button
           role="button"
           aria-label="lean more on Hashnode pro"

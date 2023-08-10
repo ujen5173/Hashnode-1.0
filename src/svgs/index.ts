@@ -72,6 +72,7 @@ export { default as Location } from "./Location";
 export { default as Logo } from "./Logo";
 export { default as LogonoText } from "./LogonoText";
 export { default as Magic } from "./Magic";
+export { default as Mail } from "./Mail";
 export { default as Manage } from "./Manage";
 export { default as Mastodon } from "./Mastodon";
 export { default as More } from "./More";

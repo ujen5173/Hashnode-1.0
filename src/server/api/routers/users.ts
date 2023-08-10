@@ -331,27 +331,48 @@ export const usersRouter = createTRPCRouter({
       return following;
     }),
 
-    getUserDashboardRoadmapDetails: protectedProcedure
-    .query(async ({ ctx }) => {
-      const data = await ctx.prisma.user.findUnique({
-        where: {
-          id: ctx.session.user.id,
-        },
-        select: {
-          articles: {
-            select: {
-              id: true,
-            },
-            take: 1,
+  getUserDashboardRoadmapDetails: protectedProcedure.query(async ({ ctx }) => {
+    const data = await ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.session.user.id,
+      },
+      select: {
+        articles: {
+          select: {
+            id: true,
           },
-          handle: {
-            select: {
-              appearance: true,
-            }
-          }
-        }
-      });
+          take: 1,
+        },
+        handle: {
+          select: {
+            appearance: true,
+          },
+        },
+      },
+    });
 
-      return data;
-    }),
+    return data;
+  }),
+  subscriptionStatus: protectedProcedure.query(async ({ ctx }) => {
+    const { session, prisma } = ctx;
+
+    if (!session.user?.id) {
+      throw new Error("Not authenticated");
+    }
+
+    const data = await prisma.user.findUnique({
+      where: {
+        id: session.user?.id,
+      },
+      select: {
+        stripeSubscriptionStatus: true,
+      },
+    });
+
+    if (!data) {
+      throw new Error("Could not find user");
+    }
+
+    return data.stripeSubscriptionStatus;
+  }),
 });

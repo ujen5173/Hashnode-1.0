@@ -1,3 +1,4 @@
+import { Tooltip } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
@@ -27,11 +28,24 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
         </Link>
 
         <div className="flex-1">
-          <Link href={`/u/@${card.user.username}`}>
-            <h1 className="text-base font-semibold text-gray-900 dark:text-text-secondary">
-              {card.user.name}
-            </h1>
-          </Link>
+          <div className="flex itmes-center gap-2">
+            <Link href={`/u/@${card.user.username}`}>
+              <h1 className="text-base font-semibold text-gray-900 dark:text-text-secondary">
+                {card.user.name}
+              </h1>
+            </Link>
+            {
+              card.user.stripeSubscriptionStatus === "active" && (
+                <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
+                  fontSize: "0.8rem",
+                  fontWeight: "400",
+                  letterSpacing: "0.5px"
+                }}>
+                  <span className="px-2 py-1 tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-medium text-xs text-gray-700 dark:text-text-secondary">PRO</span>
+                </Tooltip>
+              )
+            }
+          </div>
 
           {card.user.handle && (
             <p className="flex gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">

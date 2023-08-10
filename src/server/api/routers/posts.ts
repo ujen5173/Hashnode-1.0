@@ -95,6 +95,7 @@ const searchResponseFormater = (
     name: string;
     username: string;
     profile: string;
+    stripeSubscriptionStatus: string | null;
     followers: {
       id: string;
     }[];
@@ -378,6 +379,7 @@ export const postsRouter = createTRPCRouter({
             user: {
               select: {
                 name: true,
+                stripeSubscriptionStatus: true,
                 username: true,
               },
             },
@@ -431,6 +433,7 @@ export const postsRouter = createTRPCRouter({
                 username: true,
                 bio: true,
                 profile: true,
+                stripeSubscriptionStatus: true,
                 handle: {
                   select: {
                     handle: true,
@@ -605,6 +608,7 @@ export const postsRouter = createTRPCRouter({
             user: {
               select: {
                 username: true,
+                stripeSubscriptionStatus: true,
                 followers: {
                   select: {
                     id: true,
@@ -763,6 +767,7 @@ export const postsRouter = createTRPCRouter({
               name: true,
               username: true,
               profile: true,
+              stripeSubscriptionStatus: true,
               followers: {
                 select: {
                   id: true,
@@ -814,7 +819,13 @@ export const postsRouter = createTRPCRouter({
               id: true,
               title: true,
               user: {
-                select: { name: true, username: true, profile: true, id: true },
+                select: {
+                  name: true,
+                  username: true,
+                  profile: true,
+                  id: true,
+                  stripeSubscriptionStatus: true,
+                },
               },
               cover_image: true,
               slug: true,
@@ -864,6 +875,7 @@ export const postsRouter = createTRPCRouter({
               id: true,
               name: true,
               username: true,
+              stripeSubscriptionStatus: true,
               profile: true,
               followers: {
                 select: {

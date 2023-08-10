@@ -23,6 +23,11 @@ export const env = createEnv({
     GITHUB_CLIENT_SECRET: z.string(),
 
     UPLOADTHING_SECRET: z.string(),
+
+    STRIPE_PK: z.string(),
+    STRIPE_SK: z.string(),
+    STRIPE_PRICE_ID: z.string(),
+    STRIPE_WEBHOOK_SECRET: z.string(),
   },
 
   /**
@@ -54,5 +59,10 @@ export const env = createEnv({
     NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
 
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
+
+    STRIPE_PK: process.env.STRIPE_PK,
+    STRIPE_SK: process.env.STRIPE_SK,
+    STRIPE_PRICE_ID: process.env.STRIPE_PRICE_ID,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
   },
 });

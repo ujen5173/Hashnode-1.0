@@ -1,3 +1,4 @@
+import { Tooltip } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +12,7 @@ interface Props {
     id: string;
     name: string;
     username: string;
+    stripeSubscriptionStatus: string | null;
     profile: string;
     isFollowing: boolean;
   };
@@ -18,6 +20,8 @@ interface Props {
 }
 
 const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
+
+  console.log({ searchedUser })
   const { data: user } = useSession();
 
   const [isFollowing, setIsFollowing] = useState<boolean>(
@@ -61,9 +65,22 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
           />
 
           <div>
-            <h3 className="text-lg font-semibold text-gray-700 dark:text-text-secondary md:text-xl">
-              {searchedUser.name}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-semibold text-gray-700 dark:text-text-secondary md:text-lg">
+                {searchedUser.name}
+              </h3>
+              {
+                searchedUser.stripeSubscriptionStatus === "active" && (
+                  <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
+                    fontSize: "0.8rem",
+                    fontWeight: "400",
+                    letterSpacing: "0.5px"
+                  }}>
+                    <span className="px-2 py-1 tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-semibold text-xs text-gray-700 dark:text-text-secondary">PRO</span>
+                  </Tooltip>
+                )
+              }
+            </div>
 
             <p className="text-sm text-gray-500 dark:text-text-primary">
               {searchedUser.username}

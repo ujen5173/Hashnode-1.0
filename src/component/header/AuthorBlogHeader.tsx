@@ -77,7 +77,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     <header className="border-b border-border-light bg-white px-2 dark:border-border dark:bg-primary sm:px-4 lg:border-none">
       <div className="container mx-auto p-2 sm:px-4">
         <nav className="flex w-full items-center justify-between py-2">
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <div className="block sm:hidden">
               <button
                 arial-label="Hamburger Menu"

@@ -14,6 +14,7 @@ export interface Article {
     username: string;
     profile: string;
     bio: string;
+    stripeSubscriptionStatus: string | null;
     handle: {
       id: string;
       handle: string;
@@ -71,6 +72,7 @@ export interface User {
   name: string;
   username: string;
   profile: string;
+  stripeSubscriptionStatus: string | null;
   handle?: {
     id: string;
     name: string;
@@ -102,6 +104,7 @@ export interface Comment {
     name: string;
     username: string;
     profile: string;
+    stripeSubscriptionStatus: string | null;
   };
   likes: { id: string }[];
   likesCount: number;
@@ -121,6 +124,7 @@ interface SearchResults {
         name: string;
         username: string;
         profile: string;
+        stripeSubscriptionStatus: string | null;
         isFollowing: boolean;
       }[]
     | null;
@@ -137,14 +141,14 @@ interface SearchResults {
         id: string;
         title: string;
         user: {
+          id: string;
           name: string;
           username: string;
           profile: string;
-          id: string;
+          stripeSubscriptionStatus: string | null;
         };
         cover_image: string;
         readCount: number;
-
         series?: {
           title: string;
         };
@@ -163,6 +167,7 @@ export interface UserSimple {
   name: string;
   username: string;
   profile: string;
+  stripeSubscriptionStatus: string | null;
 }
 
 export interface DataType {
@@ -200,6 +205,7 @@ export interface DetailedUser {
     about: string;
     id: string;
   } | null;
+  stripeSubscriptionStatus: string | null;
   followersCount: number;
   social: SocialHandles;
   id: string;
@@ -226,6 +232,7 @@ export interface UserDetails {
   location: string;
   profile: string;
   tagline: string;
+  stripeSubscriptionStatus?: string | null;
   available: string;
   cover_image: string;
   bio: string;

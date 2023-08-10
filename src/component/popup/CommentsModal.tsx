@@ -4,11 +4,8 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Times } from "~/svgs";
-import { type DefaultEditorContent } from '~/types';
 import { api } from "~/utils/api";
-import { formattedContent } from "~/utils/miniFunctions";
 import { CommentCard } from "../card";
-import Editor from "../editor";
 
 const CommentsModal: FC<{
   id: string;
@@ -28,14 +25,7 @@ const CommentsModal: FC<{
       id: string;
       username: string;
     } | null>(null);
-    const [text, setText] = useState<DefaultEditorContent>({
-      type: "doc",
-      content: [{
-        type: "paragraph",
-        text: "",
-      }]
-    });
-    const [emptyEditor, setEmptyEditor] = useState<boolean>(false);
+    const [text, setText] = useState("");
     const commentSection = useRef<HTMLDivElement | null>(null);
     const {
       data: comments,
@@ -60,40 +50,32 @@ const CommentsModal: FC<{
     const { mutateAsync: comment, isLoading: publishing } =
       api.comments.newComment.useMutation();
 
-    const commentFunc = async (type: "REPLY" | "COMMENT", content: DefaultEditorContent) => {
+    const commentFunc = async (type: "REPLY" | "COMMENT", content: string) => {
       try {
         if (!user) {
           toast.error("You need to login to comment");
           return;
         }
-        const newContent = formattedContent(content);
-        if (newContent.length < 5) {
+        if (content.length < 5) {
           toast.error("Comment is too short");
           return;
         }
-        if (newContent.length > 255) {
+        if (content.length > 255) {
           toast.error("Comment is too long");
           return;
         }
         await comment({
           articleId: id,
-          content: newContent,
+          content: content,
           commentId: replyingUserDetails?.id,
           type,
         });
         toast.success("Commented successfully");
-        setText({
-          type: "doc",
-          content: [{
-            type: "paragraph",
-            text: "",
-          }]
-        });
-        setEmptyEditor(true);
+        setText("")
         await refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
-          setEmptyEditor(true);
+          // setEmptyEditor(true);
           toast.error(err.message);
         }
       }
@@ -104,14 +86,7 @@ const CommentsModal: FC<{
     };
 
     const cancelComment = () => {
-      setEmptyEditor(true);
-      setText({
-        type: "doc",
-        content: [{
-          type: "paragraph",
-          text: "",
-        }]
-      });
+      setText("")
     };
 
     return (
@@ -159,15 +134,12 @@ const CommentsModal: FC<{
               </div>
             )}
 
-            <div className="p-3">
-              <Editor
+            <div className="">
+              <textarea
+                className="w-full h-20 p-2 rounded-md bg-transparent resize-none text-gray-700 dark:text-text-secondary outline-none"
                 placeholder="Write a thoughtful comment..."
                 value={text}
-                onChange={(value) => setText(value)}
-                minHeight="max-h-[150px]"
-                showBubbleMenu={false}
-                renderLocalStorageData={false}
-                emptyEditor={emptyEditor}
+                onChange={(e) => setText(e.target.value)}
               />
             </div>
 
@@ -204,8 +176,6 @@ const CommentsModal: FC<{
                   replyingUserDetails={replyingUserDetails}
                   replyComment={replyComment}
                   authorUsername={authorUsername}
-                  emptyEditor={emptyEditor}
-                  setEmptyEditor={setEmptyEditor}
                 />
               ))}
           </section>

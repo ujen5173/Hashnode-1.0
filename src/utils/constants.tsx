@@ -505,6 +505,7 @@ export const selectArticleCard = {
       username: true,
       profile: true,
       bio: true,
+      stripeSubscriptionStatus: true,
       handle: {
         select: {
           id: true,

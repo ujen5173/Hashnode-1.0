@@ -1,9 +1,10 @@
+import { Tooltip } from "@mantine/core";
 import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import type { Comment, DefaultEditorContent } from "~/types";
+import type { Comment } from "~/types";
 import { api } from "~/utils/api";
 import { formatDate } from "~/utils/miniFunctions";
 import { CommentFooter, ReplyDetails } from "../miniComponent";
@@ -12,7 +13,7 @@ interface Props {
   comment: Comment;
   type: "REPLY" | "COMMENT";
   authorUsername: string;
-  commentFunc: (type: "REPLY" | "COMMENT", content: DefaultEditorContent) => Promise<void>;
+  commentFunc: (type: "REPLY" | "COMMENT", content: string) => Promise<void>;
   publishing: boolean;
   replyingUserDetails: {
     id: string;
@@ -25,8 +26,6 @@ interface Props {
     } | null>
   >;
   replyComment: (data: { id: string; username: string }) => void;
-  emptyEditor: boolean;
-  setEmptyEditor: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const CommentCard: FC<Props> = ({
@@ -38,19 +37,11 @@ export const CommentCard: FC<Props> = ({
   replyingUserDetails,
   setReplyingUserDetails,
   replyComment,
-  emptyEditor,
-  setEmptyEditor
 }) => {
   const { data: user } = useSession();
   const { mutate: likeComment } = api.comments.likeComment.useMutation();
   const [showReplies, setShowReplies] = useState<boolean>(false);
-  const [replyText, setReplyText] = useState<DefaultEditorContent>({
-    type: "doc",
-    content: [{
-      type: "paragraph",
-      text: "",
-    }]
-  });
+  const [replyText, setReplyText] = useState("")
   const [replies, setReplies] = useState<{
     totalReplies: number;
     replies: Comment[];
@@ -130,14 +121,7 @@ export const CommentCard: FC<Props> = ({
           );
           setReplyingUserDetails(null);
           setShowReplies(true);
-          setReplyText({
-            type: "doc",
-            content: [{
-              type: "paragraph",
-              text: "",
-            }]
-          });
-          setEmptyEditor(true);
+          setReplyText("");
         })
         .catch(() => {
           toast.error("Something went wrong, please try again later");
@@ -148,14 +132,8 @@ export const CommentCard: FC<Props> = ({
   const cancelReply = () => {
     setReplyingUserDetails(null);
     setShowReplies(false);
-    setReplyText({
-      type: "doc",
-      content: [{
-        type: "paragraph",
-        text: "",
-      }]
-    });
-    setEmptyEditor(true);
+    setReplyText("");
+
   };
 
   const ShowRepliesSection = () => {
@@ -199,9 +177,22 @@ export const CommentCard: FC<Props> = ({
 
         <div className="flex flex-1 items-start gap-2">
           <div className="mb-2">
-            <h3 className="text-base font-semibold text-gray-700 dark:text-text-secondary">
-              {comment?.user?.name}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-semibold text-gray-700 dark:text-text-secondary">
+                {comment?.user?.name}
+              </h3>
+              {
+                comment?.user.stripeSubscriptionStatus === "active" && (
+                  <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
+                    fontSize: "0.8rem",
+                    fontWeight: "400",
+                    letterSpacing: "0.5px"
+                  }}>
+                    <span className="px-2 py-1 tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-semibold text-xs text-gray-700 dark:text-text-secondary">PRO</span>
+                  </Tooltip>
+                )
+              }
+            </div>
 
             <p className="text-xs text-gray-500 dark:text-text-primary">
               {formatDate(new Date(comment?.createdAt))}
@@ -229,7 +220,6 @@ export const CommentCard: FC<Props> = ({
             replyingUserDetails={replyingUserDetails}
             publishing={publishing}
             cancelReply={cancelReply}
-            emptyEditor={emptyEditor}
             handleReply={handleReply}
             commentId={comment.id}
           />
@@ -260,14 +250,11 @@ export const CommentCard: FC<Props> = ({
                   replyingUserDetails={replyingUserDetails}
                   replyComment={replyComment}
                   publishing={publishing}
-                  setEmptyEditor={setEmptyEditor}
                   authorUsername={authorUsername}
-                  emptyEditor={emptyEditor}
                 />
 
                 <div className="relative pl-4 pt-7">
                   <ReplyDetails
-                    emptyEditor={emptyEditor}
                     replyText={replyText}
                     setReplyText={setReplyText}
                     replyingUserDetails={replyingUserDetails}
@@ -281,7 +268,6 @@ export const CommentCard: FC<Props> = ({
             ) : (
               <CommentCard
                 commentFunc={commentFunc}
-                setEmptyEditor={setEmptyEditor}
                 comment={reply}
                 key={reply.id}
                 type="REPLY"
@@ -289,7 +275,6 @@ export const CommentCard: FC<Props> = ({
                 replyingUserDetails={replyingUserDetails}
                 replyComment={replyComment}
                 publishing={publishing}
-                emptyEditor={emptyEditor}
                 authorUsername={authorUsername}
               />
             )

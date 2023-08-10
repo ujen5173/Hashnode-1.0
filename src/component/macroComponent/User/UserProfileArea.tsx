@@ -1,3 +1,4 @@
+import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -41,17 +42,30 @@ const UserProfileArea: FC<{
       <div className="flex flex-1 flex-col items-start gap-4 lg:flex-row">
         <div className="flex w-full flex-1 items-start justify-between">
           <div>
-            <div className="mb-4 md:mb-6">
-              <h1 className="mb-2 text-2xl font-bold text-gray-700 dark:text-text-secondary">
-                {userDetails?.name}
-              </h1>
+            <div className="mb-3 md:mb-5">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary md:text-2xl">
+                  {userDetails?.name}
+                </h3>
+                {
+                  userDetails?.stripeSubscriptionStatus === "active" && (
+                    <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
+                      fontSize: "0.8rem",
+                      fontWeight: "400",
+                      letterSpacing: "0.5px"
+                    }}>
+                      <span className="px-2 py-1 tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-semibold text-xs text-gray-700 dark:text-text-secondary">PRO</span>
+                    </Tooltip>
+                  )
+                }
+              </div>
 
               <p className="text-base font-medium text-gray-500 dark:text-text-primary lg:text-lg">
                 @{userDetails?.username}
               </p>
             </div>
 
-            <p className="mb-4 text-base font-medium text-gray-500 dark:text-text-primary md:mb-6">
+            <p className="mb-3 text-base font-medium text-gray-500 dark:text-text-primary md:mb-5">
               {userDetails?.tagline}
             </p>
 

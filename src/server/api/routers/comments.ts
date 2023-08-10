@@ -258,6 +258,7 @@ export const commentsRouter = createTRPCRouter({
               id: true,
               name: true,
               username: true,
+              stripeSubscriptionStatus: true,
               profile: true,
             },
           },
@@ -319,6 +320,7 @@ export const commentsRouter = createTRPCRouter({
               name: true,
               username: true,
               profile: true,
+              stripeSubscriptionStatus: true,
             },
           },
           likes: {

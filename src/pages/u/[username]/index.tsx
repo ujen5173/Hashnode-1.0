@@ -1,7 +1,6 @@
 import { type User } from "@prisma/client";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
-import { useSession } from "next-auth/react";
 import { Header, UserProfileBody } from "~/component";
 import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
@@ -11,8 +10,6 @@ import { type DetailedUser, type SocialHandles } from "~/types";
 const UserBlog: NextPage<{
   user: DetailedUser;
 }> = ({ user }) => {
-  const { data: session } = useSession();
-
   return (
     <>
       <UserBlogSEO user={user} />

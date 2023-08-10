@@ -6,12 +6,14 @@ import {
   notificationRouter,
   postsRouter,
   seriesRouter,
+  stripeRouter,
   tagsRouter,
   usersRouter,
 } from "./routers";
 
 export const appRouter = createTRPCRouter({
   posts: postsRouter,
+  stripe: stripeRouter,
   tags: tagsRouter,
   users: usersRouter,
   likes: likesRouter,
