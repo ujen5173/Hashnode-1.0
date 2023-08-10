@@ -18,7 +18,7 @@ const Trending = () => {
   const articles = useMemo(() => articlesData?.pages.flatMap((page) => page.posts), [articlesData])
 
   return (
-    <div className="my-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
+    <div className="mb-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <header className="flex items-center justify-between border-b border-border-light pb-2 dark:border-border">
         <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
           Trending

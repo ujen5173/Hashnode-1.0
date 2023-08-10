@@ -33,7 +33,7 @@ const UserDetails: FC<{
           <div className="flex flex-wrap gap-2">
             {userDetails?.skills?.map((tech, index) => (
               <div key={index}>
-                <span className="block rounded-md border border-border-light bg-light-bg px-3 py-1 text-sm text-gray-700 hover:shadow-sm dark:border-border dark:bg-primary-light dark:text-text-secondary md:text-base">
+                <span className="block rounded-md border border-border-light bg-light-bg px-3 py-1 text-xs text-gray-700 hover:shadow-sm dark:border-border dark:bg-primary-light dark:text-text-secondary md:text-base">
                   {tech}
                 </span>
               </div>

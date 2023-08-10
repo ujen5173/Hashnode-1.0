@@ -16,8 +16,7 @@ const EditProfile: NextPage<{
   user: UserDetails;
 }> = ({ user }) => {
   const { tab } = useRouter().query;
-  console.log({ tab });
-
+ 
   return (
     <>
       <SettingsSEO />
@@ -253,8 +252,7 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
 const Pro = () => {
   const { mutateAsync: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation();
   const { data: subscriptionStatus } = api.users.subscriptionStatus.useQuery();
-  console.log(subscriptionStatus)
-
+ 
   const { push } = useRouter();
 
   const handleUpgrade = async () => {

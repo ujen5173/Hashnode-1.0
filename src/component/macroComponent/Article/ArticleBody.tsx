@@ -196,7 +196,7 @@ const SeriesSection: FC<{
               <span className="text-lg font-bold text-secondary hover:underline">
                 <Link
                   href={`/dev/@${user?.user?.handle?.handle as string
-                    }/series/${slug}`}
+                    }/series/${data.slug}`}
                 >
                   {data.title}
                 </Link>

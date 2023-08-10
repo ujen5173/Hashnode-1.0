@@ -22,22 +22,32 @@ export const seriesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const series = await ctx.prisma.series.create({
-        data: {
-          ...input,
-          author: {
-            connect: {
-              id: ctx.session.user.id,
+      try {
+        const series = await ctx.prisma.series.create({
+          data: {
+            ...input,
+            author: {
+              connect: {
+                id: ctx.session.user.id,
+              },
             },
+            slug: input.slug || slugify(input.title, slugSetting),
           },
-          slug: input.slug || slugify(input.title, slugSetting),
-        },
-        select: {
-          slug: true,
-        },
-      });
+          select: {
+            slug: true,
+          },
+        });
 
-      return series;
+        return !!series;
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
     }),
 
   getSeriesOfArticle: publicProcedure
@@ -47,42 +57,52 @@ export const seriesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const series = await ctx.prisma.series.findFirst({
-        where: {
-          slug: input.slug,
-        },
-        select: {
-          title: true,
-          slug: true,
-          description: true,
-          cover_image: true,
-          articles: {
-            select: {
-              id: true,
-              title: true,
-              slug: true,
-              content: true,
-              cover_image: true,
-              read_time: true,
-              createdAt: true,
-              user: {
-                select: {
-                  username: true,
+      try {
+        const series = await ctx.prisma.series.findFirst({
+          where: {
+            slug: input.slug,
+          },
+          select: {
+            title: true,
+            slug: true,
+            description: true,
+            cover_image: true,
+            articles: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                content: true,
+                cover_image: true,
+                read_time: true,
+                createdAt: true,
+                user: {
+                  select: {
+                    username: true,
+                  },
                 },
               },
             },
           },
-        },
-      });
+        });
 
-      if (!series) {
+        if (!series) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Series not found!",
+          });
+        }
+
+        return series;
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Series not found",
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
         });
       }
-
-      return series;
     }),
 
   getSeriesOfAuthor: publicProcedure
@@ -92,26 +112,36 @@ export const seriesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const series = await ctx.prisma.series.findMany({
-        where: {
-          author: {
-            username: input.username,
+      try {
+        const series = await ctx.prisma.series.findMany({
+          where: {
+            author: {
+              username: input.username,
+            },
           },
-        },
-        select: {
-          title: true,
-          id: true,
-        },
-      });
+          select: {
+            title: true,
+            id: true,
+          },
+        });
 
-      if (!series) {
+        if (!series) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Series not found",
+          });
+        }
+
+        return series;
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Series not found",
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
         });
       }
-
-      return series;
     }),
 
   searchSeries: protectedProcedure
@@ -121,62 +151,47 @@ export const seriesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const series = await ctx.prisma.series.findMany({
-        where: {
-          AND: [
-            {
-              OR: [
-                {
-                  title: {
-                    contains: input.query,
-                    mode: "insensitive",
+      try {
+        const series = await ctx.prisma.series.findMany({
+          where: {
+            AND: [
+              {
+                OR: [
+                  {
+                    title: {
+                      contains: input.query,
+                      mode: "insensitive",
+                    },
                   },
-                },
-                {
-                  description: {
-                    contains: input.query,
-                    mode: "insensitive",
+                  {
+                    description: {
+                      contains: input.query,
+                      mode: "insensitive",
+                    },
                   },
-                },
-              ],
-            },
-            {
-              authorId: ctx.session.user.id,
-            },
-          ],
-        },
-        select: {
-          id: true,
-          title: true,
-        },
-      });
-
-      return series;
-    }),
-
-  newSeries: protectedProcedure
-    .input(
-      z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        image: z.string().optional(),
-        slug: z.string().optional(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const series = await ctx.prisma.series.create({
-        data: {
-          ...input,
-          slug: input.slug || slugify(input.title, slugSetting),
-          author: {
-            connect: {
-              id: ctx.session.user.id,
-            },
+                ],
+              },
+              {
+                authorId: ctx.session.user.id,
+              },
+            ],
           },
-        },
-      });
+          select: {
+            id: true,
+            title: true,
+          },
+        });
 
-      return !!series;
+        return series;
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
     }),
 
   deleteSeries: protectedProcedure
@@ -186,12 +201,21 @@ export const seriesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const series = await ctx.prisma.series.delete({
-        where: {
-          id: input.id,
-        },
-      });
-
-      return !!series;
+      try {
+        const series = await ctx.prisma.series.delete({
+          where: {
+            id: input.id,
+          },
+        });
+        return !!series;
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
     }),
 });

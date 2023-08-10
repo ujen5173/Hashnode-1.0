@@ -4,6 +4,7 @@ import { z } from "zod";
 import { type SocialHandles } from "~/types";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
+import { TRPCClientError } from "@trpc/client";
 
 export const usersRouter = createTRPCRouter({
   followUserToggle: protectedProcedure
@@ -12,8 +13,6 @@ export const usersRouter = createTRPCRouter({
         username: z.string().trim(),
       })
     )
-
-    // Mutation code
     .mutation(async ({ ctx, input }) => {
       try {
         const { username } = input;
@@ -138,6 +137,10 @@ export const usersRouter = createTRPCRouter({
           };
         }
       } catch (err) {
+        console.log({ err });
+        if (err instanceof TRPCClientError) {
+          throw err;
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -300,7 +303,31 @@ export const usersRouter = createTRPCRouter({
         take: 20,
       });
 
-      return followers;
+      const authorUser = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session?.user?.id,
+        },
+        select: {
+          following: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      const updatedFollowers = followers.map((user) => {
+        return {
+          ...user,
+          isFollowing: authorUser?.following.some(
+            (following) => following.id === user.id
+          )
+            ? true
+            : false,
+        };
+      });
+
+      return updatedFollowers;
     }),
 
   getFollowingList: publicProcedure
@@ -327,8 +354,31 @@ export const usersRouter = createTRPCRouter({
         },
         take: 20,
       });
+      const authorUser = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session?.user?.id,
+        },
+        select: {
+          following: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
 
-      return following;
+      const updatedFollowing = following.map((user) => {
+        return {
+          ...user,
+          isFollowing: authorUser?.following.some(
+            (following) => following.id === user.id
+          )
+            ? true
+            : false,
+        };
+      });
+
+      return updatedFollowing;
     }),
 
   getUserDashboardRoadmapDetails: protectedProcedure.query(async ({ ctx }) => {

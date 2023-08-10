@@ -21,7 +21,6 @@ const Following: NextPage<{
 }> = ({ user }) => {
   const { data: session } = useSession();
 
-
   return (
     <>
       <Header />
@@ -39,11 +38,11 @@ const Following: NextPage<{
             </Link>
 
             <Link href={`/u/@${user.username}`}>
-              <h1 className="mb-4 text-2xl font-semibold">{user.name}</h1>
+              <h1 className="mb-4 text-2xl font-semibold text-gray-700 dark:text-text-secondary">{user.name}</h1>
             </Link>
 
             {user.username === session?.user.username && (
-              <button className="btn-outline mb-4 flex gap-2">
+              <button className="btn-outline mb-4 flex items-center gap-2">
                 <Pen className="h-5 w-5 fill-none stroke-secondary" />
                 <span>Edit Profile</span>
               </button>
@@ -54,7 +53,7 @@ const Following: NextPage<{
                 <DateSVG className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
               </span>
 
-              <span className="text-lg">
+              <span className="text-lg text-gray-500 dark:text-text-primary">
                 Member since{" "}
                 <span className="font-medium">
                   {new Date(user.createdAt).toDateString()}

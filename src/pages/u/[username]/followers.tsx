@@ -5,10 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type FC } from "react";
-import { Header, TagLoading } from "~/component";
+import { FollowCard, Header, TagLoading } from "~/component";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { Add, DateSVG, Pen } from "~/svgs";
+import { DateSVG, Pen } from "~/svgs";
 import { api } from "~/utils/api";
 
 const Followers: NextPage<{
@@ -41,11 +41,11 @@ const Followers: NextPage<{
             </Link>
 
             <Link href={`/u/@${user.username}`}>
-              <h1 className="mb-4 text-2xl font-semibold">{user.name}</h1>
+              <h1 className="mb-4 text-2xl font-semibold text-gray-700 dark:text-text-secondary">{user.name}</h1>
             </Link>
 
             {user.username === session?.user.username && (
-              <button className="btn-outline mb-4 flex gap-2">
+              <button className="btn-outline mb-4 flex items-center gap-2">
                 <Pen className="h-5 w-5 fill-none stroke-secondary" />
                 <span>Edit Profile</span>
               </button>
@@ -56,7 +56,7 @@ const Followers: NextPage<{
                 <DateSVG className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
               </span>
 
-              <span className="text-lg">
+              <span className="text-lg text-gray-500 dark:text-text-primary">
                 Member since{" "}
                 <span className="font-medium">
                   {new Date(user.createdAt).toDateString()}
@@ -145,15 +145,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export const FollowArea = () => {
-  const path = useRouter();
+  const router = useRouter();
 
   const { data: followersData, isLoading: isFollowersLoading } =
     api.users.getFollowersList.useQuery(
       {
-        username: path.query.username as string,
+        username: router.query.username as string,
       },
       {
-        enabled: path.pathname?.includes("followers"),
+        enabled: router.pathname?.includes("followers"),
         refetchOnWindowFocus: false,
       }
     );
@@ -161,17 +161,25 @@ export const FollowArea = () => {
   const { data: followingData, isLoading: isFollowingLoading } =
     api.users.getFollowingList.useQuery(
       {
-        username: path.query.username as string,
+        username: router.query.username as string,
       },
       {
-        enabled: path.pathname?.includes("following"),
+        enabled: router.pathname?.includes("following"),
         refetchOnWindowFocus: false,
       }
     );
 
+  const { mutate: follow } = api.users.followUserToggle.useMutation();
+
+  const followUser = (username: string) => {
+    follow({
+      username,
+    });
+  }
+
   return (
     <div className="flex-1 py-6">
-      {path.pathname.includes("followers") ? (
+      {router.pathname.includes("followers") ? (
         <div className="flex flex-wrap gap-2">
           {isFollowersLoading ? (
             <>
@@ -188,7 +196,7 @@ export const FollowArea = () => {
             </>
           ) : (
             followersData?.map((user) => (
-              <FollowCard user={user} key={user.id} />
+              <FollowCard user={user} key={user.id} followUser={followUser} />
             ))
           )}
         </div>
@@ -209,7 +217,7 @@ export const FollowArea = () => {
             </>
           ) : (
             followingData?.map((user) => (
-              <FollowCard user={user} key={user.id} />
+              <FollowCard user={user} key={user.id} followUser={followUser} />
             ))
           )}
         </div>
@@ -218,46 +226,8 @@ export const FollowArea = () => {
   );
 };
 
-export const FollowCard: FC<{
-  user: {
-    id: string;
-    name: string;
-    username: string;
-    profile: string;
-    tagline: string;
-  };
-}> = ({ user }) => {
-  return (
-    <div className="flex w-full items-center gap-2 rounded-md border border-border-light bg-light-bg p-4 dark:border-border dark:bg-primary-light md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-0.5rem)]">
-      <div className="flex flex-1 gap-2">
-        <Link href={`/u/@${user.username}`}>
-          <Image
-            src={user.profile}
-            width={60}
-            height={60}
-            className="h-10 w-10 rounded-full object-cover"
-            alt="User Profile"
-          />
-        </Link>
 
-        <div>
-          <Link href={`/u/@${user.username}`}>
-            <h1 className="text-base font-semibold text-gray-900 dark:text-text-secondary">
-              {user.name}
-            </h1>
-          </Link>
-          <p className="text-sm text-gray-500 dark:text-text-primary">
-            {user.tagline}
-          </p>
-        </div>
-      </div>
 
-      <button className="rounded-full border border-border-light bg-white p-2 hover:bg-border-light dark:border-border dark:bg-primary dark:hover:bg-border">
-        <Add className="h-5 w-5 fill-secondary stroke-none" />
-      </button>
-    </div>
-  );
-};
 
 export const FollowHeader: FC<{
   user: {

@@ -2,6 +2,7 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import {
   AuthorBlogHeader,
@@ -112,16 +113,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const SeriesContainer = () => {
-  const slug = useRouter().query.slug;
-  const { data, isLoading } = api.series.getSeriesOfArticle.useQuery(
+  const router = useRouter();
+  const slug = router.query.slug;
+  const { data, isLoading, error } = api.series.getSeriesOfArticle.useQuery(
     {
       slug: slug as string,
     },
     {
       enabled: !!slug,
       refetchOnWindowFocus: false,
+      retry: false,
     }
   );
+
+  useEffect(() => {
+    if (error && error.data?.code === "NOT_FOUND") {
+      void router.push("/404");
+    }
+  }, [error]);
 
   return (
     <div className="w-full bg-white dark:bg-primary">
@@ -155,7 +164,7 @@ const SeriesContainer = () => {
           )}
         </div>
         <div className="hr-line-between-text mt-10 flex items-center justify-center">
-          <span>Articles in this series</span>
+          <span className="text-gray-700 dark:text-text-secondary">Articles in this series</span>
         </div>
 
         <div className="flex flex-wrap gap-4 py-6">

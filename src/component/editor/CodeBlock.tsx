@@ -10,7 +10,6 @@ export interface CodeBlockComponentProps {
   extension: Extension;
 }
 const CodeBlock: FC<CodeBlockComponentProps> = ({ node: { attrs: { language: defaultLanguage } }, updateAttributes, extension }) => {
-  console.log({ defaultLanguage })
   return (
     <NodeViewWrapper className="relative">
       <div className="absolute top-4 right-4">

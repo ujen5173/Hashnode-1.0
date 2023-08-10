@@ -1,7 +1,7 @@
 import React, { type FC } from "react";
 import { Input } from "~/component/miniComponent";
 import { type UserDetails } from "~/types";
- 
+
 const BasicInfo: FC<{
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -62,7 +62,7 @@ const BasicInfo: FC<{
         disabled={false}
         required={false}
         value={data.bio}
-        max={350}
+        max={500}
         name="bio"
         onChange={handleChange}
       />
@@ -89,7 +89,7 @@ const BasicInfo: FC<{
         disabled={false}
         required={false}
         value={data.available}
-        max={125}
+        max={500}
         name="available"
         onChange={handleChange}
       />

@@ -20,8 +20,6 @@ interface Props {
 }
 
 const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
-
-  console.log({ searchedUser })
   const { data: user } = useSession();
 
   const [isFollowing, setIsFollowing] = useState<boolean>(

@@ -3,6 +3,7 @@ export { default as ArticleCard } from "./ArticleCard";
 export { default as BookmarkCard } from "./BookmarkCard";
 export { default as CommentCard } from "./CommentCard";
 export { default as DraftCard } from "./DraftCard";
+export { default as FollowCard } from "./FollowCard";
 export { default as NotificationCard } from "./NotificationCard";
 export { default as SimpleArticleCard } from "./SimpleArticleCard";
 export { default as StackedArticleCard } from "./StackedArticleCard";
