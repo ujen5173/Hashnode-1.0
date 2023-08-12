@@ -44,14 +44,14 @@ const Input: FC<Props> = ({
       {label && (
         <label
           htmlFor={name}
-          className="mb-2 block text-sm font-semibold text-gray-700 dark:text-text-primary md:text-base"
+          className="mb-2 block text-sm font-semibold text-gray-500 dark:text-text-primary md:text-base"
         >
           {label} {required && <span className="text-[#dc2626]">*</span>}
         </label>
       )}
 
       {description && (
-        <p className="mb-4 text-sm text-gray-500 dark:text-text-primary">
+        <p className="mb-2 text-sm text-gray-500 dark:text-text-primary">
           {description}
         </p>
       )}
@@ -61,10 +61,10 @@ const Input: FC<Props> = ({
           id={name}
           type={input_type}
           className={`text-${fontSize} ${fontSize === "xl" || fontSize === "2xl"
-              ? "font-semibold"
-              : fontSize === "3xl"
-                ? "font-bold"
-                : "font-normal"
+            ? "font-semibold"
+            : fontSize === "3xl"
+              ? "font-bold"
+              : "font-normal"
             } ${variant === "FILLED"
               ? "input-filled"
               : variant === "ROUNDED"
@@ -88,10 +88,10 @@ const Input: FC<Props> = ({
         <>
           <textarea
             className={`text-${fontSize} ${fontSize === "xl" || fontSize === "2xl"
-                ? "font-semibold"
-                : fontSize === "3xl"
-                  ? "font-bold"
-                  : "font-medium"
+              ? "font-semibold"
+              : fontSize === "3xl"
+                ? "font-bold"
+                : "font-medium"
               } ${variant === "FILLED"
                 ? "input-filled"
                 : variant === "ROUNDED"
