@@ -400,7 +400,6 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string().trim(),
-        username: z.string().trim(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -409,11 +408,6 @@ export const postsRouter = createTRPCRouter({
           where: {
             AND: [
               { slug: input.slug },
-              {
-                user: {
-                  username: input.username.slice(1, input.username.length),
-                },
-              },
               {
                 isDeleted: false,
               },
@@ -466,6 +460,7 @@ export const postsRouter = createTRPCRouter({
         });
 
         if (!article) {
+          console.log("Article not found!");
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Article not found",
@@ -492,6 +487,83 @@ export const postsRouter = createTRPCRouter({
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong, try again later",
+          });
+        }
+      }
+    }),
+
+  getArticleToEdit: protectedProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const article = await ctx.prisma.article.findFirst({
+          where: {
+            slug: input.slug,
+          },
+          select: {
+            title: true,
+            subtitle: true,
+            content: true,
+            cover_image: true,
+            cover_imageKey: true,
+            slug: true,
+            seoTitle: true,
+            disabledComments: true,
+            seoDescription: true,
+            seoOgImage: true,
+            userId: true,
+            seoOgImageKey: true,
+            series: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+            tags: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        });
+
+        if (!article) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Article not found",
+          });
+        }
+
+        if (article.userId !== ctx.session.user.id) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You are not authorized to edit this article",
+          });
+        }
+
+        return {
+          ...article,
+          tags: article.tags.map((e) => e.name),
+          series: article.series?.title || null,
+          seoTitle: article.seoTitle || "",
+          seoDescription: article.seoDescription || "",
+        };
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong, try again later",
+          });
         }
       }
     }),
@@ -503,20 +575,22 @@ export const postsRouter = createTRPCRouter({
           .string()
           .min(5, "Title should be atleset of 5 characters")
           .trim(),
-        subtitle: z.string().trim().optional(),
+        subtitle: z.string().trim(),
         content: z
           .string()
           .min(25, "Content should be atleast of 25 characters")
           .trim(),
-        cover_image: z.string().optional(),
-        cover_imageKey: z.string().optional(),
-        tags: z.array(z.string().trim()).optional().default([]),
+        cover_image: z.string().nullable(),
+        cover_imageKey: z.string().nullable(),
+        tags: z.array(z.string().trim()).default([]),
         slug: z.string().trim(),
-        series: z.string().optional(),
-        seoTitle: z.string().trim().optional(),
-        seoDescription: z.string().trim().optional(),
-        seoOgImage: z.string().trim().optional(),
-        disabledComments: z.boolean().optional().default(false),
+        series: z.string().nullable(),
+        seoTitle: z.string().trim(),
+        seoDescription: z.string().trim(),
+        seoOgImage: z.string().trim().nullable(),
+        disabledComments: z.boolean().default(false),
+
+        edit: z.boolean(), //? article is being edited or created
       }),
     })
     .mutation(async ({ ctx, input }) => {
@@ -529,7 +603,7 @@ export const postsRouter = createTRPCRouter({
           },
         });
 
-        if (existingArticle) {
+        if (existingArticle && !input.edit) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Article with this title already exists",
@@ -574,9 +648,9 @@ export const postsRouter = createTRPCRouter({
         const createdTags = await Promise.all(tagPromises);
 
         // Create the article with the created tags
-        const { series, ...rest } = input;
+        const { series, edit, ...rest } = input;
 
-        const newArticle = await ctx.prisma.article.create({
+        const data = {
           data: {
             ...rest,
             tags: {
@@ -617,27 +691,41 @@ export const postsRouter = createTRPCRouter({
               },
             },
           },
-        });
-
-        // Notify followers of the user
-        await ctx.prisma.notification.createMany({
-          data: newArticle.user.followers.map((follower) => ({
-            userId: follower.id,
-            type: NotificationTypes.NEW_ARTICLE,
-            body: `@${ctx.session.user.username} published a new article`,
-            title: newArticle.title,
-            slug: newArticle.slug,
-            articleAuthor: newArticle.user.username,
-            isRead: false,
-            fromId: ctx.session.user.id,
-          })),
-        });
-
-        return {
-          success: true,
-          redirectLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
         };
+
+        if (input.edit) {
+          await ctx.prisma.article.update({
+            where: {
+              slug: slug,
+            },
+            ...data,
+          });
+          return {
+            success: true,
+          };
+        } else {
+          const newArticle = await ctx.prisma.article.create(data);
+          // Notify followers of the user
+          await ctx.prisma.notification.createMany({
+            data: newArticle.user.followers.map((follower) => ({
+              userId: follower.id,
+              type: NotificationTypes.NEW_ARTICLE,
+              body: `@${ctx.session.user.username} published a new article`,
+              title: newArticle.title,
+              slug: newArticle.slug,
+              articleAuthor: newArticle.user.username,
+              isRead: false,
+              fromId: ctx.session.user.id,
+            })),
+          });
+
+          return {
+            success: true,
+            redirectLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
+          };
+        }
       } catch (error) {
+        console.log({ error });
         if (error instanceof TRPCError) {
           throw error;
         } else {
@@ -1091,7 +1179,6 @@ export const postsRouter = createTRPCRouter({
         const articles = await ctx.prisma.article.findMany({
           where: {
             isDeleted: false,
-
             user: {
               username: input.username,
             },
@@ -1134,6 +1221,50 @@ export const postsRouter = createTRPCRouter({
         return {
           posts: articles,
           nextCursor,
+        };
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
+
+  deleteArticlePermantly: protectedProcedure
+    .input(
+      z.object({
+        slug: z.string().trim(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const article = await ctx.prisma.article.delete({
+          where: {
+            slug: input.slug,
+            userId: ctx.session.user.id,
+          },
+          select: {
+            id: true,
+            user: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        if (!article) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Article not found",
+          });
+        }
+
+        return {
+          success: true,
         };
       } catch (err) {
         if (err instanceof TRPCError) {

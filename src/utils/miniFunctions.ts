@@ -15,7 +15,7 @@ import Link from "@tiptap/extension-link";
 import Paragraph from "@tiptap/extension-paragraph";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
-import { generateHTML } from "@tiptap/react";
+import { generateHTML, generateJSON } from "@tiptap/react";
 
 export const limitTags = (
   tags: {
@@ -148,6 +148,27 @@ export const imageToBlogHandler = (file: File): Promise<File | null> => {
 
 export const formattedContent = (content: DefaultEditorContent) =>
   generateHTML(content, [
+    Document,
+    Text,
+    Paragraph,
+    Heading,
+    Bold,
+    Italic,
+    Code,
+    CodeBlock,
+    CodeBlockLowlight,
+    Heading,
+    Blockquote,
+    Highlight,
+    Strike,
+    Link,
+    Blockquote,
+    HardBreak,
+    HorizontalRule,
+  ]);
+
+export const convertToHTML = (content: string) =>
+  generateJSON(content, [
     Document,
     Text,
     Paragraph,

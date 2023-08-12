@@ -23,6 +23,8 @@ interface Props {
 
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
+
+  subtitle: string
 }
 
 const NewArticleModal: FC<Props> = ({
@@ -35,6 +37,7 @@ const NewArticleModal: FC<Props> = ({
 
   query,
   setQuery,
+  subtitle,
 }) => {
   const { handleChange } = useContext(C) as ContextValue;
   const { data: user } = useSession()
@@ -52,6 +55,7 @@ const NewArticleModal: FC<Props> = ({
       refetchOnMount: false,
       enabled: requestedTags.length > 0,
       refetchOnWindowFocus: false,
+      retry: false
     }
   );
 
@@ -106,6 +110,7 @@ const NewArticleModal: FC<Props> = ({
   const { mutateAsync } = api.posts.new.useMutation();
 
   const handlePublish = async () => {
+
     const content = formattedContent(data.content);
 
     if (!data.title || !content) {
@@ -120,8 +125,16 @@ const NewArticleModal: FC<Props> = ({
 
     setPublishing(true);
     try {
-      const res = await mutateAsync({ ...data, content });
-      if (res.success) {
+      let res: {
+        success: boolean;
+        redirectLink?: string;
+      };
+      if (router.query?.params && router.query?.params.length > 0 && router.query?.params[0] === "edit") {
+        res = await mutateAsync({ ...data, subtitle, content, edit: true });
+      } else {
+        res = await mutateAsync({ ...data, subtitle, content, edit: false });
+      }
+      if (res.success && res.redirectLink) {
         setPublishModal(false);
         localStorage.removeItem("savedData");
         await router.push(res.redirectLink);
@@ -271,7 +284,7 @@ const NewArticleModal: FC<Props> = ({
                       onClick={() => {
                         setData((prev) => ({
                           ...prev,
-                          series: undefined,
+                          series: null,
                         }));
                       }}
                     >

@@ -1,5 +1,8 @@
 import { useClickOutside } from "@mantine/hooks";
+import { TRPCClientError } from "@trpc/client";
+import { TRPCError } from "@trpc/server";
 import Image from "next/image";
+import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
@@ -11,24 +14,25 @@ import { Times } from "~/svgs";
 import ImagePreview from "~/svgs/ImagePreview";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { type DefaultEditorContent } from "~/types";
+import { api } from "~/utils/api";
 import { slugSetting } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
-import { imageToBlogHandler } from "~/utils/miniFunctions";
+import { convertToHTML, imageToBlogHandler } from "~/utils/miniFunctions";
 import { useUploadThing } from "~/utils/uploadthing";
 
 export interface ArticleData {
   title: string;
-  subtitle?: string;
+  subtitle: string | null;
   content: DefaultEditorContent;
-  cover_image?: string;
-  cover_imageKey?: string;
+  cover_image: string | null;
+  cover_imageKey: string | null;
   tags: string[];
   slug: string;
-  series?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoOgImage?: string;
-  seoOgImageKey?: string;
+  series: string | null;
+  seoTitle: string;
+  seoDescription: string;
+  seoOgImage: string | null;
+  seoOgImageKey: string | null;
   disabledComments: boolean;
 }
 
@@ -47,6 +51,27 @@ const NewArticleBody: FC<{
 }) => {
     const { handleChange } = useContext(C) as ContextValue;
     const [query, setQuery] = useState("");
+    const [subtitle, setSubTitle] = useState<string>("");
+    const { query: URLQuery } = useRouter();
+
+    const { data: articleData, error } = api.posts.getArticleToEdit.useQuery({
+      slug: (URLQuery?.params as string[])[1] as string,
+    }, {
+      enabled: !!((URLQuery?.params as string[])[0] === "edit"),
+      refetchOnWindowFocus: false,
+      retry: false
+    });
+
+    useEffect(() => {
+      if (error) {
+        if (error instanceof TRPCClientError || error instanceof TRPCError) {
+          toast.error(error.message)
+        } else {
+          toast.error("Something went wrong getting article")
+        }
+      }
+    }, [error]);
+
 
     const [data, setData] = useState<ArticleData>({
       title: "",
@@ -58,17 +83,26 @@ const NewArticleBody: FC<{
           text: "",
         }]
       },
-      cover_image: undefined,
-      series: undefined,
+      cover_image: null,
+      series: null,
       tags: [],
-      cover_imageKey: undefined,
+      cover_imageKey: null,
       slug: "",
       seoTitle: "",
       seoDescription: "",
-      seoOgImage: undefined,
-      seoOgImageKey: undefined,
+      seoOgImage: null,
+      seoOgImageKey: null,
       disabledComments: false,
     });
+
+    console.log(articleData)
+
+    useEffect(() => {
+      if (articleData) {
+        setData({ ...articleData, content: convertToHTML(articleData.content) as DefaultEditorContent });
+      }
+    }, [articleData])
+
 
     const saveData = (): void => {
       setSavedState(false);
@@ -99,14 +133,14 @@ const NewArticleBody: FC<{
       if (key === "seoOgImageKey") {
         setData({
           ...data,
-          seoOgImage: undefined,
-          seoOgImageKey: undefined,
+          seoOgImage: null,
+          seoOgImageKey: null,
         });
       } else {
         setData({
           ...data,
-          cover_image: undefined,
-          cover_imageKey: undefined,
+          cover_image: null,
+          cover_imageKey: null,
         });
       }
     };
@@ -161,8 +195,8 @@ const NewArticleBody: FC<{
                         }
                         setData((prev) => ({
                           ...prev,
-                          cover_image: uploaded[0]?.fileUrl,
-                          cover_imageKey: uploaded[0]?.fileKey,
+                          cover_image: uploaded[0]?.fileUrl || null,
+                          cover_imageKey: uploaded[0]?.fileKey || null,
                         }));
                       }}
                     />
@@ -214,9 +248,9 @@ const NewArticleBody: FC<{
               />
             </div>
             <Input
-              value={data.subtitle as string}
+              value={subtitle}
               onChange={(e) => {
-                handleChange(e, setData);
+                setSubTitle(e.target.value);
               }}
               placeholder="Article Subtitle (optional)"
               input_type="text"
@@ -257,6 +291,7 @@ const NewArticleBody: FC<{
           setPublishing={setPublishing}
           query={query}
           setQuery={setQuery}
+          subtitle={subtitle}
         />
       </main>
     );

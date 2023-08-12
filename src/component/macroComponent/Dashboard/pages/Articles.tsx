@@ -150,6 +150,8 @@ const ArticleCard: FC<{
     dropdown,
   ]);
   const { mutateAsync } = api.posts.restoreArticle.useMutation()
+  const { mutateAsync: deleteTemporarily } = api.posts.deleteTemporarily.useMutation();
+  const { mutateAsync: deletePermanently } = api.posts.deleteArticlePermantly.useMutation()
 
   const restoreArticle = async () => {
     try {
@@ -189,12 +191,23 @@ const ArticleCard: FC<{
       </div>
 
       <div className="hidden sm:block">
-        <button
-          type="button"
-          className="cursor-default rounded-lg border border-border-light bg-slate-200 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm font-bold uppercase tracking-wider text-black dark:border-border"
-        >
-          PUBLISHED
-        </button>
+        {
+          type === "PUBLISHED" ? (
+            <button
+              type="button"
+              className="cursor-default rounded-lg border border-border-light bg-slate-200 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm font-bold uppercase tracking-wider text-black dark:border-border"
+            >
+              PUBLISHED
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="cursor-default rounded-lg border border-border-light bg-slate-200 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm font-bold uppercase tracking-wider text-black dark:border-border"
+            >
+              DELETED
+            </button>
+          )
+        }
       </div>
 
       <div className="relative px-6">
@@ -214,12 +227,18 @@ const ArticleCard: FC<{
             {
               type === "PUBLISHED" ? (
                 <>
-                  <button className="w-full px-4 py-2 text-left text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-primary-light">
+                  <Link href={`/article/edit/${data.slug}`} className="w-full block px-4 py-2 text-left text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-primary-light">
                     Edit
-                  </button>
-                  <button className="w-full px-4 py-2 text-left hover:bg-gray-200 dark:hover:bg-primary-light">
+                  </Link>
+                  <button onClick={() => {
+                    void deleteTemporarily({
+                      slug: data.slug
+                    })
+                    window.location.reload()
+                  }} className="w-full px-4 py-2 text-left hover:bg-gray-200 dark:hover:bg-primary-light">
                     <span className="text-red">Delete</span>
-                  </button></>
+                  </button>
+                </>
               ) : (
                 <>
                   <button onClick={() => void restoreArticle()} className="w-full px-4 py-2 text-left text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-primary-light">
@@ -227,8 +246,12 @@ const ArticleCard: FC<{
                   </button>
                   <button onClick={() => {
                     alert("Are you sure to delete this parmanently?")
-                    // void restoreArticle()
-                  }} className="w-full px-4 py-2 text-left text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-primary-light">
+                    void deletePermanently({
+                      slug: data.slug
+                    });
+
+                    window.location.reload()
+                  }} className="text-red w-full px-4 py-2 text-left hover:bg-gray-200 dark:hover:bg-primary-light">
                     Delete
                   </button>
                 </>

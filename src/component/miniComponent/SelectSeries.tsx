@@ -10,7 +10,7 @@ import { TagLoading } from "../loading";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 
 const SelectSeries: FC<{
-  series: string | undefined;
+  series: string | null;
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
 }> = ({ series: ser, setData }) => {
   const [query, setQuery] = useState("");

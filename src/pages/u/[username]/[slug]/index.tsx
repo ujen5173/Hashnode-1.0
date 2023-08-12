@@ -38,7 +38,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const data = await ssg.posts.getSingleArticle.fetch({
       slug: params.slug,
-      username: params.username,
     });
 
     return {

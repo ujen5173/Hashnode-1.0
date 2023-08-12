@@ -1,14 +1,17 @@
+// ACCEPTED PARAMS: article/new | article/edit/[articleId]
+
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useState } from "react";
-import { NewArticleBody, NewArticleHeader } from "~/component";
 import NewSEO from "~/SEO/New.seo";
+import { NewArticleBody, NewArticleHeader } from "~/component";
 import { authOptions } from "~/server/auth";
 
 const NewArticle: NextPage = () => {
   const [publishModal, setPublishModal] = useState<boolean>(false);
   const [publishing, setPublishing] = useState<boolean>(false); // upload loading
   const [savedState, setSavedState] = useState<boolean>(true);
+
 
   return (
     <>
