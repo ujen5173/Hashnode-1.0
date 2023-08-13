@@ -98,7 +98,7 @@ export const tagsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const tag = (await ctx.prisma.tag.findUnique({
+        const tag = await ctx.prisma.tag.findUnique({
           where: {
             name: input.name,
           },
@@ -109,7 +109,7 @@ export const tagsRouter = createTRPCRouter({
               },
             },
           },
-        })) as { followers: { id: string }[] };
+        });
 
         if (!tag) {
           throw new TRPCError({

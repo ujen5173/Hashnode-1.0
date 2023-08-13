@@ -7,7 +7,6 @@ import { prisma } from "~/server/db";
 import type { DetailedTag } from "~/types";
 
 const SingleTag: NextPage<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
-
   return (
     <>
       <TagSEO tagDetails={tagDetails} />

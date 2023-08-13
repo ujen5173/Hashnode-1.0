@@ -235,7 +235,7 @@ const Roadmap = () => {
             if (data?.articles && data?.articles.length > 0) {
               return;
             } else {
-              void router.push("/new");
+              void router.push("/article/new");
             }
           }}
           className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"

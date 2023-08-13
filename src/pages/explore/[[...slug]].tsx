@@ -5,7 +5,6 @@ import ExploreSEO from "~/SEO/Explore.seo";
 import { authOptions } from "~/server/auth";
 
 const ExplorePage: NextPage = () => {
-
   return (
     <>
       <ExploreSEO />

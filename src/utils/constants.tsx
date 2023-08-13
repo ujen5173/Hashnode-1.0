@@ -628,7 +628,7 @@ export const articleProfileDropdownList = [
   }, {
     name: "New Article",
     icon: <Pen className="h-4 w-4 fill-none stroke-gray-900 dark:stroke-text-secondary" />,
-    link: (userId: string) => `/new`,
+    link: (userId: string) => `/article/new`,
     hiddenItem: false,
     danger: false,
   }, {

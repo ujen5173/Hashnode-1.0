@@ -43,7 +43,7 @@ const NoArticlesUploadedError: FC<Props> = ({ user, author }) => {
           </h1>
 
           {user?.user.username === author.username && (
-            <Link href="/new" className="mx-auto block">
+            <Link href="/article/new" className="mx-auto block">
               <button className="btn-filled">
                 <span className="flex items-center gap-2">
                   <Pen className="h-5 w-5 fill-none stroke-gray-100" />

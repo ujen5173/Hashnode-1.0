@@ -63,7 +63,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
           )}
         </button>
 
-        <Link href={`/new?tag=${tagDetails.name}`} className="w-full sm:w-max">
+        <Link href={`/article/new?tag=${tagDetails.name}`} className="w-full sm:w-max">
           <button className="btn-filled flex w-full items-center justify-center gap-2 text-white md:w-max">
             <Pen className="h-5 w-5 fill-white" />
             Write An Article
@@ -105,9 +105,8 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
         <div className="flex items-center gap-2">
           <a
             title="Share Tag on Twitter"
-            href={`https://twitter.com/intent/tweet?text=${
-              process.env.NEXT_PUBLIC_VERCEL_URL as string
-            }/tag/${tagDetails.slug}`}
+            href={`https://twitter.com/intent/tweet?text=${process.env.NEXT_PUBLIC_VERCEL_URL as string
+              }/tag/${tagDetails.slug}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -121,8 +120,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
             className="btn-icon-large flex"
             onClick={() => {
               void navigator.clipboard.writeText(
-                `${process.env.NEXT_PUBLIC_VERCEL_URL as string}/tag/${
-                  tagDetails.slug
+                `${process.env.NEXT_PUBLIC_VERCEL_URL as string}/tag/${tagDetails.slug
                 }`
               );
               toast.success("Copied to clipboard!");
