@@ -16,3 +16,4 @@ export * from "./miniComponent";
 export * from "./miniComponent/Search";
 export * from "./popup";
 export * from "./settings";
+export * from "./userFollows";

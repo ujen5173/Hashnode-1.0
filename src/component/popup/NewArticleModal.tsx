@@ -53,19 +53,21 @@ const NewArticleModal: FC<Props> = ({
     },
     {
       refetchOnMount: false,
-      enabled: requestedTags.length > 0,
+      enabled: !!(requestedTags.length > 0),
       refetchOnWindowFocus: false,
       retry: false
     }
   );
 
   useEffect(() => {
+    if (router?.query?.params?.includes("edit")) return;
     //? Getting tag from server if it is in the url or localstorage saved tags.
     const tagsFromUrl = new URLSearchParams(window.location.search).get("tag");
     if (tagsFromUrl) setRequestedTags(tagsFromUrl.split(" "));
 
+
     const article = localStorage.getItem("savedData");
-    if (article) {
+    if (article && !router?.query?.params?.includes("edit")) {
       const parsedArticle = JSON.parse(article) as ArticleCard;
       if (parsedArticle.tags.length > 0) {
         setRequestedTags(parsedArticle.tags.map((e) => e.slug));
@@ -110,7 +112,6 @@ const NewArticleModal: FC<Props> = ({
   const { mutateAsync } = api.posts.new.useMutation();
 
   const handlePublish = async () => {
-
     const content = formattedContent(data.content);
 
     if (!data.title || !content) {
@@ -125,18 +126,12 @@ const NewArticleModal: FC<Props> = ({
 
     setPublishing(true);
     try {
-      let res: {
-        success: boolean;
-        redirectLink?: string;
-      };
-      if (router.query?.params && router.query?.params.length > 0 && router.query?.params[0] === "edit") {
-        res = await mutateAsync({ ...data, subtitle, content, edit: true });
-      } else {
-        res = await mutateAsync({ ...data, subtitle, content, edit: false });
-      }
+      const res = await mutateAsync({ ...data, subtitle, content, edit: router?.query?.params?.includes("edit") || false });
       if (res.success && res.redirectLink) {
         setPublishModal(false);
-        localStorage.removeItem("savedData");
+        if (!router?.query?.params?.includes("edit")) {
+          localStorage.removeItem("savedData");
+        }
         await router.push(res.redirectLink);
         toast.success("Article published successfully");
       }
@@ -169,7 +164,13 @@ const NewArticleModal: FC<Props> = ({
             onClick={() => void handlePublish()}
             className={`${publishing ? "opacity-50" : ""} btn-filled`}
           >
-            {publishing ? "Publishing..." : "Publish"}
+            {
+              router?.query?.params?.includes("edit") ? (
+                publishing ? "Updating..." : "Update"
+              ) : (
+                publishing ? "Publishing..." : "Publish"
+              )
+            }
           </button>
         </header>
 

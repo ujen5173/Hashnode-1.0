@@ -97,7 +97,7 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
       }
       const res = await mutateAsync({
         ...dataWithSocial,
-        skills: dataWithSocial.skills.split(",").map((e) => e.trim()),
+        skills: dataWithSocial.skills.trim().split(",").map((e) => e.trim()),
         social: dataWithSocial.social,
       });
 

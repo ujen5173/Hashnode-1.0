@@ -460,7 +460,6 @@ export const postsRouter = createTRPCRouter({
         });
 
         if (!article) {
-          console.log("Article not found!");
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Article not found",
@@ -693,8 +692,8 @@ export const postsRouter = createTRPCRouter({
           },
         };
 
-        if (input.edit) {
-          await ctx.prisma.article.update({
+        if (edit) {
+          const res = await ctx.prisma.article.update({
             where: {
               slug: slug,
             },
@@ -702,6 +701,7 @@ export const postsRouter = createTRPCRouter({
           });
           return {
             success: true,
+            redirectLink: `/u/@${ctx.session.user.username}/${res.slug}`,
           };
         } else {
           const newArticle = await ctx.prisma.article.create(data);
@@ -725,7 +725,6 @@ export const postsRouter = createTRPCRouter({
           };
         }
       } catch (error) {
-        console.log({ error });
         if (error instanceof TRPCError) {
           throw error;
         } else {

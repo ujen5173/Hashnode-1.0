@@ -52,12 +52,12 @@ const NewArticleBody: FC<{
     const { handleChange } = useContext(C) as ContextValue;
     const [query, setQuery] = useState("");
     const [subtitle, setSubTitle] = useState<string>("");
-    const { query: URLQuery } = useRouter();
+    const router = useRouter();
 
     const { data: articleData, error } = api.posts.getArticleToEdit.useQuery({
-      slug: (URLQuery?.params as string[])[1] as string,
+      slug: (router?.query?.params as string[])[1] as string,
     }, {
-      enabled: !!((URLQuery?.params as string[])[0] === "edit"),
+      enabled: !!(router?.query?.params?.includes("edit")),
       refetchOnWindowFocus: false,
       retry: false
     });
@@ -66,8 +66,10 @@ const NewArticleBody: FC<{
       if (error) {
         if (error instanceof TRPCClientError || error instanceof TRPCError) {
           toast.error(error.message)
+          void router.push("/")
         } else {
           toast.error("Something went wrong getting article")
+          void router.push("/")
         }
       }
     }, [error]);
@@ -95,8 +97,6 @@ const NewArticleBody: FC<{
       disabledComments: false,
     });
 
-    console.log(articleData)
-
     useEffect(() => {
       if (articleData) {
         setData({ ...articleData, content: convertToHTML(articleData.content) as DefaultEditorContent });
@@ -105,6 +105,8 @@ const NewArticleBody: FC<{
 
 
     const saveData = (): void => {
+      if (router?.query?.params?.includes("edit")) return;
+
       setSavedState(false);
       localStorage.setItem("savedData", JSON.stringify(data));
       setTimeout(() => {

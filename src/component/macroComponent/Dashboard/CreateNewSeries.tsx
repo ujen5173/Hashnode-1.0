@@ -24,7 +24,10 @@ const CreateNewSeries = () => {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const res = await mutateAsync(data);
+    const res = await mutateAsync({
+      ...data,
+      edit: false,
+    });
     if (res) {
       toast.success("Series created successfully");
       void router.push(`/${router.query.id as string}/dashboard/series`);
@@ -101,11 +104,10 @@ const CreateNewSeries = () => {
           onClick={() => void handleSubmit()}
           disabled={isLoading}
           className={`btn-outline
-          ${
-            isLoading
+          ${isLoading
               ? "cursor-not-allowed bg-gray-300 text-gray-700 dark:bg-gray-700 dark:text-gray-500"
               : ""
-          }
+            }
         `}
         >
           Create

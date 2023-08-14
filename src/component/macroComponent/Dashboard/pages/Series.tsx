@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
+import { toast } from "react-toastify";
 import { ArticleLoading } from "~/component/loading";
 import { Redirect } from "~/svgs";
 import { api } from "~/utils/api";
@@ -17,6 +18,23 @@ const Series = () => {
       enabled: !!user?.user,
     }
   );
+
+  const { mutateAsync } = api.series.deleteSeries.useMutation();
+
+  const deleteSeries = async (id: string) => {
+    const con = confirm("Are you sure you want to delete this series?");
+    if (!con) return;
+    const res = await mutateAsync({
+      id,
+    });
+
+    if (res) {
+      toast.success("Series deleted successfully");
+    } else {
+      toast.error("Something went wrong");
+    }
+  };
+
 
   return (
     <section className="relative w-full">
@@ -43,7 +61,7 @@ const Series = () => {
         ) : data && data.length > 0 ? (
           <div className="">
             {data.map((item) => (
-              <SeriesCard item={item} key={item.id} />
+              <SeriesCard author={user?.user.handle?.handle as string} item={item} key={item.id} deleteSeries={deleteSeries} />
             ))}
           </div>
         ) : (
@@ -70,8 +88,11 @@ const SeriesCard: FC<{
   item: {
     id: string;
     title: string;
+    slug: string;
   };
-}> = ({ item }) => {
+  author: string;
+  deleteSeries: (id: string) => Promise<void>;
+}> = ({ item, author, deleteSeries }) => {
   return (
     <div
       key={item.id}
@@ -84,13 +105,13 @@ const SeriesCard: FC<{
       </div>
 
       <div className="flex items-center gap-2">
-        <button className="flex items-center gap-2 rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
+        <Link href={`/dev/@${author}/series/${item.slug}`} className="inline-flex items-center gap-2 rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
           <Redirect className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
 
           <span className="font-medium text-gray-500 dark:text-text-primary">
             View Series
           </span>
-        </button>
+        </Link>
 
         <button className="rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
           <span className="font-medium text-gray-500 dark:text-text-primary">
@@ -98,7 +119,7 @@ const SeriesCard: FC<{
           </span>
         </button>
 
-        <button className="rounded-md px-3 py-1 font-medium text-gray-500 hover:bg-gray-200 hover:text-[#dc2626!important] dark:text-text-primary dark:hover:bg-primary-light">
+        <button onClick={() => void deleteSeries(item.id)} className="rounded-md px-3 py-1 font-medium text-gray-500 hover:bg-gray-200 hover:text-[#dc2626!important] dark:text-text-primary dark:hover:bg-primary-light">
           Delete
         </button>
       </div>

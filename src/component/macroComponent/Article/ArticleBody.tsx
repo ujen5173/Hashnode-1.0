@@ -61,7 +61,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white pb-12 dark:bg-primary">
+    <main className="bg-white pb-12 dark:bg-primary">
       <div className="mx-auto max-w-[1200px]">
         {article?.cover_image && (
           <Image

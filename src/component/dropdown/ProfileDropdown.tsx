@@ -86,7 +86,7 @@ const ProfileDropdown = React.forwardRef<
         profileDropdownList.map((item, index) => (
           <>
             {item?.type ? (
-              <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
+              <div key={index} className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
             ) : <div className={`${item.hiddenItem ? "block lg:hidden" : ""} cursor-pointer`}
               onClick={() => {
                 if (item.danger) {

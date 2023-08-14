@@ -17,6 +17,10 @@ const Editor: FC<{
 }> = ({ minHeight = "min-h-[500px]", emptyEditor = false, renderLocalStorageData = true, value, onChange, showBubbleMenu = true, placeholder = null }) => {
   const [hydrated, setHydrated] = useState(false);
 
+  useEffect(() => {
+    setHydrated(false);
+  }, [value]);
+
   const editor = useEditor({
     extensions: [
       ...TiptapExtensions,

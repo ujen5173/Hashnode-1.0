@@ -19,24 +19,39 @@ export const seriesRouter = createTRPCRouter({
         description: z.string().optional(),
         cover_image: z.string().optional(),
         slug: z.string().optional(),
+        edit: z.boolean().default(false),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const { edit, ...restInput } = input;
       try {
-        const series = await ctx.prisma.series.create({
+        const dbQuery = {
           data: {
-            ...input,
+            ...restInput,
             author: {
               connect: {
                 id: ctx.session.user.id,
               },
             },
-            slug: input.slug || slugify(input.title, slugSetting),
+            slug: restInput.slug || slugify(restInput.title, slugSetting),
           },
           select: {
             slug: true,
           },
-        });
+        };
+
+        let series = null;
+
+        if (edit) {
+          series = await ctx.prisma.series.update({
+            where: {
+              slug: restInput.slug,
+            },
+            ...dbQuery,
+          });
+        } else {
+          series = await ctx.prisma.series.create(dbQuery);
+        }
 
         return !!series;
       } catch (err) {
@@ -120,8 +135,9 @@ export const seriesRouter = createTRPCRouter({
             },
           },
           select: {
-            title: true,
             id: true,
+            title: true,
+            slug: true,
           },
         });
 
