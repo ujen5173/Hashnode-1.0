@@ -21,7 +21,7 @@ const TagsSearchCard: FC<Props> = ({ tag, setOpened }) => {
 
   const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
 
-  const followUser = () => {
+  const followTag = () => {
     if (!user) {
       return toast.error("You need to be logged in to follow users");
     }
@@ -50,7 +50,7 @@ const TagsSearchCard: FC<Props> = ({ tag, setOpened }) => {
       </Link>
 
       <button
-        onClick={() => void followUser()}
+        onClick={() => void followTag()}
         className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
       >
         {isFollowing ? (

@@ -1,5 +1,6 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
+import React, { createContext } from "react";
 import ArticleSEO from "~/SEO/Article.seo";
 import { ArticleBody, ArticleHeader, Footer } from "~/component";
 import { authOptions } from "~/server/auth";
@@ -12,12 +13,26 @@ interface Props {
   };
 }
 
+export const FollowContext = createContext<{
+  following: boolean;
+  setFollowing: React.Dispatch<React.SetStateAction<boolean>>;
+}>({
+  following: false,
+  setFollowing: () => {
+    // do nothing
+  },
+});
+
 const SingleArticle: NextPage<Props> = ({ article }) => {
+  const [following, setFollowing] = React.useState(article.isFollowing);
+
   return (
     <>
       <ArticleSEO article={article} />
-      <ArticleHeader user={article.user} />
-      <ArticleBody article={article} />
+      <FollowContext.Provider value={{ following, setFollowing }} >
+        <ArticleHeader user={article.user} />
+        <ArticleBody article={article} />
+      </FollowContext.Provider>
       <Footer />
     </>
   );

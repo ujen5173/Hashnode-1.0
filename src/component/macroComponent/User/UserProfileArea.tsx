@@ -3,7 +3,8 @@ import { useClickOutside } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, useState, type FC } from "react";
+import { useState, type FC } from "react";
+import { toast } from "react-toastify";
 import {
   Angledown,
   Check,
@@ -14,7 +15,7 @@ import {
   Twitter,
 } from "~/svgs";
 import { type DetailedUser } from "~/types";
-import { C, type ContextValue } from "~/utils/context";
+import { api } from "~/utils/api";
 
 const UserProfileArea: FC<{
   userDetails: DetailedUser | undefined;
@@ -23,8 +24,35 @@ const UserProfileArea: FC<{
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [opened2, setOpened2] = useState(false);
   const ref2 = useClickOutside<HTMLDivElement>(() => setOpened2(false));
-  const { following, followUser } = useContext(C) as ContextValue;
+  // const { following, followUser } = useContext(C) as ContextValue;
   const { data: user } = useSession();
+
+  const [following, setFollowing] = useState<{
+    status: boolean;
+    followersCount: string;
+  }>({
+    status: false,
+    followersCount: "0",
+  });
+
+  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+
+  const followUser = () => {
+    if (!user) {
+      return toast.error("You need to be logged in to follow users");
+    }
+
+    setFollowing({
+      status: !following.status,
+      followersCount: following.status
+        ? JSON.stringify(parseInt(following.followersCount) - 1)
+        : JSON.stringify(parseInt(following.followersCount) + 1),
+    });
+
+    followToggle({
+      username: user.user.username,
+    });
+  };
 
   return (
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
@@ -188,7 +216,7 @@ const UserProfileArea: FC<{
         ) : (
           <div className="max-w-[250px]">
             <button
-              onClick={() => void followUser(user)}
+              onClick={() => void followUser()}
               className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
             >
               {following.status ? (

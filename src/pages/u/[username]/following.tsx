@@ -1,9 +1,8 @@
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
-import { FollowProfileArea, Header } from "~/component";
+import { FollowArea, FollowHeader, FollowProfileArea, Header } from "~/component";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { FollowArea, FollowHeader } from "./followers";
 
 const Following: NextPage<{
   user: {

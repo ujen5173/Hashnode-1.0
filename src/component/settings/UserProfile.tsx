@@ -43,7 +43,7 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
       available: z.string().optional(),
       cover_image: z.string().optional(),
       bio: z.string().optional(),
-      skills: z.string().optional(),
+      skills: z.string().trim().optional(),
       social: z.object({
         twitter: z.string().optional(),
         instagram: z.string().optional(),
@@ -97,7 +97,7 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
       }
       const res = await mutateAsync({
         ...dataWithSocial,
-        skills: dataWithSocial.skills.trim().split(",").map((e) => e.trim()),
+        skills: dataWithSocial.skills.trim().length > 0 ? dataWithSocial.skills.split(",").map((e) => e.trim()) : [],
         social: dataWithSocial.social,
       });
 

@@ -10,6 +10,7 @@ import {
   NotAuthenticatedProfileDropdown
 } from "~/component/dropdown";
 import { Notification } from "~/component/miniComponent";
+import { FollowContext } from "~/pages/u/[username]/[slug]";
 import {
   Check,
   Follow,
@@ -24,8 +25,11 @@ import { C, type ContextValue } from "~/utils/context";
 
 const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
   const { handleTheme, setSearchOpen } = useContext(C) as ContextValue;
+  const { following, setFollowing } = useContext(FollowContext) as {
+    following: boolean;
+    setFollowing: React.Dispatch<React.SetStateAction<boolean>>
+  };
   const { data: user } = useSession();
-  const { following, followUser } = useContext(C) as ContextValue;
   const [count, setCount] = useState(0);
 
   const [opened, setOpened] = useState(false); // notification dropdown state
@@ -70,6 +74,21 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
     }
     setCount(data || 0);
   }, [error, data]);
+
+  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+
+  const followUser = () => {
+    if (!user) {
+      toast.error("You need to be logged in to follow a user");
+      return;
+    }
+
+    setFollowing((prev) => !prev);
+
+    followToggle({
+      username: author.username,
+    });
+  };
 
   return (
     <div className="flex items-center justify-center gap-2">
@@ -135,10 +154,10 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
           </Link>
         ) : (
           <button
-            onClick={() => void followUser(user)}
+            onClick={() => void followUser()}
             className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max"
           >
-            {following.status ? (
+            {following ? (
               <>
                 <Check className="h-5 w-5 fill-secondary" />
                 <span>Following</span>

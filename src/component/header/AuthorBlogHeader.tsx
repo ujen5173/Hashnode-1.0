@@ -23,6 +23,7 @@ import {
   Twitter,
   Youtube,
 } from "~/svgs";
+import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { ArticleHamburgerMenu } from "../aside";
 import {
@@ -47,11 +48,19 @@ interface Props {
 const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
   const {
     handleTheme,
-    setSearchOpen,
-    following,
-    setFollowing,
-    followUser,
+    setSearchOpen
   } = useContext(C) as ContextValue;
+  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+
+  const [following, setFollowing] = useState(false);
+
+  const followUser = () => {
+    setFollowing(prev => !prev);
+
+    followToggle({
+      username: author.username,
+    });
+  }
   const [opened, setOpened] = useState(false);
   const [menu, setMenu] = useState(false);
   const [control, setControl] = useState<HTMLDivElement | null>(null);
@@ -62,14 +71,12 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     control,
     dropdown,
   ]);
+
   useEffect(() => {
     if (author && user) {
-      setFollowing({
-        status: author.followers.find((e) => e.id === user?.user.id)
-          ? true
-          : false,
-        followersCount: "", // not needed!
-      });
+      setFollowing(author.followers.find((e) => e.id === user?.user.id)
+        ? true
+        : false);
     }
   }, [user, author]);
 
@@ -203,18 +210,18 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                 </Link>
               ) : (
                 <button
-                  onClick={() => void followUser(user)}
+                  onClick={() => void followUser()}
                   className="btn-outline flex w-auto items-center justify-center gap-2 text-secondary md:w-max"
                 >
-                  {following.status ? (
+                  {following ? (
                     <>
                       <Check className="h-5 w-5 fill-secondary" />
-                      <span>Following</span>
+                      <span>Fsdasollowing</span>
                     </>
                   ) : (
                     <>
                       <Follow className="h-5 w-5 fill-secondary" />
-                      <span>Follow User</span>
+                      <span>Followasdf User</span>
                     </>
                   )}
                 </button>

@@ -2,16 +2,16 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState, type FC } from "react";
+import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import removeMd from "remove-markdown";
 import { StackedArticleLoading } from "~/component/loading";
 import { ArticleActions } from "~/component/miniComponent";
 import { CommentsModal } from "~/component/popup";
+import { FollowContext } from "~/pages/u/[username]/[slug]";
 import { Book, Check, Follow, Settings } from "~/svgs";
 import type { Article, Tag, User } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 import { formatDate } from "~/utils/miniFunctions";
 
 const ArticleBody: FC<{ article: Article }> = ({ article }) => {
@@ -274,8 +274,27 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
 };
 
 export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
-  const { following, followUser } = useContext(C) as ContextValue;
+  // const { following, followUser } = useContext(C) as ContextValue;
   const { data: user } = useSession();
+
+  const { following, setFollowing } = useContext(FollowContext) as {
+    following: boolean;
+    setFollowing: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+
+  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+
+  const followUser = () => {
+    if (!user) {
+      toast.error("You need to login to follow a user");
+      return;
+    }
+    setFollowing(prev => !prev);
+
+    followToggle({
+      username: author.username,
+    });
+  };
 
   return (
     <div className="px-4">
@@ -314,10 +333,10 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                 </Link>
               ) : (
                 <button
-                  onClick={() => void followUser(user)}
+                  onClick={() => void followUser()}
                   className="btn-outline hidden w-max items-center justify-center gap-2 text-secondary sm:flex"
                 >
-                  {following.status ? (
+                  {following ? (
                     <>
                       <Check className="h-5 w-5 fill-secondary" />
                       <span>Following</span>

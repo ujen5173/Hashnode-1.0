@@ -27,7 +27,7 @@ const ProfileDetail: FC<{
               string
             ];
 
-            if (value === "") return null;
+            if (value.trim() === "") return null;
             return (
               <a href={value} target="_blank" key={index}>
                 <button className="btn-icon-large flex">
