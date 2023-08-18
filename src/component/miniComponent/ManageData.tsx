@@ -34,7 +34,7 @@ const ManageData: FC<Props> = ({
               .map((_, i) => (
                 <div
                   key={i}
-                  className="w-full border-b border-border-light dark:border-border md:w-[calc(100%/2-0.5rem)]"
+                  className="w-full border-b last:border-none border-border-light dark:border-border md:w-[calc(100%/2-0.5rem)]"
                 >
                   {loading}
                 </div>
@@ -68,7 +68,7 @@ const ManageData: FC<Props> = ({
               .map((_, i) => (
                 <div
                   key={i}
-                  className="border-b border-border-light dark:border-border"
+                  className="border-b border-border-light last:border-none dark:border-border"
                 >
                   {loading}
                 </div>

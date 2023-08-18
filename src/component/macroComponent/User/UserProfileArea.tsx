@@ -3,7 +3,7 @@ import { useClickOutside } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import {
   Angledown,
@@ -24,34 +24,41 @@ const UserProfileArea: FC<{
   const ref = useClickOutside<HTMLDivElement>(() => setOpened(false));
   const [opened2, setOpened2] = useState(false);
   const ref2 = useClickOutside<HTMLDivElement>(() => setOpened2(false));
-  // const { following, followUser } = useContext(C) as ContextValue;
   const { data: user } = useSession();
 
-  const [following, setFollowing] = useState<{
-    status: boolean;
-    followersCount: string;
-  }>({
+  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+
+  const [following, setFollowing] = useState({
     status: false,
-    followersCount: "0",
+    followerCount: 0,
   });
 
-  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+  useEffect(() => {
+    setFollowing({
+      status: userDetails?.isFollowing || false,
+      followerCount: userDetails?.followersCount || 0,
+    });
+  }, [userDetails]);
 
   const followUser = () => {
     if (!user) {
       return toast.error("You need to be logged in to follow users");
     }
 
-    setFollowing({
-      status: !following.status,
-      followersCount: following.status
-        ? JSON.stringify(parseInt(following.followersCount) - 1)
-        : JSON.stringify(parseInt(following.followersCount) + 1),
-    });
+    setFollowing((prev) => ({
+      ...prev,
+      status: !prev.status,
+      followerCount: prev.status
+        ? prev.followerCount - 1
+        : prev.followerCount + 1,
+    }));
 
-    followToggle({
-      username: user.user.username,
-    });
+    if (userDetails) {
+
+      followToggle({
+        username: userDetails.username,
+      });
+    }
   };
 
   return (
@@ -104,7 +111,7 @@ const UserProfileArea: FC<{
                     {Intl.NumberFormat("en-US", {
                       notation: "compact",
                       compactDisplay: "short",
-                    }).format(+following.followersCount || 0)}{" "}
+                    }).format(following?.followerCount || 0)}{" "}
                   </span>
                   Follower
                 </span>

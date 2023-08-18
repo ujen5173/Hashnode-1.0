@@ -342,7 +342,6 @@ export const postsRouter = createTRPCRouter({
         await ctx.prisma.article.findMany({
           where: {
             isDeleted: false,
-
             id: {
               in: input.ids.map((id) => id.id),
             },
@@ -406,12 +405,8 @@ export const postsRouter = createTRPCRouter({
       try {
         const article = await ctx.prisma.article.findFirst({
           where: {
-            AND: [
-              { slug: input.slug },
-              {
-                isDeleted: false,
-              },
-            ],
+            isDeleted: false,
+            slug: input.slug,
           },
           include: {
             series: {
@@ -506,6 +501,7 @@ export const postsRouter = createTRPCRouter({
         const article = await ctx.prisma.article.findFirst({
           where: {
             slug: input.slug,
+            isDeleted: false,
           },
           select: {
             title: true,
@@ -755,11 +751,10 @@ export const postsRouter = createTRPCRouter({
       }
       const activities = await ctx.prisma.article.findMany({
         where: {
+          isDeleted: false,
           user: {
             username: input.username.slice(1, input.username.length),
           },
-
-          isDeleted: false,
         },
         select: {
           id: true,
@@ -1020,18 +1015,17 @@ export const postsRouter = createTRPCRouter({
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
         const articles = await ctx.prisma.article.findMany({
-          ...(input?.variant === "any"
-            ? {}
-            : {
-                where: {
-                  isDeleted: false,
-
+          where: {
+            isDeleted: false,
+            ...(input?.variant === "any"
+              ? {}
+              : {
                   createdAt: {
                     gte: startDate,
                     lte: endDate,
                   },
-                },
-              }),
+                }),
+          },
           take: (limit || 6) + 1,
           skip: skip,
           cursor: cursor ? { id: cursor } : undefined,

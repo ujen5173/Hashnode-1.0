@@ -201,6 +201,12 @@ const ExploreMainComponent = () => {
             <>
               <ArticleLoading />
               <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
             </>
           )
         }

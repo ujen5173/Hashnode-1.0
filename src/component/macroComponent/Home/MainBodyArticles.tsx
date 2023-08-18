@@ -118,6 +118,10 @@ const MainBodyArticles = () => {
           <>
             <ArticleLoading />
             <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
+            <ArticleLoading />
           </>
         )
       }

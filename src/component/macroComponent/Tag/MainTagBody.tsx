@@ -259,6 +259,10 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
             <>
               <ArticleLoading />
               <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
             </>
           )
         }

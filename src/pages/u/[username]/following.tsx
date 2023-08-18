@@ -1,5 +1,6 @@
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
+import Head from "next/head";
 import { FollowArea, FollowHeader, FollowProfileArea, Header } from "~/component";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
@@ -17,6 +18,9 @@ const Following: NextPage<{
 
   return (
     <>
+      <Head>
+        <title>{user.name}&apos;s Following | Hashnode Clone</title>
+      </Head>
       <Header />
       <main className="min-h-screen w-full bg-light-bg dark:bg-black">
         <div className="mx-auto flex max-w-[1550px] gap-4 py-8 sm:px-4">

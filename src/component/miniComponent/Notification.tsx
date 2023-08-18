@@ -136,6 +136,10 @@ export const NotificationContainer: FC<{
           <>
             <NotificationLoading />
             <NotificationLoading />
+            <NotificationLoading />
+            <NotificationLoading />
+            <NotificationLoading />
+            <NotificationLoading />
           </>
         )
       }

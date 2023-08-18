@@ -115,6 +115,10 @@ const Articles = () => {
             <>
               <ArticleLoading />
               <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
             </>
           )
         }

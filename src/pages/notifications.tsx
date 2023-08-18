@@ -107,6 +107,10 @@ const Notifications = () => {
                 <>
                   <NotificationLoading />
                   <NotificationLoading />
+                  <NotificationLoading />
+                  <NotificationLoading />
+                  <NotificationLoading />
+                  <NotificationLoading />
                 </>
               )
             }

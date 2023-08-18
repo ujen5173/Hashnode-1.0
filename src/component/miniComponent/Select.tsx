@@ -50,8 +50,8 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
       text-gray-700 outline-none transition-[ring] duration-100 focus:bg-light-bg focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-primary 
       hover:dark:border-border dark:focus:bg-primary-light md:min-w-[180px]`}
     >
-      <span className="text-base mb-0">{select.selected}</span>
-      <Angledown className="h-5 mb-0 w-5 fill-gray-700 dark:fill-text-primary" />
+      <span className="text-base mb-[0!important]">{select.selected}</span>
+      <Angledown className="h-5 mb-[0!important] w-5 fill-gray-700 dark:fill-text-primary" />
 
       {opened && (
         <div

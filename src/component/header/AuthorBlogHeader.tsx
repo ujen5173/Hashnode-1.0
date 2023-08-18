@@ -61,6 +61,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
       username: author.username,
     });
   }
+
   const [opened, setOpened] = useState(false);
   const [menu, setMenu] = useState(false);
   const [control, setControl] = useState<HTMLDivElement | null>(null);
@@ -216,12 +217,12 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                   {following ? (
                     <>
                       <Check className="h-5 w-5 fill-secondary" />
-                      <span>Fsdasollowing</span>
+                      <span>Following</span>
                     </>
                   ) : (
                     <>
                       <Follow className="h-5 w-5 fill-secondary" />
-                      <span>Followasdf User</span>
+                      <span>Follow User</span>
                     </>
                   )}
                 </button>
