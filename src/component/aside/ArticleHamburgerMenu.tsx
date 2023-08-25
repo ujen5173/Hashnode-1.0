@@ -23,7 +23,7 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
         className={`hamburger_menu ${menu ? "active" : "inactive"
           } fixed left-0 top-0 z-50 h-screen w-full max-w-[18rem] overflow-auto md:max-w-[20rem]`}
       >
-        <div className="flex min-h-screen w-full flex-col">
+        <div className="flex min-h-[100dvh] w-full flex-col">
           <header className="flex items-center justify-between border-b border-border border-border-light bg-light-bg p-6 shadow-md dark:border-border dark:bg-primary">
             <Link className="flex items-center gap-2" href="/">
               <Image

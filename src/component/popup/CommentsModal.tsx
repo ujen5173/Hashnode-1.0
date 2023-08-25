@@ -99,7 +99,7 @@ const CommentsModal: FC<{
         />
         <section
           ref={commentSection}
-          className={`fixed right-0 top-0 h-full min-h-screen w-full max-w-[450px] overflow-auto border-l border-border-light bg-light-bg dark:border-border dark:bg-primary ${commentsModal ? "commentsModal" : "commentsModal-off"
+          className={`fixed right-0 top-0 h-full min-h-[100dvh] w-full max-w-[450px] overflow-auto border-l border-border-light bg-light-bg dark:border-border dark:bg-primary ${commentsModal ? "commentsModal" : "commentsModal-off"
             }`}
         >
           <header className="flex items-center justify-between border-b border-border-light p-4 dark:border-border">

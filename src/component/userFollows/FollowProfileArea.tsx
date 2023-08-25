@@ -17,7 +17,7 @@ const FollowProfileArea: FC<{
 }> = ({ user }) => {
   const { data: session } = useSession();
 
-  return <div className="w-1/4 rounded-md border border-border-light bg-white p-6 dark:border-border dark:bg-primary">
+  return <div className="w-full md:w-1/4 rounded-md border border-border-light bg-white p-6 dark:border-border dark:bg-primary">
     <Link href={`/u/@${user.username}`}>
       <Image
         src={user.profile}

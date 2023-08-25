@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
+import { Balancer } from "react-wrap-balancer";
 import removeMd from "remove-markdown";
 import { StackedArticleLoading } from "~/component/loading";
 import { ArticleActions } from "~/component/miniComponent";
@@ -76,14 +77,14 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
         <section className={`relative pt-8 md:pb-0 md:pt-14`}>
           <div className="px-4">
-            <h1 className="mb-6 text-center text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:mb-8 md:w-11/12 md:text-5xl md:leading-tight">
+            <Balancer className="mb-6 text-center break-words text-2xl sm:text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:mb-8 md:w-11/12 md:text-5xl md:leading-tight">
               {article.title}
-            </h1>
+            </Balancer>
 
             {article?.subtitle && (
-              <h2 className="mx-auto mb-5 w-full text-center text-xl font-normal text-gray-600 dark:text-text-primary sm:w-10/12 md:mb-10 md:text-3xl">
+              <Balancer className="mx-auto mb-5 break-words text-center text-xl font-normal text-gray-600 dark:text-text-primary md:mb-10 md:text-3xl">
                 {article?.subtitle}
-              </h2>
+              </Balancer>
             )}
 
             <div className="mx-auto mb-6 flex w-full flex-col items-center justify-center gap-2 md:mb-10 md:w-fit lg:flex-row">
@@ -125,9 +126,9 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
               </div>
             </div>
 
-            <div
+            <Balancer
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
-              className="article mx-auto w-full break-words text-gray-700 dark:text-text-secondary pb-10 pt-2 sm:pt-6 md:w-11/12 md:py-6 lg:w-10/12 xl:w-full"
+              className="article mx-auto w-full break-words text-gray-700 dark:text-text-secondary pb-10 pt-2 sm:pt-6 md:py-6"
             />
           </div>
 

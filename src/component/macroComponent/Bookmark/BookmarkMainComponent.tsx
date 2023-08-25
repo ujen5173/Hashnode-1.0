@@ -18,7 +18,7 @@ const BookmarkMainComponent = () => {
   );
 
   return (
-    <section className="container-main my-4 min-h-screen w-full">
+    <section className="container-main my-4 min-h-[100dvh] w-full">
       <div className="mb-4 rounded-md border border-border-light bg-white px-3 py-12 dark:border-border dark:bg-primary md:px-6">
         <h1 className="mb-2 text-center text-3xl font-semibold text-gray-700 dark:text-text-secondary">
           Bookmarks

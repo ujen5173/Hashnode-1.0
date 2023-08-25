@@ -196,6 +196,14 @@ const ArticleActions: FC<Props> = ({
         <div className="h-6 w-[2px] bg-border-light dark:bg-border"></div>
 
         <div className="relative">
+          {optionsOpen && (
+            <MoreOptions
+              ref={setOptionsDropdown}
+              setOptionsOpen={setOptionsOpen}
+              slug={article.slug}
+              user={user?.user.username === article.user.username}
+            />
+          )}
 
           <Tooltip label="More Options" withArrow position="bottom">
             <div
@@ -213,14 +221,6 @@ const ArticleActions: FC<Props> = ({
               </button>
             </div>
           </Tooltip>
-          {optionsOpen && (
-            <MoreOptions
-              ref={setOptionsDropdown}
-              setOptionsOpen={setOptionsOpen}
-              slug={article.slug}
-              user={user?.user.username === article.user.username}
-            />
-          )}
         </div>
       </div>
     </div>

@@ -137,7 +137,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
 
 
   return (
-    <section className="container-main my-4 min-h-screen w-full">
+    <section className="container-main my-4 min-h-[100dvh] w-full">
       <TagPageHeader
         tagDetails={tagDetails}
         following={following}

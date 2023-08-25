@@ -21,7 +21,7 @@ const Aside = () => {
   );
 
   return (
-    <div className="container-aside relative hidden min-h-screen py-4 lg:block">
+    <div className="container-aside relative hidden min-h-[100dvh] py-4 lg:block">
       <aside className="sticky left-0 top-[5.5rem] h-fit w-full rounded-md border border-border-light bg-white py-2 dark:border-border dark:bg-primary">
         <Navigations />
         <Divider />
@@ -109,17 +109,17 @@ const SocialHandles = () => {
             target="_blank"
             aria-label={`Follow us on ${item.name}`}
             title={`Follow us on ${item.name}`}
-            className={`btn-social-icon flex h-8 w-8 items-center justify-center ${item.name === "Twitter"
-              ? "hover:bg-twitterColor"
+            className={`btn-social-icon flex h-8 w-8 transition-colors items-center justify-center ${item.name === "Twitter"
+              ? "hover:bg-[#1da1f2]"
               : item.name === "Discord"
-                ? "hover:bg-discordColor"
-                : item.name === "Instagram"
-                  ? "hover:bg-instaColor"
-                  : item.name === "Linkedin"
-                    ? "hover:bg-linkedinColor"
+                ? "hover:bg-[#7289da]"
+                : item.name === "Github"
+                  ? "hover:bg-[#2c3646]"
+                  : item.name === "Hashnode"
+                    ? "hover:bg-[#2c3646]"
                     : ""
               }`}
-            href={`/${item.link}`}
+            href={`${item.link}`}
           >
             {item.icon}
           </a>

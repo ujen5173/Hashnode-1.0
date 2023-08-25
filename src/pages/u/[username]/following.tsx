@@ -22,8 +22,8 @@ const Following: NextPage<{
         <title>{user.name}&apos;s Following | Hashnode Clone</title>
       </Head>
       <Header />
-      <main className="min-h-screen w-full bg-light-bg dark:bg-black">
-        <div className="mx-auto flex max-w-[1550px] gap-4 py-8 sm:px-4">
+      <main className="min-h-[100dvh] w-full bg-light-bg dark:bg-black">
+        <div className="mx-auto flex flex-col md:flex-row max-w-[1550px] gap-4 py-8 sm:px-4">
           <FollowProfileArea user={user} />
 
           <div className="flex-1 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">

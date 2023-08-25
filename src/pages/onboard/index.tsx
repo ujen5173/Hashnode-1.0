@@ -13,7 +13,7 @@ const Onboard = () => {
         </Link>
       </header>
 
-      <main className="min-h-screen bg-light-bg dark:bg-black">
+      <main className="min-h-[100dvh] bg-light-bg dark:bg-black">
         <div className="mx-auto flex max-w-[1440px] gap-0 px-4 py-28 md:gap-8 lg:gap-20 xl:gap-28">
           <div className="flex w-full flex-col justify-center">
             <h1 className="mx-auto mb-5 items-center text-3xl font-semibold text-secondary">

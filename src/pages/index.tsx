@@ -1,13 +1,17 @@
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
+import { useSession } from "next-auth/react";
 import { Anouncement, Header, MainBody } from "~/component";
 import HomeSEO from "~/SEO/Home.seo";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const { data } = api.users.subscriptionStatus.useQuery();
-
+  const { data: session } = useSession();
+  const { data } = api.users.subscriptionStatus.useQuery(undefined, {
+    enabled: !!session,
+    refetchOnWindowFocus: false,
+  });
   return (
     <>
       <HomeSEO />

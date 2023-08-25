@@ -19,7 +19,6 @@ import {
   ImportFile,
   Instagram,
   Integrations,
-  Linkedin,
   LogonoText,
   Manage,
   Mastodon,
@@ -37,7 +36,7 @@ import {
   Twitter,
   User as UserSVG,
   Widgets,
-  Youtube,
+  Youtube
 } from "~/svgs";
 
 export const slugSetting = {
@@ -465,29 +464,25 @@ export const generalSettingsSocials = [
 export const HashnodeSocials = [
   {
     name: "Twitter",
-    color: "#1da1f2",
     icon: <Twitter className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
     link: "https://twitter.com/ujen_basi/",
   },
   {
-    name: "Linkedin",
-    color: "#0077b5",
-    icon: <Linkedin className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
-    link: "https://linkedin.com/ujen_basi/",
+    name: "Github",
+    icon: <Github className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    link: "https://github.com/ujen5173",
   },
   {
     name: "Discord",
-    color: "#7289da",
     icon: <Discord className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
-    link: "https://discord.com/ujen_basi/",
+    link: "https://discord.com/ujen5173/",
   },
   {
-    name: "Instagram",
-    color: "#e1306c",
+    name: "Hashnode",
     icon: (
-      <Instagram className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+      <LogonoText className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
     ),
-    link: "https://instagram.com/ujen_basi/",
+    link: "https://hashnode.com/@ujenbasi575",
   },
 ];
 

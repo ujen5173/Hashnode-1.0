@@ -4,9 +4,8 @@ import { type DetailedUser } from "~/types";
 const UserDetails: FC<{
   userDetails: DetailedUser | undefined;
 }> = ({ userDetails }) => {
-  console.log({ userDetails })
   return (
-    <div className="my-6 flex w-full flex-wrap gap-6 rounded-md py-6">
+    <div className="mb-6 flex w-full flex-wrap gap-6 rounded-md">
       <div className="w-full rounded-md border border-border-light p-6 dark:border-border sm:w-[calc(100%/2-1rem)] md:w-[calc(100%/3-1rem)]">
         <h1 className="mb-4 text-lg font-semibold text-gray-700 dark:text-text-secondary md:text-xl lg:text-2xl">
           About Me

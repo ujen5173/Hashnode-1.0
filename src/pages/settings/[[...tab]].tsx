@@ -18,7 +18,7 @@ const EditProfile: NextPage<{
 
       <Header />
 
-      <main className="min-h-screen w-full bg-light-bg dark:bg-black">
+      <main className="min-h-[100dvh] w-full bg-light-bg dark:bg-black">
         <div className="container mx-auto py-6">
           <div className="flex flex-col lg:flex-row w-full">
             <div className="w-full lg:w-80 lg:pl-0 lg:pr-4">
@@ -30,7 +30,7 @@ const EditProfile: NextPage<{
 
               <UserDetailsOptions />
             </div>
-            <main className="my-4 lg:my-0 min-h-screen flex-1 rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary sm:p-6 md:p-8">
+            <main className="my-4 lg:my-0 min-h-[100dvh] flex-1 rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary sm:p-6 md:p-8">
               {
                 {
                   default: <UserProfile user={user} />,

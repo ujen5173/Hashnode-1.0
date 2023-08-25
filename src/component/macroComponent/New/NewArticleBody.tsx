@@ -148,7 +148,7 @@ const NewArticleBody: FC<{
     };
 
     return (
-      <main className="relative min-h-screen w-full overflow-hidden border-b border-border-light bg-white dark:border-border dark:bg-primary">
+      <main className="relative min-h-[100dvh] w-full overflow-hidden border-b border-border-light bg-white dark:border-border dark:bg-primary">
         <div className="mx-auto w-full max-w-[1000px] px-4 py-6">
           <div className="relative mb-5 flex items-center gap-2">
             {isUploading ? (

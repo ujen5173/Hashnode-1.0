@@ -65,7 +65,7 @@ const Notifications = () => {
     <>
       <Header />
 
-      <div className="min-h-screen w-full bg-white px-0 py-8 dark:bg-black md:px-4">
+      <div className="min-h-[100dvh] w-full bg-white px-0 py-8 dark:bg-black md:px-4">
         <div className="mx-auto max-w-[800px] rounded-lg border border-border-light bg-white px-4 dark:border-border dark:bg-primary">
           <div className="mb-4 flex items-center justify-between gap-2 border-b border-border-light p-4 dark:border-border">
             <h1

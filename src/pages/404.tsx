@@ -4,7 +4,7 @@ import Link from "next/link";
 const PageNotFound = () => {
   return (
     <div className="bg-blue-50">
-      <div className="container mx-auto flex min-h-screen flex-col items-center justify-center border-x border-border-light bg-white px-8 py-16">
+      <div className="container mx-auto flex min-h-[100dvh] flex-col items-center justify-center border-x border-border-light bg-white px-8 py-16">
         <Image
           className="mb-8 max-h-[30rem] w-auto select-none object-cover"
           src={"/pageNotFound.png"}

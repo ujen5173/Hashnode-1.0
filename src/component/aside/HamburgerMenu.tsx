@@ -19,9 +19,9 @@ const HamburgerMenu: FC<{
       />
       <section
         className={`hamburger_menu ${menu ? "active" : "inactive"
-          } fixed left-0 top-0 z-50 h-screen w-full max-w-[16rem] overflow-auto`}
+          } fixed left-0 top-0 z-50 h-[100dvh] w-full max-w-[16rem] overflow-auto`}
       >
-        <div className="flex min-h-screen w-full flex-col">
+        <div className="flex min-h-[100dvh] w-full flex-col">
           <header className="flex items-center justify-between border-b border-border border-border-light bg-light-bg p-6 py-4 shadow-md dark:border-border dark:bg-primary">
             <Link href="/">
               <Logo className="h-6 fill-secondary" />

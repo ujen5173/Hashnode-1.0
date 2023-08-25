@@ -1,11 +1,15 @@
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { LogonoText } from "~/svgs";
 import { api } from "~/utils/api";
 
 const Subscription = () => {
   const { mutateAsync: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation();
-  const { data: subscriptionStatus } = api.users.subscriptionStatus.useQuery();
-
+  const { data: session } = useSession();
+  const { data: subscriptionStatus } = api.users.subscriptionStatus.useQuery(undefined, {
+    enabled: !!session,
+    refetchOnWindowFocus: false,
+  });
   const { push } = useRouter();
 
   const handleUpgrade = async () => {

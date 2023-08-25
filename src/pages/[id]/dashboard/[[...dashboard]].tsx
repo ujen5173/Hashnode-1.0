@@ -221,7 +221,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const Roadmap = () => {
   const router = useRouter();
   const { data: user } = useSession();
-  const { data } = api.users.getUserDashboardRoadmapDetails.useQuery();
+  const { data } = api.users.getUserDashboardRoadmapDetails.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">

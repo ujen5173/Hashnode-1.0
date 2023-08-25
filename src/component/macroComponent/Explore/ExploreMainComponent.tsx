@@ -103,7 +103,7 @@ const ExploreMainComponent = () => {
 
 
   return (
-    <section className="container-main my-4 min-h-screen w-full">
+    <section className="container-main my-4 min-h-[100dvh] w-full">
       <div className="mb-4 rounded-md border border-border-light bg-white px-4 py-12 dark:border-border dark:bg-primary md:px-6">
         <h1 className="mb-4 text-center text-3xl font-semibold text-gray-700 dark:text-text-secondary">
           Explore Tech articles & Tags

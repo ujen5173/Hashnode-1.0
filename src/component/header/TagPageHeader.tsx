@@ -16,7 +16,7 @@ interface Props {
 
 const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
   return (
-    <header className="mb-4 flex flex-col items-center justify-center rounded-md border border-border-light bg-white px-6 py-11 text-center dark:border-border dark:bg-primary">
+    <header className="mb-4 flex flex-col items-center justify-center rounded-md border border-border-light bg-white px-6 py-8 md:py-10 lg:py-11 text-center dark:border-border dark:bg-primary">
       <div className="flex gap-3">
         {tagDetails.logo ? (
           <Image

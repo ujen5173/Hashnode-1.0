@@ -55,7 +55,7 @@ const Setup = () => {
         </Link>
       </div>
 
-      <div className="min-h-screen w-full bg-white dark:bg-black">
+      <div className="min-h-[100dvh] w-full bg-white dark:bg-black">
         <div className="mx-auto max-w-[900px] px-4 py-16">
           <h1 className="mb-4 text-xl font-semibold text-gray-700 dark:text-text-secondary">
             Where do you want this blog to be located?
@@ -117,9 +117,8 @@ const Setup = () => {
 
             <button
               onClick={() => void handleSubdomain()}
-              className={`${
-                isLoading ? "cursor-not-allowed opacity-40" : ""
-              } btn-filled`}
+              className={`${isLoading ? "cursor-not-allowed opacity-40" : ""
+                } btn-filled`}
               disabled={isLoading}
             >
               <div className="px-4">

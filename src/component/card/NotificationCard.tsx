@@ -7,6 +7,7 @@ import { formatDate } from "~/utils/miniFunctions";
 const NotificationCard: FC<{ notification: Notification }> = ({
   notification,
 }) => {
+  console.log({ notification })
   return (
     <div
       key={notification.id}
@@ -24,7 +25,7 @@ const NotificationCard: FC<{ notification: Notification }> = ({
 
       <div className="flex-1 text-left">
         <p className="mb-2 text-base text-gray-500 dark:text-text-primary">
-          <Link href={`/u/@${notification.articleAuthor as string}`}>
+          <Link href={`/u/@${notification.from.username}`}>
             <span className="mr-1 font-semibold text-gray-700 dark:text-text-secondary">
               {notification.from.name}
             </span>

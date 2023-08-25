@@ -4,7 +4,11 @@ import { type Config } from "tailwindcss";
 export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
-
+  safelist: [ 
+    "hover:bg-[1da1f2]",
+    "hover:bg-[2c3646]",
+    "hover:bg-[7289da]" 
+  ],
   theme: {
     extend: {
       screens: {

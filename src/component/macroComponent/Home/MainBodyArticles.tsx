@@ -99,7 +99,7 @@ const MainBodyArticles = () => {
   };
 
   return (
-    <section className="container-main my-4 min-h-screen w-full overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
+    <section className="container-main my-4 min-h-[100dvh] w-full overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
       <MainBodyHeader
         applyFilter={() => void applyFilter()}
         clearFilter={() => void clearFilter()}
