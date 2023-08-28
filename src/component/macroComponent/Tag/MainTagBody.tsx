@@ -248,7 +248,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
           articles?.map((article) => (
             <div
               key={article.id}
-              className="w-full border-b border-border-light last:border-none dark:border-border"
+              className="w-full border-b border-border-light last:border-0 dark:border-border"
             >
               <ArticleCard card={article} key={article.id} />
             </div>

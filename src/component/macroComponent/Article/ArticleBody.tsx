@@ -77,14 +77,18 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
         <section className={`relative pt-8 md:pb-0 md:pt-14`}>
           <div className="px-4">
-            <Balancer className="mb-6 text-center break-words text-2xl sm:text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary md:mx-auto md:mb-8 md:w-11/12 md:text-5xl md:leading-tight">
-              {article.title}
-            </Balancer>
+            <div className="flex items-center w-full justify-center">
+              <Balancer className="mx-auto block text-center mb-6 text-2xl sm:text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary w-full md:mb-8 md:text-5xl md:leading-tight">
+                {article.title}
+              </Balancer>
+            </div>
 
             {article?.subtitle && (
-              <Balancer className="mx-auto mb-5 break-words text-center text-xl font-normal text-gray-600 dark:text-text-primary md:mb-10 md:text-3xl">
-                {article?.subtitle}
-              </Balancer>
+              <div className="flex items-center w-full justify-center">
+                <Balancer className="mx-auto mb-5 break-words text-center text-xl font-normal text-gray-600 dark:text-text-primary md:mb-10 md:text-3xl">
+                  {article?.subtitle}
+                </Balancer>
+              </div>
             )}
 
             <div className="mx-auto mb-6 flex w-full flex-col items-center justify-center gap-2 md:mb-10 md:w-fit lg:flex-row">
@@ -126,7 +130,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
               </div>
             </div>
 
-            <Balancer
+            <div
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
               className="article mx-auto w-full break-words text-gray-700 dark:text-text-secondary pb-10 pt-2 sm:pt-6 md:py-6"
             />

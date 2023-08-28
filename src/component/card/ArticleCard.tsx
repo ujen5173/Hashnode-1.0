@@ -34,6 +34,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                 {card.user.name}
               </h1>
             </Link>
+
             {
               card.user.stripeSubscriptionStatus === "active" && (
                 <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
@@ -131,7 +132,6 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                 <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
               )}
             </button>
-
 
             <div className="flex flex-wrap items-center gap-2">
               {limitTags(card.tags, 13).map((tag, index) =>

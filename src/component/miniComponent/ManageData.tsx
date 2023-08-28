@@ -79,7 +79,7 @@ const ManageData: FC<Props> = ({
             return (
               <div
                 key={item.id}
-                className="border-b border-border-light articleCard dark:border-border"
+                className="border-b border-border-light last:border-none articleCard dark:border-border"
               >
                 {type === "ARTICLE" ? (
                   <ArticleCard card={item} />
