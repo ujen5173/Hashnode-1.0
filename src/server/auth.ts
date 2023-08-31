@@ -145,30 +145,10 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
-
-    // GithubProvider({
-    //   clientId: env.GITHUB_CLIENT_ID,
-    //   clientSecret: env.GITHUB_CLIENT_SECRET,
-    //   profile(profile: GithubProfile): User {
-    //     return {
-    //       id: profile.id.toString() || "",
-    //       name: profile.name || "",
-    //       username: profile.login,
-    //       email: profile.email || "",
-    //       profile: profile.avatar_url,
-    //       emailVerified: profile.email ? new Date() : null,
-    //       tagline: "Software Devloper",
-    //     };
-    //   },
-    // }),
   ],
   pages: {
     signIn: "/onboard",
   },
-  // session: {
-  //   strategy: "jwt",
-  // },
-  // secret: process.env.NEXTAUTH_SECRET,
 };
 
 /**

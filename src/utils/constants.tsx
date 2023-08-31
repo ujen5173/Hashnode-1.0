@@ -1,6 +1,5 @@
 import { v4 as uuid } from "uuid";
 import {
-  Analytics,
   Bookmark,
   Bookmarkalt,
   Comment,
@@ -10,32 +9,23 @@ import {
   Document,
   Exit,
   Explore,
-  ExportFile,
   Feed,
   Github,
   Global,
   Hackathon,
   Heart,
-  ImportFile,
   Instagram,
-  Integrations,
   LogonoText,
   Manage,
   Mastodon,
   Navbar,
-  Newsletter,
-  Pages,
   Pen,
   Search,
-  Seo,
   Series,
   Settings,
-  Sponsors,
   Team,
-  Tools,
   Twitter,
   User as UserSVG,
-  Widgets,
   Youtube
 } from "~/svgs";
 
@@ -264,138 +254,138 @@ export const dashboardNavigations = [
     ),
     link: "/dashboard/series",
   },
-  {
-    id: uuid(),
-    name: "Pages",
-    icon: (state: boolean) => (
-      <Pages
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/pages",
-  },
-  {
-    id: uuid(),
-    name: "Sponsors",
-    icon: (state: boolean) => (
-      <Sponsors
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/sponsors",
-  },
-  {
-    id: uuid(),
-    name: "Analytics",
-    icon: (state: boolean) => (
-      <Analytics
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/analytics",
-  },
-  {
-    id: uuid(),
-    name: "Widgets",
-    icon: (state: boolean) => (
-      <Widgets
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/widgets",
-  },
-  {
-    id: uuid(),
-    name: "Newsletter",
-    icon: (state: boolean) => (
-      <Newsletter
-        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/newsletter",
-  },
-  {
-    id: uuid(),
-    name: "Integrations",
-    icon: (state: boolean) => (
-      <Integrations
-        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/integrations",
-  },
-  {
-    id: uuid(),
-    name: "SEO",
-    icon: (state: boolean) => (
-      <Seo
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/seo",
-  },
-  {
-    id: uuid(),
-    name: "Domain",
-    icon: (state: boolean) => (
-      <Global
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/domain",
-  },
-  {
-    id: uuid(),
-    name: "GitHub",
-    icon: (state: boolean) => (
-      <Github
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/github",
-  },
-  {
-    id: uuid(),
-    name: "Import",
-    icon: (state: boolean) => (
-      <ImportFile
-        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/import",
-  },
-  {
-    id: uuid(),
-    name: "Export",
-    icon: (state: boolean) => (
-      <ExportFile
-        className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/export",
-  },
-  {
-    id: uuid(),
-    name: "Advanced",
-    icon: (state: boolean) => (
-      <Tools
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-          }`}
-      />
-    ),
-    link: "/dashboard/advanced",
-  },
+  // {
+  //   id: uuid(),
+  //   name: "Pages",
+  //   icon: (state: boolean) => (
+  //     <Pages
+  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/pages",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Sponsors",
+  //   icon: (state: boolean) => (
+  //     <Sponsors
+  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/sponsors",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Analytics",
+  //   icon: (state: boolean) => (
+  //     <Analytics
+  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/analytics",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Widgets",
+  //   icon: (state: boolean) => (
+  //     <Widgets
+  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/widgets",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Newsletter",
+  //   icon: (state: boolean) => (
+  //     <Newsletter
+  //       className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/newsletter",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Integrations",
+  //   icon: (state: boolean) => (
+  //     <Integrations
+  //       className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/integrations",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "SEO",
+  //   icon: (state: boolean) => (
+  //     <Seo
+  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/seo",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Domain",
+  //   icon: (state: boolean) => (
+  //     <Global
+  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/domain",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "GitHub",
+  //   icon: (state: boolean) => (
+  //     <Github
+  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/github",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Import",
+  //   icon: (state: boolean) => (
+  //     <ImportFile
+  //       className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/import",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Export",
+  //   icon: (state: boolean) => (
+  //     <ExportFile
+  //       className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/export",
+  // },
+  // {
+  //   id: uuid(),
+  //   name: "Advanced",
+  //   icon: (state: boolean) => (
+  //     <Tools
+  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+  //         }`}
+  //     />
+  //   ),
+  //   link: "/dashboard/advanced",
+  // },
 ];
 
 export const generalSettingsSocials = [

@@ -1,14 +1,13 @@
 # Hashnode Clone
 
-This is a **full-stack application** that serves as a clone of the popular blogging website, _Hashnode_. The purpose of this project is to showcase my skills in web development and serve as a learning experience. I have utilized Next.js, Nextjs, Tailwind CSS, and the T3 stack with PostgreSQL as the technology stack for this project. With a plethora of exciting features, this intermediate-level project replicates approximately 80% of the functionalities found on the original Hashnode website. Furthermore, I have designed the user interface entirely from scratch. This project is _still under development_, and I will continue to add more eciting features to it. I hope you enjoy this project as much as I enjoyed building it. Cheers 🍻. Contributions are welcome!
-
-> **STATUS: UNDER CONSTRUCTION**
+This is a **full-stack application** that serves as a clone of the popular blogging website, _Hashnode_. The purpose of this project is to showcase my skills in web development and serve as a learning experience. I have utilized Next.js, Nextjs, Tailwind CSS, and the T3 stack with PostgreSQL as the technology stack for this project. With a plethora of exciting features, this intermediate-level project replicates most of the functionalities found on the original Hashnode website. I hope you enjoy this project as much as I enjoyed building it. Cheers 🍻. Contributions are welcome!
 
 ## Table of Contents
 
 - Features
 - Installation
-- Usage
+- Setting up the development environment
+- Contribution
 
 ## Features
 
@@ -20,6 +19,8 @@ This is a **full-stack application** that serves as a clone of the popular blogg
 6. Likes and Bookmarks
 7. Follow System
 8. Notifications
+9. Dashboard
+10. Payment Gateway using stripe
 
 ## Installation
 
@@ -41,15 +42,15 @@ Install the dependencies:
   yarn
 ```
 
-## Installation
+### Setting up the development environment
 
-- Set up the required environment variables. Refer to the .env.example file for the necessary variables.
+- Set up the required environment variables. Refer to the `.env.example` file for the necessary variables.
 - Create `.env` file in the root directory of the project and add the environment variables with reference to the `.env.example` file.
 - Push the database schema to your PostgreSQL database: `yarn prisma-dev`
 - Start the development server: `yarn dev`
 - Open your web browser and visit **http://localhost:3000**
 
-## Contributing
+## Contribution
 
 Contributions are welcome! If you would like to contribute to this project, please follow these steps:
 
@@ -59,5 +60,6 @@ Contributions are welcome! If you would like to contribute to this project, plea
 - Create a new branch for your contribution: `git checkout -b feature/your-feature`
 - Make your changes and commit them: `git commit -m "Add your message here"`
 - Push the changes to your branch: `git push origin feature/your-feature`
+- Open a pull request.
 
 Cheers 🍻.

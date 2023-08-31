@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
 import { toast } from "react-toastify";
-import { ArticleLoading } from "~/component/loading";
 import { Redirect } from "~/svgs";
 import { api } from "~/utils/api";
 
@@ -53,10 +52,10 @@ const Series = () => {
       <main>
         {isLoading ? (
           <>
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
+            <SeriesLoading />
+            <SeriesLoading />
+            <SeriesLoading />
+            <SeriesLoading />
           </>
         ) : data && data.length > 0 ? (
           <div className="">
@@ -126,3 +125,16 @@ const SeriesCard: FC<{
     </div>
   );
 };
+
+const SeriesLoading = () => {
+  return (
+    <div className="flex items-center justify-between border-b border-border-light py-4 dark:border-border">
+      <div className="loading w-96 h-4 rounded-md bg-border-light dark:bg-border"></div>
+      <div className="flex items-center gap-2">
+        <div className="loading w-20 h-4 rounded-md bg-border-light dark:bg-border"></div>
+        <div className="loading w-20 h-4 rounded-md bg-border-light dark:bg-border"></div>
+        <div className="loading w-20 h-4 rounded-md bg-border-light dark:bg-border"></div>
+      </div>
+    </div>
+  )
+}
