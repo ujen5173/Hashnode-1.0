@@ -10,7 +10,6 @@ import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import slugify from "slugify";
 import { env } from "~/env.mjs";
 import { type BlogSocial } from "~/pages/dev/[username]";
-import { prisma } from "~/server/db";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`

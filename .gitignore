@@ -49,3 +49,4 @@ yarn-error.log*
 /todo.txt
 /data
 /test.html
+/src/server/db/prisma.ref.ts
