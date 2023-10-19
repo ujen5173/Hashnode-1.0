@@ -31,6 +31,7 @@ export const commentEnum = pgEnum("commentStatus", ["COMMENT", "REPLY"]);
 export const users = pgTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   name: varchar("name", { length: 255 }),
+  username: varchar("username", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
@@ -53,8 +54,8 @@ export const users = pgTable("user", {
     instagram: "",
     stackoverflow: "",
   }),
-  followersCount: int("followersCount"),
-  followingCount: int("followingCount"),
+  followersCount: int("followersCount").default(0),
+  followingCount: int("followingCount").default(0),
   stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
   stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
   stripeSubscriptionStatus: stripeSubscriptionEnum("stripeSubscriptionStatus"),
@@ -80,7 +81,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   following: many(following, {
     relationName: "name",
   }),
-  followinger: many(following, {
+  follower: many(following, {
     relationName: "name",
   }),
 }));

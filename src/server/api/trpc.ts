@@ -5,7 +5,7 @@ import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { getServerAuthSession } from "~/server/auth";
-import { prisma } from "~/server/db";
+import { db } from "~/server/db";
 import { stripe } from "~/server/stripe/client";
 
 type CreateContextOptions = {
@@ -18,7 +18,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   const { req, res } = opts;
   return {
     session: opts.session,
-    prisma,
+    db,
     stripe,
     req,
     res,
