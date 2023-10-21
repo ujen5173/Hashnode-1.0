@@ -2,7 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   index,
-  integer as int,
+  integer,
   json,
   pgEnum,
   pgTableCreator,
@@ -29,18 +29,20 @@ export const stripeSubscriptionEnum = pgEnum("stripeSubscriptionStatus", [
 export const commentEnum = pgEnum("commentStatus", ["COMMENT", "REPLY"]);
 
 export const users = pgTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  username: varchar("username", { length: 255 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull(),
+  id: text("id")
+    .default(sql`gen_random_uuid()`)
+    .primaryKey(),
+  name: varchar("name").notNull(),
+  username: varchar("username").notNull(),
+  email: varchar("email").notNull(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     withTimezone: true,
   }).default(sql`CURRENT_TIMESTAMP(3)`),
-  profile: varchar("profile", { length: 255 }),
+  profile: varchar("profile"),
   tagline: varchar("tagline", { length: 50 }),
-  cover_image: varchar("cover_image", { length: 255 }),
-  bio: varchar("bio", { length: 255 }),
+  cover_image: varchar("cover_image"),
+  bio: varchar("bio"),
   skills: varchar("skills", { length: 10 }).array(),
   location: varchar("location", { length: 20 }),
   available: varchar("available", { length: 50 }),
@@ -54,10 +56,10 @@ export const users = pgTable("user", {
     instagram: "",
     stackoverflow: "",
   }),
-  followersCount: int("followersCount").default(0),
-  followingCount: int("followingCount").default(0),
-  stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
-  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
+  followersCount: integer("followersCount").default(0),
+  followingCount: integer("followingCount").default(0),
+  stripeCustomerId: varchar("stripeCustomerId"),
+  stripeSubscriptionId: varchar("stripeSubscriptionId"),
   stripeSubscriptionStatus: stripeSubscriptionEnum("stripeSubscriptionStatus"),
 
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
@@ -89,15 +91,15 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 export const following = pgTable(
   "following",
   {
-    userId: text("user_id")
+    userId: text("userId")
       .references(() => users.id)
       .notNull(),
-    followingId: text("following_id")
+    followingId: text("followingId")
       .references(() => users.id)
       .notNull(),
   },
   (table) => ({
-    cpk: primaryKey(table.userId, table.followingId),
+    pk: primaryKey(table.userId, table.followingId),
   })
 );
 
@@ -105,26 +107,27 @@ export const followingRelations = relations(following, ({ one }) => ({
   user: one(users, {
     fields: [following.userId],
     references: [users.id],
-    relationName: "name",
+    relationName: "asc",
   }),
   following: one(users, {
     fields: [following.followingId],
     references: [users.id],
-    relationName: "asc",
+    relationName: "name",
   }),
 }));
+
 export const follower = pgTable(
   "follower",
   {
-    userId: text("user_id")
-      .references(() => users.id)
-      .notNull(),
-    followerId: text("follower_id")
-      .references(() => users.id)
-      .notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id),
+    followerId: text("followerId")
+      .notNull()
+      .references(() => users.id),
   },
   (table) => ({
-    cpk: primaryKey(table.userId, table.followerId),
+    pk: primaryKey(table.userId, table.followerId),
   })
 );
 
@@ -144,22 +147,22 @@ export const followerRelations = relations(follower, ({ one }) => ({
 export const accounts = pgTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 }).notNull(),
-    type: varchar("type", { length: 255 })
-      .$type<AdapterAccount["type"]>()
-      .notNull(),
-    provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: int("expires_at"),
-    token_type: varchar("token_type", { length: 255 }),
-    scope: varchar("scope", { length: 255 }),
-    id_token: text("id_token"),
-    session_state: varchar("session_state", { length: 255 }),
+    userId: text("userId")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    type: varchar("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: varchar("provider").notNull(),
+    providerAccountId: varchar("providerAccountId").notNull(),
+    refresh_token: varchar("refresh_token"),
+    access_token: varchar("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: varchar("token_type"),
+    scope: varchar("scope"),
+    id_token: varchar("id_token"),
+    session_state: varchar("session_state"),
   },
   (account) => ({
-    compoundKey: primaryKey(account.provider, account.providerAccountId),
+    // pk: primaryKey(account.provider, account.providerAccountId),
     userIdIdx: index("userId_idx").on(account.userId),
   })
 );
@@ -171,10 +174,8 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessions = pgTable(
   "session",
   {
-    sessionToken: varchar("sessionToken", { length: 255 })
-      .notNull()
-      .primaryKey(),
-    userId: varchar("userId", { length: 255 }).notNull(),
+    sessionToken: varchar("sessionToken").notNull().primaryKey(),
+    userId: text("userId"),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (session) => ({
@@ -189,22 +190,24 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 export const verificationTokens = pgTable(
   "verificationToken",
   {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
+    identifier: varchar("identifier").notNull(),
+    token: varchar("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (vt) => ({
-    compoundKey: primaryKey(vt.identifier, vt.token),
+    pk: primaryKey(vt.identifier, vt.token),
   })
 );
 
 // Handle
 export const handles = pgTable("handles", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  handle: varchar("handle", { length: 255 }).notNull(),
-  name: varchar("name", { length: 255 }).notNull(),
-  about: varchar("about", { length: 255 }),
-  userId: varchar("userId", { length: 255 }).notNull(),
+  id: text("id")
+    .default(sql`gen_random_uuid()`)
+    .primaryKey(),
+  handle: varchar("handle").notNull(),
+  name: varchar("name").notNull(),
+  about: varchar("about"),
+  userId: text("userId").notNull(),
   social: json("social").default({
     github: "",
     twitter: "",
@@ -217,23 +220,27 @@ export const handles = pgTable("handles", {
   }),
   appearance: json("appearance").default({
     layout: "MAGAZINE",
+    logo: null,
   }),
 });
 
-export const handlesRelations = relations(handles, ({ one }) => ({
+export const handlesRelations = relations(handles, ({ one, many }) => ({
   user: one(users, { fields: [handles.userId], references: [users.id] }),
+  customTabs: many(customTabs),
 }));
 
 // custom tab
 export const customTabs = pgTable(
   "customTabs",
   {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    label: varchar("label", { length: 255 }).notNull(),
-    type: varchar("type", { length: 255 }).notNull(),
-    value: varchar("value", { length: 255 }).notNull(),
-    priority: int("priority").notNull(),
-    handleId: varchar("handleId", { length: 255 }).notNull(),
+    id: text("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    label: varchar("label").notNull(),
+    type: varchar("type").notNull(),
+    value: varchar("value").notNull(),
+    priority: integer("priority").notNull(),
+    handleId: text("handleId").notNull(),
   },
   (customTabs) => ({
     handleIdIdx: index("handleId_idx").on(customTabs.id),
@@ -250,14 +257,16 @@ export const customTabsRelations = relations(customTabs, ({ one }) => ({
 export const tags = pgTable(
   "tags",
   {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    name: varchar("name", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull(),
-    description: varchar("description", { length: 255 }),
-    followersCount: int("followersCount").notNull(),
-    articlesCount: int("articlesCount").notNull(),
-    logo: varchar("logo", { length: 255 }),
-    // logoKey: varchar("logoKey", { length: 255 }),
+    id: text("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    name: varchar("name").notNull(),
+    slug: varchar("slug").notNull(),
+    description: varchar("description"),
+    followersCount: integer("followersCount").notNull().default(0),
+    articlesCount: integer("articlesCount").notNull().default(0),
+    logo: varchar("logo"),
+    // logoKey: varchar("logoKey"),
     createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
   },
@@ -275,15 +284,15 @@ export const tagsRelations = relations(tags, ({ many }) => ({
 export const tagsToUsers = pgTable(
   "tags_to_users",
   {
-    tagId: varchar("tagId", { length: 255 })
-      .notNull()
-      .references(() => tags.id),
-    userId: varchar("userId", { length: 255 })
-      .notNull()
-      .references(() => users.id),
+    userId: text("userId")
+      .references(() => users.id)
+      .notNull(),
+    tagId: text("tagId")
+      .references(() => tags.id)
+      .notNull(),
   },
   (tagsToUsers) => ({
-    compoundKey: primaryKey(tagsToUsers.tagId, tagsToUsers.userId),
+    pk: primaryKey(tagsToUsers.tagId, tagsToUsers.userId),
   })
 );
 
@@ -301,11 +310,15 @@ export const tagsToUsersRelations = relations(tagsToUsers, ({ one }) => ({
 export const tagsToArticles = pgTable(
   "tags_to_articles",
   {
-    tagId: varchar("tagId", { length: 255 }).notNull(),
-    articleId: varchar("articleId", { length: 255 }).notNull(),
+    tagId: text("tagId")
+      .references(() => tags.id)
+      .notNull(),
+    articleId: text("articleId")
+      .references(() => articles.id)
+      .notNull(),
   },
   (tagsToArticles) => ({
-    compoundKey: primaryKey(tagsToArticles.tagId, tagsToArticles.articleId),
+    pk: primaryKey(tagsToArticles.tagId, tagsToArticles.articleId),
   })
 );
 
@@ -323,13 +336,15 @@ export const tagsToArticlesRelations = relations(tagsToArticles, ({ one }) => ({
 export const comments = pgTable(
   "comments",
   {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    userId: varchar("userId", { length: 255 }).notNull(),
-    articleId: varchar("articleId", { length: 255 }).notNull(),
-    body: varchar("body", { length: 255 }).notNull(),
-    likesCount: int("likesCount").notNull().default(0),
+    id: text("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    userId: text("userId").notNull(),
+    articleId: text("articleId").notNull(),
+    body: varchar("body").notNull(),
+    likesCount: integer("likesCount").notNull().default(0),
     type: commentEnum("type").notNull(),
-    parentId: varchar("parentId", { length: 255 }),
+    parentId: text("parentId"),
     createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
   },
@@ -358,10 +373,10 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
 export const likesToComment = pgTable(
   "likes_to_comments",
   {
-    userId: varchar("user_id")
+    userId: text("userId")
       .notNull()
       .references(() => users.id),
-    commentId: varchar("comment_id")
+    commentId: text("commentId")
       .notNull()
       .references(() => comments.id),
   },
@@ -385,26 +400,28 @@ export const likesToCommentRelations = relations(likesToComment, ({ one }) => ({
 export const articles = pgTable(
   "articles",
   {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    title: varchar("title", { length: 255 }).notNull(),
-    cover_image: varchar("cover_image", { length: 255 }).notNull(),
-    cover_image_key: varchar("cover_image_key", { length: 255 }).notNull(),
-    userId: varchar("userId", { length: 255 }).notNull(),
-    content: varchar("body", { length: 255 }).notNull(),
-    read_time: varchar("body", { length: 255 }).notNull(),
-    seoTitle: varchar("seoTitle", { length: 255 }).notNull(),
+    id: text("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    title: varchar("title").notNull(),
+    cover_image: varchar("cover_image").notNull(),
+    cover_image_key: varchar("cover_image_key").notNull(),
+    userId: text("userId"),
+    content: varchar("body").notNull(),
+    read_time: varchar("body").notNull(),
+    seoTitle: varchar("seoTitle").notNull(),
     seoDescription: varchar("seoDescription"),
     seoOgImage: varchar("seoOgImage"),
     seoOgImageKey: varchar("seoOgImageKey"),
     subtitle: varchar("subtitle"),
     disabledComments: boolean("disabledComments").notNull().default(true),
-    likesCount: int("likesCount").notNull().default(0),
-    slug: varchar("slug", { length: 255 }).notNull(),
-    commentsCount: int("commentsCount").notNull().default(0),
-    readCount: int("readCount").notNull().default(0),
-    idDeleted: boolean("idDeleted").notNull().default(false),
+    likesCount: integer("likesCount").notNull().default(0),
+    slug: varchar("slug").notNull(),
+    commentsCount: integer("commentsCount").notNull().default(0),
+    readCount: integer("readCount").notNull().default(0),
+    isDeleted: boolean("isDeleted").notNull().default(false),
 
-    seriesId: varchar("seriesId", { length: 255 }),
+    seriesId: text("seriesId"),
 
     createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
@@ -433,12 +450,12 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
 export const likesToArticles = pgTable(
   "likes_to_articles",
   {
-    userId: varchar("userId", { length: 255 })
-      .notNull()
-      .references(() => users.id),
-    articleId: varchar("articleId", { length: 255 })
-      .notNull()
-      .references(() => articles.id),
+    userId: text("userId")
+      .references(() => users.id)
+      .notNull(),
+    articleId: text("articleId")
+      .references(() => articles.id)
+      .notNull(),
   },
   (t) => ({
     pk: primaryKey(t.userId, t.articleId),
@@ -462,10 +479,10 @@ export const likesToArticlesRelations = relations(
 export const readersToArticles = pgTable(
   "readers_to_articles",
   {
-    userId: varchar("userId", { length: 255 })
+    userId: text("userId")
       .notNull()
       .references(() => users.id),
-    articleId: varchar("articleId", { length: 255 })
+    articleId: text("articleId")
       .notNull()
       .references(() => articles.id),
   },
@@ -492,15 +509,17 @@ export const readersToArticlesRelations = relations(
 export const stripeEvents = pgTable(
   "stripeEvents",
   {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    type: varchar("type", { length: 255 }).notNull(),
+    id: text("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    type: varchar("type").notNull(),
     data: json("data").notNull(),
     request: json("request").notNull(),
-    pending_webhooks: int("pending_webhooks").notNull(),
+    pending_webhooks: integer("pending_webhooks").notNull(),
     livemode: boolean("livemode").notNull(),
-    api_version: varchar("api_version", { length: 255 }).notNull(),
-    object: varchar("object", { length: 255 }).notNull(),
-    account: varchar("account", { length: 255 }).notNull(),
+    api_version: varchar("api_version").notNull(),
+    object: varchar("object").notNull(),
+    account: varchar("account").notNull(),
     created: timestamp("created", { mode: "date" }).notNull(),
   },
   (stripeEvents) => ({
@@ -512,13 +531,15 @@ export const stripeEvents = pgTable(
 export const series = pgTable(
   "series",
   {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    title: varchar("title", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull(),
-    description: varchar("description", { length: 255 }).notNull(),
-    cover_image: varchar("cover_image", { length: 255 }).notNull(),
+    id: text("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    title: varchar("title").notNull(),
+    slug: varchar("slug").notNull(),
+    description: varchar("description").notNull(),
+    cover_image: varchar("cover_image").notNull(),
 
-    authorId: varchar("authorId", { length: 255 }).notNull(),
+    authorId: text("authorId").notNull(),
 
     createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
@@ -541,19 +562,22 @@ export const seriesRelations = relations(series, ({ one, many }) => ({
 export const notifications = pgTable(
   "notifications",
   {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    type: varchar("type", { length: 255 }).notNull(),
-    isRead: boolean("isRead").notNull(),
+    id: text("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    type: varchar("type").notNull(),
+    isRead: boolean("isRead").default(false),
+
+    body: varchar("body").default(""),
+    slug: varchar("slug").default("").notNull(),
+    title: varchar("title").default(""),
+    articleAuthor: varchar("articleAuthor").default(""),
+
+    userId: text("userId").notNull(),
+    fromId: text("fromId").notNull(),
+
     createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
-
-    body: varchar("body").default("").notNull(),
-    slug: varchar("slug").default("").notNull(),
-    title: varchar("title").default("").notNull(),
-    articleAuthor: varchar("articleAuthor").default("").notNull(),
-
-    userId: varchar("userId", { length: 255 }).notNull(),
-    fromId: varchar("fromId", { length: 255 }).notNull(),
   },
   (notifications) => ({
     userIdIdx: index("userId_idx").on(notifications.id),
@@ -576,11 +600,11 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
 export const verificationToken = pgTable(
   "verificationToken",
   {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
+    identifier: varchar("identifier").notNull(),
+    token: varchar("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (vt) => ({
-    compoundKey: primaryKey(vt.identifier, vt.token),
+    pk: primaryKey(vt.identifier, vt.token),
   })
 );

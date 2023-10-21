@@ -50,3 +50,4 @@ yarn-error.log*
 /data
 /test.html
 /src/server/db/prisma.ref.ts
+/drizzle
