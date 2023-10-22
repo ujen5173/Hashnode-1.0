@@ -1,20 +1,26 @@
-import type { PrismaClient } from "@prisma/client";
+import { eq } from "drizzle-orm";
+import { type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type Stripe from "stripe";
+import type * as schemaFile from "~/server/db/schema";
+import { users } from "~/server/db/schema";
 
 // retrieves a Stripe customer id for a given user if it exists or creates a new one
 export const getOrCreateStripeCustomerIdForUser = async ({
   stripe,
-  prisma,
+  db,
   userId,
 }: {
   stripe: Stripe;
-  prisma: PrismaClient;
+  db: NeonHttpDatabase<typeof schemaFile>;
   userId: string;
 }) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
+  // const user = await db.user.findUnique({
+  //   where: {
+  //     id: userId,
+  //   },
+  // });
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
   });
 
   if (!user) throw new Error("User not found");
@@ -34,28 +40,40 @@ export const getOrCreateStripeCustomerIdForUser = async ({
   });
 
   // update with new customer id
-  const updatedUser = await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
+  // const updatedUser = await db.user.update({
+  //   where: {
+  //     id: userId,
+  //   },
+  //   data: {
+  //     stripeCustomerId: customer.id,
+  //   },
+  // });
+  const updatedUser = await db
+    .update(users)
+    .set({
       stripeCustomerId: customer.id,
-    },
-  });
+    })
+    .where(eq(users.id, userId))
+    .returning({
+      stripeCustomerId: users.stripeCustomerId,
+    })
+    .then((res) => res[0]);
 
-  if (updatedUser.stripeCustomerId) {
+  if (updatedUser?.stripeCustomerId) {
     return updatedUser.stripeCustomerId;
+  } else {
+    return undefined;
   }
 };
 
 export const handleInvoicePaid = async ({
   event,
   stripe,
-  prisma,
+  db,
 }: {
   event: Stripe.Event;
   stripe: Stripe;
-  prisma: PrismaClient;
+  db: NeonHttpDatabase<typeof schemaFile>;
 }) => {
   const invoice = event.data.object as Stripe.Invoice;
   const subscriptionId = invoice.subscription;
@@ -63,59 +81,83 @@ export const handleInvoicePaid = async ({
     subscriptionId as string
   );
   const userId = subscription.metadata.userId;
+  if (!userId) return;
 
   // update user with subscription data
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
+  // await db.user.update({
+  //   where: {
+  //     id: userId,
+  //   },
+  //   data: {
+  //     stripeSubscriptionId: subscription.id,
+  //     stripeSubscriptionStatus: subscription.status,
+  //   },
+  // });
+  await db
+    .update(users)
+    .set({
       stripeSubscriptionId: subscription.id,
       stripeSubscriptionStatus: subscription.status,
-    },
-  });
+    })
+    .where(eq(users.id, userId));
 };
 
 export const handleSubscriptionCreatedOrUpdated = async ({
   event,
-  prisma,
+  db,
 }: {
   event: Stripe.Event;
-  prisma: PrismaClient;
+  db: NeonHttpDatabase<typeof schemaFile>;
 }) => {
   const subscription = event.data.object as Stripe.Subscription;
   const userId = subscription.metadata.userId;
+  if (!userId) return;
 
   // update user with subscription data
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
+  await db
+    .update(users)
+    .set({
       stripeSubscriptionId: subscription.id,
       stripeSubscriptionStatus: subscription.status,
-    },
-  });
+    })
+    .where(eq(users.id, userId));
+  // await db.user.update({
+  //   where: {
+  //     id: userId,
+  //   },
+  //   data: {
+  //     stripeSubscriptionId: subscription.id,
+  //     stripeSubscriptionStatus: subscription.status,
+  //   },
+  // });
 };
 
 export const handleSubscriptionCanceled = async ({
   event,
-  prisma,
+  db,
 }: {
   event: Stripe.Event;
-  prisma: PrismaClient;
+  db: NeonHttpDatabase<typeof schemaFile>;
 }) => {
   const subscription = event.data.object as Stripe.Subscription;
   const userId = subscription.metadata.userId;
+  if (!userId) return;
 
   // remove subscription data from user
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
+  // await db.user.update({
+  //   where: {
+  //     id: userId,
+  //   },
+  //   data: {
+  //     stripeSubscriptionId: null,
+  //     stripeSubscriptionStatus: null,
+  //   },
+  // });
+  await db
+    .update(users)
+    .set({
       stripeSubscriptionId: null,
       stripeSubscriptionStatus: null,
-    },
-  });
+    })
+    .where(eq(users.id, userId));
 };

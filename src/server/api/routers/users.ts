@@ -1,151 +1,137 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { follower, following, users } from "~/server/db/schema";
+import { users } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
 export const usersRouter = createTRPCRouter({
-  followUser: publicProcedure
-    .input(
-      z.object({
-        username: z.string().trim(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      //TODO: NOT WORKING!!
-      const targetUser = await ctx.db.query.users.findFirst({
-        where: eq(
-          users.username,
-          input.username.slice(1, input.username.length)
-        ),
-        columns: {
-          id: true,
-          username: true,
-          followersCount: true,
-          followingCount: true,
-        },
-        with: {
-          following: true,
-          follower: true,
-        },
-      });
+  // followUser: publicProcedure
+  //   .input(
+  //     z.object({
+  //       username: z.string().trim(),
+  //     })
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     //TODO: NOT WORKING!!
+  //     const targetUser = await ctx.db.query.users.findFirst({
+  //       where: eq(
+  //         users.username,
+  //         input.username.slice(1, input.username.length)
+  //       ),
+  //       with: {
+  //         following: true,
+  //         followers: true,
+  //       },
+  //       columns: {
+  //         id: true,
+  //         username: true,
+  //         followersCount: true,
+  //         followingCount: true,
+  //       },
+  //     });
 
-      const currentUser = await ctx.db.query.users.findFirst({
-        where: eq(users.id, "2802f8f4-e46c-4497-9563-b3a6089a3f96"), // session user
-        columns: {
-          id: true,
-          username: true,
-          followersCount: true,
-          followingCount: true,
-        },
-        with: {
-          following: true,
-          follower: true,
-        },
-      });
+  //     const currentUser = await ctx.db.query.users.findFirst({
+  //       where: eq(users.id, "2802f8f4-e46c-4497-9563-b3a6089a3f96"), // session user
+  //       with: {
+  //         following: true,
+  //         followers: true,
+  //       },
+  //       columns: {
+  //         id: true,
+  //         username: true,
+  //         followersCount: true,
+  //         followingCount: true,
+  //       },
+  //     });
 
-      if (!targetUser || !currentUser)
-        return {
-          success: false,
-          message: "User not found",
-          status: 404,
-        };
+  //     if (!targetUser || !currentUser)
+  //       return {
+  //         success: false,
+  //         message: "User not found",
+  //         status: 404,
+  //       };
 
-      const isFollowing = targetUser?.follower.some(
-        (follower) => follower.followingId === currentUser.id
-      )
-        ? true
-        : false;
+  //     const isFollowing = targetUser?.following.some(
+  //       (following) => following.followingId === currentUser.id
+  //     )
+  //       ? true
+  //       : false;
 
-      const targetedUserCountUpdate = ctx.db
-        .update(users)
-        .set({
-          followersCount: isFollowing
-            ? (targetUser?.followersCount || 0) - 1
-            : (targetUser?.followersCount || 0) + 1,
-        })
-        .where(
-          eq(users.username, input.username.slice(1, input.username.length))
-        );
+  //     const targetedUserCountUpdate = ctx.db
+  //       .update(users)
+  //       .set({
+  //         followersCount: isFollowing
+  //           ? (targetUser?.followersCount || 0) - 1
+  //           : (targetUser?.followersCount || 0) + 1,
+  //       })
+  //       .where(
+  //         eq(users.username, input.username.slice(1, input.username.length))
+  //       );
 
-      const sessionUsercountUpdate = ctx.db
-        .update(users)
-        .set({
-          followingCount: isFollowing
-            ? (currentUser?.followingCount || 0) - 1
-            : (currentUser?.followingCount || 0) + 1,
-        })
-        .where(eq(users.username, currentUser.username));
+  //     const sessionUsercountUpdate = ctx.db
+  //       .update(users)
+  //       .set({
+  //         followingCount: isFollowing
+  //           ? (currentUser?.followingCount || 0) - 1
+  //           : (currentUser?.followingCount || 0) + 1,
+  //       })
+  //       .where(eq(users.username, currentUser.username));
 
-      isFollowing
-        ? (() => {
-            const followUpdate1 = ctx.db
-              .delete(follower)
-              .where(
-                and(
-                  eq(follower.userId, currentUser.id),
-                  eq(follower.followerId, targetUser.id)
-                )
-              );
-            const followUpdate2 = ctx.db
-              .delete(following)
-              .where(
-                and(
-                  eq(following.followingId, currentUser.id),
-                  eq(following.userId, targetUser.id)
-                )
-              );
-            const res = Promise.all([
-              targetedUserCountUpdate,
-              sessionUsercountUpdate,
-              followUpdate1,
-              followUpdate2,
-            ]);
+  //     isFollowing
+  //       ? (() => {
+  //           const followUpdate = ctx.db
+  //             .delete(following)
+  //             .where(
+  //               and(
+  //                 eq(following.followingId, currentUser.id),
+  //                 eq(following.userId, targetUser.id)
+  //               )
+  //             );
+  //           const res = Promise.all([
+  //             targetedUserCountUpdate,
+  //             sessionUsercountUpdate,
+  //             followUpdate,
+  //           ]);
 
-            console.log({ res });
-          })()
-        : (() => {
-            const followUpdate1 = ctx.db.insert(follower).values({
-              followerId: targetUser.id,
-              userId: currentUser.id,
-            });
-            const followUpdate2 = ctx.db.insert(following).values({
-              followingId: currentUser.id,
-              userId: targetUser.id,
-            });
-            const res = Promise.all([
-              targetedUserCountUpdate,
-              sessionUsercountUpdate,
-              followUpdate1,
-              followUpdate2,
-            ]);
+  //           console.log({ res });
+  //         })()
+  //       : (() => {
+  //           const followUpdate = ctx.db.insert(following).values({
+  //             followingId: targetUser.id,
+  //             userId: currentUser.id,
+  //           });
+  //           const res = Promise.all([
+  //             targetedUserCountUpdate,
+  //             sessionUsercountUpdate,
+  //             followUpdate,
+  //           ]);
 
-            console.log({ res });
-          })();
+  //           console.log({ res });
+  //         })();
 
-      // console.log({ countUpdate, followUpdate });
+  //     // console.log({ countUpdate, followUpdate });
 
-      return {
-        success: true,
-        message: "User Followed",
-        status: 200,
-      };
-    }),
+  //     return {
+  //       success: true,
+  //       message: "User Followed",
+  //       status: 200,
+  //     };
+  //   }),
 
   getUser: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.query.users.findFirst({
       where: eq(users.id, "1d9f5a85-fc4a-4a10-a790-8ee65216dfba"),
       with: {
-        following: {
-          columns: {
-            userId: true,
-          },
-        },
-        follower: {
-          columns: {
-            userId: true,
-          },
-        },
+        // following: {
+        //   columns: {
+        //     userId: true,
+        //   },
+        // },
+        // followers: {
+        //   columns: {
+        //     userId: true,
+        //   },
+        // },
       },
     });
     return user;
@@ -190,13 +176,13 @@ export const usersRouter = createTRPCRouter({
           input.username.slice(1, input.username.length)
         ),
         with: {
-          following: true,
+          // following: true,
+          // followers: true,
           handle: {
             with: {
               customTabs: true,
             },
           },
-          follower: true,
         },
       });
 

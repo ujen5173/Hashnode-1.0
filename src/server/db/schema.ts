@@ -80,69 +80,41 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   readArtices: many(readersToArticles),
   likedArticles: many(likesToArticles),
   likedComments: many(likesToComment),
-  following: many(following, {
-    relationName: "name",
-  }),
-  follower: many(following, {
-    relationName: "name",
-  }),
+  // following: many(follow, {
+  //   relationName: "follow",
+  // }),
+  // followers: many(follow, {
+  //   relationName: "followedBy",
+  // }),
 }));
 
-export const following = pgTable(
-  "following",
-  {
-    userId: text("userId")
-      .references(() => users.id)
-      .notNull(),
-    followingId: text("followingId")
-      .references(() => users.id)
-      .notNull(),
-  },
-  (table) => ({
-    pk: primaryKey(table.userId, table.followingId),
-  })
-);
+// export const follow = pgTable(
+//   "follow",
+//   {
+//     userId: text("userId")
+//       .references(() => users.id)
+//       .notNull(),
+//     followingId: text("followingId")
+//       .references(() => users.id)
+//       .notNull(),
+//   },
+//   (table) => ({
+//     pk: primaryKey(table.userId, table.followingId),
+//   })
+// );
 
-export const followingRelations = relations(following, ({ one }) => ({
-  user: one(users, {
-    fields: [following.userId],
-    references: [users.id],
-    relationName: "asc",
-  }),
-  following: one(users, {
-    fields: [following.followingId],
-    references: [users.id],
-    relationName: "name",
-  }),
-}));
-
-export const follower = pgTable(
-  "follower",
-  {
-    userId: text("userId")
-      .notNull()
-      .references(() => users.id),
-    followerId: text("followerId")
-      .notNull()
-      .references(() => users.id),
-  },
-  (table) => ({
-    pk: primaryKey(table.userId, table.followerId),
-  })
-);
-
-export const followerRelations = relations(follower, ({ one }) => ({
-  user: one(users, {
-    fields: [follower.userId],
-    references: [users.id],
-    relationName: "name",
-  }),
-  follower: one(users, {
-    fields: [follower.followerId],
-    references: [users.id],
-    relationName: "asc",
-  }),
-}));
+// export const followRelations = relations(follow, ({ one }) => ({
+//   user: one(users, {
+//     fields: [follow.userId],
+//     references: [users.id],
+//     relationName: "followers",
+//   }),
+//   following: one(users, {
+//     fields: [follow.followingId],
+//     references: [users.id],
+//     relationName: "following",
+//   }),
+// }));
 
 export const accounts = pgTable(
   "account",
@@ -267,8 +239,8 @@ export const tags = pgTable(
     articlesCount: integer("articlesCount").notNull().default(0),
     logo: varchar("logo"),
     // logoKey: varchar("logoKey"),
-    createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
-    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   },
   (tags) => ({
     nameIdx: index("name_idx").on(tags.name),
@@ -332,6 +304,7 @@ export const tagsToArticlesRelations = relations(tagsToArticles, ({ one }) => ({
     references: [tags.id],
   }),
 }));
+
 // comment
 export const comments = pgTable(
   "comments",
@@ -345,8 +318,8 @@ export const comments = pgTable(
     likesCount: integer("likesCount").notNull().default(0),
     type: commentEnum("type").notNull(),
     parentId: text("parentId"),
-    createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
-    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   },
   (comments) => ({
     userIdIdx: index("userId_idx").on(comments.id),
@@ -406,9 +379,9 @@ export const articles = pgTable(
     title: varchar("title").notNull(),
     cover_image: varchar("cover_image").notNull(),
     cover_image_key: varchar("cover_image_key").notNull(),
-    userId: text("userId"),
+    userId: text("userId").notNull(),
     content: varchar("body").notNull(),
-    read_time: varchar("body").notNull(),
+    read_time: integer("read_time").notNull(),
     seoTitle: varchar("seoTitle").notNull(),
     seoDescription: varchar("seoDescription"),
     seoOgImage: varchar("seoOgImage"),
@@ -423,8 +396,8 @@ export const articles = pgTable(
 
     seriesId: text("seriesId"),
 
-    createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
-    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   },
   (articles) => ({
     userIdIdx: index("userId_idx").on(articles.id),
@@ -536,13 +509,13 @@ export const series = pgTable(
       .primaryKey(),
     title: varchar("title").notNull(),
     slug: varchar("slug").notNull(),
-    description: varchar("description").notNull(),
-    cover_image: varchar("cover_image").notNull(),
+    description: varchar("description"),
+    cover_image: varchar("cover_image"),
 
     authorId: text("authorId").notNull(),
 
-    createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
-    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   },
   (series) => ({
     userIdIdx: index("userId_idx").on(series.id),
@@ -576,8 +549,8 @@ export const notifications = pgTable(
     userId: text("userId").notNull(),
     fromId: text("fromId").notNull(),
 
-    createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
-    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   },
   (notifications) => ({
     userIdIdx: index("userId_idx").on(notifications.id),
@@ -585,12 +558,12 @@ export const notifications = pgTable(
 );
 
 export const notificationsRelations = relations(notifications, ({ one }) => ({
-  notifications: one(users, {
+  userId: one(users, {
     fields: [notifications.userId],
     references: [users.id],
     relationName: "notifications",
   }),
-  notificationsFrom: one(users, {
+  fromId: one(users, {
     fields: [notifications.fromId],
     references: [users.id],
     relationName: "notificationsFrom",
