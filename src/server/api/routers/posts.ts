@@ -1,6 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import readingTime from "reading-time";
-import slugify from "slugify";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import {
@@ -8,22 +6,26 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { selectArticleCard, slugSetting } from "~/utils/constants";
 import {
   refactorActivityHelper,
   type Activity,
 } from "./../../../utils/microFunctions";
 // import type * as schemaFile from "~/server/db/schema"
 import { and, desc, eq, gt, ilike, inArray, lt } from "drizzle-orm";
+import readingTime from "reading-time";
+import slugify from "slugify";
 import {
   articles,
+  customTabs,
   handles,
-  notifications,
   readersToArticles,
+  series,
   tags,
   tagsToArticles,
+  tagsToUsers,
   users,
 } from "~/server/db/schema";
+import { slugSetting } from "~/utils/constants";
 
 // const getArticlesWithUserFollowingProfiles = async (
 //   ctx: {
@@ -118,6 +120,20 @@ const searchResponseFormater = (
 };
 
 export const postsRouter = createTRPCRouter({
+  deleteAll: publicProcedure.mutation(async ({ ctx }) => {
+    await ctx.db.delete(customTabs);
+    await ctx.db.delete(series);
+    await ctx.db.delete(tagsToUsers);
+    await ctx.db.delete(handles);
+    await ctx.db.delete(tagsToArticles);
+    await ctx.db.delete(tags);
+    await ctx.db.delete(articles);
+    await ctx.db.delete(users);
+    return {
+      success: true,
+    };
+  }),
+
   getAll: publicProcedure
     .input(
       z.object({
@@ -231,6 +247,10 @@ export const postsRouter = createTRPCRouter({
               },
             },
             tags: {
+              columns: {
+                articleId: false,
+                tagId: false,
+              },
               with: {
                 tag: {
                   columns: {
@@ -260,6 +280,8 @@ export const postsRouter = createTRPCRouter({
             },
           },
         });
+
+        console.log(result);
 
         let nextCursor: typeof cursor | undefined = undefined;
         if (result.length > limit) {
@@ -494,23 +516,24 @@ export const postsRouter = createTRPCRouter({
           .default([]),
       })
     )
-    .query(async ({ ctx, input }) => {
-      return await getArticlesWithUserFollowingProfiles(
-        {
-          session: ctx.session,
-          prisma: ctx.prisma,
-        },
-        await ctx.prisma.article.findMany({
-          where: {
-            isDeleted: false,
-            id: {
-              in: input.ids.map((id) => id.id),
-            },
-          },
-          select: selectArticleCard,
-          take: 15,
-        })
-      );
+    .query(({ ctx, input }) => {
+      return [];
+      // return await getArticlesWithUserFollowingProfiles(
+      //   {
+      //     session: ctx.session,
+      //     prisma: ctx.prisma,
+      //   },
+      //   await ctx.prisma.article.findMany({
+      //     where: {
+      //       isDeleted: false,
+      //       id: {
+      //         in: input.ids.map((id) => id.id),
+      //       },
+      //     },
+      //     select: selectArticleCard,
+      //     take: 15,
+      //   })
+      // );
     }),
 
   getBookmarks: publicProcedure
@@ -724,7 +747,7 @@ export const postsRouter = createTRPCRouter({
         //     subtitle: true,
         //     content: true,
         //     cover_image: true,
-        //     cover_imageKey: true,
+        //     cover_image_Key: true,
         //     slug: true,
         //     seoTitle: true,
         //     disabledComments: true,
@@ -818,7 +841,7 @@ export const postsRouter = createTRPCRouter({
       }
     }),
 
-  new: protectedProcedure
+  new: publicProcedure
     .input({
       ...z.object({
         title: z
@@ -830,154 +853,155 @@ export const postsRouter = createTRPCRouter({
           .string()
           .min(25, "Content should be atleast of 25 characters")
           .trim(),
-        cover_image: z.string().nullable(),
-        cover_imageKey: z.string().nullable(),
+        cover_image: z.string().optional(),
+        cover_image_Key: z.string().optional(),
         tags: z.array(z.string().trim()).default([]),
         slug: z.string().trim(),
-        series: z.string().nullable(),
+        seriesId: z.string().optional(),
         seoTitle: z.string().trim(),
         seoDescription: z.string().trim(),
-        seoOgImage: z.string().trim().nullable(),
-        disabledComments: z.boolean().default(false),
+        seoOgImage: z.string().trim().optional(),
+        disabledComments: z.boolean().default(false).optional(),
 
         edit: z.boolean(), //? article is being edited or created
+        userId: z.string(),
       }),
     })
     .mutation(async ({ ctx, input }) => {
       try {
-        // const existingArticle = await ctx.prisma.article.findFirst({
-        //   where: {
-        //     slug: slug,
-        //   },
-        // });
-
         const existingArticle = await ctx.db.query.articles.findFirst({
           where: eq(articles.slug, input.slug),
+          columns: {
+            id: true,
+          },
+          with: {
+            tags: {
+              with: {
+                tag: {
+                  columns: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
         });
 
-        if (existingArticle && !input.edit) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Article with this title already exists",
-          });
-        }
-
-        // Check if tags exist or create them if necessary
-        const tagPromises = input.tags.map(async (tag) => {
-          // const existingTag = await ctx.prisma.tag.findFirst({
-          //   where: {
-          //     slug: slugify(tag, slugSetting),
-          //   },
-          // });
-          const existingTag = ctx.db.query.tags.findFirst({
-            where: eq(tags.slug, slugify(tag, slugSetting)),
-          });
-
-          if (!existingTag) {
-            // const createdTag = await ctx.prisma.tag.create({
-            //   data: {
-            //     name: tag,
-            //     slug: slugify(tag, slugSetting),
-            //     articlesCount: 1,
-            //   },
-            // });
-            const createdTag = ctx.db.insert(tags).values({
+        console.log({ existingArticle });
+        // check for not registered tags
+        const allTags = await ctx.db
+          .insert(tags)
+          .values([
+            ...input.tags.map((tag) => ({
               name: tag,
               slug: slugify(tag, slugSetting),
-              articlesCount: 1,
-            });
+            })),
+          ])
+          .onConflictDoNothing()
+          .returning({
+            id: tags.id,
+          });
 
-            return createdTag;
-          }
+        const { edit, tags: _, ...rest } = input;
 
-          // await ctx.prisma.tag.update({
-          //   where: {
-          //     name: tag,
-          //   },
-          //   data: {
-          //     articlesCount: {
-          //       increment: 1,
-          //     },
-          //   },
-          // });
-          ctx.db
-            .update(tags)
-            .set({
-              articlesCount: tags.articlesCount._.data + 1,
-            })
-            .where(eq(tags.name, tag));
-
-          return existingTag;
-        });
-
-        // Wait for all tag operations to complete
-        const createdTags = await Promise.all(tagPromises);
-
-        // Create the article with the created tags
-        const { edit, ...rest } = input;
-
-        const data = {
-          data: {
-            ...rest,
-            //? tags: {
-            //?   connect: createdTags.map((tag) => ({ id: tag.id })),
-            //? },
-            // somthing is wrong in this section
-            //? ...(series && {
-            //?   series: {
-            //?     connect: {
-            //?       title: series,
-            //?     },
-            //?   },
-            //? }),
-            //? user: {
-            //?   connect: {
-            //?     id: ctx.session.user.id,
-            //?   },
-            //? },
-            read_time: Math.ceil(readingTime(input.content).minutes) || 1,
-            slug: input.slug,
-            seoTitle: input.seoTitle || input.title,
-            seoDescription:
-              input.seoDescription ||
-              input.subtitle ||
-              input.content.slice(0, 40),
-            seoOgImage: input.seoOgImage || input.cover_image,
-          },
-          //? include: {
-          //?   user: {
-          //?     select: {
-          //?       username: true,
-          //?       stripeSubscriptionStatus: true,
-          //?       followers: {
-          //?         select: {
-          //?           id: true,
-          //?         },
-          //?       },
-          //?     },
-          //?   },
-          //? },
-        };
-
-        if (edit && existingArticle) {
-          // const res = await ctx.prisma.article.update({
-          //   where: {
-          //     slug: slug,
-          //   },
-          //   ...data,
-          // });
-          await ctx.db.insert(tagsToArticles).values(
-            createdTags.map((tag) => ({
-              articleId: existingArticle.id,
-              tagId: tag.id,
-            }))
-          );
-
-          const res = await ctx.db
+        console.log({ allTags, edit });
+        if (edit && !!existingArticle) {
+          // editing an article
+          console.log("Inside editing condition");
+          console.log({
+            result: {
+              ...rest,
+              read_time: Math.ceil(readingTime(input.content).minutes) || 1,
+              seoTitle: input.seoTitle || input.title,
+              seoDescription:
+                input.seoDescription ||
+                input.subtitle ||
+                input.content.slice(0, 40),
+              seoOgImage: input.seoOgImage || input.cover_image,
+            },
+          });
+          const [updatedArticle] = await ctx.db
             .update(articles)
             .set({
               ...rest,
-              userId: ctx.session.user.id,
+              read_time: Math.ceil(readingTime(input.content).minutes) || 1,
+              seoTitle: input.seoTitle || input.title,
+              seoDescription:
+                input.seoDescription ||
+                input.subtitle ||
+                input.content.slice(0, 40),
+              seoOgImage: input.seoOgImage || input.cover_image,
+            })
+            .where(eq(articles.id, existingArticle.id))
+            .returning({
+              id: articles.id,
+            });
+
+          console.log({ updatedArticle });
+          console.log({
+            res: allTags.map((tag) => ({
+              articleId: updatedArticle?.id as string,
+              tagId: tag.id,
+            })),
+          });
+
+          await ctx.db
+            .insert(tagsToArticles)
+            .values(
+              allTags.map((tag) => ({
+                articleId: updatedArticle?.id as string,
+                tagId: tag.id,
+              }))
+            )
+            .onConflictDoNothing();
+
+          console.log("TagsTOArticles completed!!!");
+
+          const result = await ctx.db.query.articles.findFirst({
+            where: eq(articles.id, updatedArticle?.id as string),
+            columns: {
+              id: true,
+              title: true,
+              subtitle: true,
+              content: true,
+              cover_image: true,
+              cover_image_key: true,
+              slug: true,
+              seoTitle: true,
+              disabledComments: true,
+              seoDescription: true,
+              seoOgImage: true,
+              userId: true,
+              seoOgImageKey: true,
+              seriesId: true,
+            },
+            with: {
+              series: {
+                columns: {
+                  id: true,
+                  title: true,
+                },
+              },
+              tags: {
+                with: {
+                  tag: {
+                    columns: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          return result;
+        } else {
+          // creating article
+          const [newArticle] = await ctx.db
+            .insert(articles)
+            .values({
+              ...rest,
+              userId: input.userId,
               read_time: Math.ceil(readingTime(input.content).minutes) || 1,
               slug: input.slug,
               seoTitle: input.seoTitle || input.title,
@@ -987,61 +1011,66 @@ export const postsRouter = createTRPCRouter({
                 input.content.slice(0, 40),
               seoOgImage: input.seoOgImage || input.cover_image,
             })
-            .where(eq(articles.slug, input.slug));
+            .returning({
+              id: articles.id,
+            });
 
-          return {
-            success: true,
-            redirectLink: `/u/@${ctx.session.user.username}/${res.slug}`,
-          };
-        } else {
-          // const newArticle = await ctx.prisma.article.create(data);
-          // // Notify followers of the user
-          // await ctx.prisma.notification.createMany({
-          //   data: newArticle.user.followers.map((follower) => ({
-          //     userId: follower.id,
-          //     type: NotificationTypes.NEW_ARTICLE,
-          //     body: `@${ctx.session.user.username} published a new article`,
-          //     title: newArticle.title,
-          //     slug: newArticle.slug,
-          //     articleAuthor: newArticle.user.username,
-          //     isRead: false,
-          //     fromId: ctx.session.user.id,
-          //   })),
-          // });
-          const newArticle = await ctx.db.insert(articles).values({
-            ...rest,
-            userId: ctx.session.user.id,
-            read_time: Math.ceil(readingTime(input.content).minutes) || 1,
-            slug: input.slug,
-            seoTitle: input.seoTitle || input.title,
-            seoDescription:
-              input.seoDescription ||
-              input.subtitle ||
-              input.content.slice(0, 40),
-            seoOgImage: input.seoOgImage || input.cover_image,
-          });
+          if (!newArticle) return;
 
-          await ctx.db.insert(notifications).values(
-            newArticle.user.followers.map((follower) => ({
-              userId: follower.id,
-              type: NotificationTypes.NEW_ARTICLE,
-              body: `@${ctx.session.user.username} published a new article`,
-              title: newArticle.title,
-              slug: newArticle.slug,
-              articleAuthor: newArticle.user.username,
-              isRead: false,
-              fromId: ctx.session.user.id,
+          await ctx.db.insert(tagsToArticles).values(
+            allTags.map((tag) => ({
+              articleId: newArticle.id,
+              tagId: tag.id,
             }))
           );
 
-          return {
-            success: true,
-            redirectLink: `/u/@${ctx.session.user.username}/${newArticle.slug}`,
-          };
+          const result = await ctx.db.query.articles.findFirst({
+            where: eq(articles.id, newArticle.id),
+            columns: {
+              id: true,
+              title: true,
+              subtitle: true,
+              content: true,
+              cover_image: true,
+              cover_image_key: true,
+              slug: true,
+              seoTitle: true,
+              disabledComments: true,
+              seoDescription: true,
+              seoOgImage: true,
+              userId: true,
+              seoOgImageKey: true,
+              seriesId: true,
+            },
+            with: {
+              series: {
+                columns: {
+                  id: true,
+                  title: true,
+                },
+              },
+              tags: {
+                columns: {
+                  articleId: false,
+                  tagId: false,
+                },
+                with: {
+                  tag: {
+                    columns: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          return result;
         }
-      } catch (error) {
-        if (error instanceof TRPCError) {
-          throw error;
+      } catch (err) {
+        console.log({ err });
+        if (err instanceof TRPCError) {
+          throw err;
         } else {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
@@ -1144,202 +1173,202 @@ export const postsRouter = createTRPCRouter({
         query: z.string().trim(),
       })
     )
-    .query(async ({ ctx, input }) => {
-      const { query, type } = input;
-      let result = null;
-      switch (type) {
-        case "TAGS":
-          const tags = await ctx.prisma.tag.findMany({
-            where: {
-              OR: [
-                { name: { contains: query } },
-                { slug: { contains: query } },
-                { description: { contains: query } },
-              ],
-            },
-            take: 6,
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              followers: {
-                select: {
-                  id: true,
-                },
-              },
-            },
-          });
+    .query(({ ctx, input }) => {
+      // const { query, type } = input;
+      // let result = null;
+      // switch (type) {
+      //   case "TAGS":
+      //     const tags = await ctx.prisma.tag.findMany({
+      //       where: {
+      //         OR: [
+      //           { name: { contains: query } },
+      //           { slug: { contains: query } },
+      //           { description: { contains: query } },
+      //         ],
+      //       },
+      //       take: 6,
+      //       select: {
+      //         id: true,
+      //         name: true,
+      //         slug: true,
+      //         followers: {
+      //           select: {
+      //             id: true,
+      //           },
+      //         },
+      //       },
+      //     });
 
-          const response = tags.map((e) => {
-            return searchResponseFormater(
-              e,
-              null,
-              ctx.session?.user?.id as string
-            );
-          });
+      //     const response = tags.map((e) => {
+      //       return searchResponseFormater(
+      //         e,
+      //         null,
+      //         ctx.session?.user?.id as string
+      //       );
+      //     });
 
-          result = {
-            users: null,
-            tags: response,
-            articles: null,
-          };
-          break;
+      //     result = {
+      //       users: null,
+      //       tags: response,
+      //       articles: null,
+      //     };
+      //     break;
 
-        case "USERS":
-          const users = await ctx.prisma.user.findMany({
-            where: {
-              OR: [
-                { name: { contains: query, mode: "insensitive" } },
-                { username: { contains: query, mode: "insensitive" } },
-              ],
-            },
-            take: 6,
-            select: {
-              id: true,
-              name: true,
-              username: true,
-              profile: true,
-              stripeSubscriptionStatus: true,
-              followers: {
-                select: {
-                  id: true,
-                },
-              },
-            },
-          });
+      //   case "USERS":
+      //     const users = await ctx.prisma.user.findMany({
+      //       where: {
+      //         OR: [
+      //           { name: { contains: query, mode: "insensitive" } },
+      //           { username: { contains: query, mode: "insensitive" } },
+      //         ],
+      //       },
+      //       take: 6,
+      //       select: {
+      //         id: true,
+      //         name: true,
+      //         username: true,
+      //         profile: true,
+      //         stripeSubscriptionStatus: true,
+      //         followers: {
+      //           select: {
+      //             id: true,
+      //           },
+      //         },
+      //       },
+      //     });
 
-          const res = users.map((e) => {
-            return searchResponseFormater(
-              null,
-              e,
-              ctx.session?.user?.id as string
-            );
-          });
+      //     const res = users.map((e) => {
+      //       return searchResponseFormater(
+      //         null,
+      //         e,
+      //         ctx.session?.user?.id as string
+      //       );
+      //     });
 
-          result = {
-            users: res,
-            tags: null,
-            articles: null,
-          };
-          break;
+      //     result = {
+      //       users: res,
+      //       tags: null,
+      //       articles: null,
+      //     };
+      //     break;
 
-        default:
-          const articles = ctx.prisma.article.findMany({
-            where: {
-              isDeleted: false,
+      //   default:
+      //     const articles = ctx.prisma.article.findMany({
+      //       where: {
+      //         isDeleted: false,
 
-              OR: [
-                { title: { contains: query, mode: "insensitive" } },
-                { slug: { contains: query, mode: "insensitive" } },
-                {
-                  tags: {
-                    some: { name: { contains: query, mode: "insensitive" } },
-                  },
-                },
-                {
-                  user: {
-                    OR: [
-                      { username: { contains: query, mode: "insensitive" } },
-                      { name: { contains: query, mode: "insensitive" } },
-                    ],
-                  },
-                },
-              ],
-            },
-            take: 6,
-            select: {
-              id: true,
-              title: true,
-              user: {
-                select: {
-                  name: true,
-                  username: true,
-                  profile: true,
-                  id: true,
-                  stripeSubscriptionStatus: true,
-                },
-              },
-              cover_image: true,
-              slug: true,
-              createdAt: true,
-              read_time: true,
-              updatedAt: true,
-              likesCount: true,
-              commentsCount: true,
-            },
-            orderBy: [
-              type === "LATEST"
-                ? { createdAt: "desc" }
-                : { likesCount: "desc" },
-            ],
-          });
+      //         OR: [
+      //           { title: { contains: query, mode: "insensitive" } },
+      //           { slug: { contains: query, mode: "insensitive" } },
+      //           {
+      //             tags: {
+      //               some: { name: { contains: query, mode: "insensitive" } },
+      //             },
+      //           },
+      //           {
+      //             user: {
+      //               OR: [
+      //                 { username: { contains: query, mode: "insensitive" } },
+      //                 { name: { contains: query, mode: "insensitive" } },
+      //               ],
+      //             },
+      //           },
+      //         ],
+      //       },
+      //       take: 6,
+      //       select: {
+      //         id: true,
+      //         title: true,
+      //         user: {
+      //           select: {
+      //             name: true,
+      //             username: true,
+      //             profile: true,
+      //             id: true,
+      //             stripeSubscriptionStatus: true,
+      //           },
+      //         },
+      //         cover_image: true,
+      //         slug: true,
+      //         createdAt: true,
+      //         read_time: true,
+      //         updatedAt: true,
+      //         likesCount: true,
+      //         commentsCount: true,
+      //       },
+      //       orderBy: [
+      //         type === "LATEST"
+      //           ? { createdAt: "desc" }
+      //           : { likesCount: "desc" },
+      //       ],
+      //     });
 
-          const tagsSearch = ctx.prisma.tag.findMany({
-            where: {
-              OR: [
-                { name: { contains: query } },
-                { slug: { contains: query } },
-                { description: { contains: query } },
-              ],
-            },
-            take: 6,
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              followers: {
-                select: {
-                  id: true,
-                },
-              },
-            },
-          });
+      //     const tagsSearch = ctx.prisma.tag.findMany({
+      //       where: {
+      //         OR: [
+      //           { name: { contains: query } },
+      //           { slug: { contains: query } },
+      //           { description: { contains: query } },
+      //         ],
+      //       },
+      //       take: 6,
+      //       select: {
+      //         id: true,
+      //         name: true,
+      //         slug: true,
+      //         followers: {
+      //           select: {
+      //             id: true,
+      //           },
+      //         },
+      //       },
+      //     });
 
-          const usersSearch = ctx.prisma.user.findMany({
-            where: {
-              OR: [
-                { name: { contains: query, mode: "insensitive" } },
-                { username: { contains: query, mode: "insensitive" } },
-              ],
-            },
-            take: 6,
-            select: {
-              id: true,
-              name: true,
-              username: true,
-              stripeSubscriptionStatus: true,
-              profile: true,
-              followers: {
-                select: {
-                  id: true,
-                },
-              },
-            },
-          });
+      //     const usersSearch = ctx.prisma.user.findMany({
+      //       where: {
+      //         OR: [
+      //           { name: { contains: query, mode: "insensitive" } },
+      //           { username: { contains: query, mode: "insensitive" } },
+      //         ],
+      //       },
+      //       take: 6,
+      //       select: {
+      //         id: true,
+      //         name: true,
+      //         username: true,
+      //         stripeSubscriptionStatus: true,
+      //         profile: true,
+      //         followers: {
+      //           select: {
+      //             id: true,
+      //           },
+      //         },
+      //       },
+      //     });
 
-          const [articlesRes, tagsRes, usersRes] =
-            await ctx.prisma.$transaction([articles, tagsSearch, usersSearch]);
+      //     const [articlesRes, tagsRes, usersRes] =
+      //       await ctx.prisma.$transaction([articles, tagsSearch, usersSearch]);
 
-          result = {
-            users: usersRes.map((e) => {
-              return searchResponseFormater(
-                null,
-                e,
-                ctx.session?.user?.id as string
-              );
-            }),
-            tags: tagsRes.map((e) => {
-              return searchResponseFormater(
-                e,
-                null,
-                ctx.session?.user?.id as string
-              );
-            }),
-            articles: articlesRes,
-          };
-      }
+      //     result = {
+      //       users: usersRes.map((e) => {
+      //         return searchResponseFormater(
+      //           null,
+      //           e,
+      //           ctx.session?.user?.id as string
+      //         );
+      //       }),
+      //       tags: tagsRes.map((e) => {
+      //         return searchResponseFormater(
+      //           e,
+      //           null,
+      //           ctx.session?.user?.id as string
+      //         );
+      //       }),
+      //       articles: articlesRes,
+      //     };
+      // }
 
-      return result;
+      return [];
     }),
 
   trendingArticles: publicProcedure
@@ -1351,66 +1380,67 @@ export const postsRouter = createTRPCRouter({
         variant: z.enum(["week", "month", "year", "any"]).default("any"),
       })
     )
-    .query(async ({ ctx, input }) => {
-      try {
-        const { cursor, skip, limit } = input;
-        const startDate = new Date();
-        const endDate = new Date();
+    .query(({ ctx, input }) => {
+      return [];
+      // try {
+      //   const { cursor, skip, limit } = input;
+      //   const startDate = new Date();
+      //   const endDate = new Date();
 
-        if (input?.variant === "week") {
-          startDate.setDate(startDate.getDate() - 7);
-        } else if (input?.variant === "month") {
-          startDate.setMonth(startDate.getMonth() - 1);
-        } else if (input?.variant === "year") {
-          startDate.setFullYear(startDate.getFullYear() - 1);
-        }
-        const articles = await ctx.prisma.article.findMany({
-          where: {
-            isDeleted: false,
-            ...(input?.variant === "any"
-              ? {}
-              : {
-                  createdAt: {
-                    gte: startDate,
-                    lte: endDate,
-                  },
-                }),
-          },
-          take: (limit || 6) + 1,
-          skip: skip,
-          cursor: cursor ? { id: cursor } : undefined,
-          select: selectArticleCard,
-          orderBy: [
-            { likesCount: "desc" },
-            { commentsCount: "desc" },
-            { createdAt: "desc" },
-          ],
-        });
+      //   if (input?.variant === "week") {
+      //     startDate.setDate(startDate.getDate() - 7);
+      //   } else if (input?.variant === "month") {
+      //     startDate.setMonth(startDate.getMonth() - 1);
+      //   } else if (input?.variant === "year") {
+      //     startDate.setFullYear(startDate.getFullYear() - 1);
+      //   }
+      //   const articles = await ctx.prisma.article.findMany({
+      //     where: {
+      //       isDeleted: false,
+      //       ...(input?.variant === "any"
+      //         ? {}
+      //         : {
+      //             createdAt: {
+      //               gte: startDate,
+      //               lte: endDate,
+      //             },
+      //           }),
+      //     },
+      //     take: (limit || 6) + 1,
+      //     skip: skip,
+      //     cursor: cursor ? { id: cursor } : undefined,
+      //     select: selectArticleCard,
+      //     orderBy: [
+      //       { likesCount: "desc" },
+      //       { commentsCount: "desc" },
+      //       { createdAt: "desc" },
+      //     ],
+      //   });
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (articles.length > limit) {
-          const nextItem = articles.pop(); // return the last item from the array
-          nextCursor = nextItem?.id;
-        }
+      //   let nextCursor: typeof cursor | undefined = undefined;
+      //   if (articles.length > limit) {
+      //     const nextItem = articles.pop(); // return the last item from the array
+      //     nextCursor = nextItem?.id;
+      //   }
 
-        const formattedPosts = await getArticlesWithUserFollowingProfiles(
-          {
-            session: ctx.session,
-            prisma: ctx.prisma,
-          },
-          articles
-        );
+      //   const formattedPosts = await getArticlesWithUserFollowingProfiles(
+      //     {
+      //       session: ctx.session,
+      //       prisma: ctx.prisma,
+      //     },
+      //     articles
+      //   );
 
-        return {
-          posts: formattedPosts,
-          nextCursor,
-        };
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong, try again later",
-        });
-      }
+      //   return {
+      //     posts: formattedPosts,
+      //     nextCursor,
+      //   };
+      // } catch (err) {
+      //   throw new TRPCError({
+      //     code: "INTERNAL_SERVER_ERROR",
+      //     message: "Something went wrong, try again later",
+      //   });
+      // }
     }),
 
   getFollowingArticles: protectedProcedure
@@ -1422,77 +1452,78 @@ export const postsRouter = createTRPCRouter({
         variant: z.enum(["week", "month", "year", "any"]).default("any"),
       })
     )
-    .query(async ({ ctx, input }) => {
-      try {
-        const { cursor, skip, limit } = input;
+    .query(({ ctx, input }) => {
+      return [];
+      // try {
+      //   const { cursor, skip, limit } = input;
 
-        const startDate = new Date();
-        const endDate = new Date();
+      //   const startDate = new Date();
+      //   const endDate = new Date();
 
-        if (input?.variant === "week") {
-          startDate.setDate(startDate.getDate() - 7);
-        } else if (input?.variant === "month") {
-          startDate.setMonth(startDate.getMonth() - 1);
-        } else if (input?.variant === "year") {
-          startDate.setFullYear(startDate.getFullYear() - 1);
-        }
+      //   if (input?.variant === "week") {
+      //     startDate.setDate(startDate.getDate() - 7);
+      //   } else if (input?.variant === "month") {
+      //     startDate.setMonth(startDate.getMonth() - 1);
+      //   } else if (input?.variant === "year") {
+      //     startDate.setFullYear(startDate.getFullYear() - 1);
+      //   }
 
-        const articles = await ctx.prisma.article.findMany({
-          where: {
-            isDeleted: false,
+      //   const articles = await ctx.prisma.article.findMany({
+      //     where: {
+      //       isDeleted: false,
 
-            user: {
-              followers: {
-                some: {
-                  id: ctx.session.user.id,
-                },
-              },
-            },
-            ...(input?.variant === "any"
-              ? {}
-              : {
-                  createdAt: {
-                    gte: startDate,
-                    lte: endDate,
-                  },
-                }),
-          },
+      //       user: {
+      //         followers: {
+      //           some: {
+      //             id: ctx.session.user.id,
+      //           },
+      //         },
+      //       },
+      //       ...(input?.variant === "any"
+      //         ? {}
+      //         : {
+      //             createdAt: {
+      //               gte: startDate,
+      //               lte: endDate,
+      //             },
+      //           }),
+      //     },
 
-          take: (limit || 6) + 1,
-          skip: skip,
-          cursor: cursor ? { id: cursor } : undefined,
-          select: selectArticleCard,
-          orderBy: [
-            { likesCount: "desc" },
-            { commentsCount: "desc" },
-            { createdAt: "desc" },
-          ],
-        });
+      //     take: (limit || 6) + 1,
+      //     skip: skip,
+      //     cursor: cursor ? { id: cursor } : undefined,
+      //     select: selectArticleCard,
+      //     orderBy: [
+      //       { likesCount: "desc" },
+      //       { commentsCount: "desc" },
+      //       { createdAt: "desc" },
+      //     ],
+      //   });
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (articles.length > limit) {
-          const nextItem = articles.pop(); // return the last item from the array
-          nextCursor = nextItem?.id;
-        }
+      //   let nextCursor: typeof cursor | undefined = undefined;
+      //   if (articles.length > limit) {
+      //     const nextItem = articles.pop(); // return the last item from the array
+      //     nextCursor = nextItem?.id;
+      //   }
 
-        const formattedPosts = await getArticlesWithUserFollowingProfiles(
-          {
-            session: ctx.session,
-            prisma: ctx.prisma,
-          },
-          articles
-        );
+      //   const formattedPosts = await getArticlesWithUserFollowingProfiles(
+      //     {
+      //       session: ctx.session,
+      //       prisma: ctx.prisma,
+      //     },
+      //     articles
+      //   );
 
-        return {
-          posts: formattedPosts,
-          nextCursor,
-        };
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong, try again later",
-        });
-      }
+      //   return {
+      //     posts: formattedPosts,
+      //     nextCursor,
+      //   };
+      // } catch (err) {
+      //   throw new TRPCError({
+      //     code: "INTERNAL_SERVER_ERROR",
+      //     message: "Something went wrong, try again later",
+      //   });
+      // }
     }),
 
   getAuthorArticles: publicProcedure
@@ -1508,72 +1539,73 @@ export const postsRouter = createTRPCRouter({
           .default("PUBLISHED"),
       })
     )
-    .query(async ({ ctx, input }) => {
-      try {
-        if (input.type === "SCHEDULED") {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Scheduled articles are not available for public",
-          });
-        }
+    .query(({ ctx, input }) => {
+      return [];
+      // try {
+      //   if (input.type === "SCHEDULED") {
+      //     throw new TRPCError({
+      //       code: "BAD_REQUEST",
+      //       message: "Scheduled articles are not available for public",
+      //     });
+      //   }
 
-        const { cursor, skip, limit } = input;
+      //   const { cursor, skip, limit } = input;
 
-        const articles = await ctx.prisma.article.findMany({
-          where: {
-            isDeleted: false,
-            user: {
-              username: input.username,
-            },
-            ...(input.type === "DELETED" && {
-              isDeleted: true,
-            }),
-            ...(input.type === "PUBLISHED" && {
-              isDeleted: false,
-            }),
-          },
-          take: (limit || 6) + 1,
-          skip: skip,
-          cursor: cursor ? { id: cursor } : undefined,
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            createdAt: true,
-            read_time: true,
-            user: {
-              select: {
-                profile: true,
-                username: true,
-              },
-            },
-            subtitle: true,
-            cover_image: true,
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
+      //   const articles = await ctx.prisma.article.findMany({
+      //     where: {
+      //       isDeleted: false,
+      //       user: {
+      //         username: input.username,
+      //       },
+      //       ...(input.type === "DELETED" && {
+      //         isDeleted: true,
+      //       }),
+      //       ...(input.type === "PUBLISHED" && {
+      //         isDeleted: false,
+      //       }),
+      //     },
+      //     take: (limit || 6) + 1,
+      //     skip: skip,
+      //     cursor: cursor ? { id: cursor } : undefined,
+      //     select: {
+      //       id: true,
+      //       title: true,
+      //       slug: true,
+      //       createdAt: true,
+      //       read_time: true,
+      //       user: {
+      //         select: {
+      //           profile: true,
+      //           username: true,
+      //         },
+      //       },
+      //       subtitle: true,
+      //       cover_image: true,
+      //     },
+      //     orderBy: {
+      //       createdAt: "desc",
+      //     },
+      //   });
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (articles.length > limit) {
-          const nextItem = articles.pop(); // return the last item from the array
-          nextCursor = nextItem?.id;
-        }
+      //   let nextCursor: typeof cursor | undefined = undefined;
+      //   if (articles.length > limit) {
+      //     const nextItem = articles.pop(); // return the last item from the array
+      //     nextCursor = nextItem?.id;
+      //   }
 
-        return {
-          posts: articles,
-          nextCursor,
-        };
-      } catch (err) {
-        if (err instanceof TRPCError) {
-          throw err;
-        }
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong, try again later",
-        });
-      }
+      //   return {
+      //     posts: articles,
+      //     nextCursor,
+      //   };
+      // } catch (err) {
+      //   if (err instanceof TRPCError) {
+      //     throw err;
+      //   }
+      //   throw new TRPCError({
+      //     code: "INTERNAL_SERVER_ERROR",
+      //     message: "Something went wrong, try again later",
+      //   });
+      // }
     }),
 
   deleteArticlePermantly: protectedProcedure

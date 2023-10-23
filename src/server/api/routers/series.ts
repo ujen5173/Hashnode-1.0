@@ -15,7 +15,7 @@ export const seriesRouter = createTRPCRouter({
     return result;
   }),
 
-  new: protectedProcedure
+  new: publicProcedure
     .input(
       z.object({
         title: z.string(),
@@ -23,6 +23,8 @@ export const seriesRouter = createTRPCRouter({
         cover_image: z.string().optional(),
         slug: z.string().optional(),
         edit: z.boolean().default(false),
+
+        userId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -33,7 +35,7 @@ export const seriesRouter = createTRPCRouter({
             ...restInput,
             author: {
               connect: {
-                id: ctx.session.user.id,
+                id: input.userId,
               },
             },
             slug: restInput.slug || slugify(restInput.title, slugSetting),
@@ -61,20 +63,20 @@ export const seriesRouter = createTRPCRouter({
                 restInput.slug || slugify(restInput.title, slugSetting)
               )
             )
-            .returning({
-              slug: series.slug,
-            })
-            .then((res) => res[0]?.slug as string);
+            .returning();
         } else {
           // result = await ctx.prisma.series.create(dbQuery);
-          result = await ctx.db.insert(series).values({
-            ...restInput,
-            slug: restInput.slug || slugify(restInput.title, slugSetting),
-            authorId: ctx.session.user.id,
-          });
+          result = await ctx.db
+            .insert(series)
+            .values({
+              ...restInput,
+              slug: restInput.slug || slugify(restInput.title, slugSetting),
+              authorId: input.userId,
+            })
+            .returning();
         }
 
-        return !!result;
+        return result;
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;

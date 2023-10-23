@@ -3,82 +3,152 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 
 const ApiTesting = () => {
-  const { mutateAsync: createUser } = api.users.createUser.useMutation();
-  const { mutateAsync: follow } = api.users.followUser.useMutation();
-  const { data: user } = api.users.getUserByUsername.useQuery({
-    username: "@ujen5173"
+  const { mutateAsync } = api.users.createUser.useMutation();
+  const { mutateAsync: handleMutate } = api.handles.createPersonalHandle.useMutation();
+  const { mutateAsync: customTabMutate } = api.handles.newNavbarData.useMutation();
+  const { mutateAsync: articleMutate } = api.posts.new.useMutation();
+  const { mutateAsync: seriesMutate } = api.series.new.useMutation();
+
+  const { mutateAsync: updateArticleMutate } = api.posts.new.useMutation();
+
+  const { data: userdata } = api.users.getUserByUsername.useQuery({ username: "@Brant.Mitchell" });
+  console.log({ userdata })
+  const { data: articledata } = api.posts.getAll.useQuery({
+    limit: 10,
+    skip: 0
   });
+  console.log({ articledata })
 
-  console.log({ user })
-
-  const { mutateAsync: create } = api.handles.createPersonalHandle.useMutation();
-  const { mutateAsync: navbardata } = api.handles.newNavbarData.useMutation();
-  // const { data, isLoading } = api.handles.getNavbarData.useQuery({
-  //   handle: "test-user"
-  // });
-  const { mutateAsync: update } = api.handles.updateNavbarData.useMutation();
-  const { mutateAsync: deletedata } = api.handles.deleteNavbarData.useMutation();
-
-  const createuser = async () => {
-    const users = {
-      id: faker.string.uuid(),
+  const launch = async () => {
+    // create user
+    const userData = {
       name: faker.internet.displayName(),
       username: faker.internet.userName(),
       email: faker.internet.email(),
-      profile: faker.internet.avatar(),
-      tagline: 'SOFTWARE DEVELOPER | DEVOPS DEVELOPER',
+      profile: faker.internet.url(),
+      tagline: faker.lorem.sentence({
+        min: 1,
+        max: 2
+      }),
+      cover_image: faker.internet.url(),
+      bio: faker.lorem.sentence({
+        min: 1,
+        max: 2,
+      }),
+      skills: [faker.lorem.word({
+        length: 20
+      }), faker.lorem.word({
+        length: 20
+      }), faker.lorem.word({
+        length: 20
+      })],
+      location: faker.location.city(),
+      available: faker.lorem.sentence({
+        min: 1,
+        max: 2
+      }),
+      social: {
+        github: faker.internet.url(),
+        twitter: faker.internet.url(),
+        website: faker.internet.url(),
+        youtube: faker.internet.url(),
+        facebook: faker.internet.url(),
+        linkedin: faker.internet.url(),
+      }
     }
-    const res = await createUser(users);
 
-    console.log({ res })
-  }
+    const [user] = await mutateAsync(userData);
 
-  const followUser = async () => {
-    const res = await follow({
-      username: "@rijen98"
-    });
-    console.log({ res })
-  }
+    console.log({ user });
 
-  const createhandle = async () => {
-    const res = await create({
+    // create handle
+    const handleData = {
+      userId: user?.id as string,
       handle: {
-        domain: 'programminghero',
-        name: "ujencodes"
+        domain: faker.internet.domainName(),
+        name: faker.internet.displayName(),
       }
-    });
-    console.log({ res })
-  }
+    }
 
-  const createcustomtab = async () => {
-    const res = await navbardata({
-      handle: "programminghero",
+    const [handle] = await handleMutate(handleData);
+
+    console.log({ handle })
+
+    // customTabs
+    const customTabsData = {
+      handle: handle?.handle as string,
       tab: {
-        label: "Linkedin",
+        label: faker.lorem.word({ length: 5 }),
         type: "link",
-        value: "https://linkedin.com/ujen5173/Hashnode",
-        priority: 2,
-      }
-    });
-    console.log({ res })
+        value: faker.internet.url(),
+        priority: faker.number.int({ min: 1, max: 10 }),
+      },
+    }
+
+    const customTab = await customTabMutate(customTabsData);
+
+    console.log({ customTab });
+
+    // articles
+    const articleData = {
+      title: faker.lorem.sentence({ min: 5, max: 10 }),
+      subtitle: faker.lorem.sentence({ min: 5, max: 10 }),
+      content: faker.lorem.paragraph({ min: 50, max: 1000 }),
+      cover_image: faker.internet.url(),
+      cover_image_Key: faker.lorem.word({ length: 10 }),
+      tags: [faker.lorem.word({ length: 10 }), 'voluptates', 'volutabrum'],
+      slug: faker.lorem.slug(),
+      seoTitle: faker.lorem.sentence({ min: 5, max: 10 }),
+      seoDescription: faker.lorem.sentence({ min: 5, max: 10 }),
+      seoOgImage: faker.internet.url(),
+      disabledComments: faker.datatype.boolean(),
+
+      edit: false,
+      userId: user?.id as string,
+    }
+
+    const article = await articleMutate(articleData)
+    console.log({ article })
+
+    // series
+    const seriesData = {
+      title: faker.lorem.sentence({ min: 5, max: 10 }),
+      description: faker.lorem.sentence({ min: 5, max: 10 }),
+      cover_image: faker.internet.url(),
+      slug: faker.lorem.slug(),
+      edit: false,
+      userId: user?.id as string,
+    }
+
+    const [series] = await seriesMutate(seriesData)
+    console.log({ series });
+
+    // // update article and add the series id
+    const updatedArticleData = {
+      ...article,
+      slug: article?.slug as string,
+      title: article?.title as string,
+      subtitle: article?.subtitle as string,
+      content: article?.content as string,
+      seoTitle: article?.seoTitle as string,
+      cover_image: article?.cover_image as string,
+      cover_image_key: article?.cover_image_key as string,
+      seoDescription: article?.seoDescription as string,
+      seoOgImage: article?.seoOgImage as string,
+      tags: [...(article?.tags as { tag: { name: string } }[]).map(e => e.tag.name), "codingisbest"] as string[],
+
+      seriesId: series?.id as string,
+      userId: user?.id as string,
+      edit: true,
+    }
+    const updatedArticle = await updateArticleMutate(updatedArticleData);
+    console.log({ updatedArticle })
   }
 
-  const updatecustomtab = async () => {
-    const res = await update({
-      tabId: "eef9e56f-74c5-4342-adfe-21bf1eaaaafd",
-      tab: {
-        label: "Hackerrank",
-        value: "https://hackerrank.com/ujen5173"
-      }
-    });
-    console.log({ res })
-  }
-
-  const deletecustomtab = async () => {
-    const res = await deletedata({
-      tabId: "eef9e56f-74c5-4342-adfe-21bf1eaaaafd"
-    });
-    console.log({ res })
+  const { mutateAsync: deleteAll } = api.posts.deleteAll.useMutation();
+  const delAll = async () => {
+    const res = await deleteAll();
+    console.log({ res });
   }
 
   return (
@@ -87,12 +157,8 @@ const ApiTesting = () => {
         <title>Drizzle Api Testing!!</title>
       </Head>
       <div className="gap-2 flex items-center justify-center min-h-screen">
-        <button onClick={() => void createuser()} className="btn-filled">Create User</button>
-        <button onClick={() => void followUser()} className="btn-filled">Follow Rijen</button>
-        <button onClick={() => void createhandle()} className="btn-filled">Create handle</button>
-        <button onClick={() => void createcustomtab()} className="btn-filled">Create custom tabs</button>
-        <button onClick={() => void updatecustomtab()} className="btn-filled">update custom tab</button>
-        <button onClick={() => void deletecustomtab()} className="btn-filled">delete custom tab</button>
+        <button onClick={() => void launch()} className="btn-tertiary">LAUNCH</button>
+        <button onClick={() => void delAll()} className="btn-outline">DELETE</button>
       </div>
     </>
   )

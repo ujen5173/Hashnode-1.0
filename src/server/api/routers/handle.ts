@@ -71,6 +71,7 @@ export const handleRouter = createTRPCRouter({
   createPersonalHandle: publicProcedure
     .input(
       z.object({
+        userId: z.string(),
         handle: z.object({
           domain: z.string().min(4),
           name: z.string().optional(),
@@ -95,13 +96,18 @@ export const handleRouter = createTRPCRouter({
         });
       }
 
-      const result = await ctx.db.insert(handles).values({
-        handle: input.handle.domain,
-        name: input.handle.name || "Percy30",
-        // userId: ctx.session.user.id,
-        userId: "2802f8f4-e46c-4497-9563-b3a6089a3f96",
-      });
-      return !!result;
+      const result = await ctx.db
+        .insert(handles)
+        .values({
+          handle: input.handle.domain,
+          name: input.handle.name || "Percy30",
+          // userId: ctx.session.user.id,
+          // userId: "2802f8f4-e46c-4497-9563-b3a6089a3f96",
+          userId: input.userId,
+        })
+        .returning();
+
+      return result;
     }),
 
   newNavbarData: publicProcedure
@@ -131,10 +137,13 @@ export const handleRouter = createTRPCRouter({
           message: "Handle does not exists",
         };
       }
-      const newTab = await ctx.db.insert(customTabs).values({
-        ...input.tab,
-        handleId: handle.id,
-      });
+      const newTab = await ctx.db
+        .insert(customTabs)
+        .values({
+          ...input.tab,
+          handleId: handle.id,
+        })
+        .returning();
 
       // const result = await ctx.prisma.handle.update({
       //   where: {
@@ -147,7 +156,7 @@ export const handleRouter = createTRPCRouter({
       //   },
       // });
 
-      return !!newTab;
+      return newTab;
     }),
 
   updateNavbarData: publicProcedure

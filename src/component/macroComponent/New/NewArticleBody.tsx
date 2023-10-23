@@ -25,7 +25,7 @@ export interface ArticleData {
   subtitle: string | null;
   content: DefaultEditorContent;
   cover_image: string | null;
-  cover_imageKey: string | null;
+  cover_image_Key: string | null;
   tags: string[];
   slug: string;
   series: string | null;
@@ -88,7 +88,7 @@ const NewArticleBody: FC<{
       cover_image: null,
       series: null,
       tags: [],
-      cover_imageKey: null,
+      cover_image_Key: null,
       slug: "",
       seoTitle: "",
       seoDescription: "",
@@ -142,7 +142,7 @@ const NewArticleBody: FC<{
         setData({
           ...data,
           cover_image: null,
-          cover_imageKey: null,
+          cover_image_Key: null,
         });
       }
     };
@@ -198,7 +198,7 @@ const NewArticleBody: FC<{
                         setData((prev) => ({
                           ...prev,
                           cover_image: uploaded[0]?.fileUrl || null,
-                          cover_imageKey: uploaded[0]?.fileKey || null,
+                          cover_image_Key: uploaded[0]?.fileKey || null,
                         }));
                       }}
                     />
@@ -211,7 +211,7 @@ const NewArticleBody: FC<{
           {data.cover_image && (
             <div className="relative mb-5 w-full rounded-md border border-border-light dark:border-border">
               <button
-                onClick={() => void deleteImage("cover_imageKey")}
+                onClick={() => void deleteImage("cover_image_Key")}
                 className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
               >
                 <Times className="h-5 w-5 fill-gray-700 stroke-none" />

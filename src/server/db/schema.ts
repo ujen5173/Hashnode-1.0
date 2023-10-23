@@ -232,8 +232,8 @@ export const tags = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    name: varchar("name").notNull(),
-    slug: varchar("slug").notNull(),
+    name: varchar("name").notNull().unique(),
+    slug: varchar("slug").notNull().unique(),
     description: varchar("description"),
     followersCount: integer("followersCount").notNull().default(0),
     articlesCount: integer("articlesCount").notNull().default(0),
@@ -377,12 +377,12 @@ export const articles = pgTable(
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
     title: varchar("title").notNull(),
-    cover_image: varchar("cover_image").notNull(),
-    cover_image_key: varchar("cover_image_key").notNull(),
+    cover_image: varchar("cover_image"),
+    cover_image_key: varchar("cover_image_key"),
     userId: text("userId").notNull(),
     content: varchar("body").notNull(),
     read_time: integer("read_time").notNull(),
-    seoTitle: varchar("seoTitle").notNull(),
+    seoTitle: varchar("seoTitle"),
     seoDescription: varchar("seoDescription"),
     seoOgImage: varchar("seoOgImage"),
     seoOgImageKey: varchar("seoOgImageKey"),
