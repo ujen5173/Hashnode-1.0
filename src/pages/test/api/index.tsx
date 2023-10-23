@@ -8,56 +8,68 @@ const ApiTesting = () => {
   const { mutateAsync: customTabMutate } = api.handles.newNavbarData.useMutation();
   const { mutateAsync: articleMutate } = api.posts.new.useMutation();
   const { mutateAsync: seriesMutate } = api.series.new.useMutation();
+  const { mutateAsync: commentMutate } = api.comments.newComment.useMutation();
 
   const { mutateAsync: updateArticleMutate } = api.posts.new.useMutation();
 
-  const { data: userdata } = api.users.getUserByUsername.useQuery({ username: "@Brant.Mitchell" });
+  const { data: userdata } = api.users.getUserByUsername.useQuery({ username: "@Brant.Mitchell" }, {
+    refetchOnWindowFocus: false,
+  });
   console.log({ userdata })
   const { data: articledata } = api.posts.getAll.useQuery({
     limit: 10,
     skip: 0
+  }, {
+    refetchOnWindowFocus: false,
+
   });
   console.log({ articledata })
 
   const launch = async () => {
     // create user
-    const userData = {
-      name: faker.internet.displayName(),
-      username: faker.internet.userName(),
-      email: faker.internet.email(),
-      profile: faker.internet.url(),
-      tagline: faker.lorem.sentence({
-        min: 1,
-        max: 2
-      }),
-      cover_image: faker.internet.url(),
-      bio: faker.lorem.sentence({
-        min: 1,
-        max: 2,
-      }),
-      skills: [faker.lorem.word({
-        length: 20
-      }), faker.lorem.word({
-        length: 20
-      }), faker.lorem.word({
-        length: 20
-      })],
-      location: faker.location.city(),
-      available: faker.lorem.sentence({
-        min: 1,
-        max: 2
-      }),
-      social: {
-        github: faker.internet.url(),
-        twitter: faker.internet.url(),
-        website: faker.internet.url(),
-        youtube: faker.internet.url(),
-        facebook: faker.internet.url(),
-        linkedin: faker.internet.url(),
+    const usersData = [];
+    for (let i = 0; i < 2; i++) {
+      const userData = {
+        name: faker.internet.displayName(),
+        username: faker.internet.userName(),
+        email: faker.internet.email(),
+        profile: faker.internet.url(),
+        tagline: faker.lorem.sentence({
+          min: 1,
+          max: 2
+        }),
+        cover_image: faker.internet.url(),
+        bio: faker.lorem.sentence({
+          min: 1,
+          max: 2,
+        }),
+        skills: [faker.lorem.word({
+          length: 20
+        }), faker.lorem.word({
+          length: 20
+        }), faker.lorem.word({
+          length: 20
+        })],
+        location: faker.location.city(),
+        available: faker.lorem.sentence({
+          min: 1,
+          max: 2
+        }),
+        social: {
+          github: faker.internet.url(),
+          twitter: faker.internet.url(),
+          website: faker.internet.url(),
+          youtube: faker.internet.url(),
+          facebook: faker.internet.url(),
+          linkedin: faker.internet.url(),
+        }
       }
-    }
 
-    const [user] = await mutateAsync(userData);
+      const [user] = await mutateAsync(userData);
+      usersData.push(user)
+    }
+    const [user, from] = usersData;
+    console.log([user, from])
 
     console.log({ user });
 
@@ -143,9 +155,37 @@ const ApiTesting = () => {
     }
     const updatedArticle = await updateArticleMutate(updatedArticleData);
     console.log({ updatedArticle })
+
+    const commentData = {
+      articleId: updatedArticle?.id as string,
+      userId: user?.id as string,
+      content: faker.lorem.sentence({ min: 1, max: 3 }),
+      toId: from?.id as string,
+    }
+
+    const comment = await commentMutate({
+      ...commentData,
+      type: "COMMENT",
+    });
+    console.log({ comment });
+
+    const replyData = {
+      articleId: updatedArticle?.id as string,
+      userId: from?.id as string,
+      content: faker.lorem.sentence({ min: 1, max: 3 }),
+      toId: user?.id as string,
+      commentId: comment,
+    }
+
+    const reply = await commentMutate({
+      ...replyData,
+      type: "REPLY",
+    });
+    console.log({ reply });
   }
 
   const { mutateAsync: deleteAll } = api.posts.deleteAll.useMutation();
+
   const delAll = async () => {
     const res = await deleteAll();
     console.log({ res });

@@ -10,39 +10,19 @@ import {
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const commentsRouter = createTRPCRouter({
-  newComment: protectedProcedure
+  newComment: publicProcedure
     .input(
       z.object({
         articleId: z.string().trim(),
         content: z.string().trim().min(5).max(255),
         type: z.enum(["COMMENT", "REPLY"]),
-        commentId: z.string().trim().optional().nullable(),
+        userId: z.string().trim(),
+        toId: z.string().trim(),
+        commentId: z.string().trim().optional().nullable(), // comment to who we want to reply
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { articleId, commentId } = input;
-
-      // const article = await ctx.prisma.article.findUnique({
-      //   where: {
-      //     id: articleId,
-      //   },
-      //   select: {
-      //     id: true,
-      //     title: true,
-      //     user: {
-      //       select: {
-      //         id: true,
-      //         username: true,
-      //       },
-      //     },
-      //     slug: true,
-      //     comments: {
-      //       select: {
-      //         id: true,
-      //       },
-      //     },
-      //   },
-      // });
 
       const article = await ctx.db.query.articles.findFirst({
         where: eq(articles.id, articleId),
@@ -50,6 +30,7 @@ export const commentsRouter = createTRPCRouter({
           id: true,
           title: true,
           slug: true,
+          commentsCount: true,
         },
         with: {
           user: {
@@ -66,6 +47,8 @@ export const commentsRouter = createTRPCRouter({
         },
       });
 
+      console.log({ article });
+
       if (!article) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -75,19 +58,6 @@ export const commentsRouter = createTRPCRouter({
 
       const parentComment =
         commentId &&
-        // (await ctx.prisma.comment.findUnique({
-        //   where: {
-        //     id: commentId,
-        //   },
-        //   select: {
-        //     id: true,
-        //     user: {
-        //       select: {
-        //         id: true,
-        //       },
-        //     },
-        //   },
-        // }));
         (await ctx.db.query.comments.findFirst({
           where: eq(comments.id, commentId),
           columns: {
@@ -102,6 +72,8 @@ export const commentsRouter = createTRPCRouter({
           },
         }));
 
+      console.log({ parentComment });
+
       if (commentId && !parentComment) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -109,40 +81,13 @@ export const commentsRouter = createTRPCRouter({
         });
       }
 
-      // const newComment = await ctx.prisma.comment.create({
-      //   data: {
-      //     body: input.content,
-      //     type: input.type,
-      //     article: {
-      //       connect: {
-      //         id: articleId,
-      //       },
-      //     },
-      //     user: {
-      //       connect: {
-      //         id: ctx.session.user.id,
-      //       },
-      //     },
-      //     ...(input.type === "REPLY" &&
-      //       commentId && {
-      //         parent: {
-      //           connect: {
-      //             id: commentId,
-      //           },
-      //         },
-      //       }),
-      //   },
-      //   select: {
-      //     id: true,
-      //   },
-      // });
       const newComment = await ctx.db
         .insert(comments)
         .values({
           body: input.content,
           type: input.type,
           articleId,
-          userId: ctx.session.user.id,
+          userId: input.userId,
           ...(input.type === "REPLY" &&
             commentId && {
               parentId: commentId,
@@ -153,43 +98,21 @@ export const commentsRouter = createTRPCRouter({
         })
         .then((res) => res[0]?.id as string);
 
-      // await ctx.prisma.article.update({
-      //   where: {
-      //     id: articleId,
-      //   },
-      //   data: {
-      //     commentsCount: {
-      //       increment: 1,
-      //     },
-      //   },
-      // });
+      console.log({ newComment });
+
       await ctx.db
         .update(articles)
         .set({
-          commentsCount: articles.commentsCount._.data + 1,
+          commentsCount: article.commentsCount + 1,
         })
         .where(eq(articles.id, articleId));
 
       // Notify the author of the article
       if (input.type === "COMMENT") {
-        // await ctx.prisma.notification.create({
-        //   data: {
-        //     type: NotificationTypes.COMMENT,
-        //     fromId: ctx.session.user.id,
-        //     userId: article.user.id,
-        //     title: article.title,
-        //     body:
-        //       input.content.length > 50
-        //         ? input.content.slice(0, 50) + "..."
-        //         : input.content,
-        //     isRead: false,
-        //     articleAuthor: article.user.username,
-        //     slug: `${article.slug}?commentId=${newComment.id}`,
-        //   },
-        // });
+        console.log("Comment condition");
         await ctx.db.insert(notifications).values({
           type: "COMMENT",
-          fromId: ctx.session.user.id,
+          fromId: input.toId,
           userId: article.user.id,
           title: article.title,
           body:
@@ -200,7 +123,9 @@ export const commentsRouter = createTRPCRouter({
           articleAuthor: article.user.username,
           slug: `${article.slug}?commentId=${newComment}`,
         });
+        console.log("comment condition finsihsed");
       } else if (input.type === "REPLY" && parentComment) {
+        console.log("reply condition");
         // await ctx.prisma.notification.createMany({
         //   data: [
         //     {
@@ -234,7 +159,7 @@ export const commentsRouter = createTRPCRouter({
         await ctx.db.insert(notifications).values([
           {
             type: "COMMENT",
-            fromId: ctx.session.user.id,
+            fromId: input.toId,
             userId: article.user.id,
             title: article.title,
             body:
@@ -247,7 +172,7 @@ export const commentsRouter = createTRPCRouter({
           },
           {
             type: "COMMENT",
-            fromId: ctx.session.user.id,
+            fromId: input.toId,
             userId: parentComment.user.id,
             title: article.title,
             body:
@@ -259,12 +184,10 @@ export const commentsRouter = createTRPCRouter({
             slug: `${article.slug}?commentId=${newComment}`,
           },
         ]);
+        console.log("reply condition finished");
       }
 
-      return {
-        success: true,
-        message: "Commented successfully",
-      };
+      return newComment;
     }),
 
   likeComment: protectedProcedure
