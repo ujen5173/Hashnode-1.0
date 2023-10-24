@@ -1,122 +1,116 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { users } from "~/server/db/schema";
+import { follow, users } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
 export const usersRouter = createTRPCRouter({
-  // followUser: publicProcedure
-  //   .input(
-  //     z.object({
-  //       username: z.string().trim(),
-  //     })
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     //TODO: NOT WORKING!!
-  //     const targetUser = await ctx.db.query.users.findFirst({
-  //       where: eq(
-  //         users.username,
-  //         input.username.slice(1, input.username.length)
-  //       ),
-  //       with: {
-  //         following: true,
-  //         followers: true,
-  //       },
-  //       columns: {
-  //         id: true,
-  //         username: true,
-  //         followersCount: true,
-  //         followingCount: true,
-  //       },
-  //     });
+  followUser: publicProcedure
+    .input(
+      z.object({
+        // username: z.string().trim(),
+        userId: z.string(),
+        followingId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // get following user data
+      const followingTo = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.followingId),
+        columns: {
+          id: true,
+          username: true,
+        },
+        with: {
+          following: {
+            where: eq(follow.userId, input.userId),
+            // columns: {
+            //   followingId: false,
+            //   userId: false,
+            // },
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-  //     const currentUser = await ctx.db.query.users.findFirst({
-  //       where: eq(users.id, "2802f8f4-e46c-4497-9563-b3a6089a3f96"), // session user
-  //       with: {
-  //         following: true,
-  //         followers: true,
-  //       },
-  //       columns: {
-  //         id: true,
-  //         username: true,
-  //         followersCount: true,
-  //         followingCount: true,
-  //       },
-  //     });
+      console.log({ followingTo });
 
-  //     if (!targetUser || !currentUser)
-  //       return {
-  //         success: false,
-  //         message: "User not found",
-  //         status: 404,
-  //       };
+      if (!followingTo) {
+        return {
+          success: false,
+          message: "User not found",
+          status: 404,
+        };
+      }
 
-  //     const isFollowing = targetUser?.following.some(
-  //       (following) => following.followingId === currentUser.id
-  //     )
-  //       ? true
-  //       : false;
+      if (followingTo.following.length) {
+        console.log("UnFollowing condition");
+        // unfollow the user
+        await ctx.db
+          .delete(follow)
+          .where(
+            and(
+              eq(follow.userId, input.followingId),
+              eq(follow.followingId, input.userId)
+            )
+          );
 
-  //     const targetedUserCountUpdate = ctx.db
-  //       .update(users)
-  //       .set({
-  //         followersCount: isFollowing
-  //           ? (targetUser?.followersCount || 0) - 1
-  //           : (targetUser?.followersCount || 0) + 1,
-  //       })
-  //       .where(
-  //         eq(users.username, input.username.slice(1, input.username.length))
-  //       );
+        // update the following count
+        // await ctx.db
+        //   .update(users)
+        //   .set({
+        //     followingCount: users.followingCount._.data - 1,
+        //   })
+        //   .where(eq(users.id, input.userId))
 
-  //     const sessionUsercountUpdate = ctx.db
-  //       .update(users)
-  //       .set({
-  //         followingCount: isFollowing
-  //           ? (currentUser?.followingCount || 0) - 1
-  //           : (currentUser?.followingCount || 0) + 1,
-  //       })
-  //       .where(eq(users.username, currentUser.username));
+        // await ctx.db
+        //   .update(users)
+        //   .set({
+        //     followersCount: users.followersCount._.data - 1,
+        //   })
+        //   .where(eq(users.id, input.followingId));
 
-  //     isFollowing
-  //       ? (() => {
-  //           const followUpdate = ctx.db
-  //             .delete(following)
-  //             .where(
-  //               and(
-  //                 eq(following.followingId, currentUser.id),
-  //                 eq(following.userId, targetUser.id)
-  //               )
-  //             );
-  //           const res = Promise.all([
-  //             targetedUserCountUpdate,
-  //             sessionUsercountUpdate,
-  //             followUpdate,
-  //           ]);
+        return {
+          success: false,
+          message: "User unfollowed successfully",
+          status: 400,
+        };
+      } else {
+        console.log("Following condition");
+        // follow the user
+        await ctx.db.insert(follow).values({
+          userId: input.followingId,
+          followingId: input.userId,
+        });
 
-  //           console.log({ res });
-  //         })()
-  //       : (() => {
-  //           const followUpdate = ctx.db.insert(following).values({
-  //             followingId: targetUser.id,
-  //             userId: currentUser.id,
-  //           });
-  //           const res = Promise.all([
-  //             targetedUserCountUpdate,
-  //             sessionUsercountUpdate,
-  //             followUpdate,
-  //           ]);
+        // update the following count
+        // await ctx.db
+        //   .update(users)
+        //   .set({
+        //     followingCount: users.followingCount._.data + 1,
+        //   })
+        //   .where(eq(users.id, input.userId));
 
-  //           console.log({ res });
-  //         })();
-
-  //     // console.log({ countUpdate, followUpdate });
-
-  //     return {
-  //       success: true,
-  //       message: "User Followed",
-  //       status: 200,
-  //     };
-  //   }),
+        // await ctx.db
+        //   .update(users)
+        //   .set({
+        //     followersCount: users.followersCount._.data + 1,
+        //   })
+        //   .where(eq(users.id, input.followingId));
+        return {
+          success: false,
+          message: "User followed successfully",
+          status: 400,
+        };
+      }
+    }),
 
   getUser: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.query.users.findFirst({
@@ -175,8 +169,24 @@ export const usersRouter = createTRPCRouter({
           input.username.slice(1, input.username.length)
         ),
         with: {
-          // following: true,
-          // followers: true,
+          following: {
+            columns: {
+              userId: false,
+              followingId: false,
+            },
+            with: {
+              user: true,
+            },
+          },
+          followers: {
+            columns: {
+              userId: false,
+              followingId: false,
+            },
+            with: {
+              user: true,
+            },
+          },
           handle: {
             with: {
               customTabs: true,

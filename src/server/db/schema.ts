@@ -80,41 +80,41 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   readArtices: many(readersToArticles),
   likedArticles: many(likesToArticles),
   likedComments: many(likesToComment),
-  // following: many(follow, {
-  //   relationName: "follow",
-  // }),
-  // followers: many(follow, {
-  //   relationName: "followedBy",
-  // }),
+  following: many(follow, {
+    relationName: "followers",
+  }),
+  followers: many(follow, {
+    relationName: "following",
+  }),
 }));
 
-// export const follow = pgTable(
-//   "follow",
-//   {
-//     userId: text("userId")
-//       .references(() => users.id)
-//       .notNull(),
-//     followingId: text("followingId")
-//       .references(() => users.id)
-//       .notNull(),
-//   },
-//   (table) => ({
-//     pk: primaryKey(table.userId, table.followingId),
-//   })
-// );
+export const follow = pgTable(
+  "follow",
+  {
+    userId: text("userId")
+      .references(() => users.id)
+      .notNull(),
+    followingId: text("followingId")
+      .references(() => users.id)
+      .notNull(),
+  },
+  (table) => ({
+    pk: primaryKey(table.userId, table.followingId),
+  })
+);
 
-// export const followRelations = relations(follow, ({ one }) => ({
-//   user: one(users, {
-//     fields: [follow.userId],
-//     references: [users.id],
-//     relationName: "followers",
-//   }),
-//   following: one(users, {
-//     fields: [follow.followingId],
-//     references: [users.id],
-//     relationName: "following",
-//   }),
-// }));
+export const followRelations = relations(follow, ({ one }) => ({
+  user: one(users, {
+    fields: [follow.userId],
+    references: [users.id],
+    relationName: "following",
+  }),
+  following: one(users, {
+    fields: [follow.followingId],
+    references: [users.id],
+    relationName: "followers",
+  }),
+}));
 
 export const accounts = pgTable(
   "account",

@@ -8,6 +8,13 @@ export interface Article {
   cover_image: string | null;
   disabledComments: boolean;
   readCount: number;
+  content: string;
+  read_time: number;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: Date;
+  comments: Comment[];
+  likes: { userId: string }[];
   user: {
     id: string;
     name: string;
@@ -26,18 +33,11 @@ export interface Article {
     title: string;
     slug: string;
   } | null;
-  content: string;
-  read_time: number;
   tags: {
     id: string;
     name: string;
     slug: string;
   }[];
-  likes: { id: string }[];
-  comments: Comment[];
-  likesCount: number;
-  commentsCount: number;
-  createdAt: Date;
 }
 
 // here `Omit` is used to remove the `subtitle` property from `Article` type and add `commonUsers` property
