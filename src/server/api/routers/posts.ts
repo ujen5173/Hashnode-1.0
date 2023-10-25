@@ -1,5 +1,7 @@
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, gt, ilike, inArray, lt } from "drizzle-orm";
+import { and, desc, eq, gt, gte, ilike, inArray, lt, lte } from "drizzle-orm";
+import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import type { Session } from "next-auth";
 import readingTime from "reading-time";
 import slugify from "slugify";
 import { v4 as uuid } from "uuid";
@@ -9,10 +11,16 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import type * as schemaFile from "~/server/db/schema";
 import {
   articles,
+  comments,
   customTabs,
+  follow,
   handles,
+  likesToArticles,
+  likesToComment,
+  notifications,
   readersToArticles,
   series,
   tags,
@@ -20,106 +28,103 @@ import {
   tagsToUsers,
   users,
 } from "~/server/db/schema";
-import { slugSetting } from "~/utils/constants";
+import type { ArticleCardWithComments } from "~/types";
+import {
+  displayUniqueObjects,
+  selectArticleCard,
+  slugSetting,
+} from "~/utils/constants";
 import {
   refactorActivityHelper,
   type Activity,
 } from "./../../../utils/microFunctions";
-// import type { ArticleCardWithComments } from "~/types";
 
-// const getArticlesWithUserFollowingProfiles = async (
-//   ctx: {
-//     session: Session | null;
-//     db: NeonHttpDatabase<typeof schemaFile>;
-//   },
-//   articles: ArticleCardWithComments[]
-// ) => {
-//   // If user is logged in, get the user's following profiles else return empty array for commenUsers
-//   // Retrieve user following outside the loop
-//   // const userFollowing = ctx.session?.user
-//   //   ? await ctx.prisma.user.findUnique({
-//   //       where: {
-//   //         id: ctx.session.user.id,
-//   //       },
-//   //       select: {
-//   //         following: {
-//   //           select: {
-//   //             id: true,
-//   //           },
-//   //         },
-//   //       },
-//   //     })
-//   //   : null;
-//   const userFollowing = ctx.session?.user
-//     ? await ctx.db.query.users.findFirst({
-//         where: eq(users.id, ctx.session.user.id),
-//       })
-//     : null;
+const getArticlesWithUserFollowingProfiles = async (
+  ctx: {
+    session: Session | null;
+    db: NeonHttpDatabase<typeof schemaFile>;
+  },
+  articles: ArticleCardWithComments[]
+) => {
+  // If user is logged in, get the user's following profiles else return empty array for commenUsers
+  // Retrieve user following outside the loop
+  const userFollowing = ctx.session?.user
+    ? await ctx.db.query.users.findFirst({
+        where: eq(users.id, ctx.session.user.id),
+        with: {
+          following: {
+            columns: {
+              userId: true,
+            },
+          },
+        },
+      })
+    : null;
 
-//   // Combine the mapping logic into a single loop
-//   const updatedArticles = articles.map((article) => {
-//     const { comments, ...rest } = article;
-//     let followingComments: {
-//       id: string;
-//       profile: string;
-//     }[] = [];
+  // Combine the mapping logic into a single loop
+  const updatedArticles = articles.map((article) => {
+    const { comments, ...rest } = article;
+    let followingComments: {
+      id: string;
+      profile: string | null;
+    }[] = [];
 
-//     if (userFollowing) {
-//       followingComments = displayUniqueObjects(
-//         comments
-//           .map((c) => c.user)
-//           .filter((user) =>
-//             userFollowing.following.some((f) => f.id === user.id)
-//           )
-//       );
-//     }
+    if (userFollowing) {
+      followingComments = displayUniqueObjects(
+        comments
+          .map((c) => c.user)
+          .filter((user) =>
+            userFollowing.following.some((f) => f.userId === user.id)
+          )
+      );
+    }
 
-//     return { ...rest, commonUsers: followingComments };
-//   });
+    return { ...rest, commonUsers: followingComments };
+  });
 
-//   // Handle the case when ctx.session.user is not present
-//   if (!ctx.session?.user) {
-//     updatedArticles.forEach((article) => {
-//       article.commonUsers = [];
-//     });
-//   }
+  // Handle the case when ctx.session.user is not present
+  if (!ctx.session?.user) {
+    updatedArticles.forEach((article) => {
+      article.commonUsers = [];
+    });
+  }
 
-//   return updatedArticles;
-// };
+  return updatedArticles;
+};
 
-// const searchResponseFormater = (
-//   tags: {
-//     id: string;
-//     name: string;
-//     slug: string;
-//     followers: {
-//       id: string;
-//     }[];
-//   } | null,
-//   users: {
-//     id: string;
-//     name: string;
-//     username: string;
-//     profile: string;
-//     stripeSubscriptionStatus: string | null;
-//     followers: {
-//       id: string;
-//     }[];
-//   } | null,
-//   userId: string
-// ) => {
-//   const res = tags || users;
-//   if (!res) return;
-//   const { followers, ...rest } = res;
-//   let isFollowing = false;
-//   if (userId) {
-//     isFollowing = followers.some((follower) => follower.id === userId);
-//   }
-//   return {
-//     ...rest,
-//     isFollowing,
-//   };
-// };
+const searchResponseFormater = (
+  tags: {
+    id: string;
+    name: string;
+    slug: string;
+    followers: {
+      id: string;
+    }[];
+  } | null,
+  users: {
+    id: string;
+    name: string;
+    username: string;
+    profile: string;
+    stripeSubscriptionStatus: string | null;
+    followers: {
+      id: string;
+    }[];
+  } | null,
+  userId: string
+) => {
+  const res = tags || users;
+  if (!res) return;
+  const { followers, ...rest } = res;
+  let isFollowing = false;
+  if (userId) {
+    isFollowing = followers.some((follower) => follower.id === userId);
+  }
+  return {
+    ...rest,
+    isFollowing,
+  };
+};
 
 export const postsRouter = createTRPCRouter({
   deleteAll: publicProcedure.mutation(async ({ ctx }) => {
@@ -130,7 +135,12 @@ export const postsRouter = createTRPCRouter({
     await ctx.db.delete(tagsToArticles);
     await ctx.db.delete(tags);
     await ctx.db.delete(articles);
+    await ctx.db.delete(follow);
     await ctx.db.delete(users);
+    await ctx.db.delete(comments);
+    await ctx.db.delete(notifications);
+    await ctx.db.delete(likesToArticles);
+    await ctx.db.delete(likesToComment);
     return {
       success: true,
     };
@@ -166,6 +176,34 @@ export const postsRouter = createTRPCRouter({
 
         const result = await ctx.db.query.articles
           .findMany({
+            where: and(
+              and(
+                eq(articles.isDeleted, false),
+                ...(input?.filter?.read_time
+                  ? (() => {
+                      return input?.filter?.read_time === "over_5"
+                        ? [gt(articles.read_time, 5)]
+                        : input?.filter?.read_time === "under_5"
+                        ? [lt(articles.read_time, 5)]
+                        : input?.filter?.read_time === "5"
+                        ? [eq(articles.read_time, 5)]
+                        : [];
+                    })()
+                  : []),
+                ...(input?.filter?.tags
+                  ? (() => {
+                      return input?.filter?.tags.length > 0
+                        ? [
+                            inArray(
+                              tags.name,
+                              input?.filter?.tags.map((tag) => tag.name)
+                            ),
+                          ]
+                        : [];
+                    })()
+                  : [])
+              )
+            ),
             limit: (limit || 6) + 1,
             offset: skip,
             orderBy:
@@ -176,83 +214,11 @@ export const postsRouter = createTRPCRouter({
                     desc(articles.commentsCount),
                     desc(articles.createdAt),
                   ],
-            columns: {
-              id: true,
-              title: true,
-              slug: true,
-              cover_image: true,
-              disabledComments: true,
-              readCount: true,
-              content: true,
-              read_time: true,
-              likesCount: true,
-              commentsCount: true,
-              createdAt: true,
-            },
-            with: {
-              likes: {
-                columns: {
-                  userId: true,
-                },
-              },
-              tags: {
-                columns: {
-                  articleId: false,
-                  tagId: false,
-                },
-                with: {
-                  tag: {
-                    columns: {
-                      id: true,
-                      name: true,
-                      slug: true,
-                    },
-                  },
-                },
-              },
-              user: {
-                with: {
-                  handle: {
-                    columns: {
-                      id: true,
-                      name: true,
-                      handle: true,
-                      about: true,
-                    },
-                  },
-                },
-                columns: {
-                  id: true,
-                  name: true,
-                  username: true,
-                  profile: true,
-                  bio: true,
-                  stripeSubscriptionStatus: true,
-                },
-              },
-              series: {
-                columns: {
-                  title: true,
-                  slug: true,
-                },
-              },
-              comments: {
-                with: {
-                  user: {
-                    columns: {
-                      id: true,
-                      profile: true,
-                    },
-                  },
-                },
-              },
-            },
+            ...selectArticleCard,
           })
           .then((article) =>
             article.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
           );
-
-        console.log(result);
 
         let nextCursor: typeof cursor | undefined = undefined;
         if (result.length > limit) {
@@ -260,17 +226,17 @@ export const postsRouter = createTRPCRouter({
           nextCursor = nextItem?.id;
         }
 
-        // const formattedPosts = await getArticlesWithUserFollowingProfiles(
-        //   {
-        //     session: ctx.session,
-        //     db: ctx.db,
-        //   },
-        //   result
-        // );
-        // console.log({ formattedPosts });
+        const formattedPosts = await getArticlesWithUserFollowingProfiles(
+          {
+            session: ctx.session,
+            db: ctx.db,
+          },
+          result
+        );
+
         return {
-          // posts: formattedPosts,
-          posts: result,
+          posts: formattedPosts,
+          // posts: result,
           nextCursor,
         };
       } catch (err) {
@@ -306,157 +272,48 @@ export const postsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { cursor, skip, limit } = input;
 
-      // const articles = await ctx.prisma.article.findMany({
-      //   where: {
-      //     isDeleted: false,
-      //     ...((input?.filter?.tags || input?.filter?.read_time) && {
-      //       ...(input?.filter?.read_time && {
-      //         read_time:
-      //           input?.filter?.read_time === "over_5"
-      //             ? { gt: 5 }
-      //             : input?.filter?.read_time === "under_5"
-      //             ? { lt: 5 }
-      //             : input?.filter?.read_time === "5"
-      //             ? { equals: 5 }
-      //             : undefined,
-      //       }),
-      //       ...(input?.filter?.tags &&
-      //         input.filter.tags.length > 0 && {
-      //           tags: {
-      //             some: {
-      //               name: {
-      //                 in: input?.filter?.tags
-      //                   ? input?.filter?.tags.length > 0
-      //                     ? input?.filter?.tags.map((tag) => tag.name)
-      //                     : undefined
-      //                   : undefined,
-      //                 mode: "insensitive",
-      //               },
-      //             },
-      //           },
-      //         }),
-      //     }),
-      //     tags: {
-      //       some: {
-      //         name: input.name,
-      //       },
-      //     },
-      //   },
-      //   select: selectArticleCard,
-      //   take: (limit || 6) + 1,
-      //   skip: skip,
-      //   cursor: cursor ? { id: cursor } : undefined,
-      //   orderBy:
-      //     input.type === "hot"
-      //       ? [
-      //           {
-      //             likesCount: "desc",
-      //           },
-      //           {
-      //             commentsCount: "desc",
-      //           },
-      //         ]
-      //       : input.type === "new"
-      //       ? {
-      //           createdAt: "desc",
-      //         }
-      //       : undefined,
-      // });
-      const result = await ctx.db.query.articles.findMany({
-        limit: (limit || 6) + 1,
-        offset: skip,
-        orderBy:
-          input.type === "hot"
-            ? [desc(articles.likesCount), desc(articles.commentsCount)]
-            : [desc(articles.createdAt)],
-        columns: {
-          id: true,
-          title: true,
-          slug: true,
-          cover_image: true,
-          disabledComments: true,
-          readCount: true,
-          content: true,
-          read_time: true,
-          likesCount: true,
-          commentsCount: true,
-          createdAt: true,
-        },
-        with: {
-          likes: {
-            columns: {
-              userId: true,
-            },
-          },
-          tags: {
-            with: {
-              tag: {
-                columns: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                },
-              },
-            },
-          },
-          user: true,
-          series: {
-            columns: {
-              title: true,
-              slug: true,
-            },
-          },
-          comments: {
-            with: {
-              user: {
-                columns: {
-                  id: true,
-                  profile: true,
-                },
-              },
-            },
-          },
-        },
-        where: and(
-          eq(articles.isDeleted, false),
-          ...(input?.filter?.read_time
-            ? (() => {
-                return input?.filter?.read_time === "over_5"
-                  ? [gt(articles.read_time, 5)]
-                  : input?.filter?.read_time === "under_5"
-                  ? [lt(articles.read_time, 5)]
-                  : input?.filter?.read_time === "5"
-                  ? [eq(articles.read_time, 5)]
-                  : [];
-              })()
-            : []),
-          ...(input?.filter?.tags
-            ? (() => {
-                return input?.filter?.tags.length > 0
-                  ? [
-                      ilike(
-                        tags.name,
-                        inArray(
+      const result = await ctx.db.query.articles
+        .findMany({
+          limit: (limit || 6) + 1,
+          offset: skip,
+          orderBy:
+            input.type === "hot"
+              ? [desc(articles.likesCount), desc(articles.commentsCount)]
+              : [desc(articles.createdAt)],
+          ...selectArticleCard,
+          where: and(
+            eq(articles.isDeleted, false),
+            ...(input?.filter?.read_time
+              ? (() => {
+                  return input?.filter?.read_time === "over_5"
+                    ? [gt(articles.read_time, 5)]
+                    : input?.filter?.read_time === "under_5"
+                    ? [lt(articles.read_time, 5)]
+                    : input?.filter?.read_time === "5"
+                    ? [eq(articles.read_time, 5)]
+                    : [];
+                })()
+              : []),
+            ...(input?.filter?.tags
+              ? (() => {
+                  return input?.filter?.tags.length > 0
+                    ? [
+                        ilike(
                           tags.name,
-                          input?.filter?.tags.map((tag) => tag.name)
-                        )
-                      ),
-                    ]
-                  : [];
-              })()
-            : [])
-          // ...(input?.filter?.read_time && {
-          //   read_time:
-          //     input?.filter?.read_time === "over_5"
-          //       ? { gt: 5 }
-          //       : input?.filter?.read_time === "under_5"
-          //       ? { lt: 5 }
-          //       : input?.filter?.read_time === "5"
-          //       ? { equals: 5 }
-          //       : undefined,
-          // }),
-        ),
-      });
+                          inArray(
+                            tags.name,
+                            input?.filter?.tags.map((tag) => tag.name)
+                          )
+                        ),
+                      ]
+                    : [];
+                })()
+              : [])
+          ),
+        })
+        .then((res) =>
+          res.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
+        );
 
       let nextCursor: typeof cursor | undefined = undefined;
       if (result.length > limit) {
@@ -464,17 +321,17 @@ export const postsRouter = createTRPCRouter({
         nextCursor = nextItem?.id;
       }
 
-      // const formattedPosts = await getArticlesWithUserFollowingProfiles(
-      //   {
-      //     session: ctx.session,
-      //     prisma: ctx.prisma,
-      //   },
-      //   articles
-      // );
+      const formattedPosts = await getArticlesWithUserFollowingProfiles(
+        {
+          session: ctx.session,
+          db: ctx.db,
+        },
+        result
+      );
 
       return {
-        // posts: formattedPosts,
-        posts: result,
+        posts: formattedPosts,
+        // posts: result,
         nextCursor,
       };
     }),
@@ -488,24 +345,30 @@ export const postsRouter = createTRPCRouter({
           .default([]),
       })
     )
-    .query(({ ctx, input }) => {
-      return [];
-      // return await getArticlesWithUserFollowingProfiles(
-      //   {
-      //     session: ctx.session,
-      //     prisma: ctx.prisma,
-      //   },
-      //   await ctx.prisma.article.findMany({
-      //     where: {
-      //       isDeleted: false,
-      //       id: {
-      //         in: input.ids.map((id) => id.id),
-      //       },
-      //     },
-      //     select: selectArticleCard,
-      //     take: 15,
-      //   })
-      // );
+    .query(async ({ ctx, input }) => {
+      const articlesData = await ctx.db.query.articles
+        .findMany({
+          ...selectArticleCard,
+          limit: 15,
+          where: and(
+            eq(articles.isDeleted, false),
+            inArray(
+              articles.id,
+              input.ids.map((id) => id.id)
+            )
+          ),
+        })
+        .then((res) =>
+          res.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
+        );
+
+      return await getArticlesWithUserFollowingProfiles(
+        {
+          session: ctx.session,
+          db: ctx.db,
+        },
+        articlesData
+      );
     }),
 
   getBookmarks: publicProcedure
@@ -519,28 +382,6 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        // const res = await ctx.prisma.article.findMany({
-        //   where: {
-        //     isDeleted: false,
-        //     id: {
-        //       in: input.ids.map((id) => id.id),
-        //     },
-        //   },
-        //   select: {
-        //     id: true,
-        //     read_time: true,
-        //     title: true,
-        //     slug: true,
-        //     user: {
-        //       select: {
-        //         name: true,
-        //         stripeSubscriptionStatus: true,
-        //         username: true,
-        //       },
-        //     },
-        //   },
-        //   take: 4,
-        // });
         const res = await ctx.db.query.articles.findMany({
           where: and(
             eq(articles.isDeleted, false),
@@ -576,60 +417,18 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        // const article = await ctx.prisma.article.findFirst({
-        //   where: {
-        //     isDeleted: false,
-        //     slug: input.slug,
-        //   },
-        //   include: {
-        //     series: {
-        //       select: {
-        //         title: true,
-        //         slug: true,
-        //       },
-        //     },
-        //     user: {
-        //       select: {
-        //         id: true,
-        //         name: true,
-        //         username: true,
-        //         bio: true,
-        //         profile: true,
-        //         stripeSubscriptionStatus: true,
-        //         handle: {
-        //           select: {
-        //             handle: true,
-        //             name: true,
-        //             about: true,
-        //             id: true,
-        //           },
-        //         },
-
-        //         followers: {
-        //           select: {
-        //             id: true,
-        //           },
-        //         },
-        //       },
-        //     },
-        //     tags: {
-        //       select: {
-        //         id: true,
-        //         name: true,
-        //         slug: true,
-        //       },
-        //     },
-        //     likes: {
-        //       select: {
-        //         id: true,
-        //       },
-        //     },
-        //   },
-        // });
-
         const article = await ctx.db.query.articles.findFirst({
           with: {
-            user: true,
+            user: {
+              with: {
+                followers: {
+                  where: eq(follow.userId, "ctx.session?.user?.id"),
+                  columns: {
+                    userId: true,
+                  },
+                },
+              },
+            },
             series: {
               columns: {
                 title: true,
@@ -665,30 +464,21 @@ export const postsRouter = createTRPCRouter({
             message: "Article not found",
           });
         }
+        const { followers: _, ...rest } = article.user;
 
-        // const { followers, ...rest } = article.user;
-        // if (ctx.session?.user) {
-        //   const isFollowing = article.user.followers.some(
-        //     (follower) => follower.id === ctx.session?.user.id
-        //   );
-
-        //   return {
-        //     ...article,
-        //     // isFollowing,
-        //     user: rest,
-        //   };
-        // } else {
-        //   return {
-        //     ...article,
-        //     // isFollowing: false,
-        //     user: rest,
-        //   };
-        // }
-        return {
-          ...article,
-          // isFollowing: false,
-          user: article.user,
-        };
+        if (ctx.session?.user) {
+          return {
+            ...article,
+            isFollowing: article.user.followers.length > 0,
+            user: rest,
+          };
+        } else {
+          return {
+            ...article,
+            isFollowing: false,
+            user: rest,
+          };
+        }
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;
@@ -709,38 +499,6 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        // const article = await ctx.prisma.article.findFirst({
-        //   where: {
-        //     slug: input.slug,
-        //     isDeleted: false,
-        //   },
-        //   select: {
-        //     title: true,
-        //     subtitle: true,
-        //     content: true,
-        //     cover_image: true,
-        //     cover_image_Key: true,
-        //     slug: true,
-        //     seoTitle: true,
-        //     disabledComments: true,
-        //     seoDescription: true,
-        //     seoOgImage: true,
-        //     userId: true,
-        //     seoOgImageKey: true,
-        //     series: {
-        //       select: {
-        //         id: true,
-        //         title: true,
-        //       },
-        //     },
-        //     tags: {
-        //       select: {
-        //         name: true,
-        //       },
-        //     },
-        //   },
-        // });
-
         const article = await ctx.db.query.articles.findFirst({
           where: and(
             eq(articles.slug, input.slug),
@@ -859,7 +617,6 @@ export const postsRouter = createTRPCRouter({
           },
         });
 
-        console.log({ existingArticle });
         // check for not registered tags
         const allTags = await ctx.db
           .insert(tags)
@@ -876,22 +633,9 @@ export const postsRouter = createTRPCRouter({
 
         const { edit, tags: _, ...rest } = input;
 
-        console.log({ allTags, edit });
         if (edit && !!existingArticle) {
           // editing an article
-          console.log("Inside editing condition");
-          console.log({
-            result: {
-              ...rest,
-              read_time: Math.ceil(readingTime(input.content).minutes) || 1,
-              seoTitle: input.seoTitle || input.title,
-              seoDescription:
-                input.seoDescription ||
-                input.subtitle ||
-                input.content.slice(0, 40),
-              seoOgImage: input.seoOgImage || input.cover_image,
-            },
-          });
+
           const [updatedArticle] = await ctx.db
             .update(articles)
             .set({
@@ -909,14 +653,6 @@ export const postsRouter = createTRPCRouter({
               id: articles.id,
             });
 
-          console.log({ updatedArticle });
-          console.log({
-            res: allTags.map((tag) => ({
-              articleId: updatedArticle?.id as string,
-              tagId: tag.id,
-            })),
-          });
-
           await ctx.db
             .insert(tagsToArticles)
             .values(
@@ -926,8 +662,6 @@ export const postsRouter = createTRPCRouter({
               }))
             )
             .onConflictDoNothing();
-
-          console.log("TagsTOArticles completed!!!");
 
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, updatedArticle?.id as string),
@@ -1055,15 +789,6 @@ export const postsRouter = createTRPCRouter({
   getRecentActivity: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ ctx, input }) => {
-      // const user = await ctx.prisma.user.findUnique({
-      //   where: {
-      //     username: input.username.slice(1, input.username.length),
-      //   },
-      //   select: {
-      //     createdAt: true,
-      //   },
-      // });
-
       const user = await ctx.db.query.users.findFirst({
         where: eq(
           users.username,
@@ -1081,24 +806,7 @@ export const postsRouter = createTRPCRouter({
           message: "User not found",
         });
       }
-      // const activities = await ctx.prisma.article.findMany({
-      //   where: {
-      //     isDeleted: false,
-      //     user: {
-      //       username: input.username.slice(1, input.username.length),
-      //     },
-      //   },
-      //   select: {
-      //     id: true,
-      //     title: true,
-      //     slug: true,
-      //     createdAt: true,
-      //   },
-      //   take: 10,
-      //   orderBy: {
-      //     createdAt: "desc",
-      //   },
-      // });
+
       const activities = await ctx.db.query.articles.findMany({
         with: {
           user: {
@@ -1352,67 +1060,71 @@ export const postsRouter = createTRPCRouter({
         variant: z.enum(["week", "month", "year", "any"]).default("any"),
       })
     )
-    .query(({ ctx, input }) => {
-      return [];
-      // try {
-      //   const { cursor, skip, limit } = input;
-      //   const startDate = new Date();
-      //   const endDate = new Date();
+    .query(async ({ ctx, input }) => {
+      try {
+        const { cursor, skip, limit } = input;
+        const startDate = new Date();
+        const endDate = new Date();
 
-      //   if (input?.variant === "week") {
-      //     startDate.setDate(startDate.getDate() - 7);
-      //   } else if (input?.variant === "month") {
-      //     startDate.setMonth(startDate.getMonth() - 1);
-      //   } else if (input?.variant === "year") {
-      //     startDate.setFullYear(startDate.getFullYear() - 1);
-      //   }
-      //   const articles = await ctx.prisma.article.findMany({
-      //     where: {
-      //       isDeleted: false,
-      //       ...(input?.variant === "any"
-      //         ? {}
-      //         : {
-      //             createdAt: {
-      //               gte: startDate,
-      //               lte: endDate,
-      //             },
-      //           }),
-      //     },
-      //     take: (limit || 6) + 1,
-      //     skip: skip,
-      //     cursor: cursor ? { id: cursor } : undefined,
-      //     select: selectArticleCard,
-      //     orderBy: [
-      //       { likesCount: "desc" },
-      //       { commentsCount: "desc" },
-      //       { createdAt: "desc" },
-      //     ],
-      //   });
+        if (input?.variant === "week") {
+          startDate.setDate(startDate.getDate() - 7);
+        } else if (input?.variant === "month") {
+          startDate.setMonth(startDate.getMonth() - 1);
+        } else if (input?.variant === "year") {
+          startDate.setFullYear(startDate.getFullYear() - 1);
+        }
 
-      //   let nextCursor: typeof cursor | undefined = undefined;
-      //   if (articles.length > limit) {
-      //     const nextItem = articles.pop(); // return the last item from the array
-      //     nextCursor = nextItem?.id;
-      //   }
+        const articlesData = await ctx.db.query.articles
+          .findMany({
+            where: and(
+              eq(articles.isDeleted, false),
+              input?.variant === "any"
+                ? undefined
+                : and(
+                    gte(articles.createdAt, startDate),
+                    lte(articles.createdAt, endDate)
+                  )
+            ),
+            limit: (limit || 6) + 1,
+            offset: skip,
+            ...selectArticleCard,
+            orderBy: [
+              desc(articles.createdAt),
+              desc(articles.likesCount),
+              desc(articles.commentsCount),
+            ],
+          })
+          .then((res) =>
+            res.map((article) => ({
+              ...article,
+              tags: article.tags.map((e) => e.tag),
+            }))
+          );
 
-      //   const formattedPosts = await getArticlesWithUserFollowingProfiles(
-      //     {
-      //       session: ctx.session,
-      //       prisma: ctx.prisma,
-      //     },
-      //     articles
-      //   );
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (articlesData.length > limit) {
+          const nextItem = articlesData.pop(); // return the last item from the array
+          nextCursor = nextItem?.id;
+        }
 
-      //   return {
-      //     posts: formattedPosts,
-      //     nextCursor,
-      //   };
-      // } catch (err) {
-      //   throw new TRPCError({
-      //     code: "INTERNAL_SERVER_ERROR",
-      //     message: "Something went wrong, try again later",
-      //   });
-      // }
+        const formattedPosts = await getArticlesWithUserFollowingProfiles(
+          {
+            session: ctx.session,
+            db: ctx.db,
+          },
+          articlesData
+        );
+
+        return {
+          posts: formattedPosts,
+          nextCursor,
+        };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
     }),
 
   getFollowingArticles: protectedProcedure
@@ -1424,78 +1136,73 @@ export const postsRouter = createTRPCRouter({
         variant: z.enum(["week", "month", "year", "any"]).default("any"),
       })
     )
-    .query(({ ctx, input }) => {
-      return [];
-      // try {
-      //   const { cursor, skip, limit } = input;
+    .query(async ({ ctx, input }) => {
+      try {
+        const { cursor, skip, limit } = input;
 
-      //   const startDate = new Date();
-      //   const endDate = new Date();
+        const startDate = new Date();
+        const endDate = new Date();
 
-      //   if (input?.variant === "week") {
-      //     startDate.setDate(startDate.getDate() - 7);
-      //   } else if (input?.variant === "month") {
-      //     startDate.setMonth(startDate.getMonth() - 1);
-      //   } else if (input?.variant === "year") {
-      //     startDate.setFullYear(startDate.getFullYear() - 1);
-      //   }
+        if (input?.variant === "week") {
+          startDate.setDate(startDate.getDate() - 7);
+        } else if (input?.variant === "month") {
+          startDate.setMonth(startDate.getMonth() - 1);
+        } else if (input?.variant === "year") {
+          startDate.setFullYear(startDate.getFullYear() - 1);
+        }
 
-      //   const articles = await ctx.prisma.article.findMany({
-      //     where: {
-      //       isDeleted: false,
+        const articlesdata = await ctx.db.query.articles
+          .findMany({
+            where: and(
+              eq(articles.isDeleted, false),
+              eq(articles.userId, ctx.session.user.id),
+              input?.variant === "any"
+                ? undefined
+                : and(
+                    gte(articles.createdAt, startDate),
+                    lte(articles.createdAt, endDate)
+                  )
+            ),
+            limit: (limit || 6) + 1,
+            offset: skip,
+            ...selectArticleCard,
+            orderBy: [
+              desc(articles.createdAt),
+              desc(articles.likesCount),
+              desc(articles.commentsCount),
+            ],
+          })
+          .then((res) =>
+            res.map((article) => ({
+              ...article,
+              tags: article.tags.map((e) => e.tag),
+            }))
+          );
 
-      //       user: {
-      //         followers: {
-      //           some: {
-      //             id: ctx.session.user.id,
-      //           },
-      //         },
-      //       },
-      //       ...(input?.variant === "any"
-      //         ? {}
-      //         : {
-      //             createdAt: {
-      //               gte: startDate,
-      //               lte: endDate,
-      //             },
-      //           }),
-      //     },
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (articlesdata.length > limit) {
+          const nextItem = articlesdata.pop(); // return the last item from the array
+          nextCursor = nextItem?.id;
+        }
 
-      //     take: (limit || 6) + 1,
-      //     skip: skip,
-      //     cursor: cursor ? { id: cursor } : undefined,
-      //     select: selectArticleCard,
-      //     orderBy: [
-      //       { likesCount: "desc" },
-      //       { commentsCount: "desc" },
-      //       { createdAt: "desc" },
-      //     ],
-      //   });
+        const formattedPosts = await getArticlesWithUserFollowingProfiles(
+          {
+            session: ctx.session,
+            db: ctx.db,
+          },
+          articlesdata
+        );
 
-      //   let nextCursor: typeof cursor | undefined = undefined;
-      //   if (articles.length > limit) {
-      //     const nextItem = articles.pop(); // return the last item from the array
-      //     nextCursor = nextItem?.id;
-      //   }
-
-      //   const formattedPosts = await getArticlesWithUserFollowingProfiles(
-      //     {
-      //       session: ctx.session,
-      //       prisma: ctx.prisma,
-      //     },
-      //     articles
-      //   );
-
-      //   return {
-      //     posts: formattedPosts,
-      //     nextCursor,
-      //   };
-      // } catch (err) {
-      //   throw new TRPCError({
-      //     code: "INTERNAL_SERVER_ERROR",
-      //     message: "Something went wrong, try again later",
-      //   });
-      // }
+        return {
+          posts: formattedPosts,
+          nextCursor,
+        };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
     }),
 
   getAuthorArticles: publicProcedure
@@ -1511,73 +1218,60 @@ export const postsRouter = createTRPCRouter({
           .default("PUBLISHED"),
       })
     )
-    .query(({ ctx, input }) => {
-      return [];
-      // try {
-      //   if (input.type === "SCHEDULED") {
-      //     throw new TRPCError({
-      //       code: "BAD_REQUEST",
-      //       message: "Scheduled articles are not available for public",
-      //     });
-      //   }
+    .query(async ({ ctx, input }) => {
+      try {
+        if (input.type === "SCHEDULED") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Scheduled articles are not available for public",
+          });
+        }
 
-      //   const { cursor, skip, limit } = input;
+        const { cursor, skip, limit } = input;
 
-      //   const articles = await ctx.prisma.article.findMany({
-      //     where: {
-      //       isDeleted: false,
-      //       user: {
-      //         username: input.username,
-      //       },
-      //       ...(input.type === "DELETED" && {
-      //         isDeleted: true,
-      //       }),
-      //       ...(input.type === "PUBLISHED" && {
-      //         isDeleted: false,
-      //       }),
-      //     },
-      //     take: (limit || 6) + 1,
-      //     skip: skip,
-      //     cursor: cursor ? { id: cursor } : undefined,
-      //     select: {
-      //       id: true,
-      //       title: true,
-      //       slug: true,
-      //       createdAt: true,
-      //       read_time: true,
-      //       user: {
-      //         select: {
-      //           profile: true,
-      //           username: true,
-      //         },
-      //       },
-      //       subtitle: true,
-      //       cover_image: true,
-      //     },
-      //     orderBy: {
-      //       createdAt: "desc",
-      //     },
-      //   });
+        const articlesData = await ctx.db.query.articles.findMany({
+          where: and(
+            eq(articles.isDeleted, false),
+            eq(users.username, input.username),
+            input.type === "DELETED"
+              ? eq(articles.isDeleted, true)
+              : eq(articles.isDeleted, false)
+          ),
+          limit: (limit || 6) + 1,
+          offset: skip,
+          columns: {
+            id: true,
+            title: true,
+            subtitle: true,
+            slug: true,
+            createdAt: true,
+            read_time: true,
+            userId: true,
+            cover_image: true,
+            cover_image_key: true,
+          },
+          orderBy: [desc(articles.createdAt)],
+        });
 
-      //   let nextCursor: typeof cursor | undefined = undefined;
-      //   if (articles.length > limit) {
-      //     const nextItem = articles.pop(); // return the last item from the array
-      //     nextCursor = nextItem?.id;
-      //   }
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (articlesData.length > limit) {
+          const nextItem = articlesData.pop(); // return the last item from the array
+          nextCursor = nextItem?.id;
+        }
 
-      //   return {
-      //     posts: articles,
-      //     nextCursor,
-      //   };
-      // } catch (err) {
-      //   if (err instanceof TRPCError) {
-      //     throw err;
-      //   }
-      //   throw new TRPCError({
-      //     code: "INTERNAL_SERVER_ERROR",
-      //     message: "Something went wrong, try again later",
-      //   });
-      // }
+        return {
+          posts: articlesData,
+          nextCursor,
+        };
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
     }),
 
   deleteArticlePermantly: protectedProcedure
@@ -1591,20 +1285,6 @@ export const postsRouter = createTRPCRouter({
         const article = await ctx.db
           .delete(articles)
           .where(eq(articles.slug, input.slug));
-        // const article = await ctx.prisma.article.delete({
-        //   where: {
-        //     slug: input.slug,
-        //     userId: ctx.session.user.id,
-        //   },
-        //   select: {
-        //     id: true,
-        //     user: {
-        //       select: {
-        //         id: true,
-        //       },
-        //     },
-        //   },
-        // });
 
         if (!article) {
           throw new TRPCError({
@@ -1639,41 +1319,6 @@ export const postsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const { cursor, skip, limit } = input;
-
-        // const articles = await ctx.prisma.article.findMany({
-        //   where: {
-        //     isDeleted: false,
-
-        //     user: {
-        //       handle: {
-        //         handle: input.handle,
-        //       },
-        //     },
-        //   },
-        //   select: {
-        //     id: true,
-        //     title: true,
-        //     slug: true,
-        //     createdAt: true,
-        //     content: true,
-        //     read_time: true,
-        //     user: {
-        //       select: {
-        //         profile: true,
-        //         username: true,
-        //       },
-        //     },
-        //     subtitle: true,
-        //     cover_image: true,
-        //   },
-
-        //   take: (limit || 6) + 1,
-        //   skip: skip,
-        //   cursor: cursor ? { id: cursor } : undefined,
-        //   orderBy: {
-        //     createdAt: "desc",
-        //   },
-        // });
 
         const article = await ctx.db.query.articles.findMany({
           with: {
@@ -1736,24 +1381,6 @@ export const postsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        // const article = await ctx.prisma.article.findFirst({
-        //   where: {
-        //     slug: input.slug,
-        //   },
-        //   select: {
-        //     id: true,
-        //     user: {
-        //       select: {
-        //         id: true,
-        //       },
-        //     },
-        //     readers: {
-        //       select: {
-        //         id: true,
-        //       },
-        //     },
-        //   },
-        // });
         const article = await ctx.db.query.articles.findFirst({
           where: eq(articles.slug, input.slug),
           columns: {
@@ -1798,29 +1425,6 @@ export const postsRouter = createTRPCRouter({
         );
 
         if (!hasRead) {
-          // await ctx.prisma.article.update({
-          //   where: {
-          //     id: article.id,
-          //   },
-          //   data: {
-          //     readers: {
-          //       ...(hasRead
-          //         ? undefined
-          //         : {
-          //             connect: {
-          //               id: ctx.session?.user?.id,
-          //             },
-          //           }),
-          //     },
-          //     readCount: {
-          //       ...(hasRead
-          //         ? undefined
-          //         : {
-          //             increment: 1,
-          //           }),
-          //     },
-          //   },
-          // });
           const updatedCount = hasRead
             ? article.readCount
             : article.readCount + 1;
@@ -1839,7 +1443,15 @@ export const postsRouter = createTRPCRouter({
         return {
           success: true,
         };
-      } catch (err) {}
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
     }),
 
   deleteTemporarily: protectedProcedure
@@ -1850,20 +1462,6 @@ export const postsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        // const article = await ctx.prisma.article.findFirst({
-        //   where: {
-        //     slug: input.slug,
-        //   },
-        //   select: {
-        //     id: true,
-        //     isDeleted: true,
-        //     user: {
-        //       select: {
-        //         id: true,
-        //       },
-        //     },
-        //   },
-        // });
         const article = await ctx.db.query.articles.findFirst({
           where: eq(articles.slug, input.slug),
           columns: {
@@ -1902,14 +1500,6 @@ export const postsRouter = createTRPCRouter({
         }
 
         if (ctx.session?.user?.id === article.user.id) {
-          // await ctx.prisma.article.update({
-          //   where: {
-          //     id: article.id,
-          //   },
-          //   data: {
-          //     isDeleted: true,
-          //   },
-          // });
           await ctx.db
             .update(articles)
             .set({
@@ -1946,21 +1536,6 @@ export const postsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        // const article = await ctx.prisma.article.findFirst({
-        //   where: {
-        //     slug: input.slug,
-        //   },
-        //   select: {
-        //     id: true,
-        //     isDeleted: true,
-        //     user: {
-        //       select: {
-        //         id: true,
-        //       },
-        //     },
-        //   },
-        // });
-
         const article = await ctx.db.query.articles.findFirst({
           where: eq(articles.slug, input.slug),
           columns: {
@@ -1992,14 +1567,6 @@ export const postsRouter = createTRPCRouter({
         }
 
         if (ctx.session?.user?.id === article.user.id) {
-          // await ctx.prisma.article.update({
-          //   where: {
-          //     id: article.id,
-          //   },
-          //   data: {
-          //     isDeleted: false,
-          //   },
-          // });
           await ctx.db
             .update(articles)
             .set({

@@ -2,32 +2,50 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 
 const ApiTesting = () => {
-  // const { mutateAsync } = api.users.createUser.useMutation();
-  // const { mutateAsync: handleMutate } = api.handles.createPersonalHandle.useMutation();
-  // const { mutateAsync: customTabMutate } = api.handles.newNavbarData.useMutation();
-  // const { mutateAsync: articleMutate } = api.posts.new.useMutation();
-  // const { mutateAsync: seriesMutate } = api.series.new.useMutation();
-  // const { mutateAsync: commentMutate } = api.comments.newComment.useMutation();
+  const { mutateAsync } = api.users.createUser.useMutation();
+  const { mutateAsync: handleMutate } = api.handles.createPersonalHandle.useMutation();
+  const { mutateAsync: customTabMutate } = api.handles.newNavbarData.useMutation();
+  const { mutateAsync: articleMutate } = api.posts.new.useMutation();
+  const { mutateAsync: seriesMutate } = api.series.new.useMutation();
+  const { mutateAsync: commentMutate } = api.comments.newComment.useMutation();
   const { mutateAsync: followMutate } = api.users.followUser.useMutation();
+  const { mutateAsync: likeArticleMutate } = api.likes.likeArticle.useMutation();
+  const { mutateAsync: likeCommentMutate } = api.comments.likeComment.useMutation();
 
-  // const { mutateAsync: updateArticleMutate } = api.posts.new.useMutation();
+  const { mutateAsync: updateArticleMutate } = api.posts.new.useMutation();
 
-  const { data: userdata } = api.users.getUserByUsername.useQuery({ username: "@ujen5173" }, {
-    refetchOnWindowFocus: false,
+
+  const { data: followingList } = api.users.getFollowingList.useQuery({
+    username: ""
   });
-  console.log({ userdata })
+  const { data: followersist } = api.users.getFollowersList.useQuery({
+    username: ""
+  });
+
+  console.log({
+    followingList,
+    followersist
+  })
+
+  // const { data: sujit } = api.users.getUserByUsername.useQuery({ username: "@sujit5963" }, {
+  //   refetchOnWindowFocus: false,
+  // });
+  // console.log({ sujit })
+  // const { data: ujen } = api.users.getUserByUsername.useQuery({ username: "@Alfonzo78" }, {
+  //   refetchOnWindowFocus: false,
+  // });
+  // console.log({ ujen })
   // // console.log({ userdata })
   // const { data: articledata } = api.posts.getAll.useQuery({
   //   limit: 10,
-  //   skip: 0
+  //   skip: 0,
   // }, {
   //   refetchOnWindowFocus: false,
-
   // });
   // console.log({ articledata })
 
   const launch = async () => {
-    // // create user
+    // create user
     // const usersData = [];
     // for (let i = 0; i < 2; i++) {
     //   const userData = {
@@ -186,11 +204,43 @@ const ApiTesting = () => {
 
     // follow user
     const followData = {
-      userId: "df5b18b2-48ac-477d-959f-3778383ca755",
-      followingId: "c0cafc08-4f77-42d1-980b-64fcfcf0dbb5"
+      followingId
+        :
+        "b1b3a617-8df7-473c-959c-cf1079012df5",
+      userId
+        :
+        "927e54ca-fbb9-48d3-ab53-0e04e63367d7"
     }
     const follow = await followMutate(followData);
     console.log(({ follow }))
+
+    const reversefollowData = {
+      followingId
+        :
+        "927e54ca-fbb9-48d3-ab53-0e04e63367d7",
+      userId
+        :
+        "b1b3a617-8df7-473c-959c-cf1079012df5",
+    }
+    const reversefollow = await followMutate(reversefollowData);
+    console.log(({ reversefollow }))
+
+    // like article
+    // const likeArticleData = {
+    //   articleId: "a4877815-39a4-47dd-ac1e-c6f2ebabe7c7",
+    //   userId: "68048d46-ef1b-4cd7-9aad-6edfec7f097e",
+    // };
+
+    // const likeArticle = await likeArticleMutate(likeArticleData);
+    // console.log({ likeArticle });
+
+    // like comment
+    // const likeCommnetData = {
+    //   commentId: "b4144d8b-0f38-4626-9e41-f7ab3848e275",
+    //   userId: "68048d46-ef1b-4cd7-9aad-6edfec7f097e",
+    // };
+
+    // const likeComment = await likeCommentMutate(likeCommnetData);
   }
 
   const { mutateAsync: deleteAll } = api.posts.deleteAll.useMutation();

@@ -15,24 +15,40 @@ export const usersRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // get following user data
-      const followingTo = await ctx.db.query.users.findFirst({
-        where: eq(users.id, input.followingId),
+      const me = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.userId),
         columns: {
           id: true,
-          username: true,
+          followingCount: true,
         },
         with: {
           following: {
-            where: eq(follow.userId, input.userId),
-            // columns: {
-            //   followingId: false,
-            //   userId: false,
-            // },
+            where: eq(follow.userId, input.followingId),
             with: {
               user: {
                 columns: {
                   id: true,
-                  username: true,
+                  followingCount: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      const otherUser = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.followingId),
+        columns: {
+          id: true,
+          followersCount: true,
+        },
+        with: {
+          followers: {
+            where: eq(follow.followingId, input.userId),
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  followersCount: true,
                 },
               },
             },
@@ -40,17 +56,20 @@ export const usersRouter = createTRPCRouter({
         },
       });
 
-      console.log({ followingTo });
-
-      if (!followingTo) {
+      if (!me || !otherUser) {
         return {
           success: false,
           message: "User not found",
-          status: 404,
+          status: 400,
         };
       }
 
-      if (followingTo.following.length) {
+      const isFollowing = me?.following.length > 0 ? true : false;
+
+      if (
+        isFollowing &&
+        (me.following[0]?.user?.id || otherUser.followers[0]?.user?.id)
+      ) {
         console.log("UnFollowing condition");
         // unfollow the user
         await ctx.db
@@ -63,19 +82,20 @@ export const usersRouter = createTRPCRouter({
           );
 
         // update the following count
-        // await ctx.db
-        //   .update(users)
-        //   .set({
-        //     followingCount: users.followingCount._.data - 1,
-        //   })
-        //   .where(eq(users.id, input.userId))
+        await ctx.db
+          .update(users)
+          .set({
+            followingCount:
+              +(otherUser.followers[0]?.user?.followersCount ?? 1) - 1,
+          })
+          .where(eq(users.id, input.userId));
 
-        // await ctx.db
-        //   .update(users)
-        //   .set({
-        //     followersCount: users.followersCount._.data - 1,
-        //   })
-        //   .where(eq(users.id, input.followingId));
+        await ctx.db
+          .update(users)
+          .set({
+            followersCount: +(me.following[0]?.user?.followingCount ?? 1) - 1,
+          })
+          .where(eq(users.id, input.followingId));
 
         return {
           success: false,
@@ -91,19 +111,20 @@ export const usersRouter = createTRPCRouter({
         });
 
         // update the following count
-        // await ctx.db
-        //   .update(users)
-        //   .set({
-        //     followingCount: users.followingCount._.data + 1,
-        //   })
-        //   .where(eq(users.id, input.userId));
+        await ctx.db
+          .update(users)
+          .set({
+            followingCount:
+              +(otherUser.followers[0]?.user?.followersCount ?? 0) + 1,
+          })
+          .where(eq(users.id, input.userId));
 
-        // await ctx.db
-        //   .update(users)
-        //   .set({
-        //     followersCount: users.followersCount._.data + 1,
-        //   })
-        //   .where(eq(users.id, input.followingId));
+        await ctx.db
+          .update(users)
+          .set({
+            followersCount: +(me.following[0]?.user?.followingCount ?? 0) + 1,
+          })
+          .where(eq(users.id, input.followingId));
         return {
           success: false,
           message: "User followed successfully",
@@ -114,18 +135,18 @@ export const usersRouter = createTRPCRouter({
 
   getUser: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.query.users.findFirst({
-      where: eq(users.id, "1d9f5a85-fc4a-4a10-a790-8ee65216dfba"),
+      where: eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
       with: {
-        // following: {
-        //   columns: {
-        //     userId: true,
-        //   },
-        // },
-        // followers: {
-        //   columns: {
-        //     userId: true,
-        //   },
-        // },
+        following: {
+          columns: {
+            userId: true,
+          },
+        },
+        followers: {
+          columns: {
+            userId: true,
+          },
+        },
       },
     });
     return user;
@@ -184,7 +205,7 @@ export const usersRouter = createTRPCRouter({
               followingId: false,
             },
             with: {
-              user: true,
+              following: true,
             },
           },
           handle: {
@@ -230,222 +251,213 @@ export const usersRouter = createTRPCRouter({
       // return { ...user, isFollowing };
     }),
 
-  // updateUser: protectedProcedure
-  //   .input(
-  //     z.object({
-  //       name: z.string().trim(),
-  //       username: z.string().trim(),
-  //       email: z.string().trim(),
-  //       location: z.string().trim(),
-  //       profile: z.string().trim(),
-  //       tagline: z.string().trim(),
-  //       available: z.string().trim(),
-  //       cover_image: z.string().trim(),
-  //       bio: z.string().trim(),
-  //       skills: z.array(z.string().trim()),
-  //       social: z.object({
-  //         twitter: z.string().trim().optional(),
-  //         instagram: z.string().trim().optional(),
-  //         github: z.string().trim().optional(),
-  //         stackoverflow: z.string().trim().optional(),
-  //         facebook: z.string().trim().optional(),
-  //         website: z.string().trim().optional(),
-  //         linkedin: z.string().trim().optional(),
-  //         youtube: z.string().trim().optional(),
-  //       }),
-  //     })
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     const newUser = await ctx.prisma.user.update({
-  //       where: {
-  //         id: ctx.session.user.id,
-  //       },
-  //       data: {
-  //         name: input.name,
-  //         username: input.username,
-  //         email: input.email,
-  //         location: input.location,
-  //         profile: input.profile,
-  //         tagline: input.tagline,
-  //         available: input.available,
-  //         cover_image: input.cover_image,
-  //         bio: input.bio,
-  //         skills: input.skills,
-  //         social: input.social,
-  //       },
-  //       select: {
-  //         name: true,
-  //         username: true,
-  //         email: true,
-  //         location: true,
-  //         profile: true,
-  //         tagline: true,
-  //         available: true,
-  //         cover_image: true,
-  //         bio: true,
-  //         skills: true,
-  //         social: true,
-  //       },
-  //     });
+  updateUser: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().trim(),
+        username: z.string().trim(),
+        email: z.string().trim(),
+        location: z.string().trim(),
+        profile: z.string().trim(),
+        tagline: z.string().trim(),
+        available: z.string().trim(),
+        cover_image: z.string().trim(),
+        bio: z.string().trim(),
+        skills: z.array(z.string().trim()),
+        social: z.object({
+          twitter: z.string().trim().optional(),
+          instagram: z.string().trim().optional(),
+          github: z.string().trim().optional(),
+          stackoverflow: z.string().trim().optional(),
+          facebook: z.string().trim().optional(),
+          website: z.string().trim().optional(),
+          linkedin: z.string().trim().optional(),
+          youtube: z.string().trim().optional(),
+        }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(users)
+        .set(input)
+        .where(eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"));
+      return {
+        success: true,
+        message: "User updated successfully",
+        status: 200,
+      };
+    }),
 
-  //     return {
-  //       success: true,
-  //       message: "User Updated",
-  //       status: 200,
-  //       data: {
-  //         ...newUser,
-  //         social: JSON.parse(JSON.stringify(newUser.social)) as SocialHandles,
-  //         skills: newUser.skills.join(", "),
-  //       },
-  //     };
-  //   }),
+  getFollowersList: publicProcedure
+    .input(
+      z.object({
+        username: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const f = await ctx.db.query.follow.findMany({
+        where: eq(follow.followingId, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+        with: {
+          user: {
+            columns: {
+              id: true,
+              name: true,
+              tagline: true,
+              username: true,
+              profile: true,
+            },
+          },
+        },
+        limit: 20,
+      });
 
-  // getFollowersList: publicProcedure
-  //   .input(
-  //     z.object({
-  //       username: z.string().trim(),
-  //     })
-  //   )
-  //   .query(async ({ ctx, input }) => {
-  //     const followers = await ctx.prisma.user.findMany({
-  //       where: {
-  //         following: {
-  //           some: {
-  //             username: input.username.slice(1, input.username.length),
-  //           },
-  //         },
-  //       },
-  //       select: {
-  //         id: true,
-  //         name: true,
-  //         tagline: true,
-  //         username: true,
-  //         profile: true,
-  //       },
-  //       take: 20,
-  //     });
+      const authorUser = await ctx.db.query.users.findFirst({
+        where: eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+        with: {
+          followers: {
+            columns: {
+              followingId: false,
+              userId: false,
+            },
+            where: eq(follow.userId, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+            with: {
+              following: {
+                columns: {
+                  id: true,
+                  name: true,
+                  tagline: true,
+                  username: true,
+                  profile: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-  //     const authorUser = await ctx.prisma.user.findUnique({
-  //       where: {
-  //         id: ctx.session?.user?.id,
-  //       },
-  //       select: {
-  //         following: {
-  //           select: {
-  //             id: true,
-  //           },
-  //         },
-  //       },
-  //     });
+      if (!authorUser) {
+        return {
+          success: false,
+          message: "User not found",
+          status: 400,
+        };
+      }
 
-  //     const updatedFollowers = followers.map((user) => {
-  //       return {
-  //         ...user,
-  //         isFollowing: authorUser?.following.some(
-  //           (following) => following.id === user.id
-  //         )
-  //           ? true
-  //           : false,
-  //       };
-  //     });
+      const updatedFollowers = f.map((user) => {
+        return {
+          ...user,
+          isFollowing: authorUser?.followers.length > 0 ? true : false,
+        };
+      });
+      return updatedFollowers;
+    }),
 
-  //     return updatedFollowers;
-  //   }),
+  getFollowingList: publicProcedure
+    .input(
+      z.object({
+        username: z.string().trim(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const f = await ctx.db.query.follow.findMany({
+        where: eq(follow.userId, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+        with: {
+          user: {
+            columns: {
+              id: true,
+              name: true,
+              tagline: true,
+              username: true,
+              profile: true,
+            },
+          },
+        },
+        limit: 20,
+      });
 
-  // getFollowingList: publicProcedure
-  //   .input(
-  //     z.object({
-  //       username: z.string().trim(),
-  //     })
-  //   )
-  //   .query(async ({ ctx, input }) => {
-  //     const following = await ctx.prisma.user.findMany({
-  //       where: {
-  //         followers: {
-  //           some: {
-  //             username: input.username.slice(1, input.username.length),
-  //           },
-  //         },
-  //       },
-  //       select: {
-  //         id: true,
-  //         name: true,
-  //         tagline: true,
-  //         username: true,
-  //         profile: true,
-  //       },
-  //       take: 20,
-  //     });
-  //     const authorUser = await ctx.prisma.user.findUnique({
-  //       where: {
-  //         id: ctx.session?.user?.id,
-  //       },
-  //       select: {
-  //         following: {
-  //           select: {
-  //             id: true,
-  //           },
-  //         },
-  //       },
-  //     });
+      const authorUser = await ctx.db.query.users.findFirst({
+        where: eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+        with: {
+          following: {
+            where: eq(follow.userId, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+            columns: {
+              followingId: false,
+              userId: false,
+            },
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  name: true,
+                  tagline: true,
+                  username: true,
+                  profile: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-  //     const updatedFollowing = following.map((user) => {
-  //       return {
-  //         ...user,
-  //         isFollowing: authorUser?.following.some(
-  //           (following) => following.id === user.id
-  //         )
-  //           ? true
-  //           : false,
-  //       };
-  //     });
+      if (!authorUser) {
+        return {
+          success: false,
+          message: "User not found",
+          status: 400,
+        };
+      }
 
-  //     return updatedFollowing;
-  //   }),
+      const updatedFollowing = f.map((user) => {
+        return {
+          ...user,
+          isFollowing: authorUser?.following.length > 0 ? true : false,
+        };
+      });
 
-  // getUserDashboardRoadmapDetails: protectedProcedure.query(async ({ ctx }) => {
-  //   const data = await ctx.prisma.user.findUnique({
-  //     where: {
-  //       id: ctx.session.user.id,
-  //     },
-  //     select: {
-  //       articles: {
-  //         select: {
-  //           id: true,
-  //         },
-  //         take: 1,
-  //       },
-  //       handle: {
-  //         select: {
-  //           appearance: true,
-  //         },
-  //       },
-  //     },
-  //   });
+      return updatedFollowing;
+    }),
 
-  //   return data;
-  // }),
+  getUserDashboardRoadmapDetails: protectedProcedure.query(async ({ ctx }) => {
+    const data = await ctx.db.query.users.findFirst({
+      where: eq(users.id, ctx.session.user?.id),
+      with: {
+        handle: {
+          columns: {
+            appearance: true,
+          },
+        },
+      },
+    });
 
-  // subscriptionStatus: protectedProcedure.query(async ({ ctx }) => {
-  //   const { session, prisma } = ctx;
+    const articles = await ctx.db.query.articles.findFirst({
+      where: eq(users.id, ctx.session.user?.id),
+      columns: {
+        id: true,
+      },
+    });
 
-  //   if (!session.user?.id) {
-  //     throw new Error("Not authenticated");
-  //   }
+    return {
+      ...data,
+      articles,
+    };
+  }),
 
-  //   const data = await prisma.user.findUnique({
-  //     where: {
-  //       id: session.user?.id,
-  //     },
-  //     select: {
-  //       stripeSubscriptionStatus: true,
-  //     },
-  //   });
+  subscriptionStatus: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.session.user?.id) {
+      throw new Error("Not authenticated");
+    }
 
-  //   if (!data) {
-  //     throw new Error("Could not find user");
-  //   }
+    const data = await ctx.db.query.users.findFirst({
+      where: eq(users.id, ctx.session.user?.id),
+      columns: {
+        stripeSubscriptionStatus: true,
+      },
+    });
 
-  //   return data.stripeSubscriptionStatus;
-  // }),
+    if (!data) {
+      throw new Error("Could not find user");
+    }
+
+    return data.stripeSubscriptionStatus;
+  }),
 });

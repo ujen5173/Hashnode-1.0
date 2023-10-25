@@ -9,7 +9,6 @@ import { publicProcedure } from "./../trpc";
 
 export const seriesRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    // const series = await ctx.prisma.series.findMany();
     const result = await ctx.db.query.series.findMany();
 
     return result;
@@ -48,12 +47,6 @@ export const seriesRouter = createTRPCRouter({
         let result = null;
 
         if (edit) {
-          // result = await ctx.prisma.series.update({
-          //   where: {
-          //     slug: restInput.slug,
-          //   },
-          //   ...dbQuery,
-          // });
           result = await ctx.db
             .update(series)
             .set(dbQuery.data)
@@ -65,7 +58,6 @@ export const seriesRouter = createTRPCRouter({
             )
             .returning();
         } else {
-          // result = await ctx.prisma.series.create(dbQuery);
           result = await ctx.db
             .insert(series)
             .values({
@@ -96,34 +88,6 @@ export const seriesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        // const series = await ctx.prisma.series.findFirst({
-        //   where: {
-        //     slug: input.slug,
-        //   },
-        //   select: {
-        //     title: true,
-        //     slug: true,
-        //     description: true,
-        //     cover_image: true,
-        //     articles: {
-        //       select: {
-        //         id: true,
-        //         title: true,
-        //         slug: true,
-        //         content: true,
-        //         cover_image: true,
-        //         read_time: true,
-        //         createdAt: true,
-        //         user: {
-        //           select: {
-        //             username: true,
-        //           },
-        //         },
-        //       },
-        //     },
-        //   },
-        // });
-
         const result = await ctx.db.query.series.findFirst({
           where: eq(series.slug, input.slug),
           columns: {
@@ -181,19 +145,6 @@ export const seriesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        // const series = await ctx.prisma.series.findMany({
-        //   where: {
-        //     author: {
-        //       username: input.username,
-        //     },
-        //   },
-        //   select: {
-        //     id: true,
-        //     title: true,
-        //     slug: true,
-        //   },
-        // });
-
         const result = await ctx.db.query.users
           .findFirst({
             where: eq(users.username, input.username),
@@ -214,14 +165,6 @@ export const seriesRouter = createTRPCRouter({
               },
             });
           });
-        // .series.findMany({
-        //   where: eq(series.authorId, input.username),
-        //   columns: {
-        //     id: true,
-        //     title: true,
-        //     slug: true,
-        //   },
-        // });
 
         if (!result) {
           throw new TRPCError({
@@ -250,36 +193,6 @@ export const seriesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        // const series = await ctx.prisma.series.findMany({
-        //   where: {
-        //     AND: [
-        //       {
-        //         OR: [
-        //           {
-        //             title: {
-        //               contains: input.query,
-        //               mode: "insensitive",
-        //             },
-        //           },
-        //           {
-        //             description: {
-        //               contains: input.query,
-        //               mode: "insensitive",
-        //             },
-        //           },
-        //         ],
-        //       },
-        //       {
-        //         authorId: ctx.session.user.id,
-        //       },
-        //     ],
-        //   },
-        //   select: {
-        //     id: true,
-        //     title: true,
-        //   },
-        // });
-
         const result = await ctx.db.query.series.findMany({
           where: and(
             or(
@@ -314,11 +227,6 @@ export const seriesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        // const series = await ctx.prisma.series.delete({
-        //   where: {
-        //     id: input.id,
-        //   },
-        // });
         const result = await ctx.db
           .delete(series)
           .where(eq(series.id, input.id));

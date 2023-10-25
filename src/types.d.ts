@@ -19,8 +19,8 @@ export interface Article {
     id: string;
     name: string;
     username: string;
-    profile: string;
-    bio: string;
+    profile: string | null;
+    bio: string | null;
     stripeSubscriptionStatus: string | null;
     handle: {
       id: string;
@@ -56,7 +56,7 @@ export interface ArticleCardWithComments extends ArticleCardRemoveCommonUser {
   comments: {
     user: {
       id: string;
-      profile: string;
+      profile: string | null;
     };
   }[];
 }

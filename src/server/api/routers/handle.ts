@@ -45,25 +45,6 @@ export const handleRouter = createTRPCRouter({
         .update(handles)
         .set(input)
         .where(eq(handles.userId, "c812cfc0-b546-4d07-9140-589345289fca"));
-      // const handle = await ctx.prisma.handle.findUnique({
-      //   where: {
-      //     userId: ctx.session.user.id,
-      //   },
-      // });
-
-      // if (!handle) {
-      //   throw new TRPCError({
-      //     code: "BAD_REQUEST",
-      //     message: "Handle does not exists",
-      //   });
-      // }
-
-      // const result = await ctx.prisma.handle.update({
-      //   where: {
-      //     userId: ctx.session.user.id,
-      //   },
-      //   data: input,
-      // });
 
       return !!result;
     }),
@@ -79,12 +60,6 @@ export const handleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // const findExistingHandle = await ctx.prisma.handle.findUnique({
-      //   where: {
-      //     handle: input.handle.domain,
-      //   },
-      // });
-
       const findExistingHandle = await ctx.db.query.handles.findFirst({
         where: eq(handles.handle, input.handle.domain),
       });
@@ -101,8 +76,6 @@ export const handleRouter = createTRPCRouter({
         .values({
           handle: input.handle.domain,
           name: input.handle.name || "Percy30",
-          // userId: ctx.session.user.id,
-          // userId: "2802f8f4-e46c-4497-9563-b3a6089a3f96",
           userId: input.userId,
         })
         .returning();
@@ -145,17 +118,6 @@ export const handleRouter = createTRPCRouter({
         })
         .returning();
 
-      // const result = await ctx.prisma.handle.update({
-      //   where: {
-      //     handle: input.handle,
-      //   },
-      //   data: {
-      //     customTabs: {
-      //       create: input.tab,
-      //     },
-      //   },
-      // });
-
       return newTab;
     }),
 
@@ -197,12 +159,6 @@ export const handleRouter = createTRPCRouter({
             eq(customTabs.id, input.tabId)
           )
         );
-      // const result = await ctx.prisma.customTab.update({
-      //   where: {
-      //     id: input.handle,
-      //   },
-      //   data: input.tab,
-      // });
 
       return !!result;
     }),
@@ -218,16 +174,6 @@ export const handleRouter = createTRPCRouter({
         where: eq(customTabs.handleId, input.handle),
         orderBy: (tabs, { asc }) => asc(tabs.priority),
       });
-      // const result = await ctx.prisma.customTab.findMany({
-      //   where: {
-      //     handle: {
-      //       handle: input.handle,
-      //     },
-      //   },
-      //   orderBy: {
-      //     priority: "asc",
-      //   },
-      // });
       return result;
     }),
 
@@ -241,11 +187,6 @@ export const handleRouter = createTRPCRouter({
       const result = await ctx.db
         .delete(customTabs)
         .where(eq(customTabs.id, input.tabId));
-      // const result = await ctx.prisma.customTab.delete({
-      //   where: {
-      //     id: input.tabId,
-      //   },
-      // });
       return !!result;
     }),
 });

@@ -56,8 +56,8 @@ export const users = pgTable("user", {
     instagram: "",
     stackoverflow: "",
   }),
-  followersCount: integer("followersCount").default(0),
-  followingCount: integer("followingCount").default(0),
+  followersCount: integer("followersCount").default(0).notNull(),
+  followingCount: integer("followingCount").default(0).notNull(),
   stripeCustomerId: varchar("stripeCustomerId"),
   stripeSubscriptionId: varchar("stripeSubscriptionId"),
   stripeSubscriptionStatus: stripeSubscriptionEnum("stripeSubscriptionStatus"),
@@ -339,6 +339,10 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
   parent: one(comments, {
     fields: [comments.parentId],
     references: [comments.id],
+    relationName: "parent",
+  }),
+  replies: many(comments, {
+    relationName: "parent",
   }),
   likes: many(likesToComment),
 }));

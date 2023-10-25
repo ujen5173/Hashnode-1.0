@@ -477,63 +477,81 @@ export const HashnodeSocials = [
 ];
 
 export const selectArticleCard = {
-  id: true,
-  title: true,
-  slug: true,
-  cover_image: true,
-  disabledComments: true,
-  readCount: true,
-  user: {
-    select: {
-      id: true,
-      name: true,
-      username: true,
-      profile: true,
-      bio: true,
-      stripeSubscriptionStatus: true,
-      handle: {
-        select: {
-          id: true,
-          handle: true,
-          name: true,
-          about: true,
-        },
+  with: {
+    comments: {
+      with: {
+        user: {
+          columns: {
+            id: true,
+            profile: true,
+          },
+        }
+      }
+    },
+    tags: {
+      columns: {
+        articleId: false,
+        tagId: false,
+      },
+      with: {
+        tag: {
+          columns: {
+            id: true,
+            name: true,
+            slug: true,
+          }
+        }
+      }
+    },
+    likes: {
+      columns: {
+        userId: true,
+      }
+    },
+    series: {
+      columns: {
+        title: true,
+        slug: true,
       },
     },
-  },
-  series: {
-    select: {
-      slug: true,
-      title: true,
-    },
-  },
-  comments: {
-    select: {
-      user: {
-        select: {
-          id: true,
-          profile: true,
-        },
+    user: {
+      columns: {
+        id: true,
+        name: true,
+        username: true,
+        profile: true,
+        bio: true,
+        stripeSubscriptionStatus: true,
       },
-    },
+      with: {
+        handle: {
+          columns: {
+            id: true,
+            handle: true,
+            name: true,
+            about: true,
+          }
+        }
+      }
+    }
   },
-  content: true,
-  read_time: true,
-  tags: {
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-    },
+  columns: {
+    id: true,
+    title: true,
+    slug: true,
+    cover_image: true,
+    disabledComments: true,
+    readCount: true,
+    likesCount: true,
+    commentsCount: true,
+    createdAt: true,
+    content: true,
+    read_time: true,
   },
-  likes: { select: { id: true } },
-  likesCount: true,
-  commentsCount: true,
-  createdAt: true,
 } as const;
 
 export function displayUniqueObjects(
-  objects: Array<{ id: string; profile: string }>
+  objects: Array<{ id: string; profile: string | null }>
 ) {
   // Create a set to store the unique IDs.
   const uniqueIds = new Set();

@@ -5,13 +5,7 @@ import { notifications } from "~/server/db/schema";
 
 export const notificationRouter = createTRPCRouter({
   getCount: protectedProcedure.query(async ({ ctx }) => {
-    // const result = await ctx.prisma.notification.count({
-    //   where: {
-    //     userId: ctx.session.user.id,
-    //     isRead: false,
-    //   },
-    //   take: 5,
-    // });
+ 
     const result = await ctx.db.query.notifications.findMany({
       where: and(
         eq(notifications.userId, ctx.session.user.id),
@@ -40,36 +34,7 @@ export const notificationRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const { cursor, skip, limit } = input;
-
-      // const notifications = await ctx.prisma.notification.findMany({
-      //   where: {
-      //     userId: ctx.session.user.id,
-      //     type: input.type === "ALL" ? undefined : input.type,
-      //   },
-      //   take: (limit || 6) + 1,
-      //   skip: skip,
-      //   cursor: cursor ? { id: cursor } : undefined,
-      //   orderBy: {
-      //     createdAt: "desc",
-      //   },
-      //   include: {
-      //     from: {
-      //       select: {
-      //         username: true,
-      //         profile: true,
-      //         name: true,
-      //       },
-      //     },
-      //     user: {
-      //       select: {
-      //         username: true,
-      //         profile: true,
-      //         name: true,
-      //       },
-      //     },
-      //   },
-      // });
+      const { cursor, skip, limit } = input; 
 
       const result = await ctx.db.query.notifications.findMany({
         where: and(
@@ -117,16 +82,7 @@ export const notificationRouter = createTRPCRouter({
           eq(notifications.userId, ctx.session.user.id),
           eq(notifications.isRead, false)
         )
-      );
-    // await ctx.prisma.notification.updateMany({
-    //   where: {
-    //     userId: ctx.session.user.id,
-    //     isRead: false,
-    //   },
-    //   data: {
-    //     isRead: true,
-    //   },
-    // });
+      ); 
 
     return true;
   }),
