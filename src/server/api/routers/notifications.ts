@@ -5,7 +5,6 @@ import { notifications } from "~/server/db/schema";
 
 export const notificationRouter = createTRPCRouter({
   getCount: protectedProcedure.query(async ({ ctx }) => {
- 
     const result = await ctx.db.query.notifications.findMany({
       where: and(
         eq(notifications.userId, ctx.session.user.id),
@@ -34,7 +33,7 @@ export const notificationRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const { cursor, skip, limit } = input; 
+      const { cursor, skip, limit } = input;
 
       const result = await ctx.db.query.notifications.findMany({
         where: and(
@@ -44,18 +43,20 @@ export const notificationRouter = createTRPCRouter({
         limit: (limit || 6) + 1,
         offset: skip,
         orderBy: [asc(notifications.createdAt)],
+        columns: {
+          id: true,
+          body: true,
+          type: true,
+          slug: true,
+          title: true,
+          articleAuthor: true,
+          createdAt: true,
+        },
         with: {
-          userId: {
+          from: {
             columns: {
               username: true,
-              profile: true,
-              name: true,
-            },
-          },
-          fromId: {
-            columns: {
-              username: true,
-              profile: true,
+              image: true,
               name: true,
             },
           },
@@ -82,7 +83,7 @@ export const notificationRouter = createTRPCRouter({
           eq(notifications.userId, ctx.session.user.id),
           eq(notifications.isRead, false)
         )
-      ); 
+      );
 
     return true;
   }),

@@ -120,7 +120,7 @@ const CommentsModal: FC<{
             {user && (
               <div className="flex items-center space-x-2 p-2">
                 <Image
-                  src={user?.user.profile}
+                  src={user?.user.image}
                   alt="user"
                   width={40}
                   height={40}

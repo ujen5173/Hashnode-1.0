@@ -1,4 +1,3 @@
-import { type NotificationTypes } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FC } from "react";
@@ -8,6 +7,15 @@ import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
 import { NotificationLoading } from "../loading";
 import ManageData from "./ManageData";
+
+export enum NotificationTypesEnum {
+  ALL = "ALL",
+  COMMENT = "COMMENT",
+  LIKE = "LIKE",
+  NEW_ARTICLE = "NEW_ARTICLE",
+  MENTION = "MENTION",
+  FOLLOW = "FOLLOW",
+}
 
 enum Type {
   all = "all",
@@ -92,7 +100,7 @@ export const NotificationContainer: FC<{
   const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } = api.notifications.get.useInfiniteQuery(
     {
       limit: 6,
-      type: res.toLocaleUpperCase() as NotificationTypes,
+      type: res.toLocaleUpperCase() as NotificationTypesEnum,
     },
     {
       refetchOnWindowFocus: false,
@@ -129,7 +137,7 @@ export const NotificationContainer: FC<{
           <div className="loading h-24 w-full border-b border-border-light py-4 dark:border-border"></div>
         }
         type="NOTIFICATION"
-        notificationData={{ data: notifications, isLoading, type: "ALL" }}
+        notificationData={{ data: notifications, isLoading, type: NotificationTypesEnum.ALL }}
       />
       {
         isFetchingNextPage && (

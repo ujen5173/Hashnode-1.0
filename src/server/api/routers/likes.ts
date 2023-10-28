@@ -2,19 +2,18 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { articles, likesToArticles, notifications } from "~/server/db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const likesRouter = createTRPCRouter({
-  likeArticle: publicProcedure
+  likeArticle: protectedProcedure
     .input(
       z.object({
         articleId: z.string().trim(),
-        userId: z.string().trim(),
-      })
+       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { articleId, userId } = input;
+        const { articleId } = input;
 
         const article = await ctx.db.query.articles.findFirst({
           where: eq(articles.id, articleId),
@@ -31,7 +30,7 @@ export const likesRouter = createTRPCRouter({
               },
             },
             likes: {
-              where: eq(likesToArticles.userId, userId),
+              where: eq(likesToArticles.userId, ctx.session.user.id),
               with: {
                 likes: {
                   columns: {
@@ -73,7 +72,7 @@ export const likesRouter = createTRPCRouter({
           console.log("like");
           await ctx.db.insert(likesToArticles).values({
             articleId,
-            userId: userId,
+            userId: ctx.session.user.id,
           });
           // .where(eq(likesToArticles.articleId, articleId));
         }
@@ -81,7 +80,7 @@ export const likesRouter = createTRPCRouter({
         if (!article.likes.length) {
           await ctx.db.insert(notifications).values({
             type: "LIKE",
-            fromId: userId,
+            fromId: ctx.session.user.id,
             articleAuthor: article.user.username,
             title: article.title,
             userId: article.user.id,

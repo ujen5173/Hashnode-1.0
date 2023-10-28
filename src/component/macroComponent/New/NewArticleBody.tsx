@@ -25,7 +25,7 @@ export interface ArticleData {
   subtitle: string | null;
   content: DefaultEditorContent;
   cover_image: string | null;
-  cover_image_Key: string | null;
+  cover_image_key: string | null;
   tags: string[];
   slug: string;
   series: string | null;
@@ -88,7 +88,7 @@ const NewArticleBody: FC<{
       cover_image: null,
       series: null,
       tags: [],
-      cover_image_Key: null,
+      cover_image_key: null,
       slug: "",
       seoTitle: "",
       seoDescription: "",
@@ -142,7 +142,7 @@ const NewArticleBody: FC<{
         setData({
           ...data,
           cover_image: null,
-          cover_image_Key: null,
+          cover_image_key: null,
         });
       }
     };

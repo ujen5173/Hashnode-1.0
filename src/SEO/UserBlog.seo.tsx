@@ -22,7 +22,7 @@ const UserBlogSEO: FC<{ user: User }> = ({ user }) => {
       <meta name="twitter:description" content={user.name || ""} />
       <meta
         property="twitter:image"
-        content={user.profile || "/default_user.avif"}
+        content={user.image || "/default_user.avif"}
       />
       <meta name="twitter:card" content="summary_large_image" />
 

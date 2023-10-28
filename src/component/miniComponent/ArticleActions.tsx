@@ -56,7 +56,7 @@ const ArticleActions: FC<Props> = ({
       });
     }
 
-    const hasLiked = article.likes.find((like) => like.id === user?.user.id)
+    const hasLiked = article.likes.find((like) => like.userId === user?.user.id)
       ? true
       : false;
 

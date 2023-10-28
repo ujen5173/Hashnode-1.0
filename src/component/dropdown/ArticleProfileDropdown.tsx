@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/router';
 import React from "react";
-import { articleProfileDropdownList } from "~/utils/constants";
+import { articleimageDropdownList } from "~/utils/constants";
 
-const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
+const ArticleimageDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
   const { data: user } = useSession();
   const router = useRouter();
 
@@ -21,7 +21,7 @@ const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
       <Link href={`/u/@${user?.user.username as string} `}>
         <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
           <Image
-            src={user?.user.profile as string}
+            src={user?.user.image as string}
             alt={user?.user.name as string}
             width={100}
             height={100}
@@ -39,7 +39,7 @@ const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
         </div>
       </Link>
       {
-        articleProfileDropdownList.map((item, index) => (
+        articleimageDropdownList.map((item, index) => (
           item?.type ? (
             <div key={index} className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
           ) : <div className="cursor-pointer" onClick={() => {
@@ -57,6 +57,6 @@ const ArticleProfileDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
   );
 });
 
-ArticleProfileDropdown.displayName = "ArticleProfileDropdown";
+ArticleimageDropdown.displayName = "ArticleimageDropdown";
 
-export default ArticleProfileDropdown;
+export default ArticleimageDropdown;

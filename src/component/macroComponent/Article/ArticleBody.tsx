@@ -93,12 +93,12 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
             <div className="mx-auto mb-6 flex w-full flex-col items-center justify-center gap-2 md:mb-10 md:w-fit lg:flex-row">
               <Link
-                aria-label="Visit Profile"
+                aria-label="Visit image"
                 className="mb-10 flex items-center gap-2 lg:mb-0"
                 href={`/u/@${article?.user.username}`}
               >
                 <Image
-                  src={article?.user.profile}
+                  src={article?.user.image as string}
                   alt={article?.user.name}
                   width={70}
                   height={70}
@@ -287,7 +287,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
     setFollowing: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
-  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+  const { mutate: followToggle } = api.users.followUser.useMutation();
 
   const followUser = () => {
     if (!user) {
@@ -297,7 +297,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
     setFollowing(prev => !prev);
 
     followToggle({
-      username: author.username,
+      userId: author.id,
     });
   };
 
@@ -307,7 +307,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
         <div className="flex flex-1 items-start gap-4">
           <Link href={`/u/@${author.username}`}>
             <Image
-              src={author.profile || ""}
+              src={author.image || ""}
               alt={author.name}
               width={100}
               height={100}

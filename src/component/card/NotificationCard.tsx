@@ -15,7 +15,7 @@ const NotificationCard: FC<{ notification: Notification }> = ({
     >
       <div className="relative">
         <Image
-          src={notification?.from.profile || "/default_user.avif"}
+          src={notification?.from.image || "/default_user.avif"}
           alt={notification?.from.name || ""}
           width={70}
           height={70}

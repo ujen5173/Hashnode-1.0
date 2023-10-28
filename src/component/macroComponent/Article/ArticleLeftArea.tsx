@@ -32,12 +32,12 @@ const ArticleLeftArea: FC<{ user: UserSimple }> = ({ user }) => {
       <ArticleHamburgerMenu user={user} menu={menu} setMenu={setMenu} />
 
       <Link
-        aria-label="Visit Profile"
+        aria-label="Visit image"
         className="hidden items-center gap-2 md:flex"
         href={`/u/@${user.username}`}
       >
         <Image
-          src={user?.profile || ""}
+          src={user?.image || ""}
           alt={user?.name}
           width={70}
           height={70}

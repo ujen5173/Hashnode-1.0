@@ -1,11 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { customTabs, handles, users } from "~/server/db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { customTabs, handles } from "~/server/db/schema";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const handleRouter = createTRPCRouter({
-  updateHandle: publicProcedure
+  updateHandle: protectedProcedure
     .input(
       z.object({
         name: z.string().optional(),
@@ -33,7 +33,7 @@ export const handleRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const handle = await ctx.db.query.handles.findFirst({
-        where: eq(handles.userId, "c812cfc0-b546-4d07-9140-589345289fca"),
+        where: eq(handles.userId, ctx.session.user.id),
       });
       if (!handle) {
         throw new TRPCError({
@@ -44,15 +44,14 @@ export const handleRouter = createTRPCRouter({
       const result = await ctx.db
         .update(handles)
         .set(input)
-        .where(eq(handles.userId, "c812cfc0-b546-4d07-9140-589345289fca"));
+        .where(eq(handles.userId, ctx.session.user.id));
 
       return !!result;
     }),
 
-  createPersonalHandle: publicProcedure
+  createPersonalHandle: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
         handle: z.object({
           domain: z.string().min(4),
           name: z.string().optional(),
@@ -75,15 +74,15 @@ export const handleRouter = createTRPCRouter({
         .insert(handles)
         .values({
           handle: input.handle.domain,
-          name: input.handle.name || "Percy30",
-          userId: input.userId,
+          name: input.handle.name || "HASHNODE CLONE HANDLE",
+          userId: ctx.session.user.id,
         })
         .returning();
 
       return result;
     }),
 
-  newNavbarData: publicProcedure
+  newNavbarData: protectedProcedure
     .input(
       z.object({
         handle: z.string(),
@@ -96,20 +95,20 @@ export const handleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      console.log({ handlename: input.handle });
       const handle = await ctx.db.query.handles.findFirst({
         where: eq(handles.handle, input.handle),
         columns: {
           id: true,
         },
       });
-      console.log({ handle });
+
       if (!handle) {
         return {
           success: false,
           message: "Handle does not exists",
         };
       }
+
       const newTab = await ctx.db
         .insert(customTabs)
         .values({
@@ -121,7 +120,7 @@ export const handleRouter = createTRPCRouter({
       return newTab;
     }),
 
-  updateNavbarData: publicProcedure
+  updateNavbarData: protectedProcedure
     .input(
       z.object({
         tabId: z.string(),
@@ -134,31 +133,10 @@ export const handleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.query.users.findFirst({
-        where: eq(users.name, "Ujen Basi"),
-        with: {
-          handle: {
-            columns: {
-              id: true,
-            },
-          },
-        },
-      });
-      if (!user?.handle) {
-        return {
-          success: false,
-          message: "Handle does not exists",
-        };
-      }
       const result = await ctx.db
         .update(customTabs)
         .set(input.tab)
-        .where(
-          and(
-            eq(customTabs.handleId, user.handle.id),
-            eq(customTabs.id, input.tabId)
-          )
-        );
+        .where(and(eq(customTabs.id, input.tabId)));
 
       return !!result;
     }),
@@ -166,18 +144,19 @@ export const handleRouter = createTRPCRouter({
   getNavbarData: publicProcedure
     .input(
       z.object({
-        handle: z.string(),
+        handleId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       const result = await ctx.db.query.customTabs.findMany({
-        where: eq(customTabs.handleId, input.handle),
+        where: eq(customTabs.handleId, input.handleId),
+
         orderBy: (tabs, { asc }) => asc(tabs.priority),
       });
       return result;
     }),
 
-  deleteNavbarData: publicProcedure
+  deleteNavbarData: protectedProcedure
     .input(
       z.object({
         tabId: z.string(),
@@ -187,6 +166,7 @@ export const handleRouter = createTRPCRouter({
       const result = await ctx.db
         .delete(customTabs)
         .where(eq(customTabs.id, input.tabId));
+
       return !!result;
     }),
 });

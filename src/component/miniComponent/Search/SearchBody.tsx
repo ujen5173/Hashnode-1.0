@@ -18,7 +18,7 @@ interface ArticleSeach {
     id: string;
     name: string;
     username: string;
-    profile: string;
+    image: string;
     stripeSubscriptionStatus: string | null;
   };
   cover_image: string;
@@ -41,7 +41,7 @@ interface UserSearch {
   id: string;
   name: string;
   username: string;
-  profile: string;
+  image: string;
   isFollowing: boolean;
   stripeSubscriptionStatus: string | null;
 }
@@ -85,13 +85,17 @@ const SearchBody = React.forwardRef<
   const [refetching, setRefetching] = useState(false);
 
   async function search(criteria: string): Promise<SearchResults> {
-    let response;
+    let response: SearchResults = {
+      articles: null,
+      tags: null,
+      users: null,
+    };
     if (criteria.trim().length > 0) {
-      response = await refetch();
+      response = (await refetch()).data as unknown as SearchResults;
 
-      if (response.data) {
+      if (response) {
         if (type === "TOP") {
-          const data = response.data as SearchResults;
+          const data = response;
           const randomizeResponse = faker.helpers.shuffle(
             [
               ...(data.articles?.map((e) => ({ ...e, type: "ARTICLES" })) ||
@@ -102,8 +106,8 @@ const SearchBody = React.forwardRef<
           );
           setTopResults(randomizeResponse);
         }
-        setData(response.data as SearchResults);
-        return response.data as SearchResults;
+        setData(response);
+        return response;
       } else {
         return {
           articles: null,

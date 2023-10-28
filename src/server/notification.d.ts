@@ -6,7 +6,7 @@ export interface NotificationResponse {
   from: {
     name: string;
     username: string;
-    profile: string;
+    image: string;
   };
   isRead: boolean;
   commentArticle?: {
@@ -18,7 +18,7 @@ export interface NotificationResponse {
     };
     user: {
       username: string;
-      profile: string;
+      image: string;
       name: string;
     };
     createdAt: Date;
@@ -29,7 +29,7 @@ export interface NotificationResponse {
     slug: string;
     user: {
       username: string;
-      profile: string;
+      image: string;
       name: string;
     };
     createdAt: Date;
@@ -40,7 +40,7 @@ export interface NotificationResponse {
     slug: string;
     user: {
       username: string;
-      profile: string;
+      image: string;
       name: string;
     };
     createdAt: Date;

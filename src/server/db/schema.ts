@@ -5,15 +5,12 @@ import {
   integer,
   json,
   pgEnum,
-  pgTableCreator,
+  pgTable,
   primaryKey,
   text,
   timestamp,
-  varchar,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
-
-export const pgTable = pgTableCreator((name) => `${name}`);
 
 export const stripeSubscriptionEnum = pgEnum("stripeSubscriptionStatus", [
   "incomplete",
@@ -32,20 +29,17 @@ export const users = pgTable("user", {
   id: text("id")
     .default(sql`gen_random_uuid()`)
     .primaryKey(),
-  name: varchar("name").notNull(),
-  username: varchar("username").notNull(),
-  email: varchar("email").notNull(),
-  emailVerified: timestamp("emailVerified", {
-    mode: "date",
-    withTimezone: true,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  profile: varchar("profile"),
-  tagline: varchar("tagline", { length: 50 }),
-  cover_image: varchar("cover_image"),
-  bio: varchar("bio"),
-  skills: varchar("skills", { length: 10 }).array(),
-  location: varchar("location", { length: 20 }),
-  available: varchar("available", { length: 50 }),
+  name: text("name").notNull(),
+  username: text("username").unique(),
+  email: text("email").notNull().unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  image: text("image"),
+  tagline: text("tagline"),
+  cover_image: text("cover_image"),
+  bio: text("bio"),
+  skills: text("skills").array(),
+  location: text("location"),
+  available: text("available"),
   social: json("social").default({
     github: "",
     twitter: "",
@@ -58,8 +52,8 @@ export const users = pgTable("user", {
   }),
   followersCount: integer("followersCount").default(0).notNull(),
   followingCount: integer("followingCount").default(0).notNull(),
-  stripeCustomerId: varchar("stripeCustomerId"),
-  stripeSubscriptionId: varchar("stripeSubscriptionId"),
+  stripeCustomerId: text("stripeCustomerId"),
+  stripeSubscriptionId: text("stripeSubscriptionId"),
   stripeSubscriptionStatus: stripeSubscriptionEnum("stripeSubscriptionStatus"),
 
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
@@ -122,16 +116,16 @@ export const accounts = pgTable(
     userId: text("userId")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    type: varchar("type").$type<AdapterAccount["type"]>().notNull(),
-    provider: varchar("provider").notNull(),
-    providerAccountId: varchar("providerAccountId").notNull(),
-    refresh_token: varchar("refresh_token"),
-    access_token: varchar("access_token"),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
     expires_at: integer("expires_at"),
-    token_type: varchar("token_type"),
-    scope: varchar("scope"),
-    id_token: varchar("id_token"),
-    session_state: varchar("session_state"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
   },
   (account) => ({
     // pk: primaryKey(account.provider, account.providerAccountId),
@@ -146,7 +140,7 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessions = pgTable(
   "session",
   {
-    sessionToken: varchar("sessionToken").notNull().primaryKey(),
+    sessionToken: text("sessionToken").notNull().primaryKey(),
     userId: text("userId"),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
@@ -162,8 +156,8 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 export const verificationTokens = pgTable(
   "verificationToken",
   {
-    identifier: varchar("identifier").notNull(),
-    token: varchar("token").notNull(),
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (vt) => ({
@@ -176,9 +170,9 @@ export const handles = pgTable("handles", {
   id: text("id")
     .default(sql`gen_random_uuid()`)
     .primaryKey(),
-  handle: varchar("handle").notNull(),
-  name: varchar("name").notNull(),
-  about: varchar("about"),
+  handle: text("handle").notNull(),
+  name: text("name").notNull(),
+  about: text("about"),
   userId: text("userId").notNull(),
   social: json("social").default({
     github: "",
@@ -194,6 +188,8 @@ export const handles = pgTable("handles", {
     layout: "MAGAZINE",
     logo: null,
   }),
+  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const handlesRelations = relations(handles, ({ one, many }) => ({
@@ -208,11 +204,13 @@ export const customTabs = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    label: varchar("label").notNull(),
-    type: varchar("type").notNull(),
-    value: varchar("value").notNull(),
+    label: text("label").notNull(),
+    type: text("type").notNull(),
+    value: text("value").notNull(),
     priority: integer("priority").notNull(),
     handleId: text("handleId").notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   },
   (customTabs) => ({
     handleIdIdx: index("handleId_idx").on(customTabs.id),
@@ -232,13 +230,13 @@ export const tags = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    name: varchar("name").notNull().unique(),
-    slug: varchar("slug").notNull().unique(),
-    description: varchar("description"),
+    name: text("name").notNull().unique(),
+    slug: text("slug").notNull().unique(),
+    description: text("description"),
     followersCount: integer("followersCount").notNull().default(0),
     articlesCount: integer("articlesCount").notNull().default(0),
-    logo: varchar("logo"),
-    // logoKey: varchar("logoKey"),
+    logo: text("logo"),
+    // logoKey: text("logoKey"),
     createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
     updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
   },
@@ -314,7 +312,7 @@ export const comments = pgTable(
       .primaryKey(),
     userId: text("userId").notNull(),
     articleId: text("articleId").notNull(),
-    body: varchar("body").notNull(),
+    body: text("body").notNull(),
     likesCount: integer("likesCount").notNull().default(0),
     type: commentEnum("type").notNull(),
     parentId: text("parentId"),
@@ -380,20 +378,20 @@ export const articles = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    title: varchar("title").notNull(),
-    cover_image: varchar("cover_image"),
-    cover_image_key: varchar("cover_image_key"),
+    title: text("title").notNull(),
+    cover_image: text("cover_image"),
+    cover_image_key: text("cover_image_key"),
     userId: text("userId").notNull(),
-    content: varchar("body").notNull(),
+    content: text("body").notNull(),
     read_time: integer("read_time").notNull(),
-    seoTitle: varchar("seoTitle"),
-    seoDescription: varchar("seoDescription"),
-    seoOgImage: varchar("seoOgImage"),
-    seoOgImageKey: varchar("seoOgImageKey"),
-    subtitle: varchar("subtitle"),
+    seoTitle: text("seoTitle"),
+    seoDescription: text("seoDescription"),
+    seoOgImage: text("seoOgImage"),
+    seoOgImageKey: text("seoOgImageKey"),
+    subtitle: text("subtitle"),
     disabledComments: boolean("disabledComments").notNull().default(true),
     likesCount: integer("likesCount").notNull().default(0),
-    slug: varchar("slug").notNull(),
+    slug: text("slug").notNull(),
     commentsCount: integer("commentsCount").notNull().default(0),
     readCount: integer("readCount").notNull().default(0),
     isDeleted: boolean("isDeleted").notNull().default(false),
@@ -489,15 +487,15 @@ export const stripeEvents = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    type: varchar("type").notNull(),
+    api_version: text("api_version"),
     data: json("data").notNull(),
-    request: json("request").notNull(),
+    request: json("request"),
+    type: text("type").notNull(),
+    object: text("object").notNull(),
+    account: text("account"),
+    created: timestamp("created", { mode: "date" }).notNull().defaultNow(),
     pending_webhooks: integer("pending_webhooks").notNull(),
     livemode: boolean("livemode").notNull(),
-    api_version: varchar("api_version").notNull(),
-    object: varchar("object").notNull(),
-    account: varchar("account").notNull(),
-    created: timestamp("created", { mode: "date" }).notNull(),
   },
   (stripeEvents) => ({
     userIdIdx: index("userId_idx").on(stripeEvents.id),
@@ -511,10 +509,10 @@ export const series = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    title: varchar("title").notNull(),
-    slug: varchar("slug").notNull(),
-    description: varchar("description"),
-    cover_image: varchar("cover_image"),
+    title: text("title").notNull(),
+    slug: text("slug").notNull(),
+    description: text("description"),
+    cover_image: text("cover_image"),
 
     authorId: text("authorId").notNull(),
 
@@ -542,13 +540,13 @@ export const notifications = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    type: varchar("type").notNull(),
+    type: text("type").notNull(),
     isRead: boolean("isRead").default(false),
 
-    body: varchar("body").default(""),
-    slug: varchar("slug").default("").notNull(),
-    title: varchar("title").default(""),
-    articleAuthor: varchar("articleAuthor").default(""),
+    body: text("body").default(""),
+    slug: text("slug").default("").notNull(),
+    title: text("title").default(""),
+    articleAuthor: text("articleAuthor").default(""),
 
     userId: text("userId").notNull(),
     fromId: text("fromId").notNull(),
@@ -562,12 +560,12 @@ export const notifications = pgTable(
 );
 
 export const notificationsRelations = relations(notifications, ({ one }) => ({
-  userId: one(users, {
+  user: one(users, {
     fields: [notifications.userId],
     references: [users.id],
     relationName: "notifications",
   }),
-  fromId: one(users, {
+  from: one(users, {
     fields: [notifications.fromId],
     references: [users.id],
     relationName: "notificationsFrom",
@@ -577,8 +575,8 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
 export const verificationToken = pgTable(
   "verificationToken",
   {
-    identifier: varchar("identifier").notNull(),
-    token: varchar("token").notNull(),
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (vt) => ({

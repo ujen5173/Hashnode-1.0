@@ -2,7 +2,8 @@ import { buffer } from "micro";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type Stripe from "stripe";
 import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
+import db from "~/server/db";
+import { stripeEvents } from "~/server/db/schema";
 import { stripe } from "../../server/stripe/client";
 import {
   handleInvoicePaid,
@@ -40,21 +41,21 @@ export default async function handler(
           await handleInvoicePaid({
             event,
             stripe,
-            prisma,
+            db,
           });
           break;
         case "customer.subscription.created":
           // Used to provision services as they are added to a subscription.
           await handleSubscriptionCreatedOrUpdated({
             event,
-            prisma,
+            db,
           });
           break;
         case "customer.subscription.updated":
           // Used to provision services as they are updated.
           await handleSubscriptionCreatedOrUpdated({
             event,
-            prisma,
+            db,
           });
           break;
         case "invoice.payment_failed":
@@ -69,7 +70,7 @@ export default async function handler(
           // upon your subscription settings.
           await handleSubscriptionCanceled({
             event,
-            prisma,
+            db,
           });
           break;
         default:
@@ -77,25 +78,9 @@ export default async function handler(
       }
 
       // record the event in the database
-      await prisma.stripeEvent.create({
-        data: {
-          id: event.id,
-          type: event.type,
-          object: event.object,
-          api_version: event.api_version,
-          account: event.account,
-          created: new Date(event.created * 1000), // convert to milliseconds
-          data: {
-            object: event.data.object,
-            previous_attributes: event.data.previous_attributes,
-          },
-          livemode: event.livemode,
-          pending_webhooks: event.pending_webhooks,
-          request: {
-            id: event.request?.id,
-            idempotency_key: event.request?.idempotency_key,
-          },
-        },
+      await db.insert(stripeEvents).values({
+        ...event,
+        created: new Date(event.created * 1000),
       });
 
       res.json({ received: true });

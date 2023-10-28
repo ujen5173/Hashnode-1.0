@@ -1,9 +1,11 @@
+import { eq } from "drizzle-orm";
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { Aside, Header, MainTagBody, RightAsideMain } from "~/component";
 import TagSEO from "~/SEO/Tag.seo";
 import { authOptions } from "~/server/auth";
-import { prisma } from "~/server/db";
+import db from "~/server/db";
+import { tags } from "~/server/db/schema";
 import type { DetailedTag } from "~/types";
 
 const SingleTag: NextPage<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
@@ -42,22 +44,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const tagDetails = await prisma.tag.findUnique({
-    where: {
-      slug: params,
-    },
-    include: {
+  const tagDetails = await db.query.tags.findFirst({
+    where: eq(tags.slug, params),
+    with: {
       followers: {
-        select: {
-          id: true,
+        columns: {
+          userId: true
         },
       },
       articles: {
-        select: {
-          id: true,
+        columns: {
+          articleId: true
         },
       },
-    },
+    }
+  }).then((res) => {
+    return {
+      ...res,
+      followers: res?.followers.map((e) => e.userId),
+      articles: res?.articles.map((e) => e.articleId),
+    }
   });
 
   return {

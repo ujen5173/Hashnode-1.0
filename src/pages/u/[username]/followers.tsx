@@ -1,9 +1,11 @@
+import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import Head from "next/head";
 import { FollowArea, FollowHeader, FollowProfileArea, Header } from "~/component";
 import { authOptions } from "~/server/auth";
-import { prisma } from "~/server/db";
+import db from "~/server/db";
+import { users } from "~/server/db/schema";
 
 const Followers: NextPage<{
   user: {
@@ -11,7 +13,8 @@ const Followers: NextPage<{
     username: string;
     followersCount: number;
     followingCount: number;
-    profile: string;
+    image: string;
+    id: string;
     createdAt: Date;
   };
 }> = ({ user }) => {
@@ -33,7 +36,7 @@ const Followers: NextPage<{
                 followingCount: user.followingCount,
               }}
             />
-            <FollowArea />
+            <FollowArea userId={user.id} />
           </div>
         </div>
       </main>
@@ -59,19 +62,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      username: username.slice(1, username.length),
-    },
-    select: {
+  const user = await db.query.users.findFirst({
+    where: eq(users.username, username.slice(1, username.length)),
+    columns: {
       username: true,
       name: true,
-      profile: true,
-      createdAt: true,
+      image: true,
+      id: true,
       followersCount: true,
       followingCount: true,
-    },
-  });
+      createdAt: true,
+    }
+  })
 
   if (!user) {
     return {
@@ -94,9 +96,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ? (JSON.parse(JSON.stringify(user)) as {
           name: string;
           username: string;
-          profile: string;
-          createdAt: Date;
+          image: string;
+          id: string;
           followersCount: number;
+          createdAt: Date;
           followingCount: number;
         })
         : null,

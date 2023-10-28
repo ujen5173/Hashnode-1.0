@@ -1,5 +1,16 @@
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, gt, gte, ilike, inArray, lt, lte } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  gt,
+  gte,
+  ilike,
+  inArray,
+  lt,
+  lte,
+  or,
+} from "drizzle-orm";
 import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type { Session } from "next-auth";
 import readingTime from "reading-time";
@@ -28,7 +39,7 @@ import {
   tagsToUsers,
   users,
 } from "~/server/db/schema";
-import type { ArticleCardWithComments } from "~/types";
+import type { ArticleCardWithComments, SearchResults } from "~/types";
 import {
   displayUniqueObjects,
   selectArticleCard,
@@ -39,14 +50,14 @@ import {
   type Activity,
 } from "./../../../utils/microFunctions";
 
-const getArticlesWithUserFollowingProfiles = async (
+const getArticlesWithUserFollowingimages = async (
   ctx: {
     session: Session | null;
     db: NeonHttpDatabase<typeof schemaFile>;
   },
   articles: ArticleCardWithComments[]
 ) => {
-  // If user is logged in, get the user's following profiles else return empty array for commenUsers
+  // If user is logged in, get the user's following images else return empty array for commenUsers
   // Retrieve user following outside the loop
   const userFollowing = ctx.session?.user
     ? await ctx.db.query.users.findFirst({
@@ -66,7 +77,7 @@ const getArticlesWithUserFollowingProfiles = async (
     const { comments, ...rest } = article;
     let followingComments: {
       id: string;
-      profile: string | null;
+      image: string | null;
     }[] = [];
 
     if (userFollowing) {
@@ -90,40 +101,6 @@ const getArticlesWithUserFollowingProfiles = async (
   }
 
   return updatedArticles;
-};
-
-const searchResponseFormater = (
-  tags: {
-    id: string;
-    name: string;
-    slug: string;
-    followers: {
-      id: string;
-    }[];
-  } | null,
-  users: {
-    id: string;
-    name: string;
-    username: string;
-    profile: string;
-    stripeSubscriptionStatus: string | null;
-    followers: {
-      id: string;
-    }[];
-  } | null,
-  userId: string
-) => {
-  const res = tags || users;
-  if (!res) return;
-  const { followers, ...rest } = res;
-  let isFollowing = false;
-  if (userId) {
-    isFollowing = followers.some((follower) => follower.id === userId);
-  }
-  return {
-    ...rest,
-    isFollowing,
-  };
 };
 
 export const postsRouter = createTRPCRouter({
@@ -226,7 +203,9 @@ export const postsRouter = createTRPCRouter({
           nextCursor = nextItem?.id;
         }
 
-        const formattedPosts = await getArticlesWithUserFollowingProfiles(
+        result.map((e) => e.user);
+
+        const formattedPosts = await getArticlesWithUserFollowingimages(
           {
             session: ctx.session,
             db: ctx.db,
@@ -321,7 +300,7 @@ export const postsRouter = createTRPCRouter({
         nextCursor = nextItem?.id;
       }
 
-      const formattedPosts = await getArticlesWithUserFollowingProfiles(
+      const formattedPosts = await getArticlesWithUserFollowingimages(
         {
           session: ctx.session,
           db: ctx.db,
@@ -362,7 +341,7 @@ export const postsRouter = createTRPCRouter({
           res.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
         );
 
-      return await getArticlesWithUserFollowingProfiles(
+      return await getArticlesWithUserFollowingimages(
         {
           session: ctx.session,
           db: ctx.db,
@@ -390,12 +369,20 @@ export const postsRouter = createTRPCRouter({
               input.ids.map((id) => id.id)
             )
           ),
+          with: {
+            user: {
+              columns: {
+                name: true,
+                stripeSubscriptionStatus: true,
+                username: true,
+              },
+            },
+          },
           columns: {
             id: true,
             read_time: true,
             title: true,
             slug: true,
-            userId: true,
           },
           limit: 4,
         });
@@ -417,53 +404,56 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const article = await ctx.db.query.articles.findFirst({
-          with: {
-            user: {
-              with: {
-                followers: {
-                  where: eq(follow.userId, "ctx.session?.user?.id"),
-                  columns: {
-                    userId: true,
+        const article = await ctx.db.query.articles
+          .findFirst({
+            with: {
+              user: {
+                with: {
+                  followers: {
+                    where: eq(follow.userId, ctx.session?.user?.id || ""),
+                    columns: {
+                      userId: true,
+                    },
                   },
                 },
               },
-            },
-            series: {
-              columns: {
-                title: true,
-                slug: true,
+              series: {
+                columns: {
+                  title: true,
+                  slug: true,
+                },
               },
-            },
-            tags: {
-              with: {
-                tag: {
-                  columns: {
-                    id: true,
-                    name: true,
-                    slug: true,
+              tags: {
+                with: {
+                  tag: {
+                    columns: {
+                      id: true,
+                      name: true,
+                      slug: true,
+                    },
                   },
                 },
               },
-            },
-            likes: {
-              columns: {
-                userId: true,
+              likes: {
+                columns: {
+                  userId: true,
+                },
               },
             },
-          },
-          where: and(
-            eq(articles.isDeleted, false),
-            eq(articles.slug, input.slug)
-          ),
-        });
+            where: and(
+              eq(articles.isDeleted, false),
+              eq(articles.slug, input.slug)
+            ),
+          })
+          .then((res) => ({ ...res, tags: res?.tags.map((e) => e.tag) }));
 
-        if (!article) {
+        if (!article || !article.user) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Article not found",
           });
         }
+
         const { followers: _, ...rest } = article.user;
 
         if (ctx.session?.user) {
@@ -571,7 +561,7 @@ export const postsRouter = createTRPCRouter({
       }
     }),
 
-  new: publicProcedure
+  new: protectedProcedure
     .input({
       ...z.object({
         title: z
@@ -583,18 +573,17 @@ export const postsRouter = createTRPCRouter({
           .string()
           .min(25, "Content should be atleast of 25 characters")
           .trim(),
-        cover_image: z.string().optional(),
+        cover_image: z.string().optional().nullable(),
         cover_image_Key: z.string().optional(),
         tags: z.array(z.string().trim()).default([]),
         slug: z.string().trim(),
         seriesId: z.string().optional(),
         seoTitle: z.string().trim(),
         seoDescription: z.string().trim(),
-        seoOgImage: z.string().trim().optional(),
+        seoOgImage: z.string().trim().optional().nullable(),
         disabledComments: z.boolean().default(false).optional(),
 
         edit: z.boolean(), //? article is being edited or created
-        userId: z.string(),
       }),
     })
     .mutation(async ({ ctx, input }) => {
@@ -635,7 +624,6 @@ export const postsRouter = createTRPCRouter({
 
         if (edit && !!existingArticle) {
           // editing an article
-
           const [updatedArticle] = await ctx.db
             .update(articles)
             .set({
@@ -666,48 +654,23 @@ export const postsRouter = createTRPCRouter({
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, updatedArticle?.id as string),
             columns: {
-              id: true,
-              title: true,
-              subtitle: true,
-              content: true,
-              cover_image: true,
-              cover_image_key: true,
               slug: true,
-              seoTitle: true,
-              disabledComments: true,
-              seoDescription: true,
-              seoOgImage: true,
-              userId: true,
-              seoOgImageKey: true,
-              seriesId: true,
-            },
-            with: {
-              series: {
-                columns: {
-                  id: true,
-                  title: true,
-                },
-              },
-              tags: {
-                with: {
-                  tag: {
-                    columns: {
-                      name: true,
-                    },
-                  },
-                },
-              },
             },
           });
 
-          return result;
+          return {
+            success: true,
+            redirectLink: `/u/@${ctx.session.user.username}/${
+              result?.slug as string
+            }`,
+          };
         } else {
           // creating article
           const [newArticle] = await ctx.db
             .insert(articles)
             .values({
               ...rest,
-              userId: input.userId,
+              userId: ctx.session.user.id,
               read_time: Math.ceil(readingTime(input.content).minutes) || 1,
               slug: input.slug,
               seoTitle: input.seoTitle || input.title,
@@ -721,7 +684,12 @@ export const postsRouter = createTRPCRouter({
               id: articles.id,
             });
 
-          if (!newArticle) return;
+          if (!newArticle) {
+            return {
+              success: false,
+              redirectLink: null,
+            };
+          }
 
           await ctx.db.insert(tagsToArticles).values(
             allTags.map((tag) => ({
@@ -733,48 +701,18 @@ export const postsRouter = createTRPCRouter({
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, newArticle.id),
             columns: {
-              id: true,
-              title: true,
-              subtitle: true,
-              content: true,
-              cover_image: true,
-              cover_image_key: true,
               slug: true,
-              seoTitle: true,
-              disabledComments: true,
-              seoDescription: true,
-              seoOgImage: true,
-              userId: true,
-              seoOgImageKey: true,
-              seriesId: true,
-            },
-            with: {
-              series: {
-                columns: {
-                  id: true,
-                  title: true,
-                },
-              },
-              tags: {
-                columns: {
-                  articleId: false,
-                  tagId: false,
-                },
-                with: {
-                  tag: {
-                    columns: {
-                      name: true,
-                    },
-                  },
-                },
-              },
             },
           });
 
-          return result;
+          return {
+            success: true,
+            redirectLink: `/u/@${ctx.session.user.username}/${
+              result?.slug as string
+            }`,
+          };
         }
       } catch (err) {
-        console.log({ err });
         if (err instanceof TRPCError) {
           throw err;
         } else {
@@ -853,202 +791,314 @@ export const postsRouter = createTRPCRouter({
         query: z.string().trim(),
       })
     )
-    .query(({ ctx, input }) => {
-      // const { query, type } = input;
-      // let result = null;
-      // switch (type) {
-      //   case "TAGS":
-      //     const tags = await ctx.prisma.tag.findMany({
-      //       where: {
-      //         OR: [
-      //           { name: { contains: query } },
-      //           { slug: { contains: query } },
-      //           { description: { contains: query } },
-      //         ],
-      //       },
-      //       take: 6,
-      //       select: {
-      //         id: true,
-      //         name: true,
-      //         slug: true,
-      //         followers: {
-      //           select: {
-      //             id: true,
-      //           },
-      //         },
-      //       },
-      //     });
+    .query(async ({ ctx, input }) => {
+      const result: SearchResults = {
+        users: null,
+        tags: null,
+        articles: null,
+      };
 
-      //     const response = tags.map((e) => {
-      //       return searchResponseFormater(
-      //         e,
-      //         null,
-      //         ctx.session?.user?.id as string
-      //       );
-      //     });
+      switch (input.type) {
+        case "ARTICLES":
+          const articlesData = await ctx.db.query.articles.findMany({
+            where: and(
+              eq(articles.isDeleted, false),
+              or(
+                ilike(articles.title, `%${input.query}%`),
+                ilike(articles.slug, `%${input.query}%`),
+                ilike(articles.subtitle, `%${input.query}%`)
+              )
+            ),
+            columns: {
+              id: true,
+              title: true,
+              slug: true,
+              cover_image: true,
+              likesCount: true,
+              commentsCount: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  name: true,
+                  username: true,
+                  image: true,
+                  stripeSubscriptionStatus: true,
+                },
+              },
+            },
+            orderBy: [
+              desc(articles.likesCount),
+              desc(articles.commentsCount),
+              desc(articles.createdAt),
+            ],
+            limit: 7,
+          });
+          result.articles = articlesData;
+          break;
 
-      //     result = {
-      //       users: null,
-      //       tags: response,
-      //       articles: null,
-      //     };
-      //     break;
+        case "TAGS":
+          const tagsData = await ctx.db.query.tags.findMany({
+            where: or(
+              ilike(tags.name, `%${input.query}%`),
+              ilike(tags.slug, `%${input.query}%`),
+              ilike(tags.description, `%${input.query}%`)
+            ),
+            columns: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+            with: {
+              followers: {
+                where: eq(tagsToUsers.userId, ctx.session?.user?.id || ""),
+                columns: {
+                  userId: true,
+                },
+              },
+            },
+            orderBy: [desc(tags.followersCount)],
+            limit: 7,
+          });
 
-      //   case "USERS":
-      //     const users = await ctx.prisma.user.findMany({
-      //       where: {
-      //         OR: [
-      //           { name: { contains: query, mode: "insensitive" } },
-      //           { username: { contains: query, mode: "insensitive" } },
-      //         ],
-      //       },
-      //       take: 6,
-      //       select: {
-      //         id: true,
-      //         name: true,
-      //         username: true,
-      //         profile: true,
-      //         stripeSubscriptionStatus: true,
-      //         followers: {
-      //           select: {
-      //             id: true,
-      //           },
-      //         },
-      //       },
-      //     });
+          result.tags = tagsData.map((details) => {
+            const { followers, ...rest } = details;
+            return {
+              ...rest,
+              isFollowing: followers.length > 0,
+            };
+          });
+          break;
 
-      //     const res = users.map((e) => {
-      //       return searchResponseFormater(
-      //         null,
-      //         e,
-      //         ctx.session?.user?.id as string
-      //       );
-      //     });
+        case "USERS":
+          const usersData = await ctx.db.query.users.findMany({
+            with: {
+              followers: {
+                where: eq(follow.followingId, ctx.session?.user?.id || ""),
+                columns: {
+                  userId: false,
+                },
+              },
+            },
+            columns: {
+              id: true,
+              name: true,
+              username: true,
+              stripeSubscriptionStatus: true,
+              image: true,
+            },
+            where: or(
+              ilike(users.name, `%${input.query}%`),
+              ilike(users.username, `%${input.query}%`),
+              ilike(users.bio, `%${input.query}%`),
+              ilike(users.email, `%${input.query}%`)
+            ),
+            orderBy: [desc(users.followersCount)],
+            limit: 7,
+          });
 
-      //     result = {
-      //       users: res,
-      //       tags: null,
-      //       articles: null,
-      //     };
-      //     break;
+          result.users = usersData.map((details) => {
+            const { followers, ...rest } = details;
+            return {
+              ...rest,
+              isFollowing: followers.length > 0,
+            };
+          });
+          break;
 
-      //   default:
-      //     const articles = ctx.prisma.article.findMany({
-      //       where: {
-      //         isDeleted: false,
+        case "LATEST":
+          const latestArticlesData = ctx.db.query.articles.findMany({
+            where: and(
+              eq(articles.isDeleted, false),
+              or(
+                ilike(articles.title, `%${input.query}%`),
+                ilike(articles.slug, `%${input.query}%`),
+                ilike(articles.subtitle, `%${input.query}%`)
+              )
+            ),
+            columns: {
+              id: true,
+              title: true,
+              slug: true,
+              cover_image: true,
+              read_time: true,
+              likesCount: true,
+              commentsCount: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  name: true,
+                  username: true,
+                  image: true,
+                  stripeSubscriptionStatus: true,
+                },
+              },
+            },
+            orderBy: [desc(articles.createdAt)],
+            limit: 7,
+          });
 
-      //         OR: [
-      //           { title: { contains: query, mode: "insensitive" } },
-      //           { slug: { contains: query, mode: "insensitive" } },
-      //           {
-      //             tags: {
-      //               some: { name: { contains: query, mode: "insensitive" } },
-      //             },
-      //           },
-      //           {
-      //             user: {
-      //               OR: [
-      //                 { username: { contains: query, mode: "insensitive" } },
-      //                 { name: { contains: query, mode: "insensitive" } },
-      //               ],
-      //             },
-      //           },
-      //         ],
-      //       },
-      //       take: 6,
-      //       select: {
-      //         id: true,
-      //         title: true,
-      //         user: {
-      //           select: {
-      //             name: true,
-      //             username: true,
-      //             profile: true,
-      //             id: true,
-      //             stripeSubscriptionStatus: true,
-      //           },
-      //         },
-      //         cover_image: true,
-      //         slug: true,
-      //         createdAt: true,
-      //         read_time: true,
-      //         updatedAt: true,
-      //         likesCount: true,
-      //         commentsCount: true,
-      //       },
-      //       orderBy: [
-      //         type === "LATEST"
-      //           ? { createdAt: "desc" }
-      //           : { likesCount: "desc" },
-      //       ],
-      //     });
+          const latestTagsData = ctx.db.query.tags.findMany({
+            where: or(
+              ilike(tags.name, `%${input.query}%`),
+              ilike(tags.slug, `%${input.query}%`),
+              ilike(tags.description, `%${input.query}%`)
+            ),
+            columns: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+            with: {
+              followers: {
+                where: eq(tagsToUsers.userId, ctx.session?.user?.id || ""),
+                columns: {
+                  userId: true,
+                },
+              },
+            },
+            orderBy: [desc(tags.followersCount)],
+            limit: 7,
+          });
 
-      //     const tagsSearch = ctx.prisma.tag.findMany({
-      //       where: {
-      //         OR: [
-      //           { name: { contains: query } },
-      //           { slug: { contains: query } },
-      //           { description: { contains: query } },
-      //         ],
-      //       },
-      //       take: 6,
-      //       select: {
-      //         id: true,
-      //         name: true,
-      //         slug: true,
-      //         followers: {
-      //           select: {
-      //             id: true,
-      //           },
-      //         },
-      //       },
-      //     });
+          const [latestArticles, latestTags] = await Promise.all([
+            latestArticlesData,
+            latestTagsData,
+          ]);
 
-      //     const usersSearch = ctx.prisma.user.findMany({
-      //       where: {
-      //         OR: [
-      //           { name: { contains: query, mode: "insensitive" } },
-      //           { username: { contains: query, mode: "insensitive" } },
-      //         ],
-      //       },
-      //       take: 6,
-      //       select: {
-      //         id: true,
-      //         name: true,
-      //         username: true,
-      //         stripeSubscriptionStatus: true,
-      //         profile: true,
-      //         followers: {
-      //           select: {
-      //             id: true,
-      //           },
-      //         },
-      //       },
-      //     });
+          result.articles = latestArticles;
+          result.tags = latestTags.map((details) => {
+            const { followers, ...rest } = details;
+            return {
+              ...rest,
+              isFollowing: followers.length > 0,
+            };
+          });
 
-      //     const [articlesRes, tagsRes, usersRes] =
-      //       await ctx.prisma.$transaction([articles, tagsSearch, usersSearch]);
+          break;
 
-      //     result = {
-      //       users: usersRes.map((e) => {
-      //         return searchResponseFormater(
-      //           null,
-      //           e,
-      //           ctx.session?.user?.id as string
-      //         );
-      //       }),
-      //       tags: tagsRes.map((e) => {
-      //         return searchResponseFormater(
-      //           e,
-      //           null,
-      //           ctx.session?.user?.id as string
-      //         );
-      //       }),
-      //       articles: articlesRes,
-      //     };
-      // }
+        case "TOP":
+          const topArticlesData = ctx.db.query.articles.findMany({
+            where: and(
+              eq(articles.isDeleted, false),
+              or(
+                ilike(articles.title, `%${input.query}%`),
+                ilike(articles.slug, `%${input.query}%`),
+                ilike(articles.subtitle, `%${input.query}%`)
+              )
+            ),
+            orderBy: [
+              desc(articles.likesCount),
+              desc(articles.commentsCount),
+              desc(articles.createdAt),
+            ],
+            columns: {
+              id: true,
+              title: true,
+              slug: true,
+              cover_image: true,
+              read_time: true,
+              likesCount: true,
+              commentsCount: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  name: true,
+                  username: true,
+                  image: true,
+                  stripeSubscriptionStatus: true,
+                },
+              },
+            },
+            limit: 7,
+          });
 
-      return [];
+          const topTagsData = ctx.db.query.tags.findMany({
+            where: or(
+              ilike(tags.name, `%${input.query}%`),
+              ilike(tags.slug, `%${input.query}%`),
+              ilike(tags.description, `%${input.query}%`)
+            ),
+            columns: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+            with: {
+              followers: {
+                where: eq(tagsToUsers.userId, ctx.session?.user?.id || ""),
+                columns: {
+                  userId: true,
+                },
+              },
+            },
+            orderBy: [desc(tags.followersCount), desc(tags.articlesCount)],
+            limit: 7,
+          });
+
+          const topUsersData = ctx.db.query.users.findMany({
+            with: {
+              followers: {
+                where: eq(follow.followingId, ctx.session?.user?.id || ""),
+                columns: {
+                  userId: false,
+                },
+              },
+            },
+            columns: {
+              id: true,
+              name: true,
+              username: true,
+              stripeSubscriptionStatus: true,
+              image: true,
+            },
+            where: or(
+              ilike(users.name, `%${input.query}%`),
+              ilike(users.username, `%${input.query}%`),
+              ilike(users.bio, `%${input.query}%`),
+              ilike(users.email, `%${input.query}%`)
+            ),
+            orderBy: [desc(users.followersCount)],
+            limit: 7,
+          });
+
+          const [topArticles, topTags, topUsers] = await Promise.all([
+            topArticlesData,
+            topTagsData,
+            topUsersData,
+          ]);
+
+          result.articles = topArticles;
+          result.tags = topTags.map((details) => {
+            const { followers, ...rest } = details;
+            return {
+              ...rest,
+              isFollowing: followers.length > 0,
+            };
+          });
+          result.users = topUsers.map((details) => {
+            const { followers, ...rest } = details;
+            return {
+              ...rest,
+              isFollowing: followers.length > 0,
+            };
+          });
+
+          break;
+      }
+
+      return result;
     }),
 
   trendingArticles: publicProcedure
@@ -1107,7 +1157,7 @@ export const postsRouter = createTRPCRouter({
           nextCursor = nextItem?.id;
         }
 
-        const formattedPosts = await getArticlesWithUserFollowingProfiles(
+        const formattedPosts = await getArticlesWithUserFollowingimages(
           {
             session: ctx.session,
             db: ctx.db,
@@ -1185,7 +1235,7 @@ export const postsRouter = createTRPCRouter({
           nextCursor = nextItem?.id;
         }
 
-        const formattedPosts = await getArticlesWithUserFollowingProfiles(
+        const formattedPosts = await getArticlesWithUserFollowingimages(
           {
             session: ctx.session,
             db: ctx.db,
@@ -1246,9 +1296,15 @@ export const postsRouter = createTRPCRouter({
             slug: true,
             createdAt: true,
             read_time: true,
-            userId: true,
             cover_image: true,
-            cover_image_key: true,
+          },
+          with: {
+            user: {
+              columns: {
+                image: true,
+                username: true,
+              },
+            },
           },
           orderBy: [desc(articles.createdAt)],
         });
@@ -1321,34 +1377,28 @@ export const postsRouter = createTRPCRouter({
         const { cursor, skip, limit } = input;
 
         const article = await ctx.db.query.articles.findMany({
-          with: {
-            user: {
-              with: {
-                handle: {
-                  columns: {
-                    handle: true,
-                  },
-                },
-              },
-              columns: {
-                profile: true,
-              },
-            },
-          },
           where: and(
             eq(articles.isDeleted, false),
             eq(handles.handle, input.handle)
           ),
+          with: {
+            user: {
+              columns: {
+                image: true,
+                username: true,
+              },
+            },
+          },
           columns: {
             id: true,
             title: true,
             slug: true,
-            createdAt: true,
-            content: true,
             read_time: true,
+            content: true,
             subtitle: true,
             cover_image: true,
-            userId: true,
+            createdAt: true,
+            userId: false,
           },
           limit: (limit || 6) + 1,
           offset: skip,

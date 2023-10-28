@@ -38,7 +38,7 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
       username: z.string().min(3, "Username must be atleast 3 characters long"),
       email: z.string().email("Invalid Email"),
       location: z.string().optional(),
-      profile: z.string().optional(),
+      image: z.string().optional(),
       tagline: z.string().optional(),
       available: z.string().optional(),
       cover_image: z.string().optional(),
@@ -101,8 +101,8 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
         social: dataWithSocial.social,
       });
 
-      toast.success("Profile Updated Successfully");
-      setData(res.data);
+      toast.success("image Updated Successfully");
+      // setData(res.data);
     } catch (error) {
       if (error instanceof z.ZodError && error.errors[0]) {
         toast.error(error.errors[0].message);

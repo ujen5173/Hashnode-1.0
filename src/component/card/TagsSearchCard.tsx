@@ -19,7 +19,7 @@ const TagsSearchCard: FC<Props> = ({ tag, setOpened }) => {
   const [isFollowing, setIsFollowing] = useState<boolean>(tag.isFollowing);
   const { data: user } = useSession();
 
-  const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
+  const { mutate: followToggle } = api.tags.followTag.useMutation();
 
   const followTag = () => {
     if (!user) {

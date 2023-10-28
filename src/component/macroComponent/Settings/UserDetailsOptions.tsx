@@ -21,7 +21,7 @@ const UserDetailsOptions = () => {
                 <User className={`w-5 h-5 ${tab?.length === 1 && tab[0] === undefined ? "fill-secondary" : " fill-gray-600 dark:fill-text-primary"}`} />
               </span>
               <span>
-                PROFILE
+                image
               </span>
             </div>
           </Link>

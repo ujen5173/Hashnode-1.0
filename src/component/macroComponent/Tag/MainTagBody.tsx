@@ -41,7 +41,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     followersCount: "0",
   });
 
-  const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
+  const { mutate: followToggle } = api.tags.followTag.useMutation();
   const { data: user } = useSession();
   const { data: articlesData, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getArticlesUsingTag.useInfiniteQuery(
     {

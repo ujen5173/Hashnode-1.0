@@ -28,7 +28,7 @@ const BasicInfo: FC<{
       />
 
       <Input
-        label="Profile Tagline"
+        label="image Tagline"
         type="INPUT"
         variant="FILLED"
         placeholder="Software Engineer @..."
@@ -54,7 +54,7 @@ const BasicInfo: FC<{
       />
 
       <Input
-        label="Profile Bio (About you)"
+        label="image Bio (About you)"
         type="TEXTAREA"
         variant="FILLED"
         placeholder="I am a developer from ..."

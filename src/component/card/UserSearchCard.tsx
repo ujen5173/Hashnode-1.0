@@ -13,7 +13,7 @@ interface Props {
     name: string;
     username: string;
     stripeSubscriptionStatus: string | null;
-    profile: string;
+    image: string | null;
     isFollowing: boolean;
   };
   setOpened: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,7 +26,7 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
     searchedUser.isFollowing
   );
 
-  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+  const { mutate: followToggle } = api.users.followUser.useMutation();
 
   const followUser = () => {
     if (!user) {
@@ -40,7 +40,7 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
     setIsFollowing(!isFollowing);
 
     followToggle({
-      username: searchedUser.username,
+      userId: searchedUser.id,
     });
   };
 
@@ -57,7 +57,7 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
           <Image
             width={50}
             height={50}
-            src={searchedUser.profile}
+            src={searchedUser.image as string}
             alt={searchedUser.name}
             className="h-9 w-9 rounded-full md:h-12 md:w-12"
           />

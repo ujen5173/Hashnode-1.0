@@ -1,6 +1,6 @@
 import React from "react";
 
-const ProfileShare = (props: { className: string }) => {
+const imageShare = (props: { className: string }) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" {...props}>
       <path
@@ -15,4 +15,4 @@ const ProfileShare = (props: { className: string }) => {
   );
 };
 
-export default ProfileShare;
+export default imageShare;

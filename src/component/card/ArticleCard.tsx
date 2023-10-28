@@ -18,10 +18,10 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
         <Link href={`/u/@${card.user.username}`}>
           <div>
             <Image
-              src={card.user.profile}
+              src={card.user.image as string}
               width={60}
               height={60}
-              alt="User Profile"
+              alt="User image"
               className="mt-1 h-10 w-10 rounded-full object-cover"
             />
           </div>
@@ -219,7 +219,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
                   key={user.id}
                 >
                   <Image
-                    src={user.profile}
+                    src={user.image as string}
                     alt="user"
                     width={20}
                     height={20}

@@ -75,7 +75,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
     setCount(data || 0);
   }, [error, data]);
 
-  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+  const { mutate: followToggle } = api.users.followUser.useMutation();
 
   const followUser = () => {
     if (!user) {
@@ -86,7 +86,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
     setFollowing((prev) => !prev);
 
     followToggle({
-      username: author.username,
+      userId: author.id,
     });
   };
 
@@ -173,13 +173,13 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
       </div>
 
       <button
-        aria-label="profile"
+        aria-label="image"
         role="button"
         className="relative rounded-full"
       >
         <div ref={setControl}>
           <Image
-            src={user?.user.profile || "/default_user.avif"}
+            src={user?.user.image || "/default_user.avif"}
             alt={user?.user.name || "Guest User"}
             width={100}
             height={100}

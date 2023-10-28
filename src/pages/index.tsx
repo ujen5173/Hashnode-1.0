@@ -12,13 +12,15 @@ const Home: NextPage = () => {
     enabled: !!session,
     refetchOnWindowFocus: false,
   });
+
+
   return (
     <>
       <HomeSEO />
       <Header />
       {!data && (
         <div className="w-full bg-light-bg px-0 pt-4 dark:bg-black sm:px-4 lg:hidden lg:pt-0">
-          <Anouncement /> {/* Hashnode Pro Section Mobile */}
+          <Anouncement />
         </div>
       )}
       <MainBody />

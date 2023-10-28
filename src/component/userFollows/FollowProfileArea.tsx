@@ -5,13 +5,13 @@ import Link from "next/link";
 import { type FC } from "react";
 import { DateSVG, Pen } from "~/svgs";
 
-const FollowProfileArea: FC<{
+const FollowimageArea: FC<{
   user: {
     name: string;
     username: string;
     followersCount: number;
     followingCount: number;
-    profile: string;
+    image: string;
     createdAt: Date;
   }
 }> = ({ user }) => {
@@ -20,11 +20,11 @@ const FollowProfileArea: FC<{
   return <div className="w-full md:w-1/4 rounded-md border border-border-light bg-white p-6 dark:border-border dark:bg-primary">
     <Link href={`/u/@${user.username}`}>
       <Image
-        src={user.profile}
+        src={user.image}
         width={800}
         height={800}
         className="mb-4 h-28 w-28 overflow-hidden rounded-full object-cover"
-        alt="User Profile"
+        alt="User image"
       />
     </Link>
 
@@ -35,7 +35,7 @@ const FollowProfileArea: FC<{
     {user.username === session?.user.username && (
       <Link href="/settings" className="btn-outline inline-flex mb-4 items-center gap-2">
         <Pen className="h-5 w-5 fill-none stroke-secondary" />
-        <span>Edit Profile</span>
+        <span>Edit image</span>
       </Link>
     )}
 
@@ -53,4 +53,4 @@ const FollowProfileArea: FC<{
     </div>
   </div>
 }
-export default FollowProfileArea;
+export default FollowimageArea;

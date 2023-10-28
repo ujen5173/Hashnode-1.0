@@ -391,21 +391,21 @@ export const dashboardNavigations = [
 export const generalSettingsSocials = [
   {
     id: uuid(),
-    label: "Twitter Profile",
+    label: "Twitter image",
     placeholder: "https://twitter.com/username",
     name: "twitter",
     icon: <Twitter className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
   },
   {
     id: uuid(),
-    label: "Mastodon Profile",
+    label: "Mastodon image",
     placeholder: "https://mastodon.social/@username",
     name: "mastodon",
     icon: <Mastodon className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
   },
   {
     id: uuid(),
-    label: "Instagram Profile",
+    label: "Instagram image",
     placeholder: "https://instagram.com/username",
     name: "instagram",
     icon: (
@@ -414,7 +414,7 @@ export const generalSettingsSocials = [
   },
   {
     id: uuid(),
-    label: "Github Profile",
+    label: "Github image",
     placeholder: "https://github.com/username",
     name: "github",
     icon: <Github className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
@@ -428,7 +428,7 @@ export const generalSettingsSocials = [
   },
   {
     id: uuid(),
-    label: "Hashnode Profile",
+    label: "Hashnode image",
     placeholder: "https://hashnode.com/@username",
     name: "hashnode",
     icon: (
@@ -444,7 +444,7 @@ export const generalSettingsSocials = [
   },
   {
     id: uuid(),
-    label: "Daily.dev Profile",
+    label: "Daily.dev image",
     placeholder: "https://app.daily.dev/username",
     name: "dailydev",
     icon: <Dailydev className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
@@ -483,7 +483,7 @@ export const selectArticleCard = {
         user: {
           columns: {
             id: true,
-            profile: true,
+            image: true,
           },
         }
       }
@@ -519,7 +519,7 @@ export const selectArticleCard = {
         id: true,
         name: true,
         username: true,
-        profile: true,
+        image: true,
         bio: true,
         stripeSubscriptionStatus: true,
       },
@@ -551,7 +551,7 @@ export const selectArticleCard = {
 } as const;
 
 export function displayUniqueObjects(
-  objects: Array<{ id: string; profile: string | null }>
+  objects: Array<{ id: string; image: string | null }>
 ) {
   // Create a set to store the unique IDs.
   const uniqueIds = new Set();
@@ -572,7 +572,7 @@ export function displayUniqueObjects(
 }
 
 
-export const profileDropdownList = [
+export const imageDropdownList = [
   {
     type: "divider",
   },
@@ -618,7 +618,7 @@ export const profileDropdownList = [
   }
 ]
 
-export const articleProfileDropdownList = [
+export const articleimageDropdownList = [
   {
     type: "divider",
   },
@@ -649,7 +649,7 @@ export const articleProfileDropdownList = [
     hiddenItem: false,
     danger: false,
   }, {
-    name: "Profile settings",
+    name: "image settings",
     icon: <UserSVG className="h-4 w-4 fill-gray-900 dark:fill-text-secondary" />,
     link: (userId: string) => "/settings",
     hiddenItem: false,

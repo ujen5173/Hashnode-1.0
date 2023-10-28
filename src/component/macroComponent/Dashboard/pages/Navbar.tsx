@@ -11,7 +11,7 @@ const Navbar = () => {
 
   const { data, isLoading, refetch } = api.handles.getNavbarData.useQuery(
     {
-      handle: user?.user?.handle?.handle as string,
+      handleId: user?.user?.handle?.id as string,
     },
     {
       enabled: !!user?.user.handle?.handle,
@@ -158,8 +158,9 @@ const NavBarItem: FC<{
       toast.error("Invalid URL");
       return;
     }
+
     await updateItem({
-      handle: editing.id,
+      tabId: editing.id,
       tab: newItemData,
     });
 

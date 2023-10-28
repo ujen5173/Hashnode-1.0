@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { follow, users } from "~/server/db/schema";
@@ -5,25 +6,26 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
 export const usersRouter = createTRPCRouter({
-  followUser: publicProcedure
+  followUser: protectedProcedure
     .input(
       z.object({
-        // username: z.string().trim(),
         userId: z.string(),
-        followingId: z.string(),
+        // username: z.string().trim(),
+        // userId: z.string(),
+        // followingId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       // get following user data
       const me = await ctx.db.query.users.findFirst({
-        where: eq(users.id, input.userId),
+        where: eq(users.id, ctx.session?.user.id),
         columns: {
           id: true,
           followingCount: true,
         },
         with: {
           following: {
-            where: eq(follow.userId, input.followingId),
+            where: eq(follow.userId, input.userId),
             with: {
               user: {
                 columns: {
@@ -36,14 +38,14 @@ export const usersRouter = createTRPCRouter({
         },
       });
       const otherUser = await ctx.db.query.users.findFirst({
-        where: eq(users.id, input.followingId),
+        where: eq(users.id, input.userId),
         columns: {
           id: true,
           followersCount: true,
         },
         with: {
           followers: {
-            where: eq(follow.followingId, input.userId),
+            where: eq(follow.followingId, ctx.session?.user.id),
             with: {
               user: {
                 columns: {
@@ -64,7 +66,7 @@ export const usersRouter = createTRPCRouter({
         };
       }
 
-      const isFollowing = me?.following.length > 0 ? true : false;
+      const isFollowing = me?.following.length > 0;
 
       if (
         isFollowing &&
@@ -76,8 +78,8 @@ export const usersRouter = createTRPCRouter({
           .delete(follow)
           .where(
             and(
-              eq(follow.userId, input.followingId),
-              eq(follow.followingId, input.userId)
+              eq(follow.userId, input.userId),
+              eq(follow.followingId, ctx.session?.user.id)
             )
           );
 
@@ -88,14 +90,14 @@ export const usersRouter = createTRPCRouter({
             followingCount:
               +(otherUser.followers[0]?.user?.followersCount ?? 1) - 1,
           })
-          .where(eq(users.id, input.userId));
+          .where(eq(users.id, ctx.session?.user.id));
 
         await ctx.db
           .update(users)
           .set({
             followersCount: +(me.following[0]?.user?.followingCount ?? 1) - 1,
           })
-          .where(eq(users.id, input.followingId));
+          .where(eq(users.id, input.userId));
 
         return {
           success: false,
@@ -106,8 +108,8 @@ export const usersRouter = createTRPCRouter({
         console.log("Following condition");
         // follow the user
         await ctx.db.insert(follow).values({
-          userId: input.followingId,
-          followingId: input.userId,
+          userId: input.userId,
+          followingId: ctx.session?.user.id,
         });
 
         // update the following count
@@ -117,14 +119,14 @@ export const usersRouter = createTRPCRouter({
             followingCount:
               +(otherUser.followers[0]?.user?.followersCount ?? 0) + 1,
           })
-          .where(eq(users.id, input.userId));
+          .where(eq(users.id, ctx.session?.user.id));
 
         await ctx.db
           .update(users)
           .set({
             followersCount: +(me.following[0]?.user?.followingCount ?? 0) + 1,
           })
-          .where(eq(users.id, input.followingId));
+          .where(eq(users.id, input.userId));
         return {
           success: false,
           message: "User followed successfully",
@@ -158,7 +160,7 @@ export const usersRouter = createTRPCRouter({
         name: z.string().trim(),
         username: z.string().trim(),
         email: z.string().trim(),
-        profile: z.string().trim(),
+        image: z.string().trim(),
         tagline: z.string().trim(),
       })
     )
@@ -217,38 +219,6 @@ export const usersRouter = createTRPCRouter({
       });
 
       return user;
-
-      // const user = await ctx.prisma.user.findUnique({
-      //   where: {
-      //     username: input.username.slice(1, input.username.length),
-      //   },
-      //   include: {
-      //     followers: {
-      //       select: {
-      //         id: true,
-      //       },
-      //     },
-      //   },
-      // });
-
-      // let isFollowing = false;
-
-      // if (ctx.session !== null) {
-      //   isFollowing = user?.followers.some(
-      //     (follower) => follower.id === ctx?.session?.user.id
-      //   )
-      //     ? true
-      //     : false;
-      // }
-
-      // if (!user) {
-      //   throw new TRPCError({
-      //     code: "BAD_REQUEST",
-      //     message: "User not found",
-      //   });
-      // }
-
-      // return { ...user, isFollowing };
     }),
 
   updateUser: protectedProcedure
@@ -258,7 +228,7 @@ export const usersRouter = createTRPCRouter({
         username: z.string().trim(),
         email: z.string().trim(),
         location: z.string().trim(),
-        profile: z.string().trim(),
+        image: z.string().trim(),
         tagline: z.string().trim(),
         available: z.string().trim(),
         cover_image: z.string().trim(),
@@ -277,26 +247,46 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const updatedUser = await ctx.db
         .update(users)
         .set(input)
-        .where(eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"));
+        .where(eq(users.id, ctx.session.user.id))
+        .returning({
+          name: users.name,
+          username: users.username,
+          email: users.email,
+          location: users.location,
+          image: users.image,
+          tagline: users.tagline,
+          stripeSubscriptionStatus: users.stripeSubscriptionStatus,
+          available: users.available,
+          cover_image: users.cover_image,
+          bio: users.bio,
+          skills: users.skills,
+          social: users.social,
+        });
+
       return {
         success: true,
         message: "User updated successfully",
         status: 200,
+        data: updatedUser,
       };
     }),
 
   getFollowersList: publicProcedure
     .input(
       z.object({
-        username: z.string().trim(),
+        userId: z.string().trim(),
       })
     )
     .query(async ({ ctx, input }) => {
       const f = await ctx.db.query.follow.findMany({
-        where: eq(follow.followingId, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+        where: eq(follow.followingId, input.userId),
+        columns: {
+          followingId: false,
+          userId: false,
+        },
         with: {
           user: {
             columns: {
@@ -304,49 +294,78 @@ export const usersRouter = createTRPCRouter({
               name: true,
               tagline: true,
               username: true,
-              profile: true,
+              image: true,
             },
           },
         },
         limit: 20,
       });
 
-      const authorUser = await ctx.db.query.users.findFirst({
-        where: eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
-        with: {
-          followers: {
+      let authorUser: {
+        followers: {
+          user: {
+            id: string;
+            name: string;
+            username: string;
+            image: string | null;
+            tagline: string | null;
+          };
+        }[];
+      } = {
+        followers: [],
+      };
+
+      if (ctx?.session?.user.id) {
+        authorUser = await ctx.db.query.users
+          .findFirst({
+            where: eq(users.id, ctx.session?.user.id),
             columns: {
-              followingId: false,
-              userId: false,
+              id: true,
             },
-            where: eq(follow.userId, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
             with: {
-              following: {
+              followers: {
                 columns: {
-                  id: true,
-                  name: true,
-                  tagline: true,
-                  username: true,
-                  profile: true,
+                  followingId: false,
+                  userId: false,
+                },
+                where: eq(follow.userId, input.userId),
+                with: {
+                  following: {
+                    columns: {
+                      id: true,
+                      name: true,
+                      tagline: true,
+                      username: true,
+                      image: true,
+                    },
+                  },
                 },
               },
             },
-          },
-        },
-      });
+          })
+          .then((res) => {
+            if (res) {
+              return {
+                followers: res.followers.map((f) => ({ user: f.following })),
+              };
+            }
+            return {
+              followers: [],
+            };
+          });
+      }
 
       if (!authorUser) {
-        return {
-          success: false,
-          message: "User not found",
-          status: 400,
-        };
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Author not found!",
+        });
       }
 
       const updatedFollowers = f.map((user) => {
         return {
-          ...user,
-          isFollowing: authorUser?.followers.length > 0 ? true : false,
+          ...user.user,
+          isFollowing: authorUser?.followers.length > 0,
         };
       });
       return updatedFollowers;
@@ -355,12 +374,16 @@ export const usersRouter = createTRPCRouter({
   getFollowingList: publicProcedure
     .input(
       z.object({
-        username: z.string().trim(),
+        userId: z.string().trim(),
       })
     )
     .query(async ({ ctx, input }) => {
       const f = await ctx.db.query.follow.findMany({
-        where: eq(follow.userId, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+        where: eq(follow.userId, input.userId),
+        columns: {
+          followingId: false,
+          userId: false,
+        },
         with: {
           user: {
             columns: {
@@ -368,49 +391,76 @@ export const usersRouter = createTRPCRouter({
               name: true,
               tagline: true,
               username: true,
-              profile: true,
+              image: true,
             },
           },
         },
         limit: 20,
       });
 
-      const authorUser = await ctx.db.query.users.findFirst({
-        where: eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
-        with: {
-          following: {
-            where: eq(follow.userId, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+      let authorUser: {
+        following: {
+          user: {
+            id: string;
+            name: string;
+            username: string;
+            image: string | null;
+            tagline: string | null;
+          };
+        }[];
+      } = {
+        following: [],
+      };
+
+      if (ctx?.session?.user.id) {
+        authorUser = await ctx.db.query.users
+          .findFirst({
+            where: eq(users.id, ctx.session?.user.id),
             columns: {
-              followingId: false,
-              userId: false,
+              id: true,
             },
             with: {
-              user: {
+              following: {
+                where: eq(follow.userId, input.userId),
                 columns: {
-                  id: true,
-                  name: true,
-                  tagline: true,
-                  username: true,
-                  profile: true,
+                  followingId: false,
+                  userId: false,
+                },
+                with: {
+                  user: {
+                    columns: {
+                      id: true,
+                      name: true,
+                      tagline: true,
+                      username: true,
+                      image: true,
+                    },
+                  },
                 },
               },
             },
-          },
-        },
-      });
+          })
+          .then((res) => {
+            if (res) {
+              return { following: res.following };
+            }
+            return {
+              following: [],
+            };
+          });
+      }
 
       if (!authorUser) {
-        return {
-          success: false,
-          message: "User not found",
-          status: 400,
-        };
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Author not found!",
+        });
       }
 
       const updatedFollowing = f.map((user) => {
         return {
-          ...user,
-          isFollowing: authorUser?.following.length > 0 ? true : false,
+          ...user.user,
+          isFollowing: authorUser?.following.length > 0,
         };
       });
 

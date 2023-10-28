@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
 import { v4 as uuid } from "uuid";
-import { type BlogSocial } from "~/pages/dev/[username]";
+import { type BlogSocial, type CustomTabs } from "~/pages/dev/[username]";
 import {
   Angleleft,
   Check,
@@ -33,13 +33,18 @@ import {
 
 interface Props {
   user: {
+    id: string;
     name: string;
     username: string;
-    profile: string;
+    image: string;
+    bio: string;
     handle: {
+      id: string;
       handle: string;
       name: string;
       social: BlogSocial;
+      about: string;
+      customTabs: CustomTabs[];
     };
     followers: { id: string }[];
   };
@@ -50,7 +55,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     handleTheme,
     setSearchOpen
   } = useContext(C) as ContextValue;
-  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+  const { mutate: followToggle } = api.users.followUser.useMutation();
 
   const [following, setFollowing] = useState(false);
 
@@ -58,7 +63,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     setFollowing(prev => !prev);
 
     followToggle({
-      username: author.username,
+      userId: author.id,
     });
   }
 
@@ -127,7 +132,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                 className="flex items-center gap-2"
               >
                 <Image
-                  src={author.profile}
+                  src={author.image}
                   alt={author.name}
                   width={100}
                   height={100}
@@ -166,14 +171,14 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
             </Tooltip>
 
             <button
-              aria-label="User Profile"
+              aria-label="User image"
               role="button"
               className="relative rounded-full"
               style={{ cursor: "default!important" }}
             >
               <div ref={setControl}>
                 <Image
-                  src={user?.user.profile || "/default_user.avif"}
+                  src={user?.user.image || "/default_user.avif"}
                   alt={user?.user.name || "user"}
                   width={100}
                   height={100}

@@ -38,17 +38,6 @@ const componentMap = {
   articles: <Articles />,
   series: <Series />,
   pages: <Pages />,
-  // sponsors: <Sponsors />,
-  // analytics: <Analytics />,
-  // widgets: <Widgets />,
-  // newsletter: <Newsletter />,
-  // integrations: <Integrations />,
-  // seo: <SEO />,
-  // domain: <Domain />,
-  // gitHub: <GitHub />,
-  // import: <Import />,
-  // export: <Export />,
-  // advanced: <Advanced />,
   "series/create": <CreateNewSeries />,
   "404": <DashboardPageNotFound />,
 };
@@ -223,7 +212,7 @@ const Roadmap = () => {
       <div className="flex flex-wrap gap-4">
         <div
           onClick={() => {
-            if (data?.articles && data?.articles.length > 0) {
+            if (data?.articles) {
               return;
             } else {
               void router.push("/article/new");
@@ -235,7 +224,7 @@ const Roadmap = () => {
             <Pen className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
           </div>
 
-          {data?.articles && data?.articles.length > 0 ? (
+          {data?.articles ? (
             <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
           ) : (
             <BlankCircle className="h-5 w-5 fill-gray-500 dark:fill-text-primary md:h-7 md:w-7" />
@@ -255,7 +244,7 @@ const Roadmap = () => {
 
         <div
           onClick={() => {
-            if (data?.articles && data?.articles.length > 0) {
+            if (data?.articles) {
               return;
             } else {
               const appearanceLocation = `/${user?.user.id as string

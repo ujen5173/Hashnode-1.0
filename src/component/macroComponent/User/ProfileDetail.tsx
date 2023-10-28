@@ -13,7 +13,7 @@ import {
 } from "~/svgs";
 import { type DetailedUser } from "~/types";
 
-const ProfileDetail: FC<{
+const imageDetail: FC<{
   userDetails: DetailedUser | undefined;
 }> = ({ userDetails }) => {
   return (
@@ -77,4 +77,4 @@ const ProfileDetail: FC<{
   );
 };
 
-export default ProfileDetail;
+export default imageDetail;

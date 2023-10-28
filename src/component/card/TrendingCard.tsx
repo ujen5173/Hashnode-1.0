@@ -9,7 +9,7 @@ interface Props {
     title: string;
     slug: string;
     user: {
-      profile: string | null;
+      image: string | null;
       username: string;
       id: string;
       name: string;
@@ -27,8 +27,8 @@ const TrendingCard: FC<Props> = ({ article }) => {
         className="block"
       >
         <Image
-          src={article.user.profile || "/default_user.avif"}
-          alt="User Profile"
+          src={article.user.image || "/default_user.avif"}
+          alt="User image"
           width={180}
           height={180}
           className="h-10 w-10 overflow-hidden rounded-full object-cover"

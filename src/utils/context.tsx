@@ -1,4 +1,3 @@
-import { type NotificationTypes } from "@prisma/client";
 import React, {
   createContext,
   useEffect,
@@ -8,6 +7,16 @@ import React, {
   type SetStateAction,
 } from "react";
 import { type ArticleCard } from "~/types";
+
+export enum NotificationTypesEnum {
+  ALL = "ALL",
+  COMMENT = "COMMENT",
+  LIKE = "LIKE",
+  NEW_ARTICLE = "NEW_ARTICLE",
+  MENTION = "MENTION",
+  FOLLOW = "FOLLOW",
+}
+
 
 interface Props {
   children: React.ReactNode;
@@ -38,13 +47,13 @@ export interface TrendingArticleTypes {
 export interface NotificationDataTypes {
   data: Notification[] | undefined;
   isLoading: boolean;
-  type: "COMMENT" | "LIKE" | "NEW_ARTICLE" | "MENTION" | "FOLLOW" | "ALL";
+  type: NotificationTypesEnum;
 }
 
 export interface Notification {
   id: string;
   body?: string | null; // This is for comment notification
-  type: NotificationTypes | null;
+  type: string | null;
   slug?: string | null;
   title?: string | null;
   articleAuthor?: string | null;
@@ -52,7 +61,7 @@ export interface Notification {
   from: {
     username: string;
     name: string;
-    profile: string;
+    image: string | null;
   };
 }
 

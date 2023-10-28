@@ -17,7 +17,7 @@ const SocialInfo: FC<{
         Social
       </h1>
       <Input
-        label="Twitter Profile"
+        label="Twitter image"
         type="INPUT"
         variant="FILLED"
         placeholder="https://twitter.com/johndoe"
@@ -30,7 +30,7 @@ const SocialInfo: FC<{
       />
 
       <Input
-        label="Instagram Profile"
+        label="Instagram image"
         type="INPUT"
         variant="FILLED"
         placeholder="https://instagram.com/johndoe"
@@ -43,7 +43,7 @@ const SocialInfo: FC<{
       />
 
       <Input
-        label="Facebook Profile"
+        label="Facebook image"
         type="INPUT"
         variant="FILLED"
         placeholder="https://facebook.com/johndoe"
@@ -56,7 +56,7 @@ const SocialInfo: FC<{
       />
 
       <Input
-        label="LinkedIn Profile"
+        label="LinkedIn image"
         type="INPUT"
         variant="FILLED"
         placeholder="https://linkedin.com/in/johndoe"
@@ -69,7 +69,7 @@ const SocialInfo: FC<{
       />
 
       <Input
-        label="Youtube Profile"
+        label="Youtube image"
         type="INPUT"
         variant="FILLED"
         placeholder="https://youtube.com/johndoe"
@@ -82,7 +82,7 @@ const SocialInfo: FC<{
       />
 
       <Input
-        label="Stackoverflow Profile"
+        label="Stackoverflow image"
         type="INPUT"
         variant="FILLED"
         placeholder="https://stackoverflow.com/johndoe"
@@ -95,7 +95,7 @@ const SocialInfo: FC<{
       />
 
       <Input
-        label="Github Profile"
+        label="Github image"
         type="INPUT"
         variant="FILLED"
         placeholder="https://github.com/johndoe"
@@ -121,7 +121,7 @@ const SocialInfo: FC<{
       />
 
       <h1 className="mb-4 mt-8 text-base font-semibold text-gray-700 dark:text-text-secondary">
-        Profile Identity
+        image Identity
       </h1>
 
       <Input

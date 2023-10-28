@@ -14,7 +14,7 @@ export const seriesRouter = createTRPCRouter({
     return result;
   }),
 
-  new: publicProcedure
+  new: protectedProcedure
     .input(
       z.object({
         title: z.string(),
@@ -22,53 +22,36 @@ export const seriesRouter = createTRPCRouter({
         cover_image: z.string().optional(),
         slug: z.string().optional(),
         edit: z.boolean().default(false),
-
-        userId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { edit, ...restInput } = input;
       try {
-        const dbQuery = {
-          data: {
-            ...restInput,
-            author: {
-              connect: {
-                id: input.userId,
-              },
-            },
-            slug: restInput.slug || slugify(restInput.title, slugSetting),
-          },
-          select: {
-            slug: true,
-          },
-        };
-
         let result = null;
 
         if (edit) {
           result = await ctx.db
             .update(series)
-            .set(dbQuery.data)
+            .set({
+              ...restInput,
+              slug: restInput.slug || slugify(restInput.title, slugSetting),
+              authorId: ctx.session.user.id,
+            })
             .where(
               eq(
                 series.slug,
                 restInput.slug || slugify(restInput.title, slugSetting)
               )
-            )
-            .returning();
+            );
         } else {
-          result = await ctx.db
-            .insert(series)
-            .values({
-              ...restInput,
-              slug: restInput.slug || slugify(restInput.title, slugSetting),
-              authorId: input.userId,
-            })
-            .returning();
+          result = await ctx.db.insert(series).values({
+            ...restInput,
+            slug: restInput.slug || slugify(restInput.title, slugSetting),
+            authorId: ctx.session.user.id,
+          });
         }
 
-        return result;
+        return !!result;
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;

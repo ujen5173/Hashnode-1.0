@@ -20,6 +20,7 @@ const Aside = () => {
     }
   );
 
+
   return (
     <div className="container-aside relative hidden min-h-[100dvh] py-4 lg:block">
       <aside className="sticky left-0 top-[5.5rem] h-fit w-full rounded-md border border-border-light bg-white py-2 dark:border-border dark:bg-primary">
@@ -92,9 +93,11 @@ const TrendingComponent: FC<{
           <TrendingNavigation key={item.id} item={item} />
         ))
       ) : (
-        <p className="text-sm text-gray-700 dark:text-text-primary">
-          No trending tags
-        </p>
+        <div className="h-24 flex justify-center items-center">
+          <p className="text-sm text-gray-700 dark:text-text-primary">
+            No trending tags
+          </p>
+        </div>
       )}
     </div>
   );

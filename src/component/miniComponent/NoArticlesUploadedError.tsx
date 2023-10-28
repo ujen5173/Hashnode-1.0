@@ -9,7 +9,7 @@ interface Props {
   user: Session | null;
   author: {
     name: string;
-    profile: string;
+    image: string;
     username: string;
     handle: {
       about: string;

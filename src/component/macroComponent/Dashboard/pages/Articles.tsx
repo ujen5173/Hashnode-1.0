@@ -137,7 +137,7 @@ const ArticleCard: FC<{
     slug: string;
     read_time: number;
     user: {
-      profile: string;
+      image: string | null;
       username: string;
     };
     subtitle: string | null;
@@ -153,6 +153,7 @@ const ArticleCard: FC<{
     control,
     dropdown,
   ]);
+
   const { mutateAsync } = api.posts.restoreArticle.useMutation()
   const { mutateAsync: deleteTemporarily } = api.posts.deleteTemporarily.useMutation();
   const { mutateAsync: deletePermanently } = api.posts.deleteArticlePermantly.useMutation()

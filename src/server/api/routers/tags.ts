@@ -1,8 +1,8 @@
 import { TRPCError } from "@trpc/server";
-import { desc, eq, gt, ilike, inArray } from "drizzle-orm";
+import { and, desc, eq, gt, ilike, inArray, or } from "drizzle-orm";
 import slugify from "slugify";
 import { z } from "zod";
-import { tags, users } from "~/server/db/schema";
+import { tags, tagsToUsers, users } from "~/server/db/schema";
 import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
@@ -49,15 +49,15 @@ export const tagsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const result = await ctx.db.query.tags.findMany({
-          where: ilike(tags.name, input.query),
+          where: or(
+            ilike(tags.name, `%${input.query}%`),
+            ilike(tags.slug, `%${input.query}%`),
+            ilike(tags.description, `%${input.query}%`)
+          ),
+          columns: { name: true, slug: true, articlesCount: true, logo: true },
+
           orderBy: [desc(tags.followersCount)],
           limit: 5,
-          columns: {
-            name: true,
-            slug: true,
-            articlesCount: true,
-            logo: true,
-          },
         });
 
         if (result.length > 0) return result;
@@ -78,7 +78,7 @@ export const tagsRouter = createTRPCRouter({
       }
     }),
 
-  followTagToggle: protectedProcedure
+  followTag: protectedProcedure
     .input(
       z.object({
         name: z.string().trim(),
@@ -88,8 +88,13 @@ export const tagsRouter = createTRPCRouter({
       try {
         const tag = await ctx.db.query.tags.findFirst({
           where: eq(tags.name, input.name),
+          columns: {
+            id: true,
+            followersCount: true,
+          },
           with: {
             followers: {
+              where: eq(tagsToUsers.userId, ctx.session.user.id),
               columns: {
                 userId: true,
               },
@@ -104,32 +109,30 @@ export const tagsRouter = createTRPCRouter({
           });
         }
 
-        const isFollowing = tag.followers.some(
-          (follower) => follower.userId === ctx.session.user.id
-        );
+        const isFollowing = tag.followers.length > 0;
 
-        const data = {
-          followers: {
-            connect: isFollowing
-              ? undefined
-              : {
-                  id: ctx.session.user.id,
-                },
-            disconnect: isFollowing
-              ? {
-                  id: ctx.session.user.id,
-                }
-              : undefined,
-          },
-        };
+        if (isFollowing) {
+          await ctx.db
+            .delete(tagsToUsers)
+            .where(
+              and(
+                eq(tagsToUsers.tagId, tag.id),
+                eq(tagsToUsers.userId, ctx.session.user.id)
+              )
+            );
+        } else {
+          await ctx.db.insert(tagsToUsers).values({
+            tagId: tag.id,
+            userId: ctx.session.user.id,
+          });
+        }
 
         await ctx.db
           .update(tags)
           .set({
-            ...data,
             followersCount: isFollowing
-              ? tags.followersCount._.data - 1
-              : tags.followersCount._.data + 1,
+              ? tag.followersCount - 1
+              : tag.followersCount + 1,
           })
           .where(eq(tags.name, input.name));
 
@@ -139,6 +142,7 @@ export const tagsRouter = createTRPCRouter({
           status: 200,
         };
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",

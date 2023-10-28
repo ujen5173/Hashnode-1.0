@@ -5,7 +5,7 @@ import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { getServerAuthSession } from "~/server/auth";
-import { db } from "~/server/db";
+import db from "~/server/db";
 import { stripe } from "~/server/stripe/client";
 
 type CreateContextOptions = {

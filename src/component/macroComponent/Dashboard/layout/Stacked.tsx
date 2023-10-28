@@ -12,7 +12,7 @@ export interface LayoutProps {
   author: {
     name: string;
     username: string;
-    profile: string;
+    image: string;
     bio: string;
     handle: {
       about: string;

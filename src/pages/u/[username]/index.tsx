@@ -1,10 +1,11 @@
-import { type User } from "@prisma/client";
+import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { Header, UserProfileBody } from "~/component";
 import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
-import { prisma } from "~/server/db";
+import db from "~/server/db";
+import { follow, users } from "~/server/db/schema";
 import { type DetailedUser, type SocialHandles } from "~/types";
 
 const UserBlog: NextPage<{
@@ -28,28 +29,34 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let user = null;
 
   if (username) {
-    user = (await prisma.user.findUnique({
-      where: {
-        username: username.slice(1, username.length),
-      },
-      include: {
+
+    user = await db.query.users.findFirst({
+      where: eq(users.username, username.slice(1, username.length)),
+      with: {
         handle: {
-          select: {
-            handle: true,
-            about: true,
+          columns: {
             id: true,
             name: true,
+            handle: true,
+            about: true,
           },
         },
         followers: {
-          select: {
-            id: true,
+          columns: {
+            followingId: false,
+            userId: false,
           },
+          where: eq(follow.userId, session?.user.id as string),
+          with: {
+            following: {
+              columns: {
+                id: true,
+              },
+            }
+          }
         },
       },
-    })) as User & {
-      followers: { id: string }[];
-    };
+    })
   }
 
   if (user === null) {
@@ -60,16 +67,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-
-  let isFollowing = false;
-
-  if (session !== null) {
-    isFollowing = user.followers.some(
-      (follower) => follower.id === session?.user.id
-    )
-      ? true
-      : false;
-  }
+  const isFollowing = (user?.followers ?? []).length > 0;
 
   return {
     props: {

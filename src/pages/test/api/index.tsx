@@ -13,19 +13,32 @@ const ApiTesting = () => {
   const { mutateAsync: likeCommentMutate } = api.comments.likeComment.useMutation();
 
   const { mutateAsync: updateArticleMutate } = api.posts.new.useMutation();
+  const { mutateAsync: followTag } = api.tags.followTag.useMutation();
+  // const searchQuery = "basi";
+
+  // const { refetch } = api.posts.search.useQuery(
+  //   {
+  //     query: searchQuery,
+  //     type: "TOP",
+  //   },
+  //   {
+  //     enabled: false,
+  //     refetchOnWindowFocus: false,
+  //   }
+  // );
 
 
-  const { data: followingList } = api.users.getFollowingList.useQuery({
-    username: ""
-  });
-  const { data: followersist } = api.users.getFollowersList.useQuery({
-    username: ""
-  });
+  // const { data: followingList } = api.users.getFollowingList.useQuery({
+  //   username: ""
+  // });
+  // const { data: followersist } = api.users.getFollowersList.useQuery({
+  //   username: ""
+  // });
 
-  console.log({
-    followingList,
-    followersist
-  })
+  // console.log({
+  //   followingList,
+  //   followersist
+  // })
 
   // const { data: sujit } = api.users.getUserByUsername.useQuery({ username: "@sujit5963" }, {
   //   refetchOnWindowFocus: false,
@@ -45,6 +58,13 @@ const ApiTesting = () => {
   // console.log({ articledata })
 
   const launch = async () => {
+    const res = await followTag({
+      name: "basi",
+    });
+
+    console.log({ res })
+
+
     // create user
     // const usersData = [];
     // for (let i = 0; i < 2; i++) {
@@ -52,7 +72,7 @@ const ApiTesting = () => {
     //     name: faker.internet.displayName(),
     //     username: faker.internet.userName(),
     //     email: faker.internet.email(),
-    //     profile: faker.internet.url(),
+    //     image: faker.internet.url(),
     //     tagline: faker.lorem.sentence({
     //       min: 1,
     //       max: 2
@@ -203,27 +223,27 @@ const ApiTesting = () => {
     // console.log({ reply });
 
     // follow user
-    const followData = {
-      followingId
-        :
-        "b1b3a617-8df7-473c-959c-cf1079012df5",
-      userId
-        :
-        "927e54ca-fbb9-48d3-ab53-0e04e63367d7"
-    }
-    const follow = await followMutate(followData);
-    console.log(({ follow }))
+    // const followData = {
+    //   followingId
+    //     :
+    //     "b1b3a617-8df7-473c-959c-cf1079012df5",
+    //   userId
+    //     :
+    //     "927e54ca-fbb9-48d3-ab53-0e04e63367d7"
+    // }
+    // const follow = await followMutate(followData);
+    // console.log(({ follow }))
 
-    const reversefollowData = {
-      followingId
-        :
-        "927e54ca-fbb9-48d3-ab53-0e04e63367d7",
-      userId
-        :
-        "b1b3a617-8df7-473c-959c-cf1079012df5",
-    }
-    const reversefollow = await followMutate(reversefollowData);
-    console.log(({ reversefollow }))
+    // const reversefollowData = {
+    //   followingId
+    //     :
+    //     "927e54ca-fbb9-48d3-ab53-0e04e63367d7",
+    //   userId
+    //     :
+    //     "b1b3a617-8df7-473c-959c-cf1079012df5",
+    // }
+    // const reversefollow = await followMutate(reversefollowData);
+    // console.log(({ reversefollow }))
 
     // like article
     // const likeArticleData = {
@@ -241,6 +261,8 @@ const ApiTesting = () => {
     // };
 
     // const likeComment = await likeCommentMutate(likeCommnetData);
+
+
   }
 
   const { mutateAsync: deleteAll } = api.posts.deleteAll.useMutation();

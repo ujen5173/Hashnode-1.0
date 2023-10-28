@@ -17,7 +17,7 @@ import {
 import { type DetailedUser } from "~/types";
 import { api } from "~/utils/api";
 
-const UserProfileArea: FC<{
+const UserimageArea: FC<{
   userDetails: DetailedUser | undefined;
 }> = ({ userDetails }) => {
   const [opened, setOpened] = useState(false);
@@ -26,7 +26,7 @@ const UserProfileArea: FC<{
   const ref2 = useClickOutside<HTMLDivElement>(() => setOpened2(false));
   const { data: user } = useSession();
 
-  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+  const { mutate: follow } = api.users.followUser.useMutation();
 
   const [following, setFollowing] = useState({
     status: false,
@@ -55,8 +55,8 @@ const UserProfileArea: FC<{
 
     if (userDetails) {
 
-      followToggle({
-        username: userDetails.username,
+      follow({
+        userId: userDetails.id,
       });
     }
   };
@@ -65,7 +65,7 @@ const UserProfileArea: FC<{
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
       <div className="h-28 w-28 overflow-hidden rounded-full bg-light-bg dark:bg-primary-light md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40">
         <Image
-          src={userDetails?.profile || ""}
+          src={userDetails?.image || ""}
           alt={userDetails?.name || ""}
           width={160}
           height={160}
@@ -204,7 +204,7 @@ const UserProfileArea: FC<{
                           <Report className="h-6 w-6 fill-twitterColor" />
                         </span>
 
-                        <span>Report this profile</span>
+                        <span>Report this image</span>
                       </button>
                     </li>
                   </ul>
@@ -217,7 +217,7 @@ const UserProfileArea: FC<{
         {user?.user.username === userDetails?.username ? (
           <Link href={"/settings"}>
             <button className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max">
-              Edit Profile
+              Edit image
             </button>
           </Link>
         ) : (
@@ -245,4 +245,4 @@ const UserProfileArea: FC<{
   );
 };
 
-export default UserProfileArea;
+export default UserimageArea;
