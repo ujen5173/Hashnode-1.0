@@ -1,8 +1,10 @@
 import Image from "next/image";
-import { useRef, useState, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { Hashtag } from "~/svgs";
+
+import { Hash } from "lucide-react";
 import { api } from "~/utils/api";
+import { TagLoading } from "../loading";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 
 interface Props {
@@ -30,8 +32,9 @@ const SelectTags: FC<Props> = ({
   const [opened, setOpened] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
   const input = useRef<HTMLInputElement | null>(null);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
 
-  const { refetch } = api.tags.searchTags.useQuery(
+  const { refetch, isFetching: fetchingTags } = api.tags.searchTags.useQuery(
     {
       query,
     },
@@ -40,6 +43,10 @@ const SelectTags: FC<Props> = ({
       refetchOnWindowFocus: false,
     }
   );
+
+  useEffect(() => {
+    setIsFetching(fetchingTags);
+  }, [fetchingTags]);
 
   async function search(criteria: string): Promise<Tag[]> {
     let response;
@@ -60,7 +67,7 @@ const SelectTags: FC<Props> = ({
     const response = await search(value);
     const newData = response.filter((tag) => !t.includes(tag.name));
     setTags(newData);
-  }, 50);
+  }, 200);
 
   return (
     <div className="relative">
@@ -77,6 +84,7 @@ const SelectTags: FC<Props> = ({
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
+            setIsFetching(true);
             void debounced(e.target.value);
           }}
         />
@@ -87,56 +95,65 @@ const SelectTags: FC<Props> = ({
           ref={ref}
           className="scroll-area absolute left-0 top-full z-20 flex max-h-[250px] min-h-[250px] w-full flex-col items-center justify-start overflow-auto rounded-md border border-border-light bg-light-bg shadow-md dark:border-border dark:bg-primary"
         >
-          {tags.map((tag) => (
-            <div
-              className="flex w-full cursor-pointer items-center gap-2  border-b border-border-light px-4 py-2 text-lg text-gray-500 last:border-none hover:bg-light-bg dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
-              key={tag.slug}
-              onClick={() => {
-                setData((prev) => ({
-                  ...prev,
-                  tags: Array.from(new Set([...prev.tags, tag.name])),
-                }));
-                input.current?.focus();
+          {
+            isFetching ? (
+              <>
+                <TagLoading />
+                <TagLoading />
+                <TagLoading />
+                <TagLoading />
+                <TagLoading />
+              </>
+            ) : tags.map((tag) => (
+              <div
+                className="flex w-full cursor-pointer items-center gap-2  border-b border-border-light px-4 py-2 text-lg text-gray-500 last:border-none hover:bg-light-bg dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
+                key={tag.slug}
+                onClick={() => {
+                  setData((prev) => ({
+                    ...prev,
+                    tags: Array.from(new Set([...prev.tags, tag.name])),
+                  }));
+                  input.current?.focus();
 
-                setOpened(false);
-                setQuery("");
-              }}
-            >
-              <div className="flex-1">
-                <p className="text-base text-gray-700 dark:text-text-secondary">
-                  {tag.name}
-                </p>
+                  setOpened(false);
+                  setQuery("");
+                }}
+              >
+                <div className="flex-1">
+                  <p className="text-base text-gray-700 dark:text-text-secondary">
+                    {tag.name}
+                  </p>
 
-                <p className="mb-1 text-sm font-semibold text-gray-500 dark:text-text-primary">
-                  #{tag.slug}
-                </p>
+                  <p className="mb-1 text-sm font-semibold text-gray-500 dark:text-text-primary">
+                    #{tag.slug}
+                  </p>
 
-                <p className="text-sm text-gray-500 dark:text-text-primary">
-                  {Intl.NumberFormat("en-US", {
-                    notation: "compact",
-                    compactDisplay: "short",
-                  }).format(tag.articlesCount)}
-                  &nbsp;posts
-                </p>
+                  <p className="text-sm text-gray-500 dark:text-text-primary">
+                    {Intl.NumberFormat("en-US", {
+                      notation: "compact",
+                      compactDisplay: "short",
+                    }).format(tag.articlesCount)}
+                    &nbsp;posts
+                  </p>
+                </div>
+
+                <div className="flex h-12 w-12 items-center justify-center rounded-md bg-white dark:bg-primary-light">
+                  {tag.logo ? (
+                    <Image
+                      src={tag.logo}
+                      alt={tag.name}
+                      width={70}
+                      height={70}
+                      className="h-12 w-12 rounded-md object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
+                      <Hash className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
+                    </div>
+                  )}
+                </div>
               </div>
-
-              <div className="flex h-12 w-12 items-center justify-center rounded-md bg-white dark:bg-primary-light">
-                {tag.logo ? (
-                  <Image
-                    src={tag.logo}
-                    alt={tag.name}
-                    width={70}
-                    height={70}
-                    className="h-12 w-12 rounded-md object-cover"
-                  />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
-                    <Hashtag className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       )}
     </div>

@@ -7,7 +7,8 @@ import { toast } from "react-toastify";
 import { ArticleCard } from "~/component/card";
 import { ArticleLoading } from "~/component/loading";
 import useOnScreen from "~/hooks/useOnScreen";
-import { Clock, Filter, Fire } from "~/svgs";
+
+import { Clock, Filter, Flame } from "lucide-react";
 import type { DetailedTag, FilterData } from "~/types";
 import { api } from "~/utils/api";
 import { TagPageHeader } from "../../header";
@@ -36,12 +37,14 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const [following, setFollowing] = useState<{
     status: boolean;
     followersCount: string;
+    updated: boolean,
   }>({
     status: false,
     followersCount: "0",
+    updated: false,
   });
 
-  const { mutate: followToggle } = api.tags.followTagToggle.useMutation();
+  const { mutate: followToggle } = api.tags.followTag.useMutation();
   const { data: user } = useSession();
   const { data: articlesData, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getArticlesUsingTag.useInfiniteQuery(
     {
@@ -62,6 +65,8 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
+
+  console.log({ MainTagBody: articlesData })
 
   const articles = useMemo(() => articlesData?.pages.flatMap((page) => page.posts), [articlesData])
 
@@ -85,20 +90,19 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   };
 
   useEffect(() => {
-    if (tagDetails && user) {
-      const isFollowing = tagDetails.followers.find(
-        (follower) => follower.id === user.user.id
-      );
-      if (isFollowing) {
-        setFollowing({
+    if (tagDetails && user && following.updated === false) {
+      if (tagDetails.isFollowing) {
+        setFollowing(prev => ({
           status: true,
           followersCount: JSON.stringify(tagDetails.followersCount),
-        });
+          updated: prev.updated,
+        }));
       } else {
-        setFollowing({
+        setFollowing(prev => ({
           status: false,
           followersCount: JSON.stringify(tagDetails.followersCount),
-        });
+          updated: prev.updated,
+        }));
       }
     }
   }, [tagDetails, user]);
@@ -114,6 +118,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
         followersCount: following.status
           ? JSON.stringify(parseInt(following.followersCount) - 1)
           : JSON.stringify(parseInt(following.followersCount) + 1),
+        updated: true
       });
       followToggle({
         name: name,
@@ -157,10 +162,10 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                     : "btn-tab"
                     }`}
                 >
-                  <Fire
+                  <Flame
                     className={`h-4 w-4  ${tab === undefined || tab === "hot"
                       ? "fill-secondary"
-                      : "fill-gray-700 dark:fill-text-primary"
+                      : "stroke-gray-700 dark:stroke-text-secondary"
                       }`}
                   />
                   <span className={`text-sm font-semibold`}>Hot</span>
@@ -203,7 +208,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                       filter.data.tags.length > 0
                       ? "fill-secondary stroke-secondary"
                       : ""
-                      } fill-gray-700 dark:fill-text-primary`}
+                      } stroke-gray-700 dark:stroke-text-secondary`}
                   />
                 </button>
                 <span

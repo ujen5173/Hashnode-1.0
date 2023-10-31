@@ -74,7 +74,7 @@ export const CommentCard: FC<Props> = ({
       });
     }
 
-    const hasLiked = comment.likes.find((like) => like.id === user?.user.id)
+    const hasLiked = comment.likes.find((like) => like.userId === user?.user.id)
       ? true
       : false;
 
@@ -113,6 +113,7 @@ export const CommentCard: FC<Props> = ({
       // this timeout is to make sure the comment is added to the database before fetching the replies
       refetch()
         .then((res) => {
+          console.log({ res });
           setReplies(
             res.data || {
               totalReplies: 0,
@@ -144,6 +145,7 @@ export const CommentCard: FC<Props> = ({
       setGetReplyComment(comment.id);
       setTimeout(() => {
         void refetch().then((res) => {
+          console.log({ res })
           setReplies(
             res.data || {
               totalReplies: 0,
@@ -168,7 +170,7 @@ export const CommentCard: FC<Props> = ({
 
       <div className="my-2 flex gap-2">
         <Image
-          src={comment?.user?.profile}
+          src={comment?.user?.image as string}
           alt={comment?.user?.name}
           width={40}
           height={40}

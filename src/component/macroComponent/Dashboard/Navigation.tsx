@@ -1,8 +1,9 @@
 import { useClickOutside } from "@mantine/hooks";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { type ParsedUrlQuery } from "querystring";
 import { useState, type FC } from "react";
-import { Hamburger } from "~/svgs";
+
 import { dashboardNavigations } from "~/utils/constants";
 
 const Navigation: FC<{
@@ -25,7 +26,7 @@ const Navigation: FC<{
         ref={setControl}
         className="flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-border-light bg-white px-4 py-2 dark:border-border dark:bg-primary md:hidden"
       >
-        <Hamburger className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+        <Menu className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
         <span className="text-gray-700 dark:text-text-primary font-medium">Dashboard Menu</span>
       </div>
 

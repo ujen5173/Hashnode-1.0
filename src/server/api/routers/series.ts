@@ -1,15 +1,17 @@
 import { TRPCError } from "@trpc/server";
+import { and, eq, ilike, or } from "drizzle-orm";
 import slugify from "slugify";
 import { z } from "zod";
+import { series, users } from "~/server/db/schema";
 import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
 export const seriesRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const series = await ctx.prisma.series.findMany();
+    const result = await ctx.db.query.series.findMany();
 
-    return series;
+    return result;
   }),
 
   new: protectedProcedure
@@ -25,35 +27,31 @@ export const seriesRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { edit, ...restInput } = input;
       try {
-        const dbQuery = {
-          data: {
-            ...restInput,
-            author: {
-              connect: {
-                id: ctx.session.user.id,
-              },
-            },
-            slug: restInput.slug || slugify(restInput.title, slugSetting),
-          },
-          select: {
-            slug: true,
-          },
-        };
-
-        let series = null;
+        let result = null;
 
         if (edit) {
-          series = await ctx.prisma.series.update({
-            where: {
-              slug: restInput.slug,
-            },
-            ...dbQuery,
-          });
+          result = await ctx.db
+            .update(series)
+            .set({
+              ...restInput,
+              slug: restInput.slug || slugify(restInput.title, slugSetting),
+              authorId: ctx.session.user.id,
+            })
+            .where(
+              eq(
+                series.slug,
+                restInput.slug || slugify(restInput.title, slugSetting)
+              )
+            );
         } else {
-          series = await ctx.prisma.series.create(dbQuery);
+          result = await ctx.db.insert(series).values({
+            ...restInput,
+            slug: restInput.slug || slugify(restInput.title, slugSetting),
+            authorId: ctx.session.user.id,
+          });
         }
 
-        return !!series;
+        return !!result;
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;
@@ -73,17 +71,17 @@ export const seriesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const series = await ctx.prisma.series.findFirst({
-          where: {
-            slug: input.slug,
-          },
-          select: {
+        const result = await ctx.db.query.series.findFirst({
+          where: eq(series.slug, input.slug),
+          columns: {
             title: true,
             slug: true,
             description: true,
             cover_image: true,
+          },
+          with: {
             articles: {
-              select: {
+              columns: {
                 id: true,
                 title: true,
                 slug: true,
@@ -91,8 +89,10 @@ export const seriesRouter = createTRPCRouter({
                 cover_image: true,
                 read_time: true,
                 createdAt: true,
+              },
+              with: {
                 user: {
-                  select: {
+                  columns: {
                     username: true,
                   },
                 },
@@ -101,14 +101,14 @@ export const seriesRouter = createTRPCRouter({
           },
         });
 
-        if (!series) {
+        if (!result) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Series not found!",
           });
         }
 
-        return series;
+        return result;
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;
@@ -128,27 +128,35 @@ export const seriesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const series = await ctx.prisma.series.findMany({
-          where: {
-            author: {
-              username: input.username,
+        const result = await ctx.db.query.users
+          .findFirst({
+            where: eq(users.username, input.username),
+            columns: {
+              id: true,
             },
-          },
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-          },
-        });
+          })
+          .execute()
+          .then(async (user) => {
+            if (!user) return false;
 
-        if (!series) {
+            return await ctx.db.query.series.findMany({
+              where: eq(series.authorId, user?.id),
+              columns: {
+                id: true,
+                title: true,
+                slug: true,
+              },
+            });
+          });
+
+        if (!result) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Series not found",
           });
         }
 
-        return series;
+        return result;
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;
@@ -168,37 +176,21 @@ export const seriesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const series = await ctx.prisma.series.findMany({
-          where: {
-            AND: [
-              {
-                OR: [
-                  {
-                    title: {
-                      contains: input.query,
-                      mode: "insensitive",
-                    },
-                  },
-                  {
-                    description: {
-                      contains: input.query,
-                      mode: "insensitive",
-                    },
-                  },
-                ],
-              },
-              {
-                authorId: ctx.session.user.id,
-              },
-            ],
-          },
-          select: {
+        const result = await ctx.db.query.series.findMany({
+          where: and(
+            or(
+              ilike(series.title, input.query),
+              ilike(series.description, input.query)
+            ),
+            eq(series.authorId, ctx.session.user.id)
+          ),
+          columns: {
             id: true,
             title: true,
           },
         });
 
-        return series;
+        return result;
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;
@@ -218,12 +210,11 @@ export const seriesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const series = await ctx.prisma.series.delete({
-          where: {
-            id: input.id,
-          },
-        });
-        return !!series;
+        const result = await ctx.db
+          .delete(series)
+          .where(eq(series.id, input.id));
+
+        return !!result;
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;

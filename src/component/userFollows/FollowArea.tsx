@@ -3,13 +3,15 @@ import { useRouter } from "next/router";
 import { FollowCard, TagLoading } from "~/component";
 import { api } from "~/utils/api";
 
-const FollowArea = () => {
+const FollowArea = ({ userId }: {
+  userId: string
+}) => {
   const router = useRouter();
 
   const { data: followersData, isLoading: isFollowersLoading } =
     api.users.getFollowersList.useQuery(
       {
-        username: router.query.username as string,
+        userId,
       },
       {
         enabled: router.pathname?.includes("followers"),
@@ -20,7 +22,7 @@ const FollowArea = () => {
   const { data: followingData, isLoading: isFollowingLoading } =
     api.users.getFollowingList.useQuery(
       {
-        username: router.query.username as string,
+        userId,
       },
       {
         enabled: router.pathname?.includes("following"),
@@ -28,13 +30,15 @@ const FollowArea = () => {
       }
     );
 
-  const { mutate: follow } = api.users.followUserToggle.useMutation();
+  const { mutate: follow } = api.users.followUser.useMutation();
 
-  const followUser = (username: string) => {
+  const followUser = (userId: string) => {
     follow({
-      username,
+      userId,
     });
   }
+
+  console.log({ followersData })
 
   return (
     <div className="flex-1 py-6">

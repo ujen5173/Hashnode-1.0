@@ -4,8 +4,8 @@ import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { Bookmarkplus, Comment, Dots, Heart, Share } from "~/svgs";
-import Bookmarked from "~/svgs/Bookmarked";
+
+import { Bookmark, BookmarkMinus, Heart, MessageCircle, MoreVertical, Share2 } from "lucide-react";
 import type { Article } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -56,7 +56,7 @@ const ArticleActions: FC<Props> = ({
       });
     }
 
-    const hasLiked = article.likes.find((like) => like.id === user?.user.id)
+    const hasLiked = article.likes.find((like) => like.userId === user?.user.id)
       ? true
       : false;
 
@@ -134,7 +134,7 @@ const ArticleActions: FC<Props> = ({
               } flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border`}
           >
             <div className="flex items-center justify-center gap-2">
-              <Comment className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
+              <MessageCircle className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
             </div>
 
             <span>{commentsCount}</span>
@@ -148,15 +148,15 @@ const ArticleActions: FC<Props> = ({
             aria-label="icon"
             onClick={() => updateBookmark(article.id)}
             role="button"
-            className={`${bookmarks.find((bookmark) => bookmark.id === article.id)
+            className={`dark:hover:bg-border ${bookmarks.find((bookmark) => bookmark.id === article.id)
               ? "bg-secondary bg-opacity-20"
               : ""
               } btn-icon-large flex w-max items-center justify-center`}
           >
             {bookmarks.find((bookmark) => bookmark.id === article.id) ? (
-              <Bookmarked className="h-5 w-5" />
+              <BookmarkMinus className="h-6 w-6 stroke-gray-700 dark:stroke-text-primary" />
             ) : (
-              <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+              <Bookmark className="h-6 w-6 stroke-gray-700 dark:stroke-text-primary" />
             )}
           </button>
         </Tooltip>
@@ -186,7 +186,7 @@ const ArticleActions: FC<Props> = ({
                 className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
               >
                 <div className="flex items-center justify-center gap-2">
-                  <Share className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
+                  <Share2 className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
                 </div>
               </button>
             </div>
@@ -216,7 +216,7 @@ const ArticleActions: FC<Props> = ({
                 className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
               >
                 <div className="flex items-center justify-center gap-2">
-                  <Dots className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
+                  <MoreVertical className="h-5 w-5 fill-border dark:fill-text-primary md:h-6 md:w-6" />
                 </div>
               </button>
             </div>

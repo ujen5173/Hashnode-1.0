@@ -1,9 +1,10 @@
+import { ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
 import { toast } from "react-toastify";
-import { Redirect } from "~/svgs";
+
 import { api } from "~/utils/api";
 
 const Series = () => {
@@ -105,7 +106,7 @@ const SeriesCard: FC<{
 
       <div className="flex items-center gap-2">
         <Link href={`/dev/@${author}/series/${item.slug}`} className="inline-flex items-center gap-2 rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
-          <Redirect className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
+          <ExternalLink className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
 
           <span className="font-medium text-gray-500 dark:text-text-primary">
             View Series

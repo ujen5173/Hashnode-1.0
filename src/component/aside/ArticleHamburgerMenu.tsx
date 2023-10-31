@@ -1,7 +1,7 @@
+import { X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
-import { Times } from "~/svgs";
 import { type UserSimple } from "~/types";
 import { HashnodeSocials } from "~/utils/constants";
 
@@ -27,7 +27,7 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
           <header className="flex items-center justify-between border-b border-border border-border-light bg-light-bg p-6 shadow-md dark:border-border dark:bg-primary">
             <Link className="flex items-center gap-2" href="/">
               <Image
-                src={user?.profile || "/default_user.avif"}
+                src={user?.image || "/default_user.avif"}
                 alt={user?.name || "User"}
                 className="h-10 w-10 rounded-full object-cover"
                 width={180}
@@ -46,7 +46,7 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
               onClick={() => setMenu(false)}
               className="btn-icon-large flex"
             >
-              <Times className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+              <X className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
             </button>
           </header>
 
@@ -59,7 +59,7 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
               <ul className="mb-4 border-b border-border-light px-4 pb-4 dark:border-border">
                 {["Home", "Badges"].map((item, index) => (
                   <li key={index}>
-                    <Link href={`/${item.toLowerCase()}`}>
+                    <Link href={`/u/@${user?.username as string}`}>
                       <div className="rounded-md px-6 py-3 text-base font-medium tracking-wide text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
                         {item}
                       </div>

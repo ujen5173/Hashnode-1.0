@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
-import { Book } from "~/svgs";
+
+import { BookOpen } from "lucide-react";
 import { C, type ContextValue } from "~/utils/context";
 import { formatDate, limitText } from "~/utils/miniFunctions";
 import { type CardProps } from "./SimpleArticleCard";
@@ -31,7 +32,7 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
                 {formatDate(article.createdAt)}
               </p>
               <div className="flex items-center gap-2">
-                <Book className="h-4 w-4 fill-secondary" />
+                <BookOpen className="h-4 w-4 fill-secondary" />
                 <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
                   {article.read_time} min read
                 </p>

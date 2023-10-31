@@ -23,7 +23,7 @@ const Others = () => {
                   <Link
                     href={item.link}
                     key={index}
-                    className="flex w-[calc(100%/2-0.5rem)] items-center gap-2 text-gray-600 hover:text-secondary hover:underline dark:text-text-primary"
+                    className="flex w-[calc(100%/2-0.5rem)] text-sm items-center gap-2 text-gray-600 hover:text-secondary hover:underline dark:text-text-primary"
                   >
                     {item.name}
                   </Link>

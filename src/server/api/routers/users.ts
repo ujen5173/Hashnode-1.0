@@ -1,172 +1,173 @@
-import { NotificationTypes } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { type SocialHandles } from "~/types";
+import { articles, follow, users } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
-import { TRPCClientError } from "@trpc/client";
 
 export const usersRouter = createTRPCRouter({
-  followUserToggle: protectedProcedure
+  followUser: protectedProcedure
     .input(
       z.object({
-        username: z.string().trim(),
+        userId: z.string(),
+        // username: z.string().trim(),
+        // userId: z.string(),
+        // followingId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const { username } = input;
-
-        // Find the target user
-        const targetUser = await ctx.prisma.user.findUnique({
-          where: { username },
-          select: {
-            username: true,
-            followers: true,
-            followersCount: true,
+      // get following user data
+      const me = await ctx.db.query.users.findFirst({
+        where: eq(users.id, ctx.session?.user.id),
+        columns: {
+          id: true,
+          followingCount: true,
+        },
+        with: {
+          following: {
+            where: eq(follow.userId, input.userId),
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  followingCount: true,
+                },
+              },
+            },
           },
+        },
+      });
+      const otherUser = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.userId),
+        columns: {
+          id: true,
+          followersCount: true,
+        },
+        with: {
+          followers: {
+            where: eq(follow.followingId, ctx.session?.user.id),
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  followersCount: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!me || !otherUser) {
+        return {
+          success: false,
+          message: "User not found",
+          status: 400,
+        };
+      }
+
+      const isFollowing = me?.following.length > 0;
+
+      if (
+        isFollowing &&
+        (me.following[0]?.user?.id || otherUser.followers[0]?.user?.id)
+      ) {
+        console.log("UnFollowing condition");
+        // unfollow the user
+        await ctx.db
+          .delete(follow)
+          .where(
+            and(
+              eq(follow.userId, input.userId),
+              eq(follow.followingId, ctx.session?.user.id)
+            )
+          );
+
+        // update the following count
+        await ctx.db
+          .update(users)
+          .set({
+            followingCount:
+              +(otherUser.followers[0]?.user?.followersCount ?? 1) - 1,
+          })
+          .where(eq(users.id, ctx.session?.user.id));
+
+        await ctx.db
+          .update(users)
+          .set({
+            followersCount: +(me.following[0]?.user?.followingCount ?? 1) - 1,
+          })
+          .where(eq(users.id, input.userId));
+
+        return {
+          success: false,
+          message: "User unfollowed successfully",
+          status: 400,
+        };
+      } else {
+        console.log("Following condition");
+        // follow the user
+        await ctx.db.insert(follow).values({
+          userId: input.userId,
+          followingId: ctx.session?.user.id,
         });
 
-        if (!targetUser) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "User not found",
-          });
-        }
+        // update the following count
+        await ctx.db
+          .update(users)
+          .set({
+            followingCount:
+              +(otherUser.followers[0]?.user?.followersCount ?? 0) + 1,
+          })
+          .where(eq(users.id, ctx.session?.user.id));
 
-        const currentUser = ctx.session.user;
-
-        if (targetUser.username === currentUser.username) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "You cannot follow yourself",
-          });
-        }
-
-        // Check if the current user is already following the target user
-        const isFollowing = targetUser.followers.some(
-          (follower) => follower.id === currentUser.id
-        );
-
-        if (isFollowing) {
-          // Unfollow the target user
-          await Promise.all([
-            ctx.prisma.user.update({
-              where: { username: currentUser.username },
-              data: {
-                following: {
-                  disconnect: {
-                    username,
-                  },
-                },
-                followingCount: {
-                  decrement: 1,
-                },
-              },
-            }),
-            ctx.prisma.user.update({
-              where: { username },
-              data: {
-                followers: {
-                  disconnect: {
-                    username: currentUser.username,
-                  },
-                },
-                followersCount: {
-                  decrement: 1,
-                },
-              },
-            }),
-          ]);
-
-          return {
-            success: true,
-            message: "User Unfollowed",
-            status: 200,
-          };
-        } else {
-          // Follow the target user
-          await Promise.all([
-            ctx.prisma.user.update({
-              where: { username },
-              data: {
-                followers: {
-                  connect: {
-                    id: currentUser.id,
-                  },
-                },
-                followersCount: {
-                  increment: 1,
-                },
-              },
-            }),
-            ctx.prisma.user.update({
-              where: { username: currentUser.username },
-              data: {
-                following: {
-                  connect: {
-                    username,
-                  },
-                },
-                followingCount: {
-                  increment: 1,
-                },
-              },
-            }),
-            ctx.prisma.notification.create({
-              data: {
-                type: NotificationTypes.FOLLOW,
-                from: {
-                  connect: {
-                    id: currentUser.id,
-                  },
-                },
-                user: {
-                  connect: {
-                    username,
-                  },
-                },
-              },
-            }),
-          ]);
-
-          return {
-            success: true,
-            message: "User Followed",
-            status: 200,
-          };
-        }
-      } catch (err) {
-        console.log({ err });
-        if (err instanceof TRPCClientError) {
-          throw err;
-        }
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong, try again later",
-        });
+        await ctx.db
+          .update(users)
+          .set({
+            followersCount: +(me.following[0]?.user?.followingCount ?? 0) + 1,
+          })
+          .where(eq(users.id, input.userId));
+        return {
+          success: false,
+          message: "User followed successfully",
+          status: 400,
+        };
       }
     }),
 
   getUser: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.user.findUnique({
-      where: {
-        id: ctx.session.user.id,
-      },
-      include: {
-        followers: {
-          select: {
-            username: true,
+    const user = await ctx.db.query.users.findFirst({
+      where: eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+      with: {
+        following: {
+          columns: {
+            userId: true,
           },
         },
-        following: {
-          select: {
-            username: true,
+        followers: {
+          columns: {
+            userId: true,
           },
         },
       },
     });
+    return user;
   }),
+
+  createUser: publicProcedure
+    .input(
+      z.object({
+        name: z.string().trim(),
+        username: z.string().trim(),
+        email: z.string().trim(),
+        image: z.string().trim(),
+        tagline: z.string().trim(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.insert(users).values(input).returning();
+
+      return user;
+    }),
 
   getUserByUsername: publicProcedure
     .input(
@@ -175,37 +176,48 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.findUnique({
-        where: {
-          username: input.username.slice(1, input.username.length),
-        },
-        include: {
+      // const user = await ctx.db
+      //   .select()
+      //   .from(users)
+      //   .leftJoin(follower, eq(follower.followerId, users.id))
+      //   .where(
+      //     eq(users.username, input.username.slice(1, input.username.length))
+      //   );
+
+      // console.log(user);
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(
+          users.username,
+          input.username.slice(1, input.username.length)
+        ),
+        with: {
+          following: {
+            columns: {
+              userId: false,
+              followingId: false,
+            },
+            with: {
+              user: true,
+            },
+          },
           followers: {
-            select: {
-              id: true,
+            columns: {
+              userId: false,
+              followingId: false,
+            },
+            with: {
+              following: true,
+            },
+          },
+          handle: {
+            with: {
+              customTabs: true,
             },
           },
         },
       });
 
-      let isFollowing = false;
-
-      if (ctx.session !== null) {
-        isFollowing = user?.followers.some(
-          (follower) => follower.id === ctx?.session?.user.id
-        )
-          ? true
-          : false;
-      }
-
-      if (!user) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "User not found",
-        });
-      }
-
-      return { ...user, isFollowing };
+      return user;
     }),
 
   updateUser: protectedProcedure
@@ -215,7 +227,7 @@ export const usersRouter = createTRPCRouter({
         username: z.string().trim(),
         email: z.string().trim(),
         location: z.string().trim(),
-        profile: z.string().trim(),
+        image: z.string().trim(),
         tagline: z.string().trim(),
         available: z.string().trim(),
         cover_image: z.string().trim(),
@@ -234,187 +246,189 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const newUser = await ctx.prisma.user.update({
-        where: {
-          id: ctx.session.user.id,
-        },
-        data: {
-          name: input.name,
-          username: input.username,
-          email: input.email,
-          location: input.location,
-          profile: input.profile,
-          tagline: input.tagline,
-          available: input.available,
-          cover_image: input.cover_image,
-          bio: input.bio,
-          skills: input.skills,
-          social: input.social,
-        },
-        select: {
-          name: true,
-          username: true,
-          email: true,
-          location: true,
-          profile: true,
-          tagline: true,
-          available: true,
-          cover_image: true,
-          bio: true,
-          skills: true,
-          social: true,
-        },
-      });
+      const updatedUser = await ctx.db
+        .update(users)
+        .set(input)
+        .where(eq(users.id, ctx.session.user.id))
+        .returning({
+          name: users.name,
+          username: users.username,
+          email: users.email,
+          location: users.location,
+          image: users.image,
+          tagline: users.tagline,
+          stripeSubscriptionStatus: users.stripeSubscriptionStatus,
+          available: users.available,
+          cover_image: users.cover_image,
+          bio: users.bio,
+          skills: users.skills,
+          social: users.social,
+        });
 
       return {
         success: true,
-        message: "User Updated",
+        message: "User updated successfully",
         status: 200,
-        data: {
-          ...newUser,
-          social: JSON.parse(JSON.stringify(newUser.social)) as SocialHandles,
-          skills: newUser.skills.join(", "),
-        },
+        data: updatedUser,
       };
     }),
 
   getFollowersList: publicProcedure
     .input(
       z.object({
-        username: z.string().trim(),
+        userId: z.string().trim(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const followers = await ctx.prisma.user.findMany({
-        where: {
-          following: {
-            some: {
-              username: input.username.slice(1, input.username.length),
-            },
-          },
-        },
-        select: {
+      const result = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.userId),
+        columns: {
           id: true,
-          name: true,
-          tagline: true,
-          username: true,
-          profile: true,
         },
-        take: 20,
-      });
-
-      const authorUser = await ctx.prisma.user.findUnique({
-        where: {
-          id: ctx.session?.user?.id,
-        },
-        select: {
-          following: {
-            select: {
-              id: true,
+        with: {
+          followers: {
+            limit: 20,
+            columns: {
+              followingId: false,
+              userId: false,
             },
-          },
-        },
-      });
+            with: {
+              following: {
+                columns: {
+                  id: true,
+                  username: true,tagline: true,
+                  name: true,
+                  image: true,
+                },
+                ...(ctx?.session?.user?.id ? ({with: {
+                  following: {
+                    where: eq(follow.userId, ctx?.session?.user?.id ),
+                    columns: {
+                      userId: true,
+                    },
+                  },
+                }}) : {})
+               }
+            }
+          }
+        }
+       }).then((e: {
+        id: string;
+        followers: {
+            following: {
+              followers?: {
+                userId: string;
+              }[];
+                id: string;
+                tagline: string | null;
+                name: string;
+                username: string;
+                image: string | null;
+            };
+        }[];
+    } | undefined) => e?.followers.map(f => {
+      const {followers, ...rest} = f.following;
+      return ({...rest, isFollowing: (followers ?? []).length > 0})
+      }));
 
-      const updatedFollowers = followers.map((user) => {
-        return {
-          ...user,
-          isFollowing: authorUser?.following.some(
-            (following) => following.id === user.id
-          )
-            ? true
-            : false,
-        };
-      });
-
-      return updatedFollowers;
+      return result;
     }),
 
   getFollowingList: publicProcedure
     .input(
       z.object({
-        username: z.string().trim(),
+        userId: z.string().trim(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const following = await ctx.prisma.user.findMany({
-        where: {
-          followers: {
-            some: {
-              username: input.username.slice(1, input.username.length),
-            },
-          },
-        },
-        select: {
+       const result = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.userId),
+        columns: {
           id: true,
-          name: true,
-          tagline: true,
-          username: true,
-          profile: true,
         },
-        take: 20,
-      });
-      const authorUser = await ctx.prisma.user.findUnique({
-        where: {
-          id: ctx.session?.user?.id,
-        },
-        select: {
+        with: {
           following: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
+            limit: 20,
+            columns: {
+              followingId: false,
+              userId: false,
+            }, 
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  username: true,
+                  name: true,
+                  tagline: true,
+                  image: true,
+                },
+                ...(ctx?.session?.user?.id ? ({with: {
+                  followers: {
+                    where: eq(follow.followingId, ctx?.session?.user?.id ),
+                    columns: { 
+                      userId: true,
+                    },
+                  },
+                }}) : {})
+               }
+            }
+          }
+        }
+      }).then((e: {
+        id: string;
+        following: {
+            user: {
+              followers?: {
+                userId: string;
+              }[];
+                id: string;
+                name: string;
+                username: string;
+                tagline: string | null;
+                image: string | null;
+            };
+        }[];
+    } | undefined) => e?.following.map(f => {
+      const {followers, ...rest} = f.user;
+      return ({...rest, isFollowing: (followers ?? []).length > 0})
+      }));
 
-      const updatedFollowing = following.map((user) => {
-        return {
-          ...user,
-          isFollowing: authorUser?.following.some(
-            (following) => following.id === user.id
-          )
-            ? true
-            : false,
-        };
-      });
-
-      return updatedFollowing;
+      return result;
     }),
 
   getUserDashboardRoadmapDetails: protectedProcedure.query(async ({ ctx }) => {
-    const data = await ctx.prisma.user.findUnique({
-      where: {
-        id: ctx.session.user.id,
-      },
-      select: {
-        articles: {
-          select: {
-            id: true,
-          },
-          take: 1,
-        },
+    const data = await ctx.db.query.users.findFirst({
+      where: eq(users.id, ctx.session.user?.id),
+      with: {
         handle: {
-          select: {
+          columns: {
             appearance: true,
           },
         },
       },
     });
 
-    return data;
-  }),
-  subscriptionStatus: protectedProcedure.query(async ({ ctx }) => {
-    const { session, prisma } = ctx;
+    const articlesData = await ctx.db.query.articles.findFirst({
+      where: eq(articles.userId, ctx.session.user?.id),
+      columns: {
+        id: true,
+      },
+    });
 
-    if (!session.user?.id) {
+    return {
+      ...data,
+      articles: articlesData,
+    };
+  }),
+
+  subscriptionStatus: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.session.user?.id) {
       throw new Error("Not authenticated");
     }
 
-    const data = await prisma.user.findUnique({
-      where: {
-        id: session.user?.id,
-      },
-      select: {
+    const data = await ctx.db.query.users.findFirst({
+      where: eq(users.id, ctx.session.user?.id),
+      columns: {
         stripeSubscriptionStatus: true,
       },
     });

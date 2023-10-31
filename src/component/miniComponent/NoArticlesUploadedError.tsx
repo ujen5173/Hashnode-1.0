@@ -1,15 +1,16 @@
+import { Pencil } from "lucide-react";
 import { type Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
-import { Pen } from "~/svgs";
+
 import { C, type ContextValue } from "~/utils/context";
 
 interface Props {
   user: Session | null;
   author: {
     name: string;
-    profile: string;
+    image: string;
     username: string;
     handle: {
       about: string;
@@ -46,7 +47,7 @@ const NoArticlesUploadedError: FC<Props> = ({ user, author }) => {
             <Link href="/article/new" className="mx-auto block">
               <button className="btn-filled">
                 <span className="flex items-center gap-2">
-                  <Pen className="h-5 w-5 fill-none stroke-gray-100" />
+                  <Pencil className="h-5 w-5 fill-none stroke-gray-100" />
                   <span className="tracking-wider">Write an article</span>
                 </span>
               </button>

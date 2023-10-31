@@ -1,8 +1,10 @@
+import { Check, Hash, Newspaper, Pencil, Link as PermaLink, Plus, Twitter, Users2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
 import { toast } from "react-toastify";
-import { Add, Chain, Check, Feed, Group, Hashtag, Pen, Twitter } from "~/svgs";
+import { env } from "~/env.mjs";
+
 import type { DetailedTag } from "~/types";
 
 interface Props {
@@ -28,7 +30,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
           />
         ) : (
           <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
-            <Hashtag className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
+            <Hash className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
           </div>
         )}
 
@@ -52,12 +54,12 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
         >
           {following.status ? (
             <>
-              <Check className="h-5 w-5 fill-secondary" />
+              <Check className="h-5 w-5 stroke-secondary" />
               <span>Following</span>
             </>
           ) : (
             <>
-              <Add className="h-5 w-5 fill-secondary" />
+              <Plus className="h-5 w-5 stroke-secondary" />
               <span>Follow Tag</span>
             </>
           )}
@@ -65,7 +67,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
 
         <Link href={`/article/new?tag=${tagDetails.name}`} className="w-full sm:w-max">
           <button className="btn-filled flex w-full items-center justify-center gap-2 text-white md:w-max">
-            <Pen className="h-5 w-5 fill-white" />
+            <Pencil className="h-5 w-5  fill-none stroke-gray-700 dark:stroke-text-secondary" />
             Write An Article
           </button>
         </Link>
@@ -73,7 +75,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
 
       <div className="flex flex-wrap items-center justify-center gap-4">
         <div className="flex items-center gap-4 text-gray-700 dark:text-text-secondary">
-          <Group className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+          <Users2 className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
           <span className="flex items-center gap-1">
             <span>
               {Intl.NumberFormat("en-US", {
@@ -89,7 +91,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
         <span className="text-gray-700 dark:text-text-secondary">·</span>
 
         <div className="flex items-center gap-4 text-gray-700 dark:text-text-secondary">
-          <Feed className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+          <Newspaper className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
 
           <span className="flex items-center gap-1">
             <span>
@@ -105,13 +107,13 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
         <div className="flex items-center gap-2">
           <a
             title="Share Tag on Twitter"
-            href={`https://twitter.com/intent/tweet?text=${process.env.NEXT_PUBLIC_VERCEL_URL as string
+            href={`https://twitter.com/intent/tweet?text=${env.NEXT_PUBLIC_VERCEL_URL
               }/tag/${tagDetails.slug}`}
             target="_blank"
             rel="noopener noreferrer"
           >
             <button className="btn-icon-large flex">
-              <Twitter className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+              <Twitter className="h-5 w-5 stroke-none fill-gray-700 dark:fill-text-secondary" />
             </button>
           </a>
 
@@ -126,7 +128,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
               toast.success("Copied to clipboard!");
             }}
           >
-            <Chain className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+            <PermaLink className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
           </button>
         </div>
       </div>

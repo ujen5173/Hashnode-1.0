@@ -1,6 +1,8 @@
 import { TRPCError } from "@trpc/server";
+import { and, desc, eq, gt, ilike, inArray, or } from "drizzle-orm";
 import slugify from "slugify";
 import { z } from "zod";
+import { tags, tagsToUsers, users } from "~/server/db/schema";
 import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
@@ -8,11 +10,9 @@ import { publicProcedure } from "./../trpc";
 export const tagsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     try {
-      return await ctx.prisma.tag.findMany({
-        orderBy: {
-          followersCount: "desc",
-        },
-        take: 10,
+      return await ctx.db.query.tags.findMany({
+        orderBy: [desc(tags.followersCount)],
+        limit: 10,
       });
     } catch (err) {
       throw new TRPCError({
@@ -26,13 +26,9 @@ export const tagsRouter = createTRPCRouter({
     .input(z.object({ slug: z.array(z.string().trim()) }))
     .query(async ({ ctx, input }) => {
       try {
-        return await ctx.prisma.tag.findMany({
-          where: {
-            slug: {
-              in: input.slug,
-            },
-          },
-          select: {
+        return await ctx.db.query.tags.findMany({
+          where: inArray(tags.slug, input.slug),
+          columns: {
             name: true,
           },
         });
@@ -52,24 +48,16 @@ export const tagsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const result = await ctx.prisma.tag.findMany({
-          where: {
-            name: {
-              contains: input.query,
-              mode: "insensitive",
-            },
-          },
-          orderBy: {
-            followersCount: "desc",
-          },
-          take: 5,
-          select: {
-            // id: true,
-            name: true,
-            slug: true,
-            articlesCount: true,
-            logo: true,
-          },
+        const result = await ctx.db.query.tags.findMany({
+          where: or(
+            ilike(tags.name, `%${input.query}%`),
+            ilike(tags.slug, `%${input.query}%`),
+            ilike(tags.description, `%${input.query}%`)
+          ),
+          columns: { name: true, slug: true, articlesCount: true, logo: true },
+
+          orderBy: [desc(tags.followersCount)],
+          limit: 5,
         });
 
         if (result.length > 0) return result;
@@ -90,7 +78,7 @@ export const tagsRouter = createTRPCRouter({
       }
     }),
 
-  followTagToggle: protectedProcedure
+  followTag: protectedProcedure
     .input(
       z.object({
         name: z.string().trim(),
@@ -98,14 +86,17 @@ export const tagsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const tag = await ctx.prisma.tag.findUnique({
-          where: {
-            name: input.name,
+        const tag = await ctx.db.query.tags.findFirst({
+          where: eq(tags.name, input.name),
+          columns: {
+            id: true,
+            followersCount: true,
           },
-          select: {
+          with: {
             followers: {
-              select: {
-                id: true,
+              // where: eq(tagsToUsers.userId, ctx.session.user.id),
+              columns: {
+                userId: true,
               },
             },
           },
@@ -118,36 +109,32 @@ export const tagsRouter = createTRPCRouter({
           });
         }
 
-        const isFollowing = tag.followers.some(
-          (follower) => follower.id === ctx.session.user.id
-        );
+        const isFollowing = tag.followers.length > 0;
 
-        const data = {
-          followers: {
-            connect: isFollowing
-              ? undefined
-              : {
-                  id: ctx.session.user.id,
-                },
-            disconnect: isFollowing
-              ? {
-                  id: ctx.session.user.id,
-                }
-              : undefined,
-          },
-        };
+        if (isFollowing) {
+          await ctx.db
+            .delete(tagsToUsers)
+            .where(
+              and(
+                eq(tagsToUsers.tagId, tag.id),
+                eq(tagsToUsers.userId, ctx.session.user.id)
+              )
+            );
+        } else {
+          await ctx.db.insert(tagsToUsers).values({
+            tagId: tag.id,
+            userId: ctx.session.user.id,
+          });
+        }
 
-        await ctx.prisma.tag.update({
-          where: {
-            name: input.name,
-          },
-          data: {
-            ...data,
-            followersCount: {
-              [isFollowing ? "decrement" : "increment"]: 1,
-            },
-          },
-        });
+        await ctx.db
+          .update(tags)
+          .set({
+            followersCount: isFollowing
+              ? tag.followersCount - 1
+              : tag.followersCount + 1,
+          })
+          .where(eq(tags.name, input.name));
 
         return {
           success: true,
@@ -155,6 +142,7 @@ export const tagsRouter = createTRPCRouter({
           status: 200,
         };
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -171,7 +159,7 @@ export const tagsRouter = createTRPCRouter({
         })
         .optional()
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {  
       try {
         const startDate = new Date();
         const endDate = new Date();
@@ -184,62 +172,44 @@ export const tagsRouter = createTRPCRouter({
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
 
-        const tags = await ctx.prisma.tag.findMany({
-          where: {
-            ...(input?.variant === "any"
-              ? {
-                  articlesCount: {
-                    gt: 0,
+        const res = await ctx.db.query.tags.findMany({
+          limit: input?.limit || 6,
+          where: and(
+            gt(tags.articlesCount, 0),
+          ),
+          orderBy: [desc(tags.articlesCount), desc(tags.followersCount)],
+          with: {
+            articles: {
+              columns: {
+                articleId: false,
+                tagId: false,
+              },
+              with: {
+                article: {
+                  columns: {
+                    createdAt: true,
                   },
-                }
-              : {
-                  AND: [
-                    {
-                      articles: {
-                        some: {
-                          createdAt: {
-                            gte: startDate,
-                            lte: endDate,
-                          },
-                        },
-                      },
-                    },
-                    {
-                      articlesCount: {
-                        gt: 0,
-                      },
-                    },
-                  ],
-                }),
-          },
-          take: input?.limit || 6,
-          orderBy: [
-            {
-              articlesCount: "desc",
+                },
+              },
             },
-            {
-              followersCount: "desc",
-            },
-          ],
-          include: {
-            articles: true,
           },
+        }).then(res => {
+          const result = res.map(tag => {
+             return {
+              ...tag,
+              articles: input?.variant === "any" ? tag.articles : tag.articles.filter(article => article.article.createdAt >= startDate && article.article.createdAt <= endDate)
+            }
+          });
+           return result;
         });
-
-        const tagData = tags.map((tag) => {
+ 
+        const tagData = res.map((tag) => {
           return {
             id: tag.id,
             name: tag.name,
             slug: tag.slug,
             logo: tag.logo,
-            articlesCount:
-              input?.variant === "any"
-                ? tag.articles.length
-                : tag.articles.filter(
-                    (article) =>
-                      article.createdAt >= startDate &&
-                      article.createdAt <= endDate
-                  ).length,
+            articlesCount: tag.articles.length
           };
         });
 
@@ -274,32 +244,63 @@ export const tagsRouter = createTRPCRouter({
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
 
-        const tags = await ctx.prisma.tag.findMany({
-          where: {
-            followers: {
-              some: {
-                id: ctx.session.user.id,
+        const result = await ctx.db.query.users.findFirst({
+          where: eq(users.id, ctx.session.user.id),
+          columns: {
+            id: true,
+          },
+          with: {
+            followingTags: {
+              with: {
+                tag: {
+                  columns: {
+                    description: false,
+                  },
+                  with: {
+                    articles: {
+                      columns: {
+                        articleId: false,
+                        tagId: false,
+                      },
+                      with: {
+                        article: {
+                          columns: {
+                            createdAt: true,
+                          },
+                        },
+                      }
+                    }
+                  }
+                }
               },
-            },
-          },
-          take: input?.limit || 6,
-          orderBy: {
-            followersCount: "desc",
-          },
-          include: {
-            articles: true,
-          },
+              columns: {
+                tagId: false,
+                userId: false,
+              }
+            }
+          }
+        }).then(res => {
+          if (res) {
+            return res.followingTags.map(e => e.tag);
+          } else {
+            return undefined;
+          }
         });
 
-        const tagData = tags.map((tag) => {
+        if (!result) {
+          return []
+        }
+
+        const tagData = result.map((tag) => {
           return {
             id: tag.id,
             name: tag.name,
             slug: tag.slug,
             logo: tag.logo,
-            articlesCount: tag.articles.filter(
+            articlesCount:  input?.variant === "any" ? tag.articlesCount :  tag.articles.filter(
               (article) =>
-                article.createdAt >= startDate && article.createdAt <= endDate
+                article.article.createdAt >= startDate &&
+                article.article.createdAt <= endDate
             ).length,
           };
         });
@@ -325,24 +326,24 @@ export const tagsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const tag = await ctx.prisma.tag.findUnique({
-          where: {
-            name: input.name,
+        const tag = await ctx.db.query.tags.findFirst({
+          where: eq(tags.name, input.name),
+          columns: {
+            id: true,
           },
         });
+
         if (tag) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Tag already exists",
           });
         } else {
-          return await ctx.prisma.tag.create({
-            data: {
-              name: input.name,
-              logo: input.logo,
-              description: input.description,
-              slug: slugify(input.name, slugSetting),
-            },
+          return await ctx.db.insert(tags).values({
+            name: input.name,
+            logo: input.logo,
+            description: input.description,
+            slug: slugify(input.name, slugSetting),
           });
         }
       } catch (err) {

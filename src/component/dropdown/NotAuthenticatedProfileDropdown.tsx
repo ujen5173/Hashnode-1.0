@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const NotAuthenticatedProfileDropdown = React.forwardRef<HTMLDivElement>(
-  ({}, ref) => {
+const NotAuthenticatedimageDropdown = React.forwardRef<HTMLDivElement>(
+  ({ }, ref) => {
     return (
       <div
         ref={ref}
@@ -40,6 +40,6 @@ const NotAuthenticatedProfileDropdown = React.forwardRef<HTMLDivElement>(
   }
 );
 
-NotAuthenticatedProfileDropdown.displayName = "NotAuthenticatedProfileDropdown";
+NotAuthenticatedimageDropdown.displayName = "NotAuthenticatedimageDropdown";
 
-export default NotAuthenticatedProfileDropdown;
+export default NotAuthenticatedimageDropdown;

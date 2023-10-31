@@ -34,7 +34,7 @@ const ReplyDetails: FC<Props> = ({
           onChange={(e) => setReplyText(e.target.value)}
         />
 
-        <div className="flex-end flex justify-end gap-2">
+        <div className="flex-end flex justify-end gap-2 p-2">
           <button
             className={`btn-filled ${publishing ? "cursor-not-allowed opacity-40" : ""
               }`}

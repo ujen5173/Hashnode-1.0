@@ -1,5 +1,6 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
+import { Bell, Check, Plus, Search, Settings, Sun } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,14 +12,6 @@ import {
 } from "~/component/dropdown";
 import { Notification } from "~/component/miniComponent";
 import { FollowContext } from "~/pages/u/[username]/[slug]";
-import {
-  Check,
-  Follow,
-  Notification as NotificationSVG,
-  Search,
-  Settings,
-  Sun
-} from "~/svgs";
 import { type UserSimple } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -75,7 +68,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
     setCount(data || 0);
   }, [error, data]);
 
-  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+  const { mutate: followToggle } = api.users.followUser.useMutation();
 
   const followUser = () => {
     if (!user) {
@@ -86,7 +79,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
     setFollowing((prev) => !prev);
 
     followToggle({
-      username: author.username,
+      userId: author.id,
     });
   };
 
@@ -123,7 +116,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
               role="button"
               className="btn-icon flex h-10 w-10"
             >
-              <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+              <Bell className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
             </button>
 
             {count > 0 && (
@@ -148,7 +141,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
         {user?.user.username === author?.username ? (
           <Link href={`/${user?.user.id}/dashboard`}>
             <button className="btn-filled flex w-full items-center justify-center gap-2 text-secondary md:w-max">
-              <Settings className="h-5 w-5 fill-white" />
+              <Settings className="h-5 w-5 stroke-white" />
               Dashboard
             </button>
           </Link>
@@ -159,12 +152,12 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
           >
             {following ? (
               <>
-                <Check className="h-5 w-5 fill-secondary" />
+                <Check className="h-5 w-5 stroke-secondary" />
                 <span>Following</span>
               </>
             ) : (
               <>
-                <Follow className="h-5 w-5 fill-secondary" />
+                <Plus className="h-5 w-5 stroke-secondary" />
                 <span>Follow User</span>
               </>
             )}
@@ -173,13 +166,13 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
       </div>
 
       <button
-        aria-label="profile"
+        aria-label="image"
         role="button"
         className="relative rounded-full"
       >
         <div ref={setControl}>
           <Image
-            src={user?.user.profile || "/default_user.avif"}
+            src={user?.user.image || "/default_user.avif"}
             alt={user?.user.name || "Guest User"}
             width={100}
             height={100}

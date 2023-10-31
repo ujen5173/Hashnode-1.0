@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -5,11 +6,12 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
-import useOnScreen from "~/hooks/useOnScreen";
 import AuthorBlog from "~/SEO/AuthorBlog.seo";
+import { AuthorBlogHeader, Grid, Magazine, Stacked } from "~/component";
+import useOnScreen from "~/hooks/useOnScreen";
 import { authOptions } from "~/server/auth";
-import { prisma } from "~/server/db";
+import db from "~/server/db";
+import { handles } from "~/server/db/schema";
 import { api } from "~/utils/api";
 
 export interface BlogSocial {
@@ -38,7 +40,7 @@ const AuthorBlogs: NextPage<{
     id: string;
     name: string;
     username: string;
-    profile: string;
+    image: string;
     bio: string;
     handle: {
       id: string;
@@ -70,7 +72,7 @@ const AuthorBlogs: NextPage<{
   const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } =
     api.posts.getAuthorArticlesByHandle.useInfiniteQuery(
       {
-        handle: router.query.username
+        handleDomain: router.query.username
           ? (router.query?.username.slice(
             1,
             router.query?.username.length
@@ -99,9 +101,17 @@ const AuthorBlogs: NextPage<{
   }, [reachedBottom]);
 
   const articles = useMemo(
-    () => data?.pages.flatMap((page) => page.posts),
-    [data]
-  );
+    () => {
+      const newData = data?.pages.flatMap((page) => page.posts) || [];
+      const transformedPosts = newData?.map(({ user, ...rest }) => {
+        const { articles, ...restUserData } = user;
+        return articles.map(e => ({ ...e, user: restUserData }))
+      });
+      return transformedPosts[0];
+    }, [data]);
+
+  console.log(articles)
+
   return (
     <>
       <AuthorBlog author={user} />
@@ -165,7 +175,7 @@ const AuthorBlogs: NextPage<{
         }[appearance?.layout || "MAGAZINE"]
       }
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };
@@ -174,35 +184,51 @@ export default AuthorBlogs;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
-  const username = context.query.username as string;
+  const handleDomain = context.query.username as string;
 
-  const user = await prisma.user.findFirst({
-    where: {
-      handle: {
-        handle: username.slice(1, username.length),
-      },
+  const user = await db.query.handles.findFirst({
+    where: eq(handles.handle, handleDomain.slice(1, handleDomain.length)),
+    columns: {
+      about: false,
+      handle: false,
+      id: false,
+      social: false,
+      appearance: false,
+      name: false,
+      userId: false,
     },
-    select: {
-      id: true,
-      name: true,
-      username: true,
-      profile: true,
-      bio: true,
-      handle: {
-        select: {
+    with: {
+      user: {
+        columns: {
           id: true,
-          handle: true,
           name: true,
-          customTabs: true,
-          about: true,
-          social: true,
+          username: true,
+          image: true,
+          bio: true,
+        },
+        with: {
+          handle: {
+            columns: {
+              id: true,
+              handle: true,
+              name: true,
+              about: true,
+              social: true,
+            },
+            with: {
+              customTabs: true,
+            }
+          },
+          followers: {
+            columns: {
+              followingId: true,
+              userId: false,
+            }
+          }
         },
       },
-      followers: {
-        select: { id: true },
-      },
     },
-  });
+  }).then(res => ({ ...res?.user, followers: res?.user?.followers?.map(follower => ({ id: follower.followingId })) }));
 
   if (!user) {
     return {
@@ -218,7 +244,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
           username: string;
-          profile: string;
+          image: string;
           handle: {
             handle: string;
             name: string;
@@ -272,7 +298,7 @@ export const AuthorBlogNavigation: FC<{ tabs: CustomTabs[] }> = ({ tabs }) => {
 export const AuthorArea: FC<{
   author: {
     name: string;
-    profile: string;
+    image: string;
     username: string;
     handle: {
       about: string;
@@ -284,10 +310,10 @@ export const AuthorArea: FC<{
       <div className="mx-auto flex max-w-[1000px] flex-col items-center justify-center px-4 py-14 md:py-16">
         <div className="flex flex-col items-center justify-center gap-2">
           <Image
-            src={author.profile || ""}
+            src={author.image || ""}
             width={120}
             height={120}
-            alt="User Profile"
+            alt="User image"
             className="h-16 md:h-20 w-16 md:w-20 rounded-full object-cover"
           />
           <h1 className="mb-4 text-2xl font-semibold text-gray-900 dark:text-text-secondary">

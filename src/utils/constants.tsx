@@ -1,33 +1,7 @@
+import { Book, Bookmark, Compass, Github, Globe, Heart, Instagram, Laptop2, LogOut, MessageCircle, Newspaper, Palette, Pencil, Search, Settings, Table2, Twitter, User, Users, Youtube } from "lucide-react";
 import { v4 as uuid } from "uuid";
-import {
-  Bookmark,
-  Bookmarkalt,
-  Comment,
-  Customize,
-  Dailydev,
-  Discord,
-  Document,
-  Exit,
-  Explore,
-  Feed,
-  Github,
-  Global,
-  Hackathon,
-  Heart,
-  Instagram,
-  LogonoText,
-  Manage,
-  Mastodon,
-  Navbar,
-  Pen,
-  Search,
-  Series,
-  Settings,
-  Team,
-  Twitter,
-  User as UserSVG,
-  Youtube
-} from "~/svgs";
+import { Dailydev, Discord, LogonoText, Mastodon } from "~/svgs";
+
 
 export const slugSetting = {
   lower: true,
@@ -41,7 +15,7 @@ export const asideItems = [
   {
     name: "Explore",
     icon: (
-      <Explore className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+      <Compass className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
     ),
     href: "/explore",
     type: "link",
@@ -49,7 +23,7 @@ export const asideItems = [
   {
     name: "Bookmarks",
     icon: (
-      <Bookmark className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+      <Bookmark className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
     ),
     href: "/bookmarks",
     type: "link",
@@ -57,14 +31,14 @@ export const asideItems = [
   {
     name: "Hackathons",
     icon: (
-      <Hackathon className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+      <Laptop2 className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
     ),
     href: "/hackathons",
     type: "link",
   },
   {
     name: "Team Blogs",
-    icon: <Team className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />,
+    icon: <Users className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
     href: "/team-blogs",
     type: "link",
   },
@@ -72,7 +46,7 @@ export const asideItems = [
 
 enum Type {
   all = "all",
-  new_articles = "new_article",
+  articles = "article",
   comments = "comment",
   likes = "like",
 }
@@ -90,7 +64,7 @@ export const notificationNavigation = (notificationType: Type) => {
       name: "comment",
       label: "Comments",
       icon: (name: string) => (
-        <Comment
+        <MessageCircle
           className={`h-4 w-4 fill-none ${notificationType === name
             ? "stroke-secondary"
             : "stroke-gray-700 dark:stroke-text-secondary"
@@ -113,10 +87,10 @@ export const notificationNavigation = (notificationType: Type) => {
     },
     {
       id: 789,
-      name: "new_article",
+      name: "article",
       label: "Articles",
       icon: (name: string) => (
-        <Document
+        <Newspaper
           className={`h-4 w-4 fill-none ${notificationType === name
             ? "stroke-secondary"
             : "stroke-gray-700 dark:stroke-text-secondary"
@@ -204,7 +178,7 @@ export const dashboardNavigations = [
     name: "General",
     icon: (state: boolean) => (
       <Settings
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
           }`}
       />
     ),
@@ -214,8 +188,8 @@ export const dashboardNavigations = [
     id: uuid(),
     name: "Appearance",
     icon: (state: boolean) => (
-      <Customize
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+      <Palette
+        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
           }`}
       />
     ),
@@ -225,8 +199,8 @@ export const dashboardNavigations = [
     id: uuid(),
     name: "Navbar",
     icon: (state: boolean) => (
-      <Navbar
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+      <Table2
+        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
           }`}
       />
     ),
@@ -236,8 +210,8 @@ export const dashboardNavigations = [
     id: uuid(),
     name: "Articles",
     icon: (state: boolean) => (
-      <Feed
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+      <Newspaper
+        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
           }`}
       />
     ),
@@ -247,165 +221,33 @@ export const dashboardNavigations = [
     id: uuid(),
     name: "Series",
     icon: (state: boolean) => (
-      <Series
-        className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
+      <Book
+        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
           }`}
       />
     ),
     link: "/dashboard/series",
   },
-  // {
-  //   id: uuid(),
-  //   name: "Pages",
-  //   icon: (state: boolean) => (
-  //     <Pages
-  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/pages",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Sponsors",
-  //   icon: (state: boolean) => (
-  //     <Sponsors
-  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/sponsors",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Analytics",
-  //   icon: (state: boolean) => (
-  //     <Analytics
-  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/analytics",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Widgets",
-  //   icon: (state: boolean) => (
-  //     <Widgets
-  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/widgets",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Newsletter",
-  //   icon: (state: boolean) => (
-  //     <Newsletter
-  //       className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/newsletter",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Integrations",
-  //   icon: (state: boolean) => (
-  //     <Integrations
-  //       className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/integrations",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "SEO",
-  //   icon: (state: boolean) => (
-  //     <Seo
-  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/seo",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Domain",
-  //   icon: (state: boolean) => (
-  //     <Global
-  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/domain",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "GitHub",
-  //   icon: (state: boolean) => (
-  //     <Github
-  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/github",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Import",
-  //   icon: (state: boolean) => (
-  //     <ImportFile
-  //       className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/import",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Export",
-  //   icon: (state: boolean) => (
-  //     <ExportFile
-  //       className={`h-5 w-5 fill-gray-700 dark:fill-text-secondary ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/export",
-  // },
-  // {
-  //   id: uuid(),
-  //   name: "Advanced",
-  //   icon: (state: boolean) => (
-  //     <Tools
-  //       className={`h-5 w-5 ${state ? "fill-white" : "fill-gray-700 dark:fill-text-secondary"
-  //         }`}
-  //     />
-  //   ),
-  //   link: "/dashboard/advanced",
-  // },
 ];
 
 export const generalSettingsSocials = [
   {
     id: uuid(),
-    label: "Twitter Profile",
+    label: "Twitter image",
     placeholder: "https://twitter.com/username",
     name: "twitter",
-    icon: <Twitter className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    icon: <Twitter className="h-5 w-5 stroke-none fill-gray-500 dark:fill-text-primary" />,
   },
   {
     id: uuid(),
-    label: "Mastodon Profile",
+    label: "Mastodon image",
     placeholder: "https://mastodon.social/@username",
     name: "mastodon",
     icon: <Mastodon className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
   },
   {
     id: uuid(),
-    label: "Instagram Profile",
+    label: "Instagram image",
     placeholder: "https://instagram.com/username",
     name: "instagram",
     icon: (
@@ -414,21 +256,21 @@ export const generalSettingsSocials = [
   },
   {
     id: uuid(),
-    label: "Github Profile",
+    label: "Github image",
     placeholder: "https://github.com/username",
     name: "github",
-    icon: <Github className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    icon: <Github className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />,
   },
   {
     id: uuid(),
     label: "Your Website",
     placeholder: "https://something.com",
     name: "website",
-    icon: <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    icon: <Globe className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
   },
   {
     id: uuid(),
-    label: "Hashnode Profile",
+    label: "Hashnode image",
     placeholder: "https://hashnode.com/@username",
     name: "hashnode",
     icon: (
@@ -444,7 +286,7 @@ export const generalSettingsSocials = [
   },
   {
     id: uuid(),
-    label: "Daily.dev Profile",
+    label: "Daily.dev image",
     placeholder: "https://app.daily.dev/username",
     name: "dailydev",
     icon: <Dailydev className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
@@ -454,12 +296,12 @@ export const generalSettingsSocials = [
 export const HashnodeSocials = [
   {
     name: "Twitter",
-    icon: <Twitter className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    icon: <Twitter className="h-5 w-5 stroke-none fill-gray-500 dark:fill-text-primary" />,
     link: "https://twitter.com/ujen_basi/",
   },
   {
     name: "Github",
-    icon: <Github className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    icon: <Github className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary fill-none" />,
     link: "https://github.com/ujen5173",
   },
   {
@@ -477,63 +319,81 @@ export const HashnodeSocials = [
 ];
 
 export const selectArticleCard = {
-  id: true,
-  title: true,
-  slug: true,
-  cover_image: true,
-  disabledComments: true,
-  readCount: true,
-  user: {
-    select: {
-      id: true,
-      name: true,
-      username: true,
-      profile: true,
-      bio: true,
-      stripeSubscriptionStatus: true,
-      handle: {
-        select: {
-          id: true,
-          handle: true,
-          name: true,
-          about: true,
-        },
+  with: {
+    comments: {
+      with: {
+        user: {
+          columns: {
+            id: true,
+            image: true,
+          },
+        }
+      }
+    },
+    tags: {
+      columns: {
+        articleId: false,
+        tagId: false,
+      },
+      with: {
+        tag: {
+          columns: {
+            id: true,
+            name: true,
+            slug: true,
+          }
+        }
+      }
+    },
+    likes: {
+      columns: {
+        userId: true,
+      }
+    },
+    series: {
+      columns: {
+        title: true,
+        slug: true,
       },
     },
-  },
-  series: {
-    select: {
-      slug: true,
-      title: true,
-    },
-  },
-  comments: {
-    select: {
-      user: {
-        select: {
-          id: true,
-          profile: true,
-        },
+    user: {
+      columns: {
+        id: true,
+        name: true,
+        username: true,
+        image: true,
+        bio: true,
+        stripeSubscriptionStatus: true,
       },
-    },
+      with: {
+        handle: {
+          columns: {
+            id: true,
+            handle: true,
+            name: true,
+            about: true,
+          }
+        }
+      }
+    }
   },
-  content: true,
-  read_time: true,
-  tags: {
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-    },
+  columns: {
+    id: true,
+    title: true,
+    slug: true,
+    cover_image: true,
+    disabledComments: true,
+    readCount: true,
+    likesCount: true,
+    commentsCount: true,
+    createdAt: true,
+    content: true,
+    read_time: true,
   },
-  likes: { select: { id: true } },
-  likesCount: true,
-  commentsCount: true,
-  createdAt: true,
 } as const;
 
 export function displayUniqueObjects(
-  objects: Array<{ id: string; profile: string }>
+  objects: Array<{ id: string; image: string | null }>
 ) {
   // Create a set to store the unique IDs.
   const uniqueIds = new Set();
@@ -554,25 +414,25 @@ export function displayUniqueObjects(
 }
 
 
-export const profileDropdownList = [
+export const imageDropdownList = [
   {
     type: "divider",
   },
   {
     name: "My Bookmarks",
-    icon: <Bookmarkalt className="h-4 w-4 fill-gray-900 dark:fill-text-secondary" />,
+    icon: <Bookmark className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />,
     link: (userId: string) => "/bookmarks",
     hiddenItem: false,
     danger: false,
   }, {
     name: "Account Settings",
-    icon: <UserSVG className="h-4 w-4 fill-gray-900 dark:fill-text-secondary" />,
+    icon: <User className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />,
     link: (userId: string) => "/settings",
     hiddenItem: false,
     danger: false,
   }, {
     name: "Manage your blogs",
-    icon: <Manage className="h-4 w-4 fill-none stroke-gray-900 dark:stroke-text-secondary" />,
+    icon: <Table2 className="h-4 w-4 fill-none stroke-gray-900 dark:stroke-text-secondary" />,
     link: (userId: string) => `/${userId}/dashboard`,
     hiddenItem: false,
     danger: false,
@@ -593,32 +453,32 @@ export const profileDropdownList = [
     type: "divider",
   }, {
     name: "Log out",
-    icon: <Exit className="h-4 w-4 fill-red" />,
+    icon: <LogOut className="h-4 w-4 stroke-red" />,
     hiddenItem: false,
     link: null,
     danger: true,
   }
 ]
 
-export const articleProfileDropdownList = [
+export const articleimageDropdownList = [
   {
     type: "divider",
   },
   {
     name: "Dashboard",
-    icon: <Settings className="h-4 w-4 fill-gray-900 stroke-none dark:fill-text-secondary" />,
+    icon: <Settings className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
     link: (userId: string) => `/${userId}/dashboard`,
     hiddenItem: false,
     danger: false,
   }, {
     name: "New Article",
-    icon: <Pen className="h-4 w-4 fill-none stroke-gray-900 dark:stroke-text-secondary" />,
+    icon: <Pencil className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
     link: (userId: string) => `/article/new`,
     hiddenItem: false,
     danger: false,
   }, {
     name: "My Bookmarks",
-    icon: <Bookmarkalt className="h-4 w-4 fill-gray-900 dark:fill-text-secondary" />,
+    icon: <Bookmark className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
     link: (userId: string) => "/bookmarks",
     hiddenItem: false,
     danger: false,
@@ -631,8 +491,8 @@ export const articleProfileDropdownList = [
     hiddenItem: false,
     danger: false,
   }, {
-    name: "Profile settings",
-    icon: <UserSVG className="h-4 w-4 fill-gray-900 dark:fill-text-secondary" />,
+    name: "image settings",
+    icon: <User className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
     link: (userId: string) => "/settings",
     hiddenItem: false,
     danger: false,
@@ -640,7 +500,7 @@ export const articleProfileDropdownList = [
     type: "divider",
   }, {
     name: "Log out",
-    icon: <Exit className="h-4 w-4 fill-red" />,
+    icon: <LogOut className="h-4 w-4 stroke-red" />,
     hiddenItem: false,
     link: null,
     danger: true,

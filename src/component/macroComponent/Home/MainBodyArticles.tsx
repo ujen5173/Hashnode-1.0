@@ -44,7 +44,7 @@ const MainBodyArticles = () => {
 
   const { data, isLoading, refetch, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getAll.useInfiniteQuery(
     {
-      ...filterData,
+      ...({ ...filterData, filter: { ...filterData.filter, tags: filterData.filter.tags.map(tag => tag.name) } }),
       limit: 4,
     },
     {
@@ -54,6 +54,7 @@ const MainBodyArticles = () => {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
+
 
   const [articles, setArticles] = useState<TrendingArticleTypes>({ data: [], isLoading: true });
 
@@ -107,14 +108,8 @@ const MainBodyArticles = () => {
         setFilter={setFilter}
       />
 
-      <ManageData
-        loading={<ArticleLoading />}
-        type="ARTICLE"
-        articleData={articles}
-      />
-
       {
-        isFetchingNextPage && (
+        (isFetchingNextPage || isLoading) ? (
           <>
             <ArticleLoading />
             <ArticleLoading />
@@ -123,7 +118,11 @@ const MainBodyArticles = () => {
             <ArticleLoading />
             <ArticleLoading />
           </>
-        )
+        ) : <ManageData
+          loading={<ArticleLoading />}
+          type="ARTICLE"
+          articleData={articles}
+        />
       }
       <div ref={bottomRef} />
 

@@ -1,6 +1,7 @@
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Hamburger, Logo, LogonoText } from "~/svgs";
+import { Logo, LogonoText } from "~/svgs";
 import { HamburgerMenu } from "../aside";
 
 const LeftArea = () => {
@@ -14,7 +15,7 @@ const LeftArea = () => {
         className="btn-icon flex h-10 w-10 lg:hidden"
         onClick={() => setMenu((prev) => !prev)}
       >
-        <Hamburger className="h-5 w-5 fill-black dark:fill-white" />
+        <Menu className="h-5 w-5 fill-black dark:fill-white" />
       </button>
 
       <HamburgerMenu menu={menu} setMenu={setMenu} />

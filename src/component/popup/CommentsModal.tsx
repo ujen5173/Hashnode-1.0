@@ -3,7 +3,8 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { Times } from "~/svgs";
+
+import { X } from "lucide-react";
 import { api } from "~/utils/api";
 import { CommentCard } from "../card";
 
@@ -112,7 +113,7 @@ const CommentsModal: FC<{
               }}
               className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-primary"
             >
-              <Times className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+              <X className="h-6 w-6 stroke-gray-700 dark:stroke-text-secondary" />
             </button>
           </header>
 
@@ -120,7 +121,7 @@ const CommentsModal: FC<{
             {user && (
               <div className="flex items-center space-x-2 p-2">
                 <Image
-                  src={user?.user.profile}
+                  src={user?.user.image}
                   alt="user"
                   width={40}
                   height={40}

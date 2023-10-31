@@ -13,14 +13,10 @@ const config = {
   },
   images: {
     remotePatterns: [
+      { protocol: "https", hostname: "cdn.hashnode.com", port: "" },
       {
         protocol: "https",
-        hostname: "cdn.hashnode.com",
-        port: "",
-      },
-      {
-        protocol: "https",
-        hostname: "chat.openai.com",
+        hostname: "i.ytimg.com",
         port: "",
       },
       {

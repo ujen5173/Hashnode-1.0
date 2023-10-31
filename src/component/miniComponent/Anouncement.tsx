@@ -1,12 +1,13 @@
+import { Rocket } from "lucide-react";
 import Link from "next/link";
-import { Rocket } from "~/svgs";
+
 
 const Anouncement = () => {
   return (
     <div className="anouncement rounded-md border border-border-light bg-white p-6 dark:border-border dark:bg-primary">
       <header className="mb-2 flex gap-4">
         <span className="mt-2">
-          <Rocket className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+          <Rocket className="h-6 w-6 stroke-gray-700 dark:stroke-text-secondary" />
         </span>
         <span className="text-xl font-bold text-black dark:text-white">
           Introducing Hahsnode Pro

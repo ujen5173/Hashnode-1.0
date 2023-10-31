@@ -1,28 +1,13 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
+import { Check, ChevronLeft, Github, Globe, Instagram, Linkedin, Menu, Plus, Search, Settings, Sun, Twitter, Youtube } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
 import { v4 as uuid } from "uuid";
-import { type BlogSocial } from "~/pages/dev/[username]";
-import {
-  Angleleft,
-  Check,
-  Dailydev,
-  Follow,
-  Github,
-  Global,
-  Hamburger,
-  Instagram,
-  Linkedin,
-  Mastodon,
-  Search,
-  Settings,
-  Sun,
-  Twitter,
-  Youtube,
-} from "~/svgs";
+import { type BlogSocial, type CustomTabs } from "~/pages/dev/[username]";
+import { Dailydev, Mastodon } from "~/svgs";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { ArticleHamburgerMenu } from "../aside";
@@ -33,13 +18,18 @@ import {
 
 interface Props {
   user: {
+    id: string;
     name: string;
     username: string;
-    profile: string;
+    image: string;
+    bio: string;
     handle: {
+      id: string;
       handle: string;
       name: string;
       social: BlogSocial;
+      about: string;
+      customTabs: CustomTabs[];
     };
     followers: { id: string }[];
   };
@@ -50,7 +40,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     handleTheme,
     setSearchOpen
   } = useContext(C) as ContextValue;
-  const { mutate: followToggle } = api.users.followUserToggle.useMutation();
+  const { mutate: followToggle } = api.users.followUser.useMutation();
 
   const [following, setFollowing] = useState(false);
 
@@ -58,7 +48,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     setFollowing(prev => !prev);
 
     followToggle({
-      username: author.username,
+      userId: author.id,
     });
   }
 
@@ -93,7 +83,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                 onClick={() => setMenu(true)}
                 className="btn-icon-large flex"
               >
-                <Hamburger className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+                <Menu className="h-6 w-6 stroke-gray-700 dark:stroke-text-secondary" />
               </button>
 
               <ArticleHamburgerMenu
@@ -110,7 +100,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                   role="button"
                   className="btn-icon-large flex"
                 >
-                  <Angleleft className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+                  <ChevronLeft className="h-6 w-6 stroke-gray-700 dark:stroke-text-secondary" />
                 </button>
               </Link>
 
@@ -127,7 +117,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                 className="flex items-center gap-2"
               >
                 <Image
-                  src={author.profile}
+                  src={author.image}
                   alt={author.name}
                   width={100}
                   height={100}
@@ -166,14 +156,14 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
             </Tooltip>
 
             <button
-              aria-label="User Profile"
+              aria-label="User image"
               role="button"
               className="relative rounded-full"
               style={{ cursor: "default!important" }}
             >
               <div ref={setControl}>
                 <Image
-                  src={user?.user.profile || "/default_user.avif"}
+                  src={user?.user.image || "/default_user.avif"}
                   alt={user?.user.name || "user"}
                   width={100}
                   height={100}
@@ -205,7 +195,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
               {user?.user.username === author.username ? (
                 <Link href={`/${user?.user.id}/dashboard`}>
                   <button className="btn-filled flex w-auto items-center justify-center gap-2 text-secondary md:w-max">
-                    <Settings className="h-5 w-5 fill-white" />
+                    <Settings className="h-5 w-5 fill-none stroke-white" />
                     Dashboard
                   </button>
                 </Link>
@@ -216,12 +206,12 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                 >
                   {following ? (
                     <>
-                      <Check className="h-5 w-5 fill-secondary" />
+                      <Check className="h-5 w-5 stroke-secondary" />
                       <span>Following</span>
                     </>
                   ) : (
                     <>
-                      <Follow className="h-5 w-5 fill-secondary" />
+                      <Plus className="h-5 w-5 stroke-secondary" />
                       <span>Follow User</span>
                     </>
                   )}
@@ -235,14 +225,14 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                   .filter((e) => e[0] !== "handle" && e[1] !== "")
                   .map((e) => {
                     const iconStyle =
-                      "h-5 w-5 fill-gray-500 dark:fill-text-primary";
+                      "h-5 w-5 stroke-none fill-gray-500 dark:fill-text-primary";
                     const social = {
                       twitter: <Twitter className={iconStyle} />,
                       github: <Github className={iconStyle} />,
                       linkedin: <Linkedin className={iconStyle} />,
                       mastodon: <Mastodon className={iconStyle} />,
                       instagram: <Instagram className={iconStyle} />,
-                      website: <Global className={iconStyle} />,
+                      website: <Globe className={iconStyle} />,
                       youtube: <Youtube className={iconStyle} />,
                       dailydev: <Dailydev className={iconStyle} />,
                     };

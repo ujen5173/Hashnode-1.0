@@ -28,6 +28,7 @@ const CreateNewSeries = () => {
       ...data,
       edit: false,
     });
+
     if (res) {
       toast.success("Series created successfully");
       void router.push(`/${router.query.id as string}/dashboard/series`);

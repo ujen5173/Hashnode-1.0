@@ -1,6 +1,6 @@
+import { TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { type FC } from "react";
-import { Trending } from "~/svgs";
 import { api } from "~/utils/api";
 import { asideItems, HashnodeSocials } from "~/utils/constants";
 import { type TrendingTagsTypes } from "~/utils/context";
@@ -19,6 +19,9 @@ const Aside = () => {
       refetchOnWindowFocus: false,
     }
   );
+
+  console.log({ tagsData, isLoading })
+
 
   return (
     <div className="container-aside relative hidden min-h-[100dvh] py-4 lg:block">
@@ -76,7 +79,7 @@ const TrendingComponent: FC<{
           Trending tags
         </h1>
         <span>
-          <Trending className="h-4 w-4 fill-black dark:fill-text-primary" />
+          <TrendingUp className="h-4 w-4 stroke-black dark:stroke-text-primary" />
         </span>
       </div>
 
@@ -92,9 +95,11 @@ const TrendingComponent: FC<{
           <TrendingNavigation key={item.id} item={item} />
         ))
       ) : (
-        <p className="text-sm text-gray-700 dark:text-text-primary">
-          No trending tags
-        </p>
+        <div className="h-24 flex justify-center items-center">
+          <p className="text-sm text-gray-700 dark:text-text-primary">
+            No trending tags
+          </p>
+        </div>
       )}
     </div>
   );
@@ -114,7 +119,7 @@ const SocialHandles = () => {
               : item.name === "Discord"
                 ? "hover:bg-[#7289da]"
                 : item.name === "Github"
-                  ? "hover:bg-[#2c3646]"
+                  ? "hover:bg-[#2c3646] github"
                   : item.name === "Hashnode"
                     ? "hover:bg-[#2c3646]"
                     : ""

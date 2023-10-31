@@ -12,7 +12,7 @@ This is a **full-stack application** that serves as a clone of the popular blogg
 ## Features
 
 1. Authentication
-2. User Profiles
+2. User images
 3. Comments with Replies
 4. Tags
 5. Search Functionality

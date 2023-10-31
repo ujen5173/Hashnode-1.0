@@ -1,6 +1,7 @@
-import { NotificationTypes } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { articles, likesToArticles, notifications } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const likesRouter = createTRPCRouter({
@@ -8,28 +9,34 @@ export const likesRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().trim(),
-      })
+       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
         const { articleId } = input;
 
-        const article = await ctx.prisma.article.findUnique({
-          where: {
-            id: articleId,
-          },
-          select: {
+        const article = await ctx.db.query.articles.findFirst({
+          where: eq(articles.id, articleId),
+          columns: {
             slug: true,
             title: true,
+            likesCount: true,
+          },
+          with: {
             user: {
-              select: {
+              columns: {
                 id: true,
                 username: true,
               },
             },
             likes: {
-              select: {
-                id: true,
+              where: eq(likesToArticles.userId, ctx.session.user.id),
+              with: {
+                likes: {
+                  columns: {
+                    id: true,
+                  },
+                },
               },
             },
           },
@@ -42,63 +49,52 @@ export const likesRouter = createTRPCRouter({
           });
         }
 
-        const hasLiked = article.likes.some(
-          (like) => like.id === ctx.session.user.id
-        );
+        const updatedLikesCount = await ctx.db
+          .update(articles)
+          .set({
+            likesCount:
+              article.likes.length > 0
+                ? article.likesCount - 1
+                : article.likesCount + 1,
+          })
+          .where(eq(articles.id, articleId))
+          .returning({
+            likesCount: articles.likesCount,
+          })
+          .then((res) => res[0]?.likesCount as number);
 
-        const newArticle = (await ctx.prisma.article.update({
-          where: {
-            id: articleId,
-          },
-          data: {
-            likes: {
-              [hasLiked ? "disconnect" : "connect"]: {
-                id: ctx.session.user.id,
-              },
-            },
-            likesCount: {
-              [hasLiked ? "decrement" : "increment"]: 1,
-            },
-          },
-          select: {
-            likes: {
-              select: { id: true },
-            },
-            likesCount: true,
-          },
-        })) as {
-          likes: { id: string }[];
-          likesCount: number;
-        };
+        if (article.likes.length > 0) {
+          console.log("unlike");
+          await ctx.db
+            .delete(likesToArticles)
+            .where(eq(likesToArticles.articleId, articleId));
+        } else {
+          console.log("like");
+          await ctx.db.insert(likesToArticles).values({
+            articleId,
+            userId: ctx.session.user.id,
+          });
+          // .where(eq(likesToArticles.articleId, articleId));
+        }
 
-        if (!hasLiked) {
-          await ctx.prisma.notification.create({
-            data: {
-              type: NotificationTypes.LIKE,
-              from: {
-                connect: {
-                  id: ctx.session.user.id,
-                },
-              },
-              articleAuthor: article.user.username,
-              body: null,
-              title: article.title,
-              user: {
-                connect: {
-                  id: article.user.id,
-                },
-              },
-              isRead: false,
-              slug: article.slug,
-            },
+        if (!article.likes.length) {
+          await ctx.db.insert(notifications).values({
+            type: "LIKE",
+            fromId: ctx.session.user.id,
+            articleAuthor: article.user.username,
+            title: article.title,
+            userId: article.user.id,
+            isRead: false,
+            slug: article.slug,
           });
         }
 
         return {
           success: true,
-          message: hasLiked ? "Unliked article" : "Liked article",
-          hasLiked: !hasLiked,
-          likesCount: newArticle.likesCount,
+          message:
+            article.likes.length > 0 ? "Unliked article" : "Liked article",
+          hasLiked: !article.likes.length,
+          likesCount: updatedLikesCount,
         };
       } catch (error) {
         throw new TRPCError({

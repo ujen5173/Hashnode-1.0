@@ -1,8 +1,9 @@
+import { BookOpen } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
-import { Book } from "~/svgs";
+
 import { C, type ContextValue } from "~/utils/context";
 import { formatDate } from "~/utils/miniFunctions";
 
@@ -28,15 +29,14 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
 
   return (
     <div
-      className={`${
-        type === "main"
+      className={`${type === "main"
           ? "main-block"
           : type === "group"
-          ? "w-full"
-          : perRow === 2
-          ? "w-full md:w-[calc(100%/2-0.5rem)]"
-          : "w-full md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-0.67rem)]"
-      }`}
+            ? "w-full"
+            : perRow === 2
+              ? "w-full md:w-[calc(100%/2-0.5rem)]"
+              : "w-full md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-0.67rem)]"
+        }`}
       key={article.id}
     >
       <Link
@@ -49,8 +49,8 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
               article.cover_image
                 ? article.cover_image
                 : theme === "light"
-                ? "/imagePlaceholder-light.avif"
-                : "/imagePlaceholder-dark.avif"
+                  ? "/imagePlaceholder-light.avif"
+                  : "/imagePlaceholder-dark.avif"
             }
             alt={`${article.title} image not found!`}
             width={500}
@@ -76,7 +76,7 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
           </p>
 
           <div className="flex items-center gap-2">
-            <Book className="h-4 w-4 fill-secondary" />
+            <BookOpen className="h-4 w-4 stroke-secondary" />
             <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
               {article.read_time} min read
             </p>

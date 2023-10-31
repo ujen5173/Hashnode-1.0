@@ -91,7 +91,7 @@ const ManageData: FC<Props> = ({
                       slug: item.slug,
                       user: {
                         id: item.user.id,
-                        profile: item.user.profile,
+                        image: item.user.image,
                         name: item.user.name,
                         username: item.user.username,
                       },

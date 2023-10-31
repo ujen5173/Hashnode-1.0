@@ -1,5 +1,3 @@
-import type { CommentType } from "@prisma/client";
-
 export interface Article {
   id: string;
   title: string;
@@ -8,12 +6,19 @@ export interface Article {
   cover_image: string | null;
   disabledComments: boolean;
   readCount: number;
+  content: string;
+  read_time: number;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: Date;
+  comments: Comment[];
+  likes: { userId: string }[];
   user: {
     id: string;
     name: string;
     username: string;
-    profile: string;
-    bio: string;
+    image: string | null;
+    bio: string | null;
     stripeSubscriptionStatus: string | null;
     handle: {
       id: string;
@@ -26,25 +31,18 @@ export interface Article {
     title: string;
     slug: string;
   } | null;
-  content: string;
-  read_time: number;
   tags: {
     id: string;
     name: string;
     slug: string;
   }[];
-  likes: { id: string }[];
-  comments: Comment[];
-  likesCount: number;
-  commentsCount: number;
-  createdAt: Date;
 }
 
 // here `Omit` is used to remove the `subtitle` property from `Article` type and add `commonUsers` property
 export interface ArticleCard extends Omit<Article, "subtitle" | "comments"> {
   commonUsers: {
     id: string;
-    profile: string;
+    image: string | null;
   }[];
 }
 
@@ -56,7 +54,7 @@ export interface ArticleCardWithComments extends ArticleCardRemoveCommonUser {
   comments: {
     user: {
       id: string;
-      profile: string;
+      image: string | null;
     };
   }[];
 }
@@ -71,7 +69,7 @@ export interface User {
   id: string;
   name: string;
   username: string;
-  profile: string;
+  image: string;
   stripeSubscriptionStatus: string | null;
   handle?: {
     id: string;
@@ -88,8 +86,7 @@ export interface DetailedTag {
   slug: string;
   followersCount: string;
   articlesCount: string;
-  followers: { id: string }[];
-  articles: { id: string }[];
+  isFollowing: boolean;
   description: string;
   logo: string;
   createdAt: string;
@@ -103,12 +100,12 @@ export interface Comment {
     id: string;
     name: string;
     username: string;
-    profile: string;
+    image: string | null;
     stripeSubscriptionStatus: string | null;
   };
-  likes: { id: string }[];
+  likes: { userId: string }[];
   likesCount: number;
-  type: CommentType;
+  type: "COMMENT" | "REPLY";
   parentId?: string | null;
   articleId?: string | null;
   repliesCount?: number;
@@ -123,9 +120,10 @@ interface SearchResults {
         id: string;
         name: string;
         username: string;
-        profile: string;
+        image: string | null;
         stripeSubscriptionStatus: string | null;
         isFollowing: boolean;
+        isAuthor: boolean;
       }[]
     | null;
   tags:
@@ -140,24 +138,19 @@ interface SearchResults {
     | {
         id: string;
         title: string;
-        user: {
-          id: string;
-          name: string;
-          username: string;
-          profile: string;
-          stripeSubscriptionStatus: string | null;
-        };
-        cover_image: string;
-        readCount: number;
-        series?: {
-          title: string;
-        };
+        cover_image: string | null;
         slug: string;
-        read_time: number;
         likesCount: number;
         commentsCount: number;
         createdAt: Date;
         updatedAt: Date;
+        user: {
+          id: string;
+          name: string;
+          username: string;
+          image: string | null;
+          stripeSubscriptionStatus: string | null;
+        };
       }[]
     | null;
 }
@@ -166,7 +159,7 @@ export interface UserSimple {
   id: string;
   name: string;
   username: string;
-  profile: string;
+  image: string | null;
   stripeSubscriptionStatus: string | null;
 }
 
@@ -180,10 +173,13 @@ export interface DataType {
   cover_image: string | null;
   createdAt: Date;
   user: {
-    profile: string;
+    image: string | null;
     username: string;
   };
 }
+
+export const NotificationTypes =
+  "ALL" | "COMMENT" | "LIKE" | "NEW_ARTICLE" | "MENTION" | "FOLLOW";
 
 export interface FilterData {
   status: boolean;
@@ -213,7 +209,7 @@ export interface DetailedUser {
   username: string;
   email: string;
   emailVerified: Date | null;
-  profile: string;
+  image: string;
   tagline: string;
   cover_image: string;
   bio: string;
@@ -230,7 +226,7 @@ export interface UserDetails {
   username: string;
   email: string;
   location: string;
-  profile: string;
+  image: string;
   tagline: string;
   stripeSubscriptionStatus?: string | null;
   available: string;

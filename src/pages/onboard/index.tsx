@@ -79,7 +79,7 @@ const Onboard = () => {
                 }
                 width={70}
                 height={70}
-                alt="CEO Profile"
+                alt="CEO image"
                 className="h-14 w-14 rounded-full object-cover"
               />
               <div>

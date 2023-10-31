@@ -1,6 +1,7 @@
 import { useClickOutside } from "@mantine/hooks";
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState, type FC } from "react";
-import { Angledown } from "~/svgs";
+
 
 interface SelectProps {
   status: boolean;
@@ -51,7 +52,7 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
       hover:dark:border-border dark:focus:bg-primary-light md:min-w-[180px]`}
     >
       <span className="text-base mb-[0!important]">{select.selected}</span>
-      <Angledown className="h-5 mb-[0!important] w-5 fill-gray-700 dark:fill-text-primary" />
+      <ChevronDown className="h-5 mb-[0!important] w-5 stroke-gray-700 dark:stroke-text-secondary" />
 
       {opened && (
         <div

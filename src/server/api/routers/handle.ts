@@ -1,7 +1,8 @@
 import { TRPCError } from "@trpc/server";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { publicProcedure } from "./../trpc";
+import { customTabs, handles } from "~/server/db/schema";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const handleRouter = createTRPCRouter({
   updateHandle: protectedProcedure
@@ -31,25 +32,19 @@ export const handleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const handle = await ctx.prisma.handle.findUnique({
-        where: {
-          userId: ctx.session.user.id,
-        },
+      const handle = await ctx.db.query.handles.findFirst({
+        where: eq(handles.userId, ctx.session.user.id),
       });
-
       if (!handle) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Handle does not exists",
         });
       }
-
-      const result = await ctx.prisma.handle.update({
-        where: {
-          userId: ctx.session.user.id,
-        },
-        data: input,
-      });
+      const result = await ctx.db
+        .update(handles)
+        .set(input)
+        .where(eq(handles.userId, ctx.session.user.id));
 
       return !!result;
     }),
@@ -64,10 +59,8 @@ export const handleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const findExistingHandle = await ctx.prisma.handle.findUnique({
-        where: {
-          handle: input.handle.domain,
-        },
+      const findExistingHandle = await ctx.db.query.handles.findFirst({
+        where: eq(handles.handle, input.handle.domain),
       });
 
       if (findExistingHandle) {
@@ -77,37 +70,16 @@ export const handleRouter = createTRPCRouter({
         });
       }
 
-      const result = await ctx.prisma.handle.create({
-        data: {
+      const result = await ctx.db
+        .insert(handles)
+        .values({
           handle: input.handle.domain,
-          name: input.handle.name || ctx.session.user.username,
-          appearance: {
-            layout: "STACKED",
-            logo: null,
-            // @type:
-            // logo: {
-            //   light: "",
-            //   dark: ""
-            // },
-          },
-          user: {
-            connect: {
-              id: ctx.session.user.id,
-            },
-          },
-          social: {
-            twitter: "",
-            mastodon: "",
-            instagram: "",
-            github: "",
-            website: "",
-            linkedin: "",
-            youtube: "",
-            dailydev: "",
-          },
-        },
-      });
-      return !!result;
+          name: input.handle.name || "HASHNODE CLONE HANDLE",
+          userId: ctx.session.user.id,
+        })
+        .returning();
+
+      return result;
     }),
 
   newNavbarData: protectedProcedure
@@ -123,39 +95,48 @@ export const handleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.prisma.handle.update({
-        where: {
-          handle: input.handle,
-        },
-        data: {
-          customTabs: {
-            create: input.tab,
-          },
+      const handle = await ctx.db.query.handles.findFirst({
+        where: eq(handles.handle, input.handle),
+        columns: {
+          id: true,
         },
       });
 
-      return !!result;
+      if (!handle) {
+        return {
+          success: false,
+          message: "Handle does not exists",
+        };
+      }
+
+      const newTab = await ctx.db
+        .insert(customTabs)
+        .values({
+          ...input.tab,
+          handleId: handle.id,
+        })
+        .returning();
+
+      return newTab;
     }),
 
   updateNavbarData: protectedProcedure
     .input(
       z.object({
-        handle: z.string(),
+        tabId: z.string(),
         tab: z.object({
-          label: z.string(),
-          type: z.string(),
-          value: z.string(),
-          priority: z.number().default(0),
+          label: z.string().optional(),
+          type: z.string().optional(),
+          value: z.string().optional(),
+          priority: z.number().default(0).optional(),
         }),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.prisma.customTab.update({
-        where: {
-          id: input.handle,
-        },
-        data: input.tab,
-      });
+      const result = await ctx.db
+        .update(customTabs)
+        .set(input.tab)
+        .where(and(eq(customTabs.id, input.tabId)));
 
       return !!result;
     }),
@@ -163,19 +144,14 @@ export const handleRouter = createTRPCRouter({
   getNavbarData: publicProcedure
     .input(
       z.object({
-        handle: z.string(),
+        handleId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const result = await ctx.prisma.customTab.findMany({
-        where: {
-          handle: {
-            handle: input.handle,
-          },
-        },
-        orderBy: {
-          priority: "asc",
-        },
+      const result = await ctx.db.query.customTabs.findMany({
+        where: eq(customTabs.handleId, input.handleId),
+
+        orderBy: (tabs, { asc }) => asc(tabs.priority),
       });
       return result;
     }),
@@ -187,11 +163,10 @@ export const handleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.prisma.customTab.delete({
-        where: {
-          id: input.tabId,
-        },
-      });
+      const result = await ctx.db
+        .delete(customTabs)
+        .where(eq(customTabs.id, input.tabId));
+
       return !!result;
     }),
 });

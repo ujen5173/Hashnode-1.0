@@ -1,5 +1,5 @@
+import { Heart, MessageCircle } from "lucide-react";
 import { type FC } from "react";
-import { Comment as CommentSVG, Heart } from "~/svgs";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { type Comment } from "~/types";
 
@@ -31,11 +31,10 @@ const CommentFooter: FC<Props> = ({
       >
         <span>
           <Heart
-            className={`h-5 w-5 fill-none ${
-              like.hasLiked
-                ? "fill-red stroke-red"
-                : "stroke-border dark:stroke-text-primary"
-            }  md:h-6 md:w-6`}
+            className={`h-5 w-5 fill-none ${like.hasLiked
+              ? "fill-red stroke-red"
+              : "stroke-border dark:stroke-text-primary"
+              }  md:h-6 md:w-6`}
           />
         </span>
 
@@ -50,9 +49,9 @@ const CommentFooter: FC<Props> = ({
       >
         <span>
           {isLoading ? (
-            <LoadingSpinner className="h-6 w-6 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+            <LoadingSpinner className="h-6 w-6 fill-none stroke-gray-700 dark:stroke-text-primary" />
           ) : (
-            <CommentSVG className="h-6 w-6 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+            <MessageCircle className="h-6 w-6 fill-none stroke-gray-700 dark:stroke-text-primary" />
           )}
         </span>
 

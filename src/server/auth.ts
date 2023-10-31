@@ -1,4 +1,6 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { eq, ilike } from "drizzle-orm";
+import { pgTable, type PgTableFn } from "drizzle-orm/pg-core";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
@@ -6,18 +8,35 @@ import {
   type NextAuthOptions,
   type User,
 } from "next-auth";
+import { type Adapter } from "next-auth/adapters";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import slugify from "slugify";
 import { env } from "~/env.mjs";
 import { type BlogSocial } from "~/pages/dev/[username]";
-import { prisma } from "~/server/db";
+import { slugSetting } from "~/utils/constants";
+import db from "./db";
+import {
+  accounts,
+  articles,
+  comments,
+  customTabs,
+  follow,
+  handles,
+  likesToArticles,
+  likesToComment,
+  notifications,
+  readersToArticles,
+  series,
+  sessions,
+  stripeEvents,
+  tags,
+  tagsToArticles,
+  tagsToUsers,
+  users,
+  verificationToken,
+  verificationTokens,
+} from "./db/schema";
 
-/**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
- */
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: User;
@@ -28,7 +47,7 @@ declare module "next-auth" {
     name: string;
     username: string;
     email: string;
-    profile: string;
+    image: string;
     emailVerified: Date | null;
     tagline: string;
     stripeSubscriptionStatus: string | null;
@@ -45,19 +64,63 @@ declare module "next-auth" {
   }
 }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
+/*
+  pgTableHijack is a function which is responsible for using my schema instead of nextauth default schema.
+  ? source: https://github.com/nextauthjs/next-auth/discussions/7005#discussioncomment-7276938
+*/
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const pgTableHijack: PgTableFn = (name, columns, extraConfig) => {
+  switch (name) {
+    case "user":
+      return users;
+    case "follow":
+      return follow;
+    case "account":
+      return accounts;
+    case "session":
+      return sessions;
+    case "verificationToken":
+      return verificationTokens;
+    case "handles":
+      return handles;
+    case "customTabs":
+      return customTabs;
+    case "tags":
+      return tags;
+    case "tags_to_users":
+      return tagsToUsers;
+    case "tags_to_articles":
+      return tagsToArticles;
+    case "comments":
+      return comments;
+    case "likes_to_comments":
+      return likesToComment;
+    case "articles":
+      return articles;
+    case "likes_to_articles":
+      return likesToArticles;
+    case "readers_to_articles":
+      return readersToArticles;
+    case "stripeEvents":
+      return stripeEvents;
+    case "series":
+      return series;
+    case "notifications":
+      return notifications;
+    case "verificationToken":
+      return verificationToken;
+    default:
+      return pgTable(name, columns, extraConfig);
+  }
+};
+
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session: async ({ session, user }) => {
-      const handle = await prisma.handle.findUnique({
-        where: {
-          userId: user.id,
-        },
-        select: {
+      const handle = await db.query.handles.findFirst({
+        where: eq(handles.userId, user.id),
+        columns: {
           id: true,
           handle: true,
           name: true,
@@ -66,7 +129,6 @@ export const authOptions: NextAuthOptions = {
           appearance: true,
         },
       });
-
       return {
         ...session,
         user: {
@@ -74,7 +136,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           username: user.username,
           email: user.email,
-          profile: user.profile,
+          image: user.image,
           emailVerified: user.emailVerified,
           tagline: user.tagline,
           handle: handle,
@@ -83,47 +145,34 @@ export const authOptions: NextAuthOptions = {
       };
     },
   },
-  adapter: PrismaAdapter(prisma),
+  adapter: DrizzleAdapter(db, pgTableHijack) as Adapter<User>,
   providers: [
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+
       async profile(profile: GoogleProfile): Promise<User> {
-        // Get all the usernames that starts with the name of the new user
-        const usernameOccurance = await prisma.user.findMany({
-          where: {
-            username: {
-              startsWith: slugify(profile.name, {
-                lower: true,
-                replacement: "",
-                trim: true,
-              }),
-            },
-          },
-          select: {
+        const usernameOccurance = await db.query.users.findMany({
+          where: ilike(users.name, `%${slugify(profile.name, slugSetting)}%`),
+          columns: {
             username: true,
           },
         });
-
         const isUsernameExists = (username: string): boolean => {
           return usernameOccurance.some((user) => user.username === username);
         };
-
         // Function to generate a random number
         const generateRandomNumber = () => {
           return Math.floor(Math.random() * 10);
         };
-
         // Function to generate a unique username
         const generateUniqueUsername = (desiredUsername: string): string => {
           let username = desiredUsername;
           let suffix = 1;
-
           while (isUsernameExists(username)) {
             username = `${desiredUsername}${generateRandomNumber()}${suffix}`;
             suffix++;
           }
-
           return username;
         };
 
@@ -132,14 +181,13 @@ export const authOptions: NextAuthOptions = {
           name: profile.name,
           username: generateUniqueUsername(
             slugify(profile.name, {
-              lower: true,
-              replacement: "",
-              trim: true,
+              ...slugSetting,
+              replacement: "_",
             })
           ),
           email: profile.email,
-          profile: profile.picture,
-          stripeSubscriptionStatus: null,
+          image: profile.picture,
+          stripeSubscriptionStatus: "incomplete",
           emailVerified: profile.email_verified ? new Date() : null,
           tagline: "Software Devloper",
         };
@@ -153,7 +201,8 @@ export const authOptions: NextAuthOptions = {
 
 /**
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
- *
+ *import { db } from '~/server/db';
+
  * @see https://next-auth.js.org/configuration/nextjs
  */
 export const getServerAuthSession = (ctx: {

@@ -1,10 +1,12 @@
+import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useRouter } from 'next/router';
 import SettingsSEO from "~/SEO/Settings.seo";
 import { Account, EmailNotification, Header, ManageBlogs, Subscription, UserDetailsOptions, UserProfile } from "~/component";
 import { authOptions } from "~/server/auth";
-import { prisma } from "~/server/db";
+import db from "~/server/db";
+import { users } from "~/server/db/schema";
 import { type UserDetails } from "~/types";
 
 const EditProfile: NextPage<{
@@ -60,14 +62,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: session?.user.id,
-    },
-    select: {
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, session?.user.id),
+    columns: {
       name: true,
       tagline: true,
-      profile: true,
+      image: true,
       location: true,
       bio: true,
       skills: true,
@@ -79,11 +79,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  let newUser = null;
-
-  newUser = {
+  let newUser = {
     ...user,
-    skills: user?.skills.map((e) => e.trim()).join(", "),
+    skills: user?.skills?.map((e) => e.trim()).join(", ") ?? "",
   };
 
   if (!user?.social) {

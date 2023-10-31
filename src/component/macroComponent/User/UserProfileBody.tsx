@@ -3,7 +3,7 @@ import { type DetailedUser } from "~/types";
 import { Aside } from "../../aside";
 import ProfileArea from "./ProfileArea";
 
-const UserProfileBody: FC<{
+const UserimageBody: FC<{
   user: DetailedUser;
 }> = ({ user }) => {
   return (
@@ -16,4 +16,4 @@ const UserProfileBody: FC<{
   );
 };
 
-export default UserProfileBody;
+export default UserimageBody;

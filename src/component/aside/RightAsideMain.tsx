@@ -27,7 +27,7 @@ const RightAsideMain: FC<{ tagDetails?: DetailedTag }> = ({ tagDetails }) => {
           </p>
         </div>
       ) : (
-        !data && (
+        data !== "active" && (
           <div className="mb-4">
             <Anouncement />
           </div>

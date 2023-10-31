@@ -1,5 +1,4 @@
 import { useViewportSize } from "@mantine/hooks";
-import { type NotificationTypes } from "@prisma/client";
 import { type GetServerSideProps } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -10,10 +9,11 @@ import useOnScreen from "~/hooks/useOnScreen";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
+import type { NotificationTypesEnum } from "~/utils/context";
 
 enum Type {
   all = "all",
-  new_articles = "new_article",
+  articles = "article",
   comments = "comment",
   likes = "like",
 }
@@ -33,7 +33,7 @@ const Notifications = () => {
   const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } = api.notifications.get.useInfiniteQuery(
     {
       limit: 6,
-      type: notificationType.toLocaleUpperCase() as NotificationTypes,
+      type: notificationType.toLocaleUpperCase() as NotificationTypesEnum,
     },
     {
       refetchOnWindowFocus: false,
@@ -53,6 +53,7 @@ const Notifications = () => {
   );
   const bottomRef = useRef<HTMLDivElement>(null);
   const reachedBottom = useOnScreen(bottomRef);
+
   useEffect(() => {
     if (reachedBottom && hasNextPage) {
       void fetchNextPage();
@@ -100,7 +101,7 @@ const Notifications = () => {
                 <div className="loading h-24 w-full border-b border-border-light py-4 dark:border-border"></div>
               }
               type="NOTIFICATION"
-              notificationData={{ data: notifications, isLoading, type: "ALL" }}
+              notificationData={{ data: notifications, isLoading, type: notificationType as unknown as NotificationTypesEnum }}
             />
             {
               isFetchingNextPage && (

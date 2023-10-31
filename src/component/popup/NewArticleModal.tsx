@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
-import { Times } from "~/svgs";
+
+import { X } from "lucide-react";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -155,7 +156,7 @@ const NewArticleModal: FC<Props> = ({
             onClick={() => void setPublishModal(false)}
             className="btn-subtle flex items-center justify-center gap-2"
           >
-            <Times className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+            <X className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
             <span className="text-gray-700 dark:text-white">Close</span>
           </button>
 
@@ -196,9 +197,9 @@ const NewArticleModal: FC<Props> = ({
               </label>
 
               <div className="relative flex items-stretch gap-2 rounded-md border border-border-light dark:border-border md:px-4 ">
-                <div className="hidden select-none items-center justify-center border-r border-border-light pr-3 dark:border-border md:flex">
-                  <span className="text-gray-500 dark:text-text-primary">
-                    /u/@{user?.user.username}/
+                <div className="hidden select-none w-max max-w-32 border-r items-center border-border-light pr-3 dark:border-border md:flex">
+                  <span className="text-gray-500 dark:text-text-primary line-clamp-1">
+                    /@{user?.user.username}/
                   </span>
                 </div>
 
@@ -206,7 +207,7 @@ const NewArticleModal: FC<Props> = ({
                   autoComplete="off"
                   autoCorrect="off"
                   type="text"
-                  className="input-outline"
+                  className="input-outline flex-1"
                   style={{ border: "0" }}
                   placeholder="article-slug"
                   id="slug"
@@ -259,7 +260,7 @@ const NewArticleModal: FC<Props> = ({
                         }));
                       }}
                     >
-                      <Times className="h-5 w-5 fill-red" />
+                      <X className="h-5 w-5 fill-red" />
                     </div>
                   </div>
                 ))}
@@ -289,7 +290,7 @@ const NewArticleModal: FC<Props> = ({
                         }));
                       }}
                     >
-                      <Times className="h-5 w-5 fill-red" />
+                      <X className="h-5 w-5 fill-red" />
                     </button>
                   </div>
                 </div>

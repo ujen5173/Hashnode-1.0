@@ -1,6 +1,7 @@
 import { type Editor } from "@tiptap/core";
+import { Link2 } from "lucide-react";
 import { useEffect, useRef, type Dispatch, type FC, type SetStateAction } from "react";
-import { Link as LinkSvg } from "~/svgs";
+
 
 interface LinkSelectorProps {
   editor: Editor;
@@ -28,7 +29,7 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
           setIsOpen(!isOpen);
         }}
       >
-        <LinkSvg className="w-4 h-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+        <Link2 className="w-4 h-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
       </button>
       {isOpen && (
         <form
