@@ -1,8 +1,9 @@
+import { Check, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { Check, Follow } from "~/svgs";
+
 import { api } from "~/utils/api";
 
 interface Props {
@@ -55,12 +56,12 @@ const TagsSearchCard: FC<Props> = ({ tag, setOpened }) => {
       >
         {isFollowing ? (
           <>
-            <Check className="h-5 w-5 fill-secondary" />
+            <Check className="h-5 w-5 stroke-secondary" />
             <span>Following</span>
           </>
         ) : (
           <>
-            <Follow className="h-5 w-5 fill-secondary" />
+            <Plus className="h-5 w-5 stroke-secondary" />
             <span>Follow Tag</span>
           </>
         )}

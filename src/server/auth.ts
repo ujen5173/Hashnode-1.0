@@ -12,6 +12,7 @@ import { type Adapter } from "next-auth/adapters";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import slugify from "slugify";
 import { env } from "~/env.mjs";
+import { type BlogSocial } from "~/pages/dev/[username]";
 import { slugSetting } from "~/utils/constants";
 import db from "./db";
 import {
@@ -50,6 +51,16 @@ declare module "next-auth" {
     emailVerified: Date | null;
     tagline: string;
     stripeSubscriptionStatus: string | null;
+    handle?: {
+      handle: string;
+      id: string;
+      name: string;
+      about: string | null;
+      social: BlogSocial;
+      appearance?: {
+        layout: "MAGAZINE" | "STACKED" | "GRID";
+      };
+    } | null;
   }
 }
 

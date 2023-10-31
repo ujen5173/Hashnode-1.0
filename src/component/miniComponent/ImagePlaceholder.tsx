@@ -1,7 +1,8 @@
+import { UploadCloud } from "lucide-react";
 import Image from "next/image";
 import React, { type FC } from "react";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
-import Upload from "~/svgs/Upload";
+
 
 interface Props {
   title?: string;
@@ -61,9 +62,8 @@ const ImagePlaceholder: FC<Props> = ({
               height={840}
               src={image} // it will convert base64 to url
               alt="preview"
-              className={`${
-                isUploading ? "loading" : ""
-              } h-full w-full rounded-md bg-border-light object-cover dark:bg-border`}
+              className={`${isUploading ? "loading" : ""
+                } h-full w-full rounded-md bg-border-light object-cover dark:bg-border`}
             />
           ) : isUploading ? (
             <div className={`flex items-center justify-center gap-2`}>
@@ -76,7 +76,7 @@ const ImagePlaceholder: FC<Props> = ({
           ) : (
             <>
               <div className={`flex items-center justify-center gap-2`}>
-                <Upload className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+                <UploadCloud className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
                 <span className="text-gray-700 dark:text-text-secondary">
                   Upload Image
                 </span>

@@ -27,7 +27,7 @@ const Subscription = () => {
     </header>
 
     <section className="py-4">
-      {subscriptionStatus ? (
+      {subscriptionStatus === "active" ? (
         <div className="py-4">
           <h1 className="text-2xl mb-4 font-semibold text-gray-700 dark:text-text-secondary">
             You are already subscribed to Hashnode Pro
@@ -41,7 +41,7 @@ const Subscription = () => {
           <div className="flex-1">
             <header className="mb-2 flex gap-2 items-center">
               <span className="">
-                <LogonoText className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+                <LogonoText className="h-6 w-6 stroke-gray-700 dark:stroke-text-secondary" />
               </span>
               <p className="text-xl font-bold text-black dark:text-white flex items-center gap-2">
                 Hashnode Clone

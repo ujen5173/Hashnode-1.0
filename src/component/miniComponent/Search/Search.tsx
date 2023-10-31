@@ -1,6 +1,7 @@
+import { Search, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useContext, type FC } from "react";
-import { Ai, Search } from "~/svgs";
+
 import { C, type ContextValue } from "~/utils/context";
 
 const SearchArea: FC = () => {
@@ -22,10 +23,10 @@ const SearchArea: FC = () => {
         <button
           aria-label="Unlock the power of AI"
           role="button"
-          className="btn-subtle flex items-center justify-center gap-4"
+          className="btn-subtle flex items-center justify-center gap-1"
         >
           <span>Rix</span>
-          <Ai className="h-4 w-4" />
+          <Sparkles className="h-4 w-4" />
         </button>
       </div>
 

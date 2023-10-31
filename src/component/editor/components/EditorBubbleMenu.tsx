@@ -1,12 +1,7 @@
 import { BubbleMenu, type BubbleMenuProps } from "@tiptap/react";
 import React, { useState, type FC } from "react";
-import {
-  Bold, Code, Heading1,
-  Heading2,
-  Heading3,
-  Highlight, Italic,
-  Strike
-} from "~/svgs";
+
+import { Bold, Code, Heading1, Heading2, Heading3, Highlighter, Italic, Strikethrough } from "lucide-react";
 import { LinkSelector } from "./link-selector";
 
 type EditorBubbleMenuProps = Omit<BubbleMenuProps, "children">;
@@ -57,7 +52,7 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
       name: "strike",
       isActive: () => props.editor.isActive("strike"),
       command: () => props.editor.chain().focus().toggleStrike().run(),
-      icon: (isActive: boolean) => <Strike className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: (isActive: boolean) => <Strikethrough className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
     },
     {
       name: "highlight",
@@ -68,7 +63,7 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
           .focus()
           .toggleHighlight({ color: "#FDE047" })
           .run(),
-      icon: (isActive: boolean) => <Highlight className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: (isActive: boolean) => <Highlighter className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
     },
     {
       name: "code",

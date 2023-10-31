@@ -1,7 +1,7 @@
+import { X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
-import { Times } from "~/svgs";
 import { type UserSimple } from "~/types";
 import { HashnodeSocials } from "~/utils/constants";
 
@@ -46,7 +46,7 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
               onClick={() => setMenu(false)}
               className="btn-icon-large flex"
             >
-              <Times className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+              <X className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
             </button>
           </header>
 

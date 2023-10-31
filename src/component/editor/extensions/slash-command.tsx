@@ -1,6 +1,7 @@
 import { Extension, type Editor, type Range } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
 import Suggestion from "@tiptap/suggestion";
+import { Code, Heading1, Heading2, Heading3, List, ListOrdered, Quote, SplitSquareVertical, Text } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -9,11 +10,6 @@ import {
   useState, type ReactNode
 } from "react";
 import tippy from "tippy.js";
-import {
-  BulletList, Code, Divider, Heading1,
-  Heading2,
-  Heading3, NumberedList, Quote, Text
-} from "~/svgs";
 
 interface CommandItemProps {
   title: string;
@@ -62,7 +58,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       title: "Text",
       description: "Just start typing with plain text.",
       searchTerms: ["p", "paragraph"],
-      icon: <Text className="w-4 h-4 stroke-none fill-gray-700 dark:fill-text-secondary" />,
+      icon: <Text className="w-4 h-4 stroke-none stroke-gray-700 dark:stroke-text-secondary" />,
       command: ({ editor, range }: CommandProps) => {
         editor
           .chain()
@@ -118,7 +114,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       title: "Bullet List",
       description: "Create a simple bullet list.",
       searchTerms: ["unordered", "point", "list", "bullet"],
-      icon: <BulletList className="w-4 h-4 stroke-none fill-gray-700 dark:fill-text-secondary" />,
+      icon: <List className="w-4 h-4 stroke-none stroke-gray-700 dark:stroke-text-secondary" />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).toggleBulletList().run();
       },
@@ -127,7 +123,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       title: "Divider",
       description: "Add a horizontal divider.",
       searchTerms: ["divider", "hr"],
-      icon: <Divider className="w-4 h-4 stroke-none fill-gray-700 dark:fill-text-secondary" />,
+      icon: <SplitSquareVertical className="w-4 h-4 stroke-none stroke-gray-700 dark:stroke-text-secondary" />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).setHorizontalRule().run();
       },
@@ -136,7 +132,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       title: "Numbered List",
       description: "Create a list with numbering.",
       searchTerms: ["ordered", "list", "number"],
-      icon: <NumberedList className="w-4 h-4 stroke-none fill-gray-700 dark:fill-text-secondary" />,
+      icon: <ListOrdered className="w-4 h-4 stroke-none stroke-gray-700 dark:stroke-text-secondary" />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).toggleOrderedList().run();
       },
@@ -145,7 +141,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       title: "Quote",
       description: "Capture a quote.",
       searchTerms: ["blockquote"],
-      icon: <Quote className="w-4 h-4 stroke-none fill-gray-700 dark:fill-text-secondary" />,
+      icon: <Quote className="w-4 h-4 stroke-none stroke-gray-700 dark:stroke-text-secondary" />,
       command: ({ editor, range }: CommandProps) =>
         editor
           .chain()

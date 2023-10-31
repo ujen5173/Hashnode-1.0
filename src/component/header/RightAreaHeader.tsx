@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { Notification as NotificationSVG, Pen, Sun, Updates } from "~/svgs";
+
+import { Bell, GitBranch, Pencil, Sun } from "lucide-react";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { Notification } from "../miniComponent";
@@ -57,7 +58,7 @@ const RightArea: FC = () => {
               role="button"
               className="btn-filled hidden items-center justify-center gap-2 hover:bg-blue-500 sm:flex"
             >
-              <Pen className="h-4 w-4 fill-white stroke-white" />
+              <Pencil className="h-4 w-4 fill-none stroke-white" />
               <span className="text-sm">Write</span>
             </button>
           </Link>
@@ -69,7 +70,7 @@ const RightArea: FC = () => {
                 role="button"
                 className="btn-icon flex h-10 w-10 xl:hidden"
               >
-                <Pen className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+                <Pencil className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
               </button>
             </Link>
           </div>
@@ -82,7 +83,7 @@ const RightArea: FC = () => {
           role="button"
           className="btn-icon hidden h-10 w-10 xl:flex"
         >
-          <Updates className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+          <GitBranch className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
         </button>
       </Tooltip>
 
@@ -107,7 +108,7 @@ const RightArea: FC = () => {
               role="button"
               className="btn-icon hidden h-10 w-10 sm:flex"
             >
-              <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+              <Bell className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
             </div>
 
             <Link
@@ -120,7 +121,7 @@ const RightArea: FC = () => {
                 role="button"
                 className="btn-icon flex h-10 w-10"
               >
-                <NotificationSVG className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+                <Bell className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
               </button>
             </Link>
           </div>

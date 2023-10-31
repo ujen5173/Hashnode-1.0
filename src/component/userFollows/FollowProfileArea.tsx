@@ -1,9 +1,10 @@
 
+import { Calendar, Pencil } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
-import { DateSVG, Pen } from "~/svgs";
+
 
 const FollowimageArea: FC<{
   user: {
@@ -34,17 +35,17 @@ const FollowimageArea: FC<{
 
     {user.username === session?.user.username && (
       <Link href="/settings" className="btn-outline inline-flex mb-4 items-center gap-2">
-        <Pen className="h-5 w-5 fill-none stroke-secondary" />
-        <span>Edit image</span>
+        <Pencil className="h-5 w-5 fill-none stroke-secondary" />
+        <span>Edit Profile</span>
       </Link>
     )}
 
     <div className="flex items-center gap-2">
       <span>
-        <DateSVG className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
+        <Calendar className="h-4 w-4 fill-none stroke-gray-500 dark:stroke-text-primary" />
       </span>
 
-      <span className="text-lg text-gray-500 dark:text-text-primary">
+      <span className="text-md text-gray-500 dark:text-text-primary">
         Member since{" "}
         <span className="font-medium">
           {new Date(user.createdAt).toDateString()}

@@ -1,7 +1,8 @@
+import { Sparkles, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { type FC } from "react";
-import { Logo, Magic, Times } from "~/svgs";
+import { Logo } from "~/svgs";
 import { asideItems } from "~/utils/constants";
 
 const HamburgerMenu: FC<{
@@ -31,7 +32,7 @@ const HamburgerMenu: FC<{
               aria-label="Close Hambuger Menu"
               className="btn-icon-large flex"
             >
-              <Times className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+              <X className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
             </button>
           </header>
           <section className="flex flex-1 flex-col bg-light-bg px-4 shadow-md dark:bg-primary">
@@ -50,7 +51,7 @@ const HamburgerMenu: FC<{
               <div className="flex-1">
                 <Link href="/">
                   <div className="flex items-center gap-2 rounded-md px-4 py-2 text-base tracking-wide text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
-                    <Magic className="h-5 w-5 fill-secondary" />
+                    <Sparkles className="h-5 w-5 fill-secondary" />
                     <span>Rix</span>
                     <button className="400 rounded-full border border-border-light bg-gray-100 px-2 py-1 text-xs font-medium text-secondary dark:border-border dark:bg-border">
                       Upcomming

@@ -6,7 +6,8 @@ import React, { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { TagsSearchCard, UserSearchCard } from "~/component/card";
 import { SearchLoading } from "~/component/loading";
-import { Search } from "~/svgs";
+
+import { Search } from "lucide-react";
 import { type SearchResults } from "~/types";
 import { api } from "~/utils/api";
 import SearchArticle from "./SearchArticle";
@@ -43,6 +44,7 @@ interface UserSearch {
   username: string;
   image: string;
   isFollowing: boolean;
+  isAuthor: boolean;
   stripeSubscriptionStatus: string | null;
 }
 const searchNavigation = [
@@ -79,6 +81,8 @@ const SearchBody = React.forwardRef<
     tags: null,
     users: null,
   });
+
+  console.log({ data })
 
   const [topResults, setTopResults] = useState<any>([]);
 

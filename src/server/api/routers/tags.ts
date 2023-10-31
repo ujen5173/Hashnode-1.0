@@ -94,7 +94,7 @@ export const tagsRouter = createTRPCRouter({
           },
           with: {
             followers: {
-              where: eq(tagsToUsers.userId, ctx.session.user.id),
+              // where: eq(tagsToUsers.userId, ctx.session.user.id),
               columns: {
                 userId: true,
               },
@@ -159,7 +159,7 @@ export const tagsRouter = createTRPCRouter({
         })
         .optional()
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {  
       try {
         const startDate = new Date();
         const endDate = new Date();
@@ -172,51 +172,44 @@ export const tagsRouter = createTRPCRouter({
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
 
-        const res = await ctx.db.query.tags
-          .findMany({
-            where:
-              input?.variant === "any"
-                ? gt(tags.articlesCount, 0)
-                : eq(tags.articlesCount, 0),
-            limit: input?.limit || 6,
-            orderBy: [desc(tags.articlesCount), desc(tags.followersCount)],
-            with: {
-              articles: {
-                with: {
-                  article: {
-                    columns: {
-                      createdAt: true,
-                    },
+        const res = await ctx.db.query.tags.findMany({
+          limit: input?.limit || 6,
+          where: and(
+            gt(tags.articlesCount, 0),
+          ),
+          orderBy: [desc(tags.articlesCount), desc(tags.followersCount)],
+          with: {
+            articles: {
+              columns: {
+                articleId: false,
+                tagId: false,
+              },
+              with: {
+                article: {
+                  columns: {
+                    createdAt: true,
                   },
                 },
               },
             },
-          })
-          .then((tags) => {
-            return tags.filter((tag) => {
-              return tag.articles.some((article) => {
-                return (
-                  article.article.createdAt >= startDate &&
-                  article.article.createdAt <= endDate
-                );
-              });
-            });
+          },
+        }).then(res => {
+          const result = res.map(tag => {
+             return {
+              ...tag,
+              articles: input?.variant === "any" ? tag.articles : tag.articles.filter(article => article.article.createdAt >= startDate && article.article.createdAt <= endDate)
+            }
           });
-
+           return result;
+        });
+ 
         const tagData = res.map((tag) => {
           return {
             id: tag.id,
             name: tag.name,
             slug: tag.slug,
             logo: tag.logo,
-            articlesCount:
-              input?.variant === "any"
-                ? tag.articles.length
-                : tag.articles.filter(
-                    (article) =>
-                      article.article.createdAt >= startDate &&
-                      article.article.createdAt <= endDate
-                  ).length,
+            articlesCount: tag.articles.length
           };
         });
 
@@ -251,49 +244,60 @@ export const tagsRouter = createTRPCRouter({
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
 
-        const res = await ctx.db.query.users
-          .findFirst({
-            where: eq(users.id, ctx.session.user.id),
-            with: {
-              followingTags: {
-                columns: {
-                  userId: true,
-                },
-              },
-            },
-          })
-          .then((user) => {
-            if (!user) {
-              return [];
-            }
-            return ctx.db.query.tags.findMany({
-              where: inArray(
-                tags.id,
-                user.followingTags.map((tag) => tag.userId)
-              ),
-              limit: input?.limit || 6,
-              orderBy: [desc(tags.followersCount)],
+        const result = await ctx.db.query.users.findFirst({
+          where: eq(users.id, ctx.session.user.id),
+          columns: {
+            id: true,
+          },
+          with: {
+            followingTags: {
               with: {
-                articles: {
-                  with: {
-                    article: {
-                      columns: {
-                        createdAt: true,
-                      },
-                    },
+                tag: {
+                  columns: {
+                    description: false,
                   },
-                },
+                  with: {
+                    articles: {
+                      columns: {
+                        articleId: false,
+                        tagId: false,
+                      },
+                      with: {
+                        article: {
+                          columns: {
+                            createdAt: true,
+                          },
+                        },
+                      }
+                    }
+                  }
+                }
               },
-            });
-          });
+              columns: {
+                tagId: false,
+                userId: false,
+              }
+            }
+          }
+        }).then(res => {
+          if (res) {
+            return res.followingTags.map(e => e.tag);
+          } else {
+            return undefined;
+          }
+        });
 
-        const tagData = res.map((tag) => {
+        if (!result) {
+          return []
+        }
+
+        const tagData = result.map((tag) => {
           return {
             id: tag.id,
             name: tag.name,
             slug: tag.slug,
             logo: tag.logo,
-            articlesCount: tag.articles.filter(
+            articlesCount:  input?.variant === "any" ? tag.articlesCount :  tag.articles.filter(
               (article) =>
                 article.article.createdAt >= startDate &&
                 article.article.createdAt <= endDate

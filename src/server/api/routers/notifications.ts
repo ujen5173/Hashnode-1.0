@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { notifications } from "~/server/db/schema";
@@ -8,7 +8,7 @@ export const notificationRouter = createTRPCRouter({
     const result = await ctx.db.query.notifications.findMany({
       where: and(
         eq(notifications.userId, ctx.session.user.id),
-        eq(notifications.isRead, false)
+        eq(notifications.isRead, false),
       ),
       limit: 10,
     });
@@ -26,8 +26,7 @@ export const notificationRouter = createTRPCRouter({
           "ALL",
           "COMMENT",
           "LIKE",
-          "NEW_ARTICLE",
-          "MENTION",
+          "ARTICLE",
           "FOLLOW",
         ]),
       })
@@ -38,11 +37,11 @@ export const notificationRouter = createTRPCRouter({
       const result = await ctx.db.query.notifications.findMany({
         where: and(
           eq(notifications.userId, ctx.session.user.id),
-          input.type === "ALL" ? undefined : eq(notifications.type, input.type)
+          input.type === "ALL" ? undefined : eq(notifications.type, input.type),
         ),
         limit: (limit || 6) + 1,
         offset: skip,
-        orderBy: [asc(notifications.createdAt)],
+        orderBy: [desc(notifications.createdAt)],
         columns: {
           id: true,
           body: true,

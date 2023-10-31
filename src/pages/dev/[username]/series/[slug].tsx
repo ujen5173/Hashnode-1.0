@@ -14,7 +14,8 @@ import {
 import { authOptions } from "~/server/auth";
 import db from "~/server/db";
 import { handles } from "~/server/db/schema";
-import { Pen } from "~/svgs";
+
+import { Pencil } from "lucide-react";
 import { api } from "~/utils/api";
 import { AuthorBlogNavigation, type BlogSocial, type CustomTabs } from "..";
 
@@ -165,7 +166,7 @@ const SeriesContainer = () => {
               {data?.description}
             </h1>
             <button className="flex items-center gap-2 rounded-md border border-secondary px-4 py-1">
-              <Pen className="h-4 w-4 fill-none stroke-secondary" />
+              <Pencil className="h-4 w-4 fill-none stroke-secondary" />
               <span className="text-secondary">Edit Series</span>
             </button>
           </div>

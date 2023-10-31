@@ -1,7 +1,8 @@
+import { Pencil, Plus, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { Add, Pen, Plus, Times } from "~/svgs";
+
 import { api } from "~/utils/api";
 import { isValidURL } from "~/utils/miniFunctions";
 
@@ -11,7 +12,7 @@ const Navbar = () => {
 
   const { data, isLoading, refetch } = api.handles.getNavbarData.useQuery(
     {
-      handleId: user?.user?.handle?.id as string,
+      handleId: user?.user.handle?.id as string,
     },
     {
       enabled: !!user?.user.handle?.handle,
@@ -76,7 +77,7 @@ const Navbar = () => {
             className="btn-outline flex items-center gap-2"
           >
             <Plus className="h-4 w-4 fill-secondary" />
-            <span>Add an itesm</span>
+            <span>Add an items</span>
           </button>
         </div>
       )}
@@ -309,13 +310,13 @@ const NavBarItem: FC<{
                 }}
                 className="btn-icon-large flex items-center gap-2"
               >
-                <Pen className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+                <Pencil className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
               </button>
               <button
                 onClick={() => void removeItem(e.id)}
                 className="btn-icon-large flex items-center gap-2"
               >
-                <Times className="h-5 w-5 fill-gray-700 stroke-none dark:fill-text-secondary" />
+                <X className="h-5 w-5 fill-gray-700 stroke-none dark:fill-text-secondary" />
               </button>
             </div>
           )
@@ -338,7 +339,7 @@ const NavBarItem: FC<{
                 onClick={() => void saveNavbar()}
                 className="btn-outline flex items-center gap-2"
               >
-                <Add className="h-4 w-4 fill-secondary" />
+                <Plus className="h-4 w-4 fill-secondary" />
                 <span>Save Navbar</span>
               </button>
             </div>

@@ -1,7 +1,6 @@
-import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { follow, users } from "~/server/db/schema";
+import { articles, follow, users } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
 
@@ -281,94 +280,58 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const f = await ctx.db.query.follow.findMany({
-        where: eq(follow.followingId, input.userId),
+      const result = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.userId),
         columns: {
-          followingId: false,
-          userId: false,
+          id: true,
         },
         with: {
-          user: {
+          followers: {
+            limit: 20,
             columns: {
-              id: true,
-              name: true,
-              tagline: true,
-              username: true,
-              image: true,
-            },
-          },
-        },
-        limit: 20,
-      });
-
-      let authorUser: {
-        followers: {
-          user: {
-            id: string;
-            name: string;
-            username: string;
-            image: string | null;
-            tagline: string | null;
-          };
-        }[];
-      } = {
-        followers: [],
-      };
-
-      if (ctx?.session?.user.id) {
-        authorUser = await ctx.db.query.users
-          .findFirst({
-            where: eq(users.id, ctx.session?.user.id),
-            columns: {
-              id: true,
+              followingId: false,
+              userId: false,
             },
             with: {
-              followers: {
+              following: {
                 columns: {
-                  followingId: false,
-                  userId: false,
+                  id: true,
+                  username: true,tagline: true,
+                  name: true,
+                  image: true,
                 },
-                where: eq(follow.userId, input.userId),
-                with: {
+                ...(ctx?.session?.user?.id ? ({with: {
                   following: {
+                    where: eq(follow.userId, ctx?.session?.user?.id ),
                     columns: {
-                      id: true,
-                      name: true,
-                      tagline: true,
-                      username: true,
-                      image: true,
+                      userId: true,
                     },
                   },
-                },
-              },
-            },
-          })
-          .then((res) => {
-            if (res) {
-              return {
-                followers: res.followers.map((f) => ({ user: f.following })),
-              };
+                }}) : {})
+               }
             }
-            return {
-              followers: [],
+          }
+        }
+       }).then((e: {
+        id: string;
+        followers: {
+            following: {
+              followers?: {
+                userId: string;
+              }[];
+                id: string;
+                tagline: string | null;
+                name: string;
+                username: string;
+                image: string | null;
             };
-          });
-      }
+        }[];
+    } | undefined) => e?.followers.map(f => {
+      const {followers, ...rest} = f.following;
+      return ({...rest, isFollowing: (followers ?? []).length > 0})
+      }));
 
-      if (!authorUser) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Author not found!",
-        });
-      }
-
-      const updatedFollowers = f.map((user) => {
-        return {
-          ...user.user,
-          isFollowing: authorUser?.followers.length > 0,
-        };
-      });
-      return updatedFollowers;
+      return result;
     }),
 
   getFollowingList: publicProcedure
@@ -378,93 +341,59 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const f = await ctx.db.query.follow.findMany({
-        where: eq(follow.userId, input.userId),
+       const result = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.userId),
         columns: {
-          followingId: false,
-          userId: false,
+          id: true,
         },
         with: {
-          user: {
+          following: {
+            limit: 20,
             columns: {
-              id: true,
-              name: true,
-              tagline: true,
-              username: true,
-              image: true,
-            },
-          },
-        },
-        limit: 20,
-      });
-
-      let authorUser: {
-        following: {
-          user: {
-            id: string;
-            name: string;
-            username: string;
-            image: string | null;
-            tagline: string | null;
-          };
-        }[];
-      } = {
-        following: [],
-      };
-
-      if (ctx?.session?.user.id) {
-        authorUser = await ctx.db.query.users
-          .findFirst({
-            where: eq(users.id, ctx.session?.user.id),
-            columns: {
-              id: true,
-            },
+              followingId: false,
+              userId: false,
+            }, 
             with: {
-              following: {
-                where: eq(follow.userId, input.userId),
+              user: {
                 columns: {
-                  followingId: false,
-                  userId: false,
+                  id: true,
+                  username: true,
+                  name: true,
+                  tagline: true,
+                  image: true,
                 },
-                with: {
-                  user: {
-                    columns: {
-                      id: true,
-                      name: true,
-                      tagline: true,
-                      username: true,
-                      image: true,
+                ...(ctx?.session?.user?.id ? ({with: {
+                  followers: {
+                    where: eq(follow.followingId, ctx?.session?.user?.id ),
+                    columns: { 
+                      userId: true,
                     },
                   },
-                },
-              },
-            },
-          })
-          .then((res) => {
-            if (res) {
-              return { following: res.following };
+                }}) : {})
+               }
             }
-            return {
-              following: [],
+          }
+        }
+      }).then((e: {
+        id: string;
+        following: {
+            user: {
+              followers?: {
+                userId: string;
+              }[];
+                id: string;
+                name: string;
+                username: string;
+                tagline: string | null;
+                image: string | null;
             };
-          });
-      }
+        }[];
+    } | undefined) => e?.following.map(f => {
+      const {followers, ...rest} = f.user;
+      return ({...rest, isFollowing: (followers ?? []).length > 0})
+      }));
 
-      if (!authorUser) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Author not found!",
-        });
-      }
-
-      const updatedFollowing = f.map((user) => {
-        return {
-          ...user.user,
-          isFollowing: authorUser?.following.length > 0,
-        };
-      });
-
-      return updatedFollowing;
+      return result;
     }),
 
   getUserDashboardRoadmapDetails: protectedProcedure.query(async ({ ctx }) => {
@@ -479,8 +408,8 @@ export const usersRouter = createTRPCRouter({
       },
     });
 
-    const articles = await ctx.db.query.articles.findFirst({
-      where: eq(users.id, ctx.session.user?.id),
+    const articlesData = await ctx.db.query.articles.findFirst({
+      where: eq(articles.userId, ctx.session.user?.id),
       columns: {
         id: true,
       },
@@ -488,7 +417,7 @@ export const usersRouter = createTRPCRouter({
 
     return {
       ...data,
-      articles,
+      articles: articlesData,
     };
   }),
 

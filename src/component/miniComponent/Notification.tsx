@@ -12,14 +12,13 @@ export enum NotificationTypesEnum {
   ALL = "ALL",
   COMMENT = "COMMENT",
   LIKE = "LIKE",
-  NEW_ARTICLE = "NEW_ARTICLE",
-  MENTION = "MENTION",
+  ARTICLE = "ARTICLE",
   FOLLOW = "FOLLOW",
 }
 
 enum Type {
   all = "all",
-  new_articles = "new_article",
+  articles = "article",
   comments = "comment",
   likes = "like",
 }
@@ -95,7 +94,7 @@ const Notification = () => {
 export default Notification;
 
 export const NotificationContainer: FC<{
-  res: "all" | "comment" | "like" | "new_article" | "follow";
+  res: "all" | "comment" | "like" | "article" | "follow";
 }> = ({ res }) => {
   const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } = api.notifications.get.useInfiniteQuery(
     {

@@ -1,7 +1,9 @@
+import { ChevronLeft, Sun, UploadCloud } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useContext, type FC } from "react";
-import { Angleleft, Cloud, LogonoText, Sun } from "~/svgs";
+import { LogonoText } from "~/svgs";
+
 import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { C, type ContextValue } from "~/utils/context";
 
@@ -29,7 +31,7 @@ const NewArticleHeader: FC<Props> = ({
               role="button"
               className="btn-icon flex h-10 w-10"
             >
-              <Angleleft className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+              <ChevronLeft className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
             </button>
           </Link>
 
@@ -51,7 +53,7 @@ const NewArticleHeader: FC<Props> = ({
             <div className="hidden items-center gap-2 sm:flex">
               {savedState ? (
                 <div className="flex items-center justify-center gap-2">
-                  <Cloud className="h-6 w-6" />
+                  <UploadCloud className="h-6 w-6 fill-none stroke-green" />
                   <span className="text-base text-green">Saved</span>
                 </div>
               ) : (

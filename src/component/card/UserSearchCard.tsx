@@ -1,10 +1,11 @@
 import { Tooltip } from "@mantine/core";
+import { Check, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { Check, Follow } from "~/svgs";
+
 import { api } from "~/utils/api";
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
     stripeSubscriptionStatus: string | null;
     image: string | null;
     isFollowing: boolean;
+    isAuthor: boolean;
   };
   setOpened: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -81,28 +83,33 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
             </div>
 
             <p className="text-sm text-gray-500 dark:text-text-primary">
-              {searchedUser.username}
+              @{searchedUser.username}
             </p>
           </div>
         </div>
       </Link>
 
-      <button
-        onClick={() => void followUser()}
-        className="btn-outline flex items-center justify-center gap-2 text-secondary md:w-max"
-      >
-        {isFollowing ? (
-          <>
-            <Check className="h-5 w-5 fill-secondary" />
-            <span className="text-sm md:text-base">Following</span>
-          </>
-        ) : (
-          <>
-            <Follow className="h-5 w-5 fill-secondary" />
-            <span className="text-sm md:text-base">Follow User</span>
-          </>
-        )}
-      </button>
+      {
+        !searchedUser.isAuthor && (
+
+          <button
+            onClick={() => void followUser()}
+            className="btn-outline flex items-center justify-center gap-2 text-secondary md:w-max"
+          >
+            {isFollowing ? (
+              <>
+                <Check className="h-5 w-5 stroke-secondary" />
+                <span className="text-sm md:text-base">Following</span>
+              </>
+            ) : (
+              <>
+                <Plus className="h-5 w-5 stroke-secondary" />
+                <span className="text-sm md:text-base">Follow User</span>
+              </>
+            )}
+          </button>
+        )
+      }
     </div>
   );
 };

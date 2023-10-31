@@ -30,14 +30,13 @@ import {
   follow,
   handles,
   likesToArticles,
-  likesToComment,
-  notifications,
+  likesToComment, notificationEnum, notifications,
   readersToArticles,
   series,
   tags,
   tagsToArticles,
   tagsToUsers,
-  users,
+  users
 } from "~/server/db/schema";
 import type { ArticleCardWithComments, SearchResults } from "~/types";
 import {
@@ -133,10 +132,7 @@ export const postsRouter = createTRPCRouter({
           .object({
             read_time: z.enum(["over_5", "5", "under_5"]).nullable().optional(),
             tags: z.array(
-              z.object({
-                id: z.string().trim(),
-                name: z.string().trim(),
-              })
+              z.string(),
             ),
           })
           .optional()
@@ -148,39 +144,22 @@ export const postsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      try {
+      try { 
         const { cursor, skip, limit } = input;
-
-        const result = await ctx.db.query.articles
+         const result = await ctx.db.query.articles
           .findMany({
-            where: and(
-              and(
-                eq(articles.isDeleted, false),
-                ...(input?.filter?.read_time
-                  ? (() => {
-                      return input?.filter?.read_time === "over_5"
-                        ? [gt(articles.read_time, 5)]
-                        : input?.filter?.read_time === "under_5"
-                        ? [lt(articles.read_time, 5)]
-                        : input?.filter?.read_time === "5"
-                        ? [eq(articles.read_time, 5)]
-                        : [];
-                    })()
+            where:
+            and(eq(articles.isDeleted, false),
+                 ...(input?.filter?.read_time
+                  ? input.filter.read_time === "over_5" 
+                    ? [gt(articles.read_time, 5)]
+                    : input.filter.read_time === "under_5"
+                    ? [lt(articles.read_time, 5)]
+                    : input.filter.read_time === "5"
+                    ? [eq(articles.read_time, 5)]
+                    : []
                   : []),
-                ...(input?.filter?.tags
-                  ? (() => {
-                      return input?.filter?.tags.length > 0
-                        ? [
-                            inArray(
-                              tags.name,
-                              input?.filter?.tags.map((tag) => tag.name)
-                            ),
-                          ]
-                        : [];
-                    })()
-                  : [])
-              )
-            ),
+            ),            
             limit: (limit || 6) + 1,
             offset: skip,
             orderBy:
@@ -194,16 +173,20 @@ export const postsRouter = createTRPCRouter({
             ...selectArticleCard,
           })
           .then((article) =>
-            article.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
-          );
+            article.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) })).filter((article) => {
+              if (input?.filter?.tags) {
+                return input?.filter?.tags.every((tag) => article.tags.some((e) => e.name === tag))
+              } else {
+                return true;
+              }
+            })
+          ); 
 
         let nextCursor: typeof cursor | undefined = undefined;
         if (result.length > limit) {
           const nextItem = result.pop(); // return the last item from the array
           nextCursor = nextItem?.id;
         }
-
-        result.map((e) => e.user);
 
         const formattedPosts = await getArticlesWithUserFollowingimages(
           {
@@ -215,8 +198,7 @@ export const postsRouter = createTRPCRouter({
 
         return {
           posts: formattedPosts,
-          // posts: result,
-          nextCursor,
+          nextCursor: nextCursor,
         };
       } catch (err) {
         throw new TRPCError({
@@ -410,7 +392,7 @@ export const postsRouter = createTRPCRouter({
               user: {
                 with: {
                   followers: {
-                    where: eq(follow.userId, ctx.session?.user?.id || ""),
+                    where: eq(follow.followingId, ctx.session?.user?.id || ""),
                     columns: {
                       userId: true,
                     },
@@ -618,12 +600,35 @@ export const postsRouter = createTRPCRouter({
           .onConflictDoNothing()
           .returning({
             id: tags.id,
+            articlesCount: tags.articlesCount,
           });
+ 
 
+        const allTagsDetails = await ctx.db.query.tags.findMany({
+          where: inArray(tags.name, input.tags),
+          columns: {
+            id: true,
+            articlesCount: true,
+            name: true,
+          },
+        });
+
+        // update article count;
+        await Promise.all(
+          allTagsDetails.map(async (detail) => {
+            await ctx.db
+              .update(tags)
+              .set({
+                articlesCount: detail.articlesCount + 1,
+              })
+              .where(eq(tags.id, detail.id));
+          })
+        );
         const { edit, tags: _, ...rest } = input;
 
         if (edit && !!existingArticle) {
           // editing an article
+          console.log("editing article");
           const [updatedArticle] = await ctx.db
             .update(articles)
             .set({
@@ -644,12 +649,27 @@ export const postsRouter = createTRPCRouter({
           await ctx.db
             .insert(tagsToArticles)
             .values(
-              allTags.map((tag) => ({
+              allTagsDetails.map((tag) => ({
                 articleId: updatedArticle?.id as string,
                 tagId: tag.id,
               }))
             )
             .onConflictDoNothing();
+
+          // update article count;
+          await ctx.db
+            .update(tags)
+            .set({
+              articlesCount:
+                (allTags.find((e) => e.id === tags.id._.data)?.articlesCount ??
+                  0) + 1,
+            })
+            .where(
+              inArray(
+                tags.id,
+                allTags.map((e) => e.id)
+              )
+            );
 
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, updatedArticle?.id as string),
@@ -680,9 +700,7 @@ export const postsRouter = createTRPCRouter({
                 input.content.slice(0, 40),
               seoOgImage: input.seoOgImage || input.cover_image,
             })
-            .returning({
-              id: articles.id,
-            });
+            .returning();
 
           if (!newArticle) {
             return {
@@ -691,20 +709,51 @@ export const postsRouter = createTRPCRouter({
             };
           }
 
-          await ctx.db.insert(tagsToArticles).values(
-            allTags.map((tag) => ({
-              articleId: newArticle.id,
-              tagId: tag.id,
-            }))
-          );
+          await ctx.db
+            .insert(tagsToArticles)
+            .values(
+              allTagsDetails.map((tag) => ({
+                articleId: newArticle.id,
+                tagId: tag.id,
+              }))
+            )
+            .onConflictDoNothing();
 
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, newArticle.id),
             columns: {
               slug: true,
             },
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                },
+                with: {
+                  followers: {
+                    columns: {
+                      followingId: true,
+                    }
+                  }
+                }
+              }
+            }
           });
 
+          if (result?.user.followers) {
+            await ctx.db.insert(notifications).values(
+              result?.user.followers.map((follower) => ({
+                userId: follower.followingId,
+                fromId: ctx.session.user.id,
+                articleId: newArticle.id,
+                type: notificationEnum.enumValues[0],
+                body: `@${ctx.session.user.username} published a new article.`,
+                title: newArticle.title,
+                slug: newArticle.slug,                
+              }))
+            );
+          }
+            
           return {
             success: true,
             redirectLink: `/u/@${ctx.session.user.username}/${
@@ -713,6 +762,7 @@ export const postsRouter = createTRPCRouter({
           };
         }
       } catch (err) {
+        console.log(err);
         if (err instanceof TRPCError) {
           throw err;
         } else {
@@ -905,6 +955,7 @@ export const postsRouter = createTRPCRouter({
             return {
               ...rest,
               isFollowing: followers.length > 0,
+              isAuthor: details.id === ctx.session?.user?.id,
             };
           });
           break;
@@ -1092,6 +1143,7 @@ export const postsRouter = createTRPCRouter({
             return {
               ...rest,
               isFollowing: followers.length > 0,
+              isAuthor: details.id === ctx.session?.user?.id,
             };
           });
 
@@ -1139,7 +1191,6 @@ export const postsRouter = createTRPCRouter({
             offset: skip,
             ...selectArticleCard,
             orderBy: [
-              desc(articles.createdAt),
               desc(articles.likesCount),
               desc(articles.commentsCount),
             ],
@@ -1201,17 +1252,31 @@ export const postsRouter = createTRPCRouter({
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
 
-        const articlesdata = await ctx.db.query.articles
-          .findMany({
+        const sessionUser = await ctx.db.query.users.findFirst({
+          where: eq(users.id, ctx.session?.user?.id || ""),
+          columns: {
+            id: true,
+          },
+          with: {
+            following: {
+              columns: {
+                userId: true,
+              }
+            },
+          },
+        });
+
+        if (!sessionUser) {
+          return {
+            posts: [],
+            nextCursor: null,
+          };
+        }
+
+        const articlesdata = await ctx.db.query.articles.findMany({
             where: and(
               eq(articles.isDeleted, false),
-              eq(articles.userId, ctx.session.user.id),
-              input?.variant === "any"
-                ? undefined
-                : and(
-                    gte(articles.createdAt, startDate),
-                    lte(articles.createdAt, endDate)
-                  )
+              inArray(articles.userId, sessionUser?.following.map(e => e.userId)),
             ),
             limit: (limit || 6) + 1,
             offset: skip,
@@ -1258,7 +1323,7 @@ export const postsRouter = createTRPCRouter({
   getAuthorArticles: publicProcedure
     .input(
       z.object({
-        username: z.string().trim(),
+        id: z.string().trim(),
         limit: z.number().optional().default(6),
         skip: z.number().optional(),
         cursor: z.string().nullable().optional(),
@@ -1281,8 +1346,7 @@ export const postsRouter = createTRPCRouter({
 
         const articlesData = await ctx.db.query.articles.findMany({
           where: and(
-            eq(articles.isDeleted, false),
-            eq(users.username, input.username),
+            eq(articles.userId, input.id),
             input.type === "DELETED"
               ? eq(articles.isDeleted, true)
               : eq(articles.isDeleted, false)
@@ -1366,7 +1430,7 @@ export const postsRouter = createTRPCRouter({
   getAuthorArticlesByHandle: publicProcedure
     .input(
       z.object({
-        handle: z.string().trim(),
+        handleDomain: z.string().trim(),
         limit: z.number().optional().default(6),
         skip: z.number().optional(),
         cursor: z.string().nullable().optional(),
@@ -1376,29 +1440,31 @@ export const postsRouter = createTRPCRouter({
       try {
         const { cursor, skip, limit } = input;
 
-        const article = await ctx.db.query.articles.findMany({
-          where: and(
-            eq(articles.isDeleted, false),
-            eq(handles.handle, input.handle)
-          ),
+        const article = await ctx.db.query.handles.findMany({
+          where: eq(handles.handle, input.handleDomain),
           with: {
             user: {
-              columns: {
-                image: true,
-                username: true,
-              },
-            },
+              with: {
+                articles: {
+                  where: eq(articles.isDeleted, false),
+                  limit: (limit || 6) + 1,
+                  columns: {
+                    id: true,
+                    content: true,
+                    title: true,
+                    subtitle: true,
+                    slug: true,
+                    createdAt: true,
+                    read_time: true,
+                    cover_image: true,
+                  },
+                  orderBy: [desc(articles.createdAt)],
+                },
+              }
+            }
           },
           columns: {
             id: true,
-            title: true,
-            slug: true,
-            read_time: true,
-            content: true,
-            subtitle: true,
-            cover_image: true,
-            createdAt: true,
-            userId: false,
           },
           limit: (limit || 6) + 1,
           offset: skip,

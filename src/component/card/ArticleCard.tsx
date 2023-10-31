@@ -1,10 +1,9 @@
 import { Tooltip } from "@mantine/core";
+import { Book, BookOpen, Bookmark, BookmarkCheck, MessageCircle, ThumbsUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
-import { Book, Bookmarkplus, Like, Multicomment, Series } from "~/svgs";
-import Bookmarked from "~/svgs/Bookmarked";
 import { ArticleCard } from "~/types";
 import { C, type ContextValue } from "~/utils/context";
 import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
@@ -30,7 +29,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
         <div className="flex-1">
           <div className="flex itmes-center gap-2">
             <Link href={`/u/@${card.user.username}`}>
-              <h1 className="text-base font-semibold text-gray-900 dark:text-text-secondary">
+              <h1 className="text-sm font-semibold text-gray-900 dark:text-text-secondary">
                 {card.user.name}
               </h1>
             </Link>
@@ -78,7 +77,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
 
             <Link href={`/u/@${card.user.username}/${card.slug}`}>
               <div className="mb-4 flex items-center gap-2">
-                <Book className="h-4 w-4 fill-secondary" />
+                <BookOpen className="h-4 w-4 stroke-secondary" />
                 <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
                   {card.read_time} min read
                 </p>
@@ -127,9 +126,9 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                 } btn-icon-large flex w-max items-center justify-center`}
             >
               {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
-                <Bookmarked className="h-5 w-5" />
+                <BookmarkCheck className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
               ) : (
-                <Bookmarkplus className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                <Bookmark className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
               )}
             </button>
 
@@ -183,7 +182,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
         >
           <p className="mr-2 flex items-center gap-1 rounded-full bg-secondary bg-opacity-10 px-2 py-1">
             <span className="text-gray-900 dark:text-text-primary">
-              <Series className="h-3 w-3 fill-secondary" />
+              <Book className="h-3 w-3 fill-secondary" />
             </span>
             <span className="max-height-one text-xs font-semibold text-secondary">
               {limitText(card.series.title, 20)}
@@ -193,7 +192,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
       )}
 
       <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
-        <Like className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+        <ThumbsUp className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
         <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
           {card.likesCount}
         </span>
@@ -202,7 +201,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
       {!card.disabledComments && (
         <div className="flex w-max flex-1 items-center justify-between gap-2">
           <button className="flex items-center gap-1 rounded-full bg-transparent px-3 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
-            <Multicomment className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+            <MessageCircle className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
             <span className="text-sm font-medium text-gray-700 dark:text-text-primary">
               {card.commentsCount}
             </span>

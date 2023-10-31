@@ -1,12 +1,7 @@
+import { Mail, Settings, Table2, User, Wand2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from 'next/router';
-import {
-  Magic,
-  Mail,
-  Settings,
-  Tab,
-  User
-} from "~/svgs";
+
 
 const UserDetailsOptions = () => {
   const { tab } = useRouter().query;
@@ -42,7 +37,7 @@ const UserDetailsOptions = () => {
           <Link href="/settings/manage-blogs">
             <div className={`cursor-pointer px-4 py-3 text-base font-semibold hover:bg-gray-200  dark:hover:bg-border flex flex-row items-center gap-2 ${tab?.length === 1 && tab[0] === "manage-blogs" ? "text-secondary" : " text-gray-600 dark:text-text-primary"}`}>
               <span>
-                <Tab className={`w-5 h-5 ${tab?.length === 1 && tab[0] === "manage-blogs" ? "fill-secondary" : " fill-gray-600 dark:fill-text-primary"}`} />
+                <Table2 className={`w-5 h-5 ${tab?.length === 1 && tab[0] === "manage-blogs" ? "fill-secondary" : " fill-gray-600 dark:fill-text-primary"}`} />
               </span>
               <span>
                 MANAGE BLOGS
@@ -66,7 +61,7 @@ const UserDetailsOptions = () => {
           <Link href="/settings/pro">
             <div className={`cursor-pointer px-4 py-3 text-base font-semibold hover:bg-gray-200  dark:hover:bg-border flex flex-row items-center gap-2 ${tab?.length === 1 && tab[0] === "pro" ? "text-secondary" : " text-gray-600 dark:text-text-primary"}`}>
               <span>
-                <Magic className={`w-5 h-5 ${tab?.length === 1 && tab[0] === "pro" ? "fill-secondary" : " fill-gray-600 dark:fill-text-primary"}`} />
+                <Wand2 className={`w-5 h-5 ${tab?.length === 1 && tab[0] === "pro" ? "fill-secondary" : " fill-gray-600 dark:fill-text-primary"}`} />
               </span>
               <span>
                 PRO SUBSCRIPTIONS

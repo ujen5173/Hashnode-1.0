@@ -86,8 +86,7 @@ export interface DetailedTag {
   slug: string;
   followersCount: string;
   articlesCount: string;
-  followers: { id: string }[];
-  articles: { id: string }[];
+  isFollowing: boolean;
   description: string;
   logo: string;
   createdAt: string;
@@ -124,6 +123,7 @@ interface SearchResults {
         image: string | null;
         stripeSubscriptionStatus: string | null;
         isFollowing: boolean;
+        isAuthor: boolean;
       }[]
     | null;
   tags:

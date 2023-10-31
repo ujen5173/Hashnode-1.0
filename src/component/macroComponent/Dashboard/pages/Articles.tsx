@@ -1,11 +1,12 @@
 import { useClickOutside } from "@mantine/hooks";
 import { TRPCClientError } from "@trpc/client";
+import { MoreVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import useOnScreen from "~/hooks/useOnScreen";
-import { Dots } from "~/svgs";
+
 import { api } from "~/utils/api";
 import { limitText } from "~/utils/miniFunctions";
 
@@ -18,7 +19,7 @@ const Articles = () => {
 
   const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getAuthorArticles.useInfiniteQuery(
     {
-      username: user?.user.username as string,
+      id: user?.user.id as string,
       limit: 10,
       type,
     },
@@ -28,6 +29,7 @@ const Articles = () => {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
+
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const reachedBottom = useOnScreen(bottomRef);
@@ -221,7 +223,7 @@ const ArticleCard: FC<{
           ref={setControl}
           className="rounded-md border cursor-pointer border-border-light px-2 py-2 text-sm font-semibold uppercase hover:bg-light-bg dark:border-border dark:hover:bg-primary-light"
         >
-          <Dots className="h-4 w-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+          <MoreVertical className="h-4 w-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
         </div>
 
         {opened && (

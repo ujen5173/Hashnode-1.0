@@ -1,19 +1,11 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
+import { AlertOctagon, Check, ChevronDown, Linkedin, Plus, Share, Twitter } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import {
-  Angledown,
-  Check,
-  Follow,
-  Linkedin,
-  ProfileShare,
-  Report,
-  Twitter,
-} from "~/svgs";
 import { type DetailedUser } from "~/types";
 import { api } from "~/utils/api";
 
@@ -54,12 +46,13 @@ const UserimageArea: FC<{
     }));
 
     if (userDetails) {
-
       follow({
         userId: userDetails.id,
       });
     }
   };
+
+  console.log({ userDetails })
 
   return (
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
@@ -137,7 +130,7 @@ const UserimageArea: FC<{
                 onClick={() => setOpened(true)}
                 className="btn-icon-outline"
               >
-                <ProfileShare className="h-5 w-5 fill-gray-700 dark:fill-text-secondary" />
+                <Share className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
               </button>
 
               {opened && (
@@ -155,7 +148,7 @@ const UserimageArea: FC<{
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
-                            <Twitter className="h-6 w-6 fill-twitterColor" />
+                            <Twitter className="h-6 w-6 fill-twitterColor stroke-none" />
                           </span>
 
                           <span>Twitter</span>
@@ -189,7 +182,7 @@ const UserimageArea: FC<{
                 onClick={() => setOpened2(true)}
                 className="btn-icon-outline"
               >
-                <Angledown className="h-6 w-6 fill-gray-700 dark:fill-text-secondary" />
+                <ChevronDown className="h-6 w-6 stroke-gray-700 dark:stroke-text-secondary" />
               </button>
 
               {opened2 && (
@@ -201,7 +194,7 @@ const UserimageArea: FC<{
                     <li className="w-full p-4 text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
                       <button className="flex w-full items-center justify-center gap-2 pr-8 text-left">
                         <span>
-                          <Report className="h-6 w-6 fill-twitterColor" />
+                          <AlertOctagon className="h-6 w-6 fill-twitterColor" />
                         </span>
 
                         <span>Report this image</span>
@@ -217,7 +210,7 @@ const UserimageArea: FC<{
         {user?.user.username === userDetails?.username ? (
           <Link href={"/settings"}>
             <button className="btn-outline flex w-full items-center justify-center gap-2 text-secondary md:w-max">
-              Edit image
+              Edit Profile
             </button>
           </Link>
         ) : (
@@ -228,12 +221,12 @@ const UserimageArea: FC<{
             >
               {following.status ? (
                 <>
-                  <Check className="h-5 w-5 fill-secondary" />
+                  <Check className="h-5 w-5 stroke-secondary" />
                   <span>Following</span>
                 </>
               ) : (
                 <>
-                  <Follow className="h-5 w-5 fill-secondary" />
+                  <Plus className="h-5 w-5 stroke-secondary" />
                   <span>Follow User</span>
                 </>
               )}

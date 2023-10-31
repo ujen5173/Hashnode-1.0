@@ -7,7 +7,6 @@ import { formatDate } from "~/utils/miniFunctions";
 const NotificationCard: FC<{ notification: Notification }> = ({
   notification,
 }) => {
-  console.log({ notification })
   return (
     <div
       key={notification.id}
@@ -35,7 +34,7 @@ const NotificationCard: FC<{ notification: Notification }> = ({
             ? "commented on your article"
             : notification.type === "LIKE"
               ? "liked your article"
-              : notification.type === "NEW_ARTICLE"
+              : notification.type === "ARTICLE"
                 ? "published a new article"
                 : "followed you"}
         </p>

@@ -1,3 +1,4 @@
+import { BookOpen, Check, Plus, Settings } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +11,7 @@ import { StackedArticleLoading } from "~/component/loading";
 import { ArticleActions } from "~/component/miniComponent";
 import { CommentsModal } from "~/component/popup";
 import { FollowContext } from "~/pages/u/[username]/[slug]";
-import { Book, Check, Follow, Settings } from "~/svgs";
+
 import type { Article, Tag, User } from "~/types";
 import { api } from "~/utils/api";
 import { formatDate } from "~/utils/miniFunctions";
@@ -122,7 +123,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
                   ·
                 </span>
                 <div className="flex items-center gap-2">
-                  <Book className="h-5 w-5 fill-gray-700 dark:fill-text-primary" />
+                  <BookOpen className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
                   <span className="text-base text-gray-700 dark:text-text-primary md:text-lg">
                     {article.read_time} min read
                   </span>
@@ -332,7 +333,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
               {user?.user.username === author.username ? (
                 <Link href={`/${user?.user.id}/dashboard`}>
                   <button className="btn-filled flex w-full items-center justify-center gap-2 text-secondary md:w-max">
-                    <Settings className="h-5 w-5 fill-white" />
+                    <Settings className="h-5 w-5 stroke-white fill-none" />
                     Dashboard
                   </button>
                 </Link>
@@ -343,12 +344,12 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                 >
                   {following ? (
                     <>
-                      <Check className="h-5 w-5 fill-secondary" />
+                      <Check className="h-5 w-5 stroke-secondary" />
                       <span>Following</span>
                     </>
                   ) : (
                     <>
-                      <Follow className="h-5 w-5 fill-secondary" />
+                      <Plus className="h-5 w-5 stroke-secondary" />
                       <span>Follow User</span>
                     </>
                   )}

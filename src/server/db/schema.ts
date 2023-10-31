@@ -30,7 +30,7 @@ export const users = pgTable("user", {
     .default(sql`gen_random_uuid()`)
     .primaryKey(),
   name: text("name").notNull(),
-  username: text("username").unique(),
+  username: text("username").unique().notNull(),
   email: text("email").notNull().unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
@@ -63,6 +63,9 @@ export const users = pgTable("user", {
 export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   handle: one(handles),
+  articles: many(articles, {
+    relationName: "articles",
+  }),
   followingTags: many(tagsToUsers),
   notifications: many(notifications, {
     relationName: "notifications",
@@ -415,6 +418,7 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
   user: one(users, {
     fields: [articles.userId],
     references: [users.id],
+    relationName: "articles",
   }),
   comments: many(comments),
   tags: many(tagsToArticles),
@@ -534,13 +538,22 @@ export const seriesRelations = relations(series, ({ one, many }) => ({
 }));
 
 // notification
+
+export const notificationEnum = pgEnum("notificationType", [
+  "ARTICLE",
+  "COMMENT",
+  "REPLY",
+  "FOLLOW",
+  "LIKE",
+]);
+
 export const notifications = pgTable(
   "notifications",
   {
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    type: text("type").notNull(),
+    type: notificationEnum("type").notNull(),
     isRead: boolean("isRead").default(false),
 
     body: text("body").default(""),

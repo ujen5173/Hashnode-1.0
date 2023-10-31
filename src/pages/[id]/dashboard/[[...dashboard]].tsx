@@ -1,3 +1,4 @@
+import { CheckCircle2, ChevronDownCircle, Circle, ExternalLink, Globe, Palette, Pencil } from "lucide-react";
 import { type GetServerSideProps } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -18,16 +19,8 @@ import {
 import { Navigation } from "~/component/macroComponent/Dashboard";
 import DashboardSEO from "~/SEO/Dashboard.seo";
 import { authOptions } from "~/server/auth";
-import {
-  BlankCircle,
-  BoardedDownArrow,
-  CheckFilled,
-  Customize,
-  Global,
-  LogonoText,
-  Pen,
-  Redirect,
-} from "~/svgs";
+import { LogonoText } from "~/svgs";
+
 import { api } from "~/utils/api";
 
 // All dashboard navigations
@@ -121,14 +114,14 @@ const Dashboard = () => {
               </div>
 
               <button>
-                <BoardedDownArrow className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+                <ChevronDownCircle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
               </button>
             </div>
 
             <div className="flex items-center justify-between gap-4">
               <Link href={`/dev/@${session?.user?.handle?.handle as string}`}>
                 <div className="flex items-center gap-2 rounded-md px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
-                  <Redirect className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+                  <ExternalLink className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
 
                   <span className="font-medium text-gray-600 dark:text-text-primary">
                     Visit Blog
@@ -203,6 +196,8 @@ const Roadmap = () => {
     refetchOnWindowFocus: false,
   });
 
+  console.log({ data })
+
   return (
     <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
@@ -221,13 +216,13 @@ const Roadmap = () => {
           className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
         >
           <div className="absolute right-3 top-3 md:right-4 md:top-4">
-            <Pen className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+            <Pencil className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
           </div>
 
           {data?.articles ? (
-            <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+            <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
           ) : (
-            <BlankCircle className="h-5 w-5 fill-gray-500 dark:fill-text-primary md:h-7 md:w-7" />
+            <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primarymd:h-7 md:w-7" />
           )}
 
           <div className="flex-1">
@@ -256,13 +251,14 @@ const Roadmap = () => {
           className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
         >
           <div className="absolute right-3 top-3 md:right-4 md:top-4">
-            <Customize className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+            <Palette className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
           </div>
 
           {data?.handle?.appearance ? (
-            <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+            <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
+
           ) : (
-            <BlankCircle className="h-5 w-5 fill-gray-500 dark:fill-text-primary md:h-7 md:w-7" />
+            <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary dark:stroke-text-primary md:h-7 md:w-7" />
           )}
           <div className="flex-1">
             <h1 className="mb-2 text-xl  font-semibold text-secondary">
@@ -277,10 +273,10 @@ const Roadmap = () => {
 
         <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
           <div className="absolute right-3 top-3 md:right-4 md:top-4">
-            <Global className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+            <Globe className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
           </div>
 
-          <CheckFilled className="h-5 w-5 fill-green md:h-7 md:w-7" />
+          <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
 
           <div className="flex-1">
             <h1 className="mb-2 text-xl  font-semibold text-secondary">

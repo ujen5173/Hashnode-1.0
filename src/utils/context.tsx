@@ -12,8 +12,7 @@ export enum NotificationTypesEnum {
   ALL = "ALL",
   COMMENT = "COMMENT",
   LIKE = "LIKE",
-  NEW_ARTICLE = "NEW_ARTICLE",
-  MENTION = "MENTION",
+  ARTICLE = "ARTICLE",
   FOLLOW = "FOLLOW",
 }
 

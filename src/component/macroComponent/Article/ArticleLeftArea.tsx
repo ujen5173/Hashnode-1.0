@@ -1,8 +1,9 @@
+import { ChevronLeft, Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type FC } from "react";
 import { ArticleHamburgerMenu } from "~/component/aside";
-import { Angleleft, Hamburger } from "~/svgs";
+
 import { type UserSimple } from "~/types";
 
 const ArticleLeftArea: FC<{ user: UserSimple }> = ({ user }) => {
@@ -16,7 +17,7 @@ const ArticleLeftArea: FC<{ user: UserSimple }> = ({ user }) => {
           role="button"
           className="btn-icon flex h-10 w-10"
         >
-          <Angleleft className="h-5 w-5 fill-black dark:fill-white" />
+          <ChevronLeft className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
         </button>
       </Link>
 
@@ -26,7 +27,7 @@ const ArticleLeftArea: FC<{ user: UserSimple }> = ({ user }) => {
         onClick={() => setMenu((prev) => !prev)}
         className="btn-icon mr-2 flex h-10 w-10"
       >
-        <Hamburger className="h-5 w-5 fill-black dark:fill-white" />
+        <Menu className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
       </button>
 
       <ArticleHamburgerMenu user={user} menu={menu} setMenu={setMenu} />

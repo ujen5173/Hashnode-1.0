@@ -1,8 +1,9 @@
 import { Tooltip } from "@mantine/core";
+import { Check, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type FC, } from "react";
-import { Add, Check } from "~/svgs";
+
 
 const FollowCard: FC<{
   user: {
@@ -55,9 +56,9 @@ const FollowCard: FC<{
           className="rounded-full border border-border-light bg-white p-2 hover:bg-border-light dark:border-border dark:bg-primary dark:hover:bg-border">
           {
             isFollowing ? (
-              <Check className="h-5 w-5 fill-green" />
+              <Check className="h-5 w-5 stroke-green" />
             ) : (
-              <Add className="h-5 w-5 fill-secondary stroke-none" />
+              <Plus className="h-5 w-5 stroke-secondary stroke-none" />
             )
           }
         </button>

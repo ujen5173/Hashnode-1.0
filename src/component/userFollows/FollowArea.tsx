@@ -38,6 +38,8 @@ const FollowArea = ({ userId }: {
     });
   }
 
+  console.log({ followersData })
+
   return (
     <div className="flex-1 py-6">
       {router.pathname.includes("followers") ? (

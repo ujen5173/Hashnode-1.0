@@ -1,6 +1,7 @@
+import { Search, X } from "lucide-react";
 import React, { type FC, type KeyboardEvent } from "react";
 import { v4 as uuid } from "uuid";
-import { Search, Times } from "~/svgs";
+
 import { type FilterData } from "~/types";
 
 interface Props {
@@ -68,7 +69,7 @@ const Tag: FC<Props> = ({ filter, setFilter }) => {
               }}
               className="ml-2 flex items-center justify-center"
             >
-              <Times className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+              <X className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
             </button>
           </div>
         ))}

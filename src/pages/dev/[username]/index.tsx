@@ -6,9 +6,9 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
-import useOnScreen from "~/hooks/useOnScreen";
 import AuthorBlog from "~/SEO/AuthorBlog.seo";
+import { AuthorBlogHeader, Grid, Magazine, Stacked } from "~/component";
+import useOnScreen from "~/hooks/useOnScreen";
 import { authOptions } from "~/server/auth";
 import db from "~/server/db";
 import { handles } from "~/server/db/schema";
@@ -72,7 +72,7 @@ const AuthorBlogs: NextPage<{
   const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } =
     api.posts.getAuthorArticlesByHandle.useInfiniteQuery(
       {
-        handle: router.query.username
+        handleDomain: router.query.username
           ? (router.query?.username.slice(
             1,
             router.query?.username.length
@@ -101,9 +101,17 @@ const AuthorBlogs: NextPage<{
   }, [reachedBottom]);
 
   const articles = useMemo(
-    () => data?.pages.flatMap((page) => page.posts),
-    [data]
-  );
+    () => {
+      const newData = data?.pages.flatMap((page) => page.posts) || [];
+      const transformedPosts = newData?.map(({ user, ...rest }) => {
+        const { articles, ...restUserData } = user;
+        return articles.map(e => ({ ...e, user: restUserData }))
+      });
+      return transformedPosts[0];
+    }, [data]);
+
+  console.log(articles)
+
   return (
     <>
       <AuthorBlog author={user} />
@@ -167,7 +175,7 @@ const AuthorBlogs: NextPage<{
         }[appearance?.layout || "MAGAZINE"]
       }
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

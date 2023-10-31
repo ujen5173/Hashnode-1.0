@@ -1,6 +1,7 @@
 import { useClickOutside } from "@mantine/hooks";
 import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
+import { FileImage, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState, type FC } from "react";
@@ -10,8 +11,7 @@ import { useDebouncedCallback } from "use-debounce";
 import Editor from "~/component/editor";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
 import { NewArticleModal } from "~/component/popup";
-import { Times } from "~/svgs";
-import ImagePreview from "~/svgs/ImagePreview";
+
 import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
@@ -165,7 +165,7 @@ const NewArticleBody: FC<{
                   onClick={() => setFileModal((prev) => !prev)}
                   className="btn-subtle flex items-center justify-center gap-2"
                 >
-                  <ImagePreview className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+                  <FileImage className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
                   <span className="text-gray-500 dark:text-text-primary">
                     {"Add Cover"}
                   </span>
@@ -214,7 +214,7 @@ const NewArticleBody: FC<{
                 onClick={() => void deleteImage("cover_image_Key")}
                 className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
               >
-                <Times className="h-5 w-5 fill-gray-700 stroke-none" />
+                <X className="h-5 w-5 fill-gray-700 stroke-none" />
               </button>
 
               <Image

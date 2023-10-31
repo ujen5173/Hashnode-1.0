@@ -4,7 +4,8 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { Series } from "~/svgs";
+
+import { Table2 } from "lucide-react";
 import { api } from "~/utils/api";
 import { TagLoading } from "../loading";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
@@ -118,7 +119,7 @@ const SelectSeries: FC<{
                 key={index}
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
-                  <Series className="mx-auto my-3 h-6 w-6 fill-secondary" />
+                  <Table2 className="mx-auto my-3 h-6 w-6 fill-secondary" />
                 </div>
 
                 <span>{s.title}</span>

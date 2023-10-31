@@ -197,6 +197,11 @@ body.dark .input-secondary.input-with-opacity::-moz-placeholder {
 .btn-social-icon:hover path {
   fill: white;
 }
+.github:hover svg,
+.github:hover path {
+  fill: none!important;
+}
+
 .btn-social-icon {
   @apply flex items-center justify-center rounded-md;
 }

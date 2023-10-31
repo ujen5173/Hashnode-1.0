@@ -1,6 +1,7 @@
+import { MoveUpRight } from "lucide-react";
 import Link from "next/link";
 import { type FC } from "react";
-import { Topright } from "~/svgs";
+
 import { type DetailedUser } from "~/types";
 
 const UserBlogingArea: FC<{
@@ -29,7 +30,7 @@ const UserBlogingArea: FC<{
 
         <Link href={`/dev/@${userDetails?.handle?.handle as string}`}>
           <button className="btn-outline flex items-center justify-center gap-2">
-            <Topright className="h-4 w-4 fill-gray-700 dark:fill-text-secondary" />
+            <MoveUpRight className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
 
             <span className="text-sm text-gray-700 dark:text-text-secondary md:text-base">
               Read the Blog

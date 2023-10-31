@@ -2,7 +2,8 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type FC } from "react";
-import { Clock, Filter, Magic, People } from "~/svgs";
+
+import { Clock, Filter, Users, Wand2 } from "lucide-react";
 import { type FilterData } from "~/types";
 import { FilterSection } from "../macroComponent/Tag";
 
@@ -36,10 +37,10 @@ const MainBodyHeader: FC<Props> = ({
                   : "btn-tab"
                   }`}
               >
-                <Magic
+                <Wand2
                   className={`h-4 w-4  ${tab === undefined || tab === "personalized"
                     ? "fill-secondary"
-                    : "fill-gray-700 dark:fill-text-secondary"
+                    : "stroke-gray-700 dark:stroke-text-secondary"
                     }`}
                 />
 
@@ -55,7 +56,7 @@ const MainBodyHeader: FC<Props> = ({
                   className={`${tab === "following" ? "btn-tab-active" : "btn-tab"
                     }`}
                 >
-                  <People
+                  <Users
                     className={`h-4 w-4 fill-none ${tab === "following"
                       ? "stroke-secondary"
                       : "stroke-gray-700 dark:stroke-text-secondary"
@@ -105,7 +106,7 @@ const MainBodyHeader: FC<Props> = ({
                     filter.data.tags.length > 0
                     ? "fill-secondary stroke-secondary"
                     : ""
-                    } fill-gray-700 dark:fill-text-secondary`}
+                    } stroke-gray-700 dark:stroke-text-secondary`}
                 />
               </button>
 

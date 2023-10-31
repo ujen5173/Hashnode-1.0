@@ -1,7 +1,8 @@
+import { Hash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
-import { Hashtag } from "~/svgs";
+
 import { type Tag } from "~/utils/context";
 
 interface Props {
@@ -26,7 +27,7 @@ const TagCard: FC<Props> = ({ tag, type }) => {
           />
         ) : (
           <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary">
-            <Hashtag className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
+            <Hash className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
           </div>
         )}
 

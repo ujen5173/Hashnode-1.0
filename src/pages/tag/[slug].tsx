@@ -5,7 +5,7 @@ import { Aside, Header, MainTagBody, RightAsideMain } from "~/component";
 import TagSEO from "~/SEO/Tag.seo";
 import { authOptions } from "~/server/auth";
 import db from "~/server/db";
-import { tags } from "~/server/db/schema";
+import { tags, tagsToUsers } from "~/server/db/schema";
 import type { DetailedTag } from "~/types";
 
 const SingleTag: NextPage<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
@@ -48,21 +48,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: eq(tags.slug, params),
     with: {
       followers: {
+        ...(session?.user.id && {
+          where: eq(tagsToUsers.userId, session.user.id)
+        }),
         columns: {
           userId: true
         },
       },
-      articles: {
-        columns: {
-          articleId: true
-        },
-      },
     }
   }).then((res) => {
+    if (!res) return;
+    const { followers, ...rest } = res;
     return {
-      ...res,
-      followers: res?.followers.map((e) => e.userId),
-      articles: res?.articles.map((e) => e.articleId),
+      ...rest,
+      isFollowing: followers ? !!followers.length : false
     }
   });
 

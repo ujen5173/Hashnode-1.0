@@ -1,12 +1,11 @@
+import { Newspaper } from "lucide-react";
 import type { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/router';
 import React, { useContext } from "react";
-import {
-  Feed
-} from "~/svgs";
+
 import { imageDropdownList } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 
@@ -69,7 +68,7 @@ const imageDropdown = React.forwardRef<
       ) : (
         <Link href={`/onboard/blog/setup`}>
           <div className="flex w-full cursor-pointer gap-2 px-4 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
-            <Feed className="h-7 w-7 fill-secondary" />
+            <Newspaper className="h-7 w-7 fill-secondary" />
             <div>
               <h1 className="mb-1 text-sm font-semibold text-secondary">
                 Start a personal blog

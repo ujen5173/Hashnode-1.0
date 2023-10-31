@@ -1,16 +1,7 @@
+import { Calendar, Facebook, Github, Globe, Instagram, Linkedin, MapPin, Twitter, Youtube } from "lucide-react";
 import { type FC } from "react";
-import {
-  DateSVG,
-  Facebook,
-  Github,
-  Instagram,
-  Linkedin,
-  Location,
-  Stackoverflow,
-  Twitter,
-  Web,
-  Youtube,
-} from "~/svgs";
+import { Stackoverflow } from "~/svgs";
+
 import { type DetailedUser } from "~/types";
 
 const imageDetail: FC<{
@@ -32,17 +23,17 @@ const imageDetail: FC<{
               <a href={value} target="_blank" key={index}>
                 <button className="btn-icon-large flex">
                   {key === "twitter" ? (
-                    <Twitter className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
+                    <Twitter className="h-4 w-4 stroke-none fill-gray-500 dark:fill-text-primary" />
                   ) : key === "instagram" ? (
                     <Instagram className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "github" ? (
-                    <Github className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
+                    <Github className="h-4 w-4 fill-none stroke-gray-500 dark:stroke-text-primary" />
                   ) : key === "stackoverflow" ? (
                     <Stackoverflow className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "facebook" ? (
                     <Facebook className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "website" ? (
-                    <Web className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
+                    <Globe className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "linkedin" ? (
                     <Linkedin className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
                   ) : key === "youtube" ? (
@@ -56,7 +47,7 @@ const imageDetail: FC<{
 
       {userDetails?.location && (
         <div className="flex items-center gap-2">
-          <Location className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+          <MapPin className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
 
           <span className="text-sm text-gray-700 dark:text-text-primary md:text-base">
             {userDetails?.location}
@@ -65,7 +56,7 @@ const imageDetail: FC<{
       )}
 
       <div className="flex items-center gap-2">
-        <DateSVG className="h-4 w-4 fill-gray-700 dark:fill-text-primary" />
+        <Calendar className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
 
         <span className="text-sm text-gray-700 dark:text-text-primary md:text-base">
           Member Since{" "}

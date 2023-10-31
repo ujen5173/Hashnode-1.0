@@ -1,12 +1,8 @@
+import { Facebook, Link, Linkedin, Twitter } from "lucide-react";
 import React from "react";
 import { toast } from "react-toastify";
 import {
-  Facebook,
-  HackerNews,
-  Linkedin,
-  Permalink,
   Reddit,
-  Twitter,
   WhatsApp,
 } from "~/svgs";
 
@@ -24,7 +20,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "Permalink",
       icon: (
-        <Permalink className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
+        <Link className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         void navigator.clipboard.writeText(window.location.href);
@@ -35,7 +31,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "Twitter",
       icon: (
-        <Twitter className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
+        <Twitter className="h-4 w-4 stroke-none fill-border dark:fill-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(
@@ -71,19 +67,19 @@ const ShareOptions = React.forwardRef<
         setShareOpen(false);
       },
     },
-    {
-      name: "Hacker News",
-      icon: (
-        <HackerNews className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
-      ),
-      action: () => {
-        window.open(
-          `https://news.ycombinator.com/submitlink?u=${window.location.href}&t=${acticleDetails.title}`,
-          "_blank"
-        );
-        setShareOpen(false);
-      },
-    },
+    // {
+    //   name: "Hacker News",
+    //   icon: (
+    //     <HackerNews className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
+    //   ),
+    //   action: () => {
+    //     window.open(
+    //       `https://news.ycombinator.com/submitlink?u=${window.location.href}&t=${acticleDetails.title}`,
+    //       "_blank"
+    //     );
+    //     setShareOpen(false);
+    //   },
+    // },
     {
       name: "Facebook",
       icon: (

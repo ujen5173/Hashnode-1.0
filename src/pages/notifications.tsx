@@ -13,7 +13,7 @@ import type { NotificationTypesEnum } from "~/utils/context";
 
 enum Type {
   all = "all",
-  new_articles = "new_article",
+  articles = "article",
   comments = "comment",
   likes = "like",
 }
@@ -53,6 +53,7 @@ const Notifications = () => {
   );
   const bottomRef = useRef<HTMLDivElement>(null);
   const reachedBottom = useOnScreen(bottomRef);
+
   useEffect(() => {
     if (reachedBottom && hasNextPage) {
       void fetchNextPage();
