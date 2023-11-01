@@ -1,3 +1,6 @@
+> **Warning**
+> The website is currently experiencing issues since I've recently switched to Drizzle ORM, which may lead to the display of unusual errors. Please stay updated as we work on resolving the issue.
+
 # Hashnode Clone
 
 This is a **full-stack application** that serves as a clone of the popular blogging website, _Hashnode_. The purpose of this project is to showcase my skills in web development and serve as a learning experience. I have utilized Next.js, Nextjs, Tailwind CSS, and the T3 stack with PostgreSQL as the technology stack for this project. With a plethora of exciting features, this intermediate-level project replicates most of the functionalities found on the original Hashnode website. I hope you enjoy this project as much as I enjoyed building it. Cheers 🍻. Contributions are welcome!
