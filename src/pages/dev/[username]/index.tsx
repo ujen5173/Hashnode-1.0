@@ -4,11 +4,10 @@ import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef, useState, type FC } from "react";
+import { useEffect, useMemo, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import AuthorBlog from "~/SEO/AuthorBlog.seo";
-import { AuthorBlogHeader, Grid, Magazine, Stacked } from "~/component";
-import useOnScreen from "~/hooks/useOnScreen";
+import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
 import { authOptions } from "~/server/auth";
 import db from "~/server/db";
 import { handles } from "~/server/db/schema";
@@ -69,8 +68,8 @@ const AuthorBlogs: NextPage<{
 
   const router = useRouter();
 
-  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } =
-    api.posts.getAuthorArticlesByHandle.useInfiniteQuery(
+  const { data, isLoading, isError, } =
+    api.posts.getAuthorArticlesByHandle.useQuery(
       {
         handleDomain: router.query.username
           ? (router.query?.username.slice(
@@ -82,7 +81,6 @@ const AuthorBlogs: NextPage<{
       {
         enabled: !!router.query.username,
         refetchOnWindowFocus: false,
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
       }
     );
 
@@ -92,25 +90,21 @@ const AuthorBlogs: NextPage<{
     }
   }, [isError]);
 
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const reachedBottom = useOnScreen(bottomRef);
-  useEffect(() => {
-    if (reachedBottom && hasNextPage) {
-      void fetchNextPage();
-    }
-  }, [reachedBottom]);
 
   const articles = useMemo(
     () => {
-      const newData = data?.pages.flatMap((page) => page.posts) || [];
+      const newData = data?.posts;
       const transformedPosts = newData?.map(({ user, ...rest }) => {
         const { articles, ...restUserData } = user;
         return articles.map(e => ({ ...e, user: restUserData }))
       });
-      return transformedPosts[0];
+      if (transformedPosts) {
+        return transformedPosts[0];
+      } else {
+        return [];
+      }
     }, [data]);
 
-  console.log(articles)
 
   return (
     <>
@@ -134,8 +128,6 @@ const AuthorBlogs: NextPage<{
               })()}
               data={articles}
               isLoading={isLoading}
-              isFetchingNextPage={isFetchingNextPage}
-              ref={bottomRef}
             />
           ),
           STACKED: (
@@ -151,8 +143,6 @@ const AuthorBlogs: NextPage<{
               })()}
               data={articles}
               isLoading={isLoading}
-              isFetchingNextPage={isFetchingNextPage}
-              ref={bottomRef}
             />
           ),
           GRID: (
@@ -168,14 +158,12 @@ const AuthorBlogs: NextPage<{
               })()}
               data={articles}
               isLoading={isLoading}
-              isFetchingNextPage={isFetchingNextPage}
-              ref={bottomRef}
             />
           ),
         }[appearance?.layout || "MAGAZINE"]
       }
 
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 };

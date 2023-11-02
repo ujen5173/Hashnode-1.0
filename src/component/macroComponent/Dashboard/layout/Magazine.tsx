@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import React from "react";
+import { type FC } from "react";
 import { SimpleArticleCard } from "~/component/card";
 import { SimpleArticleCardLoading } from "~/component/loading";
 import { NoArticlesUploadedError } from "~/component/miniComponent";
@@ -7,7 +7,7 @@ import { AuthorArea } from "~/pages/dev/[username]";
 import { type DataType } from "~/types";
 import { type LayoutProps } from "./Stacked";
 
-const Magazine = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNextPage, data, isLoading, author }, bottomRef) => {
+const Magazine: FC<LayoutProps> = (({ data, isLoading, author }) => {
   const { data: user } = useSession();
 
   return (
@@ -64,7 +64,7 @@ const Magazine = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNext
                   />
                 ))}
                 {
-                  isFetchingNextPage && (
+                  isLoading && (
                     <>
                       <SimpleArticleCardLoading number={3} />
                       <SimpleArticleCardLoading number={3} />
@@ -82,15 +82,14 @@ const Magazine = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNext
           </div>
         )
         : null}
-      <div ref={bottomRef} />
+
       <AuthorArea author={author} />
+
       {data?.length === 0 && (
         <NoArticlesUploadedError user={user} author={author} />
       )}
     </>
   );
 });
-
-Magazine.displayName = "Magazine";
 
 export default Magazine;

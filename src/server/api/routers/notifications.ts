@@ -1,19 +1,19 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { notifications } from "~/server/db/schema";
 
 export const notificationRouter = createTRPCRouter({
   getCount: protectedProcedure.query(async ({ ctx }) => {
-    const result = await ctx.db.query.notifications.findMany({
-      where: and(
-        eq(notifications.userId, ctx.session.user.id),
-        eq(notifications.isRead, false),
-      ),
-      limit: 10,
-    });
+    const result = await ctx.db.execute(
+      sql`
+      SELECT COUNT(*) FROM notifications
+      WHERE notifications.user_id = ${ctx.session.user.id}
+      AND notifications.is_read = false
+      `
+    ); 
 
-    return result.length;
+    return result?.rows[0] as {count: string} ?? {count: "0"};
   }),
 
   get: protectedProcedure

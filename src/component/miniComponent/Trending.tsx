@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { useMemo } from "react";
 import { api } from "~/utils/api";
 import { BookmarkLoading } from "../loading";
 import ManageData from "./ManageData";
 
 const Trending = () => {
-  const { data: articlesData, isLoading } = api.posts.trendingArticles.useInfiniteQuery(
+  const { data: articlesData, isLoading } = api.posts.trendingArticles.useQuery(
     {
       variant: "any",
       limit: 4,
@@ -14,8 +13,6 @@ const Trending = () => {
       refetchOnWindowFocus: false,
     }
   );
-
-  const articles = useMemo(() => articlesData?.pages.flatMap((page) => page.posts), [articlesData])
 
   return (
     <div className="mb-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
@@ -39,7 +36,7 @@ const Trending = () => {
         <ManageData
           loading={<BookmarkLoading />}
           type="MINI_ARTICLES"
-          articleData={{ isLoading, data: articles }}
+          articleData={{ isLoading, data: articlesData?.posts }}
         />
       </div>
     </div>

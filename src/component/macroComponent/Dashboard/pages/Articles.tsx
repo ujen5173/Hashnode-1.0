@@ -3,9 +3,8 @@ import { TRPCClientError } from "@trpc/client";
 import { MoreVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { toast } from "react-toastify";
-import useOnScreen from "~/hooks/useOnScreen";
 
 import { api } from "~/utils/api";
 import { limitText } from "~/utils/miniFunctions";
@@ -17,33 +16,33 @@ const Articles = () => {
     "PUBLISHED"
   );
 
-  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getAuthorArticles.useInfiniteQuery(
+  const { data, isLoading } = api.posts.getAuthorArticles.useQuery(
     {
       id: user?.user.id as string,
-      limit: 10,
       type,
+      // limit: 10,
     },
     {
       enabled: !!user?.user,
       refetchOnWindowFocus: false,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      // getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
 
 
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const reachedBottom = useOnScreen(bottomRef);
+  // const bottomRef = useRef<HTMLDivElement>(null);
+  // const reachedBottom = useOnScreen(bottomRef);
 
-  const articles = useMemo(
-    () => data?.pages.flatMap((page) => page.posts),
-    [data]
-  );
+  // const articles = useMemo(
+  //   () => data?.pages.flatMap((page) => page.posts),
+  //   [data]
+  // );
 
-  useEffect(() => {
-    if (reachedBottom && hasNextPage) {
-      void fetchNextPage();
-    }
-  }, [reachedBottom]);
+  // useEffect(() => {
+  //   if (reachedBottom && hasNextPage) {
+  //     void fetchNextPage();
+  //   }
+  // }, [reachedBottom]);
 
   return (
     <section className="relative w-full">
@@ -51,7 +50,7 @@ const Articles = () => {
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           {isLoading
             ? "Fetching your articles..."
-            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${articles?.length as number
+            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${data?.posts?.length as number
             })`}
         </h1>
 
@@ -93,9 +92,9 @@ const Articles = () => {
             <ArticleLoading />
             <ArticleLoading />
           </>
-        ) : articles ? (
-          articles.length > 0 ? (
-            articles.map((article) => (
+        ) : data ? (
+          data.posts.length > 0 ? (
+            data.posts.map((article) => (
               <ArticleCard type={type} key={article.id} data={article} />
             ))
           ) : (
@@ -113,7 +112,7 @@ const Articles = () => {
           </div>
         )}
         {
-          isFetchingNextPage && (
+          isLoading && (
             <>
               <ArticleLoading />
               <ArticleLoading />
@@ -124,7 +123,7 @@ const Articles = () => {
             </>
           )
         }
-        <div ref={bottomRef} />
+        {/* <div ref={bottomRef} /> */}
       </main>
     </section>
   );

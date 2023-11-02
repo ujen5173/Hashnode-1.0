@@ -554,15 +554,15 @@ export const notifications = pgTable(
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
     type: notificationEnum("type").notNull(),
-    isRead: boolean("isRead").default(false),
+    isRead: boolean("is_read").default(false),
 
     body: text("body").default(""),
     slug: text("slug").default("").notNull(),
     title: text("title").default(""),
     articleAuthor: text("articleAuthor").default(""),
 
-    userId: text("userId").notNull(),
-    fromId: text("fromId").notNull(),
+    userId: text("user_id").notNull(),
+    fromId: text("from_id").notNull(),
 
     createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
     updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),

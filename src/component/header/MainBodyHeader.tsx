@@ -104,9 +104,9 @@ const MainBodyHeader: FC<Props> = ({
                 <Filter
                   className={`h-4 w-4 ${filter.data.read_time !== null ||
                     filter.data.tags.length > 0
-                    ? "fill-secondary stroke-secondary"
-                    : ""
-                    } stroke-gray-700 dark:stroke-text-secondary`}
+                    ? "fill-none stroke-secondary"
+                    : "stroke-gray-700 dark:stroke-text-secondary"
+                    }`}
                 />
               </button>
 

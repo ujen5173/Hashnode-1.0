@@ -1,8 +1,7 @@
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef, useState, type Dispatch, type FC, type SetStateAction } from "react";
+import { useState, type Dispatch, type FC, type SetStateAction } from "react";
 import { ArticleLoading, TagLoading } from "~/component/loading";
 import { ManageData, Select } from "~/component/miniComponent";
-import useOnScreen from "~/hooks/useOnScreen";
 import { api } from "~/utils/api";
 import {
   type TrendingArticleTypes,
@@ -29,7 +28,7 @@ const ExploreMainComponent = () => {
       refetchOnWindowFocus: false,
     }
   );
-  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.trendingArticles.useInfiniteQuery(
+  const { data, isLoading } = api.posts.trendingArticles.useQuery(
     {
       limit: 6,
       variant: filter.toLowerCase().replace("this ", "") as
@@ -44,7 +43,7 @@ const ExploreMainComponent = () => {
           ? true
           : slug.includes("tags") || slug.includes("articles"),
       refetchOnWindowFocus: false,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      // getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
   const followingTagsData = api.tags.getFollowingTags.useQuery(
@@ -61,7 +60,7 @@ const ExploreMainComponent = () => {
       refetchOnWindowFocus: false,
     }
   );
-  const { data: followingData, isLoading: followingLoading, fetchNextPage: followingNextPage, isFetchingNextPage: followingIsFetchingNextPage, hasNextPage: followingHasNextPage } = api.posts.getFollowingArticles.useInfiniteQuery(
+  const { data: followingData, isLoading: followingLoading } = api.posts.getFollowingArticles.useQuery(
     {
       limit: 6,
       variant: filter.toLowerCase().replace("this ", "") as
@@ -73,34 +72,9 @@ const ExploreMainComponent = () => {
     {
       enabled: slug === undefined ? true : slug.includes("articles-following"),
       refetchOnWindowFocus: false,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      // getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
-
-  const trendingArticles = useMemo(
-    () => data?.pages.flatMap((page) => page.posts),
-    [data]
-  );
-
-  const followingArticles = useMemo(
-    () => followingData?.pages.flatMap((page) => page.posts),
-    [followingData]
-  );
-
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const reachedBottom = useOnScreen(bottomRef);
-
-  useEffect(() => {
-    if (reachedBottom && hasNextPage) {
-      if (slug?.includes("articles-following")) {
-        void followingNextPage();
-        return;
-      }
-      void fetchNextPage();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reachedBottom]);
-
 
   return (
     <section className="container-main my-4 min-h-[100dvh] w-full">
@@ -138,7 +112,7 @@ const ExploreMainComponent = () => {
                   title="Trending Articles"
                   type="ARTICLE"
                   articlesData={{
-                    data: trendingArticles,
+                    data: data?.posts,
                     isLoading: isLoading,
                   }}
                   filter={filter}
@@ -161,7 +135,7 @@ const ExploreMainComponent = () => {
                 title="Articles You Follow"
                 type="ARTICLE"
                 articlesData={{
-                  data: followingArticles,
+                  data: followingData?.posts ?? [],
                   isLoading: followingLoading,
                 }}
                 filter={filter}
@@ -172,7 +146,7 @@ const ExploreMainComponent = () => {
                 title="Trending Articles"
                 type="ARTICLE"
                 articlesData={{
-                  data: trendingArticles,
+                  data: data?.posts,
                   isLoading: isLoading,
                 }}
                 setFilterState={setFilter}
@@ -196,8 +170,8 @@ const ExploreMainComponent = () => {
             ),
           }[(slug ? slug[0] : "default") as string]
         }
-        {
-          isFetchingNextPage || followingIsFetchingNextPage && (
+        {/* {
+          isLoading && (
             <>
               <ArticleLoading />
               <ArticleLoading />
@@ -209,8 +183,7 @@ const ExploreMainComponent = () => {
               <ArticleLoading />
             </>
           )
-        }
-        <div ref={bottomRef} />
+        } */}
       </div>
     </section>
   );

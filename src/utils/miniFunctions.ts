@@ -4,6 +4,7 @@ import { type DefaultEditorContent } from "~/types";
 
 import Blockquote from "@tiptap/extension-blockquote";
 import Bold from "@tiptap/extension-bold";
+import BulletList from "@tiptap/extension-bullet-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
@@ -12,6 +13,7 @@ import Heading from "@tiptap/extension-heading";
 import Highlight from "@tiptap/extension-highlight";
 import Italic from "@tiptap/extension-italic";
 import Link from "@tiptap/extension-link";
+import ListItem from "@tiptap/extension-list-item";
 import Paragraph from "@tiptap/extension-paragraph";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
@@ -165,6 +167,8 @@ export const formattedContent = (content: DefaultEditorContent) =>
     Blockquote,
     HardBreak,
     HorizontalRule,
+    ListItem,
+    BulletList
   ]);
 
 export const convertToHTML = (content: string) =>
@@ -186,4 +190,6 @@ export const convertToHTML = (content: string) =>
     Blockquote,
     HardBreak,
     HorizontalRule,
+    ListItem,
+    BulletList
   ]);

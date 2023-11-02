@@ -9,7 +9,7 @@ import {
   inArray,
   lt,
   lte,
-  or,
+  or
 } from "drizzle-orm";
 import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type { Session } from "next-auth";
@@ -122,12 +122,13 @@ export const postsRouter = createTRPCRouter({
     };
   }),
 
+  // TODO: Add pagination/infinite scroll feature.
   getAll: publicProcedure
     .input(
       z.object({
         limit: z.number().optional().default(6),
-        skip: z.number().optional(),
-        cursor: z.string().nullable().optional(),
+        // skip: z.number().optional(),
+        // cursor: z.string().nullable().optional(),
         filter: z
           .object({
             read_time: z.enum(["over_5", "5", "under_5"]).nullable().optional(),
@@ -145,25 +146,27 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try { 
-        const { cursor, skip, limit } = input;
+        // const { cursor, skip, limit } = input;
          const result = await ctx.db.query.articles
           .findMany({
             where:
             and(eq(articles.isDeleted, false),
-                 ...(input?.filter?.read_time
-                  ? input.filter.read_time === "over_5" 
-                    ? [gt(articles.read_time, 5)]
-                    : input.filter.read_time === "under_5"
-                    ? [lt(articles.read_time, 5)]
-                    : input.filter.read_time === "5"
-                    ? [eq(articles.read_time, 5)]
-                    : []
-                  : []),
+            
+            // ...(cursor ? [lt(articles.id, cursor)] : []),
+
+            ...(input?.filter?.read_time
+            ? input.filter.read_time === "over_5" 
+              ? [gt(articles.read_time, 5)]
+              : input.filter.read_time === "under_5"
+              ? [lt(articles.read_time, 5)]
+              : input.filter.read_time === "5"
+              ? [eq(articles.read_time, 5)]
+              : []
+            : []),
             ),            
-            limit: (limit || 6) + 1,
-            offset: skip,
-            orderBy:
-              input?.type === "latest"
+            // limit: limit,
+            // offset: cursor ? limit+1 : undefined,
+            orderBy: input?.type === "latest"
                 ? [desc(articles.createdAt)]
                 : [
                     desc(articles.likesCount),
@@ -182,11 +185,12 @@ export const postsRouter = createTRPCRouter({
             })
           ); 
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (result.length > limit) {
-          const nextItem = result.pop(); // return the last item from the array
-          nextCursor = nextItem?.id;
-        }
+        // let nextCursor: typeof cursor | undefined = undefined;
+
+        // if (result.length <= limit) {
+        //   const nextItem = result.pop(); // return the last item from the array
+        //   nextCursor = nextItem?.id;
+        // }
 
         const formattedPosts = await getArticlesWithUserFollowingimages(
           {
@@ -198,7 +202,7 @@ export const postsRouter = createTRPCRouter({
 
         return {
           posts: formattedPosts,
-          nextCursor: nextCursor,
+          // nextCursor: nextCursor,
         };
       } catch (err) {
         throw new TRPCError({
@@ -588,8 +592,12 @@ export const postsRouter = createTRPCRouter({
           },
         });
 
+        console.log({existingArticle});
+
         // check for not registered tags
-        const allTags = await ctx.db
+        let allTags;
+        if (input.tags.length > 0) {
+          allTags = await ctx.db
           .insert(tags)
           .values([
             ...input.tags.map((tag) => ({
@@ -602,6 +610,9 @@ export const postsRouter = createTRPCRouter({
             id: tags.id,
             articlesCount: tags.articlesCount,
           });
+        }
+
+
  
 
         const allTagsDetails = await ctx.db.query.tags.findMany({
@@ -624,6 +635,8 @@ export const postsRouter = createTRPCRouter({
               .where(eq(tags.id, detail.id));
           })
         );
+
+
         const { edit, tags: _, ...rest } = input;
 
         if (edit && !!existingArticle) {
@@ -657,19 +670,22 @@ export const postsRouter = createTRPCRouter({
             .onConflictDoNothing();
 
           // update article count;
-          await ctx.db
+          if (allTags) {
+
+            await ctx.db
             .update(tags)
             .set({
               articlesCount:
-                (allTags.find((e) => e.id === tags.id._.data)?.articlesCount ??
+              (allTags.find((e) => e.id === tags.id._.data)?.articlesCount ??
                   0) + 1,
-            })
+                })
             .where(
               inArray(
                 tags.id,
                 allTags.map((e) => e.id)
-              )
-            );
+                )
+                );
+              }
 
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, updatedArticle?.id as string),
@@ -709,15 +725,18 @@ export const postsRouter = createTRPCRouter({
             };
           }
 
-          await ctx.db
+          if (allTagsDetails.length > 0) {
+            await ctx.db
             .insert(tagsToArticles)
             .values(
               allTagsDetails.map((tag) => ({
                 articleId: newArticle.id,
                 tagId: tag.id,
               }))
-            )
-            .onConflictDoNothing();
+              )
+              .onConflictDoNothing();
+            }
+
 
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, newArticle.id),
@@ -740,7 +759,8 @@ export const postsRouter = createTRPCRouter({
             }
           });
 
-          if (result?.user.followers) {
+
+          if (result?.user.followers && result.user.followers.length > 0) {
             await ctx.db.insert(notifications).values(
               result?.user.followers.map((follower) => ({
                 userId: follower.followingId,
@@ -1157,14 +1177,14 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().optional().default(6),
-        skip: z.number().optional(),
-        cursor: z.string().nullable().optional(),
+        // skip: z.number().optional(),
+        // cursor: z.string().nullable().optional(),
         variant: z.enum(["week", "month", "year", "any"]).default("any"),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { cursor, skip, limit } = input;
+        const { limit } = input;
         const startDate = new Date();
         const endDate = new Date();
 
@@ -1187,8 +1207,8 @@ export const postsRouter = createTRPCRouter({
                     lte(articles.createdAt, endDate)
                   )
             ),
-            limit: (limit || 6) + 1,
-            offset: skip,
+            limit: limit,
+            // offset: skip,
             ...selectArticleCard,
             orderBy: [
               desc(articles.likesCount),
@@ -1202,11 +1222,11 @@ export const postsRouter = createTRPCRouter({
             }))
           );
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (articlesData.length > limit) {
-          const nextItem = articlesData.pop(); // return the last item from the array
-          nextCursor = nextItem?.id;
-        }
+        // let nextCursor: typeof cursor | undefined = undefined;
+        // if (articlesData.length > limit) {
+        //   const nextItem = articlesData.pop(); // return the last item from the array
+        //   nextCursor = nextItem?.id;
+        // }
 
         const formattedPosts = await getArticlesWithUserFollowingimages(
           {
@@ -1218,7 +1238,7 @@ export const postsRouter = createTRPCRouter({
 
         return {
           posts: formattedPosts,
-          nextCursor,
+          // nextCursor,
         };
       } catch (err) {
         throw new TRPCError({
@@ -1232,14 +1252,14 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().optional().default(6),
-        skip: z.number().optional(),
-        cursor: z.string().nullable().optional(),
+        // skip: z.number().optional(),
+        // cursor: z.string().nullable().optional(),
         variant: z.enum(["week", "month", "year", "any"]).default("any"),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { cursor, skip, limit } = input;
+        const { limit } = input;
 
         const startDate = new Date();
         const endDate = new Date();
@@ -1266,20 +1286,24 @@ export const postsRouter = createTRPCRouter({
           },
         });
 
+        console.log({sessionUser})
+
         if (!sessionUser) {
           return {
             posts: [],
             nextCursor: null,
           };
         }
+        let articlesData = [];
+if (sessionUser?.following.length > 0) {
 
-        const articlesdata = await ctx.db.query.articles.findMany({
+        articlesData = await ctx.db.query.articles.findMany({
             where: and(
               eq(articles.isDeleted, false),
               inArray(articles.userId, sessionUser?.following.map(e => e.userId)),
             ),
-            limit: (limit || 6) + 1,
-            offset: skip,
+            limit: limit,
+            // offset: skip,
             ...selectArticleCard,
             orderBy: [
               desc(articles.createdAt),
@@ -1294,25 +1318,34 @@ export const postsRouter = createTRPCRouter({
             }))
           );
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (articlesdata.length > limit) {
-          const nextItem = articlesdata.pop(); // return the last item from the array
-          nextCursor = nextItem?.id;
-        }
+          console.log({articlesData})
+
+        // let nextCursor: typeof cursor | undefined = undefined;
+        // if (articlesdata.length > limit) {
+        //   const nextItem = articlesdata.pop(); // return the last item from the array
+        //   nextCursor = nextItem?.id;
+        // }
 
         const formattedPosts = await getArticlesWithUserFollowingimages(
           {
             session: ctx.session,
             db: ctx.db,
           },
-          articlesdata
+          articlesData
         );
 
         return {
           posts: formattedPosts,
-          nextCursor,
+          // nextCursor: null,
         };
+      }
+      
+      return {
+        posts: [],
+        // nextCursor: null,
+      };
       } catch (err) {
+console.log({err})
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -1324,9 +1357,9 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().trim(),
-        limit: z.number().optional().default(6),
-        skip: z.number().optional(),
-        cursor: z.string().nullable().optional(),
+        // limit: z.number().optional().default(6),
+        // skip: z.number().optional(),
+        // cursor: z.string().nullable().optional(),
         type: z
           .enum(["PUBLISHED", "SCHEDULED", "DELETED"])
           .optional()
@@ -1342,17 +1375,18 @@ export const postsRouter = createTRPCRouter({
           });
         }
 
-        const { cursor, skip, limit } = input;
+        // const { cursor, skip, limit } = input;
 
         const articlesData = await ctx.db.query.articles.findMany({
           where: and(
             eq(articles.userId, input.id),
+            // ...(cursor ? [gt(articles.id, cursor)] : []),
             input.type === "DELETED"
               ? eq(articles.isDeleted, true)
               : eq(articles.isDeleted, false)
           ),
-          limit: (limit || 6) + 1,
-          offset: skip,
+          // limit: (limit || 6) + 1,
+          // offset: skip,
           columns: {
             id: true,
             title: true,
@@ -1373,15 +1407,15 @@ export const postsRouter = createTRPCRouter({
           orderBy: [desc(articles.createdAt)],
         });
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (articlesData.length > limit) {
-          const nextItem = articlesData.pop(); // return the last item from the array
-          nextCursor = nextItem?.id;
-        }
+        // let nextCursor: typeof cursor | undefined = undefined;
+        // if (articlesData.length > limit) {
+        //   const nextItem = articlesData.pop(); // return the last item from the array
+        //   nextCursor = nextItem?.id;
+        // }
 
         return {
           posts: articlesData,
-          nextCursor,
+          // nextCursor,
         };
       } catch (err) {
         if (err instanceof TRPCError) {
@@ -1432,13 +1466,13 @@ export const postsRouter = createTRPCRouter({
       z.object({
         handleDomain: z.string().trim(),
         limit: z.number().optional().default(6),
-        skip: z.number().optional(),
-        cursor: z.string().nullable().optional(),
+        // skip: z.number().optional(),
+        // cursor: z.string().nullable().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { cursor, skip, limit } = input;
+        const { limit } = input;
 
         const article = await ctx.db.query.handles.findMany({
           where: eq(handles.handle, input.handleDomain),
@@ -1466,20 +1500,19 @@ export const postsRouter = createTRPCRouter({
           columns: {
             id: true,
           },
-          limit: (limit || 6) + 1,
-          offset: skip,
-          orderBy: [desc(articles.createdAt)],
+          limit: limit,
+           orderBy: [desc(articles.createdAt)],
         });
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (article.length > limit) {
-          const nextItem = article.pop(); // return the last item from the array
-          nextCursor = nextItem?.id;
-        }
+        // let nextCursor: typeof cursor | undefined = undefined;
+        // if (article.length > limit) {
+        //   const nextItem = article.pop(); // return the last item from the array
+        //   nextCursor = nextItem?.id;
+        // }
 
         return {
           posts: article,
-          nextCursor,
+          // nextCursor,
         };
       } catch (err) {
         throw new TRPCError({
