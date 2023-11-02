@@ -1,9 +1,8 @@
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MainBodyHeader } from "~/component/header";
 import { ArticleLoading } from "~/component/loading";
 import { ManageData } from "~/component/miniComponent";
-import useOnScreen from "~/hooks/useOnScreen";
 import { type FilterData } from "~/types";
 import { api } from "~/utils/api";
 import { type TrendingArticleTypes } from "~/utils/context";
@@ -42,46 +41,39 @@ const MainBodyArticles = () => {
     },
   };
 
-  const { data, isLoading, refetch, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getAll.useInfiniteQuery(
+
+  const { isFetching, refetch } = api.posts.getAll.useQuery(
     {
       ...({ ...filterData, filter: { ...filterData.filter, tags: filterData.filter.tags.map(tag => tag.name) } }),
       limit: 4,
     },
     {
-      enabled: true,
-      refetchOnMount: true,
+      enabled: false,
       refetchOnWindowFocus: false,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
 
-
   const [articles, setArticles] = useState<TrendingArticleTypes>({ data: [], isLoading: true });
-
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const reachedBottom = useOnScreen(bottomRef);
-
-  useEffect(() => {
-    if (data) {
-      setArticles({ data: data?.pages.flatMap((page) => page.posts), isLoading: isLoading });
-    }
-  }, [data, isLoading]);
-
-  useEffect(() => {
-    if (reachedBottom && hasNextPage) {
-      void fetchNextPage();
-    }
-  }, [reachedBottom]);
 
   useEffect(() => {
     void (async () => {
       const { data } = await refetch();
-      setArticles({ data: data?.pages.flatMap((page) => page.posts), isLoading: isLoading });
+
+      if (data) {
+        setArticles({ data: data.posts, isLoading: isFetching });
+      }
     })();
   }, [tab, newFilterData]);
 
   const applyFilter = () => {
     setNewFilterData((prev) => ({ ...prev, ...filter.data }));
+    setFilter({
+      status: false,
+      data: {
+        read_time: null,
+        tags: [],
+      },
+    });
   };
 
   const clearFilter = () => {
@@ -109,7 +101,7 @@ const MainBodyArticles = () => {
       />
 
       {
-        (isFetchingNextPage || isLoading) ? (
+        isFetching ? (
           <>
             <ArticleLoading />
             <ArticleLoading />
@@ -124,7 +116,6 @@ const MainBodyArticles = () => {
           articleData={articles}
         />
       }
-      <div ref={bottomRef} />
 
     </section>
   );

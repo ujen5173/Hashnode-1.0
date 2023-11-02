@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import React from "react";
+import { type FC } from "react";
 import { StackedArticleCard } from "~/component/card";
 import { StackedArticleLoading } from "~/component/loading";
 import { NoArticlesUploadedError } from "~/component/miniComponent";
@@ -18,10 +18,9 @@ export interface LayoutProps {
       about: string;
     };
   };
-  isFetchingNextPage: boolean;
 }
 
-const Stacked = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNextPage, data, isLoading, author }, bottomRef) => {
+const Stacked: FC<LayoutProps> = ({ data, isLoading, author }) => {
   const { data: user } = useSession();
   return (
     <div className="w-full bg-light-bg dark:bg-primary">
@@ -36,7 +35,7 @@ const Stacked = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNextP
               <StackedArticleCard key={e.id} article={e} />
             ))}
             {
-              isFetchingNextPage && (
+              isLoading && (
                 <>
                   <StackedArticleLoading />
                   <StackedArticleLoading />
@@ -50,10 +49,8 @@ const Stacked = React.forwardRef<HTMLDivElement, LayoutProps>(({ isFetchingNextP
       ) : (
         <NoArticlesUploadedError user={user} author={author} />
       )}
-      <div ref={bottomRef} />
     </div>
   );
-});
-Stacked.displayName = "Stacked";
+}
 
 export default Stacked;

@@ -2,11 +2,10 @@ import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { ArticleCard } from "~/component/card";
 import { ArticleLoading } from "~/component/loading";
-import useOnScreen from "~/hooks/useOnScreen";
 
 import { Clock, Filter, Flame } from "lucide-react";
 import type { DetailedTag, FilterData } from "~/types";
@@ -46,7 +45,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
 
   const { mutate: followToggle } = api.tags.followTag.useMutation();
   const { data: user } = useSession();
-  const { data: articlesData, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getArticlesUsingTag.useInfiniteQuery(
+  const { data: articlesData, isLoading } = api.posts.getArticlesUsingTag.useQuery(
     {
       name: tagDetails.name,
       type: (tab || "hot") as "hot" | "new",
@@ -62,13 +61,10 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     },
     {
       refetchOnWindowFocus: false,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
 
-  console.log({ MainTagBody: articlesData })
 
-  const articles = useMemo(() => articlesData?.pages.flatMap((page) => page.posts), [articlesData])
 
   const applyFilter = () => {
     setNewFilterData((prev) => ({ ...prev, ...filter.data }));
@@ -130,15 +126,6 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     }
   };
 
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  const reachedBottom = useOnScreen(bottomRef);
-
-  useEffect(() => {
-    if (reachedBottom && hasNextPage) {
-      void fetchNextPage();
-    }
-  }, [reachedBottom]);
 
 
   return (
@@ -250,7 +237,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
               })}
           </div>
         ) : (
-          articles?.map((article) => (
+          articlesData?.posts?.map((article) => (
             <div
               key={article.id}
               className="w-full border-b border-border-light last:border-0 dark:border-border"
@@ -260,7 +247,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
           ))
         )}
         {
-          isFetchingNextPage && (
+          isLoading && (
             <>
               <ArticleLoading />
               <ArticleLoading />
@@ -271,7 +258,6 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
             </>
           )
         }
-        <div ref={bottomRef} />
       </main>
     </section>
   );

@@ -31,9 +31,11 @@ const RightArea: FC = () => {
   // notifications are refetched every 15 seconds
   const { data, error } = api.notifications.getCount.useQuery(undefined, {
     refetchOnWindowFocus: false,
-    refetchInterval: 15000, // 15 seconds
+    // refetchInterval: 15000, // 15 seconds
     enabled: !!user,
   });
+
+  console.log({ error })
 
   useEffect(() => {
     if (opened) {
@@ -45,7 +47,7 @@ const RightArea: FC = () => {
     if (error) {
       toast.error("Error Fetching Notifications State");
     }
-    setCount(data || 0);
+    setCount(+(data?.count ?? 0));
   }, [error, data]);
 
   return (

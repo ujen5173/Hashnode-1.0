@@ -20,8 +20,6 @@ const Aside = () => {
     }
   );
 
-  console.log({ tagsData, isLoading })
-
 
   return (
     <div className="container-aside relative hidden min-h-[100dvh] py-4 lg:block">

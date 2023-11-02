@@ -15,7 +15,7 @@ const LeftArea = () => {
         className="btn-icon flex h-10 w-10 lg:hidden"
         onClick={() => setMenu((prev) => !prev)}
       >
-        <Menu className="h-5 w-5 fill-black dark:fill-white" />
+        <Menu className="h-5 w-5 stroke-black dark:stroke-white" />
       </button>
 
       <HamburgerMenu menu={menu} setMenu={setMenu} />
