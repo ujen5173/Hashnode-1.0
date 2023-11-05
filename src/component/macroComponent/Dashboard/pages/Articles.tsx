@@ -20,29 +20,12 @@ const Articles = () => {
     {
       id: user?.user.id as string,
       type,
-      // limit: 10,
     },
     {
       enabled: !!user?.user,
       refetchOnWindowFocus: false,
-      // getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
-
-
-  // const bottomRef = useRef<HTMLDivElement>(null);
-  // const reachedBottom = useOnScreen(bottomRef);
-
-  // const articles = useMemo(
-  //   () => data?.pages.flatMap((page) => page.posts),
-  //   [data]
-  // );
-
-  // useEffect(() => {
-  //   if (reachedBottom && hasNextPage) {
-  //     void fetchNextPage();
-  //   }
-  // }, [reachedBottom]);
 
   return (
     <section className="relative w-full">
@@ -100,14 +83,14 @@ const Articles = () => {
           ) : (
             <div className="flex items-center justify-center px-4 py-8">
               <h1 className="text-3xl font-semibold text-gray-700 dark:text-text-secondary">
-                No articles Publised yet.
+                No articles {type.slice(0, 1).toUpperCase() + type.slice(1).toLowerCase()} yet.
               </h1>
             </div>
           )
         ) : (
           <div className="flex items-center justify-center px-4 py-8">
             <h1 className="text-3xl font-semibold text-gray-700 dark:text-text-secondary">
-              No articles Publised yet.
+              No articles {type.slice(0, 1).toUpperCase() + type.slice(1).toLowerCase()} yet.
             </h1>
           </div>
         )}
@@ -123,7 +106,6 @@ const Articles = () => {
             </>
           )
         }
-        {/* <div ref={bottomRef} /> */}
       </main>
     </section>
   );

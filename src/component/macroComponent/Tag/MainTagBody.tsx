@@ -8,31 +8,17 @@ import { ArticleCard } from "~/component/card";
 import { ArticleLoading } from "~/component/loading";
 
 import { Clock, Filter, Flame } from "lucide-react";
-import type { DetailedTag, FilterData } from "~/types";
+import useFilter from "~/hooks/useFilter";
+import type { DetailedTag } from "~/types";
 import { api } from "~/utils/api";
 import { TagPageHeader } from "../../header";
 import FilterSection from "./FilterSection";
 
 const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const tab = useRouter().query.tab as string | undefined;
-  const [filter, setFilter] = useState<FilterData>({
-    status: false,
-    data: {
-      read_time: null,
-      tags: [],
-    },
-  });
 
-  const read_time_options = [
-    { label: "Under 5 min", value: "under_5" },
-    { label: "5 min", value: "5" },
-    { label: "Over 5 min", value: "over_5" },
-  ];
+  const { filter, setFilter } = useFilter();
 
-  const [newFilterData, setNewFilterData] = useState<FilterData["data"]>({
-    read_time: filter.data.read_time,
-    tags: filter.data.tags,
-  });
   const [following, setFollowing] = useState<{
     status: boolean;
     followersCount: string;
@@ -51,39 +37,15 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       type: (tab || "hot") as "hot" | "new",
       limit: 2,
       filter: {
-        tags: newFilterData.tags,
-        read_time: newFilterData.read_time
-          ? (read_time_options.find(
-            (option) => option.label === newFilterData.read_time
-          )?.value as "over_5" | "5" | "under_5" | null | undefined)
-          : null,
+        read_time: filter.data.read_time,
+        tags: filter.data.tags,
       },
     },
     {
+      enabled: filter.data.shouldApply,
       refetchOnWindowFocus: false,
     }
   );
-
-
-
-  const applyFilter = () => {
-    setNewFilterData((prev) => ({ ...prev, ...filter.data }));
-  };
-
-  const clearFilter = () => {
-    setNewFilterData((prev) => ({
-      ...prev,
-      read_time: null,
-      tags: [],
-    }));
-    setFilter({
-      status: false,
-      data: {
-        read_time: null,
-        tags: [],
-      },
-    });
-  };
 
   useEffect(() => {
     if (tagDetails && user && following.updated === false) {
@@ -125,8 +87,6 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       }
     }
   };
-
-
 
   return (
     <section className="container-main my-4 min-h-[100dvh] w-full">
@@ -212,12 +172,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
           </div>
 
           {filter.status && (
-            <FilterSection
-              filter={filter}
-              setFilter={setFilter}
-              applyFilter={applyFilter}
-              clearFilter={clearFilter}
-            />
+            <FilterSection />
           )}
         </div>
 

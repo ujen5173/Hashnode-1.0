@@ -184,14 +184,11 @@ export const NotificationTypes =
 export interface FilterData {
   status: boolean;
   data: {
-    read_time: "Over 5 min" | "5 min" | "Under 5 min" | null | undefined;
-    tags: {
-      id: string;
-      name: string;
-    }[];
+    read_time: "OVER_5" | "5" | "UNDER_5" | null;
+    tags: string[];
+    shouldApply: boolean;
   };
 }
-
 export interface DetailedUser {
   followers: { id: string }[];
   isFollowing: boolean;

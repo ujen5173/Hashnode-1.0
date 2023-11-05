@@ -52,8 +52,7 @@ const UserimageArea: FC<{
     }
   };
 
-  console.log({ userDetails })
-
+ 
   return (
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
       <div className="h-28 w-28 overflow-hidden rounded-full bg-light-bg dark:bg-primary-light md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {  FilterTimeOption } from "~/hooks/useFilter";
 import { api } from "~/utils/api";
 import { BookmarkLoading } from "../loading";
 import ManageData from "./ManageData";
@@ -6,7 +7,7 @@ import ManageData from "./ManageData";
 const Trending = () => {
   const { data: articlesData, isLoading } = api.posts.trendingArticles.useQuery(
     {
-      variant: "any",
+      variant: FilterTimeOption.any,
       limit: 4,
     },
     {

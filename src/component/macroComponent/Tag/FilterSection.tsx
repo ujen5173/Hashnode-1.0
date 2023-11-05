@@ -1,21 +1,16 @@
-import React, { type FC } from "react";
+import { useContext } from "react";
 import { Select } from "~/component/miniComponent";
-import { type FilterData } from "~/types";
+import { READ_TIME_DEFAULT_TEXTS, READ_TIME_OPTIONS } from "~/hooks/useFilter";
+import { C, type ContextValue } from "~/utils/context";
 import Tag from "./Tag";
 
-interface Props {
-  filter: FilterData;
-  setFilter: React.Dispatch<React.SetStateAction<FilterData>>;
-  applyFilter: () => void;
-  clearFilter: () => void;
-}
+const FilterSection = () => {
+  const {
+    filter,
+    setFilter,
+    filterActions
+  } = useContext(C) as ContextValue;
 
-const FilterSection: FC<Props> = ({
-  filter,
-  setFilter,
-  applyFilter,
-  clearFilter,
-}) => {
   return (
     <section className="relative flex w-full flex-col justify-between gap-4 border-b border-border-light p-4 dark:border-border sm:flex-row sm:gap-12">
       <div className="flex flex-1 flex-col gap-4 sm:flex-row">
@@ -28,23 +23,18 @@ const FilterSection: FC<Props> = ({
           </label>
 
           <Select
-            defaultText={filter.data.read_time || "Select"}
-            options={[
-              { label: "Under 5 min", value: "under_5" },
-              { label: "5 min", value: "5" },
-              { label: "Over 5 min", value: "over_5" },
-            ]}
-            onChange={(value) =>
+            defaultText={filter.data.read_time ? READ_TIME_DEFAULT_TEXTS[filter.data.read_time] : "Select"}
+            options={READ_TIME_OPTIONS}
+            onChange={(value) => {
               setFilter((prev) => ({
                 ...prev,
                 data: {
                   ...prev.data,
-                  read_time: value.label as
-                    | "Over 5 min"
-                    | "Under 5 min"
-                    | "5 min",
+                  read_time: value.value as 'UNDER_5' | '5' | 'OVER_5',
+                  shouldApply: false,
                 },
               }))
+            }
             }
           />
         </div>
@@ -63,12 +53,12 @@ const FilterSection: FC<Props> = ({
 
       <div className="mt-0 flex w-max flex-wrap items-start gap-2 sm:mt-8">
         <button
-          onClick={() => void applyFilter()}
+          onClick={filterActions.applyFilter}
           className="btn-outline w-full"
         >
           Apply
         </button>
-        <button onClick={clearFilter} className="btn-subtle w-full">
+        <button onClick={filterActions.clearFilter} className="btn-subtle w-full">
           Clear Filter
         </button>
       </div>

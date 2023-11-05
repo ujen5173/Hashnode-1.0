@@ -1,6 +1,7 @@
 import { TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { type FC } from "react";
+import { FilterTimeOption } from "~/hooks/useFilter";
 import { api } from "~/utils/api";
 import { asideItems, HashnodeSocials } from "~/utils/constants";
 import { type TrendingTagsTypes } from "~/utils/context";
@@ -12,14 +13,13 @@ import AsideNavigation from "./AsideNavigation";
 const Aside = () => {
   const { data: tagsData, isLoading } = api.tags.getTredingTags.useQuery(
     {
-      variant: "any",
+      variant: FilterTimeOption.any,
       limit: 6,
     },
     {
       refetchOnWindowFocus: false,
     }
   );
-
 
   return (
     <div className="container-aside relative hidden min-h-[100dvh] py-4 lg:block">

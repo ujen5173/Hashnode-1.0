@@ -64,13 +64,13 @@ export const likesRouter = createTRPCRouter({
           .then((res) => res[0]?.likesCount as number);
 
         if (article.likes.length > 0) {
-          console.log("unlike");
-          await ctx.db
+          // like
+           await ctx.db
             .delete(likesToArticles)
             .where(eq(likesToArticles.articleId, articleId));
         } else {
-          console.log("like");
-          await ctx.db.insert(likesToArticles).values({
+          // unlike
+           await ctx.db.insert(likesToArticles).values({
             articleId,
             userId: ctx.session.user.id,
           });

@@ -35,8 +35,7 @@ const RightArea: FC = () => {
     enabled: !!user,
   });
 
-  console.log({ error })
-
+ 
   useEffect(() => {
     if (opened) {
       setCount(0);

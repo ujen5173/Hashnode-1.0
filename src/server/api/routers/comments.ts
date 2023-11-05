@@ -45,8 +45,7 @@ export const commentsRouter = createTRPCRouter({
         },
       });
 
-      console.log({ article });
-
+ 
       if (!article) {
         throw new TRPCError({
           code: "NOT_FOUND",

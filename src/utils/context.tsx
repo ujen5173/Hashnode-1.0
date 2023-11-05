@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React, {
   createContext,
   useEffect,
@@ -6,7 +7,8 @@ import React, {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { type ArticleCard } from "~/types";
+import useFilter, { DEFAULT_FILTER_DATA, type FilterTimeOption } from "~/hooks/useFilter";
+import { type ArticleCard, type FilterData } from "~/types";
 
 export enum NotificationTypesEnum {
   ALL = "ALL",
@@ -15,7 +17,6 @@ export enum NotificationTypesEnum {
   ARTICLE = "ARTICLE",
   FOLLOW = "FOLLOW",
 }
-
 
 interface Props {
   children: React.ReactNode;
@@ -68,16 +69,33 @@ export interface ContextValue extends Options {
   handleTheme: () => void;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setState: Dispatch<SetStateAction<any>>
+    setState: Dispatch<SetStateAction<unknown>>
   ) => void;
   theme: "light" | "dark";
   bookmarks: { id: string }[];
   updateBookmark: (id: string) => void;
+  filter: FilterData;
+  setFilter: React.Dispatch<React.SetStateAction<FilterData>>
+  filterActions: {
+    applyFilter: () => void;
+    clearFilter: () => void;
+  }
+  timeFilter: FilterTimeOption
+  setTimeFilter: React.Dispatch<React.SetStateAction<FilterTimeOption>>
 }
 
 export const C = createContext<ContextValue | undefined>(undefined);
 
 const Context = ({ children, options }: Props) => {
+  const { timeFilter, setTimeFilter, filter, setFilter, filterActions } = useFilter();
+
+  const routerPath = useRouter().asPath;
+
+  useEffect(() => {
+    // setting filter data to default every time the router changes to avoid unexpected behavior
+    setFilter(DEFAULT_FILTER_DATA);
+  }, [routerPath]);
+
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
 
@@ -143,7 +161,11 @@ const Context = ({ children, options }: Props) => {
         theme,
         handleTheme,
         handleChange,
-
+        filter,
+        setFilter,
+        filterActions,
+        timeFilter,
+        setTimeFilter,
         ...options,
       }}
     >

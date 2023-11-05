@@ -82,8 +82,7 @@ const SearchBody = React.forwardRef<
     users: null,
   });
 
-  console.log({ data })
-
+ 
   const [topResults, setTopResults] = useState<any>([]);
 
   const [refetching, setRefetching] = useState(false);

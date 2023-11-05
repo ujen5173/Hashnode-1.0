@@ -1,9 +1,17 @@
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState, type Dispatch, type FC, type SetStateAction } from "react";
+import { useContext, type FC } from "react";
 import { ArticleLoading, TagLoading } from "~/component/loading";
 import { ManageData, Select } from "~/component/miniComponent";
+import {
+  FILTER_TIME_OPTIONS,
+  FILTER_TIME_OPTIONS_LABEL,
+  type FilterTimeOption,
+} from "~/hooks/useFilter";
 import { api } from "~/utils/api";
 import {
+  C,
+  type ContextValue,
   type TrendingArticleTypes,
   type TrendingTagsTypes,
 } from "~/utils/context";
@@ -11,68 +19,52 @@ import ExploreMainComponentNavigation from "./ExploreMainComponentNavigation";
 
 const ExploreMainComponent = () => {
   const { slug } = useRouter().query;
-  const [filter, setFilter] = useState<
-    "This week" | "Any" | "This month" | "This year"
-  >("Any");
-  const trendingTagsData = api.tags.getTredingTags.useQuery(
+  const { data } = useSession();
+  const { timeFilter } = useContext(C) as ContextValue;
+
+  const trendingTags = api.tags.getTredingTags.useQuery(
     {
-      limit: 6,
-      variant: filter.toLowerCase().replace("this ", "") as
-        | "week"
-        | "month"
-        | "any"
-        | "year",
+      limit: 10,
     },
     {
-      enabled: slug === undefined ? true : slug.includes("tags"),
       refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !slug || slug[0] === "tags",
     }
   );
-  const { data, isLoading } = api.posts.trendingArticles.useQuery(
+
+  const followingTags = api.tags.getFollowingTags.useQuery(
     {
-      limit: 6,
-      variant: filter.toLowerCase().replace("this ", "") as
-        | "week"
-        | "month"
-        | "any"
-        | "year",
+      limit: 10,
     },
     {
-      enabled:
-        slug === undefined
-          ? true
-          : slug.includes("tags") || slug.includes("articles"),
       refetchOnWindowFocus: false,
-      // getNextPageParam: (lastPage) => lastPage.nextCursor,
+      retry: false,
+      enabled: !!data && (!slug || slug[0] === "tags-following"),
     }
   );
-  const followingTagsData = api.tags.getFollowingTags.useQuery(
+
+  const followingArticles = api.posts.getFollowingArticles.useQuery(
     {
-      limit: 6,
-      variant: filter.toLowerCase().replace("this ", "") as
-        | "week"
-        | "any"
-        | "month"
-        | "year",
+      limit: 10,
+      variant: timeFilter,
     },
     {
-      enabled: slug === undefined ? true : slug.includes("tags-following"),
       refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!data && (!slug || slug[0] === "articles-following"),
     }
   );
-  const { data: followingData, isLoading: followingLoading } = api.posts.getFollowingArticles.useQuery(
+
+  const trendingArticles = api.posts.trendingArticles.useQuery(
     {
-      limit: 6,
-      variant: filter.toLowerCase().replace("this ", "") as
-        | "week"
-        | "month"
-        | "any"
-        | "year",
+      limit: 10,
+      variant: timeFilter,
     },
     {
-      enabled: slug === undefined ? true : slug.includes("articles-following"),
       refetchOnWindowFocus: false,
-      // getNextPageParam: (lastPage) => lastPage.nextCursor,
+      retry: false,
+      enabled: !slug || slug[0] === "articles",
     }
   );
 
@@ -89,7 +81,7 @@ const ExploreMainComponent = () => {
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-md border border-border-light bg-white pt-2 dark:border-border dark:bg-primary">
+      <div className="rounded-md border border-border-light bg-white pt-2 dark:border-border dark:bg-primary">
         <ExploreMainComponentNavigation slug={slug} />
 
         {
@@ -101,10 +93,9 @@ const ExploreMainComponent = () => {
                     title="Trending Tags"
                     type="TAG"
                     tagsData={{
-                      data: trendingTagsData.data,
-                      isLoading: trendingTagsData.isFetching,
+                      data: trendingTags.data ?? [],
+                      isLoading: trendingTags.isFetching,
                     }}
-                    filter={filter}
                   />
                 </div>
 
@@ -112,10 +103,9 @@ const ExploreMainComponent = () => {
                   title="Trending Articles"
                   type="ARTICLE"
                   articlesData={{
-                    data: data?.posts,
-                    isLoading: isLoading,
+                    data: trendingArticles?.data?.posts ?? [],
+                    isLoading: trendingArticles.isLoading,
                   }}
-                  filter={filter}
                 />
               </>
             ),
@@ -124,10 +114,9 @@ const ExploreMainComponent = () => {
                 title="Tags You Follow"
                 type="TAG"
                 tagsData={{
-                  data: followingTagsData.data,
-                  isLoading: followingTagsData.isFetching,
+                  data: followingTags.data ?? [],
+                  isLoading: followingTags.isLoading,
                 }}
-                filter={filter}
               />
             ),
             "articles-following": (
@@ -135,10 +124,9 @@ const ExploreMainComponent = () => {
                 title="Articles You Follow"
                 type="ARTICLE"
                 articlesData={{
-                  data: followingData?.posts ?? [],
-                  isLoading: followingLoading,
+                  data: followingArticles?.data?.posts ?? [],
+                  isLoading: followingArticles.isLoading,
                 }}
-                filter={filter}
               />
             ),
             articles: (
@@ -146,12 +134,10 @@ const ExploreMainComponent = () => {
                 title="Trending Articles"
                 type="ARTICLE"
                 articlesData={{
-                  data: data?.posts,
-                  isLoading: isLoading,
+                  data: trendingArticles?.data?.posts ?? [],
+                  isLoading: trendingArticles.isLoading,
                 }}
-                setFilterState={setFilter}
                 showFilter={true}
-                filter={filter}
               />
             ),
             tags: (
@@ -160,30 +146,14 @@ const ExploreMainComponent = () => {
                 subtitle="Tags with most number of articles"
                 type="TAG"
                 tagsData={{
-                  data: trendingTagsData.data,
-                  isLoading: trendingTagsData.isFetching,
+                  data: trendingTags.data ?? [],
+                  isLoading: trendingTags.isLoading,
                 }}
-                setFilterState={setFilter}
                 showFilter={true}
-                filter={filter}
               />
             ),
           }[(slug ? slug[0] : "default") as string]
         }
-        {/* {
-          isLoading && (
-            <>
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-            </>
-          )
-        } */}
       </div>
     </section>
   );
@@ -197,21 +167,18 @@ const ExploreSection: FC<{
   type: "TAG" | "ARTICLE";
   title: string;
   subtitle?: string;
-  setFilterState?: Dispatch<
-    SetStateAction<"This week" | "This month" | "This year" | "Any">
-  >;
+
   showFilter?: boolean;
-  filter?: "This week" | "This month" | "This year" | "Any";
 }> = ({
   articlesData,
   tagsData,
   title,
   type,
   subtitle,
-  setFilterState,
   showFilter = false,
-  filter,
 }) => {
+    const { setTimeFilter } = useContext(C) as ContextValue;
+
     return (
       <>
         <div className="flex items-center justify-between p-4 pb-0">
@@ -226,33 +193,21 @@ const ExploreSection: FC<{
             )}
           </div>
 
-          {showFilter && setFilterState && (
+          {showFilter && (
             <div className="max-w-[350px]">
               <Select
                 onChange={(value) => {
-                  setFilterState(
-                    value.label as "This week" | "This month" | "This year"
-                  );
+                  setTimeFilter(value.value as FilterTimeOption);
                 }}
-                defaultText="Any"
-                options={[
-                  {
-                    label: "This week",
-                    value: "week",
-                  },
-                  {
-                    label: "This month",
-                    value: "month",
-                  },
-                  {
-                    label: "This year",
-                    value: "year",
-                  },
-                  {
-                    label: "Any",
-                    value: "any",
-                  },
-                ]}
+                defaultText={FILTER_TIME_OPTIONS.any}
+                options={
+                  Object.entries(FILTER_TIME_OPTIONS_LABEL).map(
+                    ([key, value]) => ({
+                      label: value,
+                      value: key.toUpperCase(),
+                    })
+                  )
+                }
               />
             </div>
           )}
@@ -264,7 +219,6 @@ const ExploreSection: FC<{
             loading={type === "TAG" ? <TagLoading /> : <ArticleLoading />}
             articleData={articlesData}
             tagsData={tagsData}
-            filter={filter}
           />
         </div>
       </>

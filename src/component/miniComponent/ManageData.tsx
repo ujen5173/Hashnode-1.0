@@ -29,12 +29,13 @@ const ManageData: FC<Props> = ({
       {type === "TAG" ? (
         tagsData?.isLoading ? (
           <div className="flex w-full flex-wrap gap-4 p-4">
+           
             {Array(6)
               .fill("")
               .map((_, i) => (
                 <div
                   key={i}
-                  className="w-full border-b last:border-none border-border-light dark:border-border md:w-[calc(100%/2-0.5rem)]"
+                  className="w-full bg-light-bg rounded-md border border-border-light dark:border-border md:w-[calc(100%/2-0.5rem)]"
                 >
                   {loading}
                 </div>

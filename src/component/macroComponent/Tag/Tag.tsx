@@ -1,6 +1,5 @@
 import { Search, X } from "lucide-react";
 import React, { type FC, type KeyboardEvent } from "react";
-import { v4 as uuid } from "uuid";
 
 import { type FilterData } from "~/types";
 
@@ -23,12 +22,11 @@ const Tag: FC<Props> = ({ filter, setFilter }) => {
           ...prevFilter.data,
           tags: [
             ...prevFilter.data.tags,
-            {
-              id: uuid(),
-              name: inputValue,
-            },
+            inputValue,
           ],
+          shouldApply: false,
         },
+
       }));
 
       (e.target as HTMLInputElement).value = "";
@@ -49,12 +47,12 @@ const Tag: FC<Props> = ({ filter, setFilter }) => {
       </div>
 
       <div className="mt-2 flex flex-wrap gap-2">
-        {filter.data.tags.map((tag) => (
+        {filter.data.tags.map((tag, idx) => (
           <div
-            key={tag.id}
+            key={idx}
             className="flex items-center justify-center rounded-md border border-border-light bg-light-bg px-2 py-1 text-sm text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary"
           >
-            <span>{tag.name}</span>
+            <span>{tag}</span>
             <button
               aria-label="icon"
               role="button"
@@ -63,7 +61,7 @@ const Tag: FC<Props> = ({ filter, setFilter }) => {
                   ...prev,
                   data: {
                     ...prev.data,
-                    tags: prev.data.tags.filter((t) => t.id !== tag.id),
+                    tags: prev.data.tags.filter((t) => t !== tag),
                   },
                 }));
               }}

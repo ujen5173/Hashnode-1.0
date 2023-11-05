@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TRPCError } from "@trpc/server";
 import {
   and,
@@ -9,7 +10,7 @@ import {
   inArray,
   lt,
   lte,
-  or
+  or,
 } from "drizzle-orm";
 import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type { Session } from "next-auth";
@@ -17,6 +18,7 @@ import readingTime from "reading-time";
 import slugify from "slugify";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
+import { FILTER_TIME_OPTIONS } from "~/hooks/useFilter";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -30,13 +32,15 @@ import {
   follow,
   handles,
   likesToArticles,
-  likesToComment, notificationEnum, notifications,
+  likesToComment,
+  notificationEnum,
+  notifications,
   readersToArticles,
   series,
   tags,
   tagsToArticles,
   tagsToUsers,
-  users
+  users,
 } from "~/server/db/schema";
 import type { ArticleCardWithComments, SearchResults } from "~/types";
 import {
@@ -123,74 +127,65 @@ export const postsRouter = createTRPCRouter({
   }),
 
   // TODO: Add pagination/infinite scroll feature.
+  // TODO: Add following feature.
   getAll: publicProcedure
     .input(
       z.object({
         limit: z.number().optional().default(6),
-        // skip: z.number().optional(),
-        // cursor: z.string().nullable().optional(),
         filter: z
           .object({
-            read_time: z.enum(["over_5", "5", "under_5"]).nullable().optional(),
-            tags: z.array(
-              z.string(),
-            ),
+            read_time: z.enum(["UNDER_5", "5", "OVER_5"]).nullable().optional(),
+            tags: z.array(z.string()),
           })
           .optional()
           .nullable(),
         type: z
-          .enum(["personalized", "following", "latest"])
+          .enum(["PERSONALIZED", "FOLLOWING", "LATEST"])
           .optional()
-          .default("personalized"),
+          .default("PERSONALIZED"),
       })
     )
     .query(async ({ ctx, input }) => {
-      try { 
-        // const { cursor, skip, limit } = input;
-         const result = await ctx.db.query.articles
+      try {
+        const result = await ctx.db.query.articles
           .findMany({
-            where:
-            and(eq(articles.isDeleted, false),
-            
-            // ...(cursor ? [lt(articles.id, cursor)] : []),
+            where: and(
+              eq(articles.isDeleted, false),
+              ...(input?.filter?.read_time
+                ? input.filter.read_time === "OVER_5"
+                  ? [gt(articles.read_time, 5)]
+                  : input.filter.read_time === "UNDER_5"
+                  ? [lt(articles.read_time, 5)]
+                  : input.filter.read_time === "5"
+                  ? [eq(articles.read_time, 5)]
+                  : []
+                : [])
+            ),
 
-            ...(input?.filter?.read_time
-            ? input.filter.read_time === "over_5" 
-              ? [gt(articles.read_time, 5)]
-              : input.filter.read_time === "under_5"
-              ? [lt(articles.read_time, 5)]
-              : input.filter.read_time === "5"
-              ? [eq(articles.read_time, 5)]
-              : []
-            : []),
-            ),            
-            // limit: limit,
-            // offset: cursor ? limit+1 : undefined,
-            orderBy: input?.type === "latest"
+            orderBy:
+              input?.type === "LATEST"
                 ? [desc(articles.createdAt)]
                 : [
                     desc(articles.likesCount),
                     desc(articles.commentsCount),
-                    desc(articles.createdAt),
+                    desc(articles.readCount),
                   ],
+
             ...selectArticleCard,
           })
           .then((article) =>
-            article.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) })).filter((article) => {
-              if (input?.filter?.tags) {
-                return input?.filter?.tags.every((tag) => article.tags.some((e) => e.name === tag))
-              } else {
-                return true;
-              }
-            })
-          ); 
-
-        // let nextCursor: typeof cursor | undefined = undefined;
-
-        // if (result.length <= limit) {
-        //   const nextItem = result.pop(); // return the last item from the array
-        //   nextCursor = nextItem?.id;
-        // }
+            article
+              .map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
+              .filter((article) => {
+                if (input?.filter?.tags) {
+                  return input?.filter?.tags.every((tag) =>
+                    article.tags.some((e) => e.name === tag)
+                  );
+                } else {
+                  return true;
+                }
+              })
+          );
 
         const formattedPosts = await getArticlesWithUserFollowingimages(
           {
@@ -202,7 +197,6 @@ export const postsRouter = createTRPCRouter({
 
         return {
           posts: formattedPosts,
-          // nextCursor: nextCursor,
         };
       } catch (err) {
         throw new TRPCError({
@@ -218,86 +212,100 @@ export const postsRouter = createTRPCRouter({
         name: z.string().trim(),
         filter: z
           .object({
-            read_time: z.enum(["over_5", "5", "under_5"]).nullable().optional(),
-            tags: z.array(
-              z.object({
-                id: z.string().trim(),
-                name: z.string().trim(),
-              })
-            ),
+            read_time: z.enum(["UNDER_5", "5", "OVER_5"]).nullable(),
+            tags: z.array(z.string().trim()),
           })
-          .optional()
-          .nullable(),
+          .optional(),
         limit: z.number().optional().default(6),
-        skip: z.number().optional(),
-        cursor: z.string().nullable().optional(),
         type: z.enum(["hot", "new"]).optional().default("new"),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { cursor, skip, limit } = input;
+      const { limit } = input;
 
-      const result = await ctx.db.query.articles
-        .findMany({
-          limit: (limit || 6) + 1,
-          offset: skip,
-          orderBy:
-            input.type === "hot"
-              ? [desc(articles.likesCount), desc(articles.commentsCount)]
-              : [desc(articles.createdAt)],
-          ...selectArticleCard,
-          where: and(
-            eq(articles.isDeleted, false),
-            ...(input?.filter?.read_time
-              ? (() => {
-                  return input?.filter?.read_time === "over_5"
-                    ? [gt(articles.read_time, 5)]
-                    : input?.filter?.read_time === "under_5"
-                    ? [lt(articles.read_time, 5)]
-                    : input?.filter?.read_time === "5"
-                    ? [eq(articles.read_time, 5)]
-                    : [];
-                })()
-              : []),
-            ...(input?.filter?.tags
-              ? (() => {
-                  return input?.filter?.tags.length > 0
-                    ? [
-                        ilike(
-                          tags.name,
-                          inArray(
-                            tags.name,
-                            input?.filter?.tags.map((tag) => tag.name)
-                          )
-                        ),
-                      ]
-                    : [];
-                })()
-              : [])
-          ),
+      const res = await ctx.db.query.tags
+        .findFirst({
+          where: eq(tags.slug, input.name),
+          columns: {
+            id: true,
+          },
+          with: {
+            articles: {
+              limit: limit,
+              with: {
+                article: {
+                  ...selectArticleCard,
+                },
+              },
+            },
+          },
         })
-        .then((res) =>
-          res.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
-        );
+        .then((res) => {
+          if (res) {
+            return res.articles
+              .map(({ article }) => ({
+                ...article,
+                tags: article.tags.map((e) => e.tag),
+              }))
+              .sort((a, b) => {
+                if (input.type === "hot") {
+                  return b.likesCount - a.likesCount;
+                } else {
+                  return (
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                  );
+                }
+              });
+          }
+        });
 
-      let nextCursor: typeof cursor | undefined = undefined;
-      if (result.length > limit) {
-        const nextItem = result.pop(); // return the last item from the array
-        nextCursor = nextItem?.id;
+      // const result = await ctx.db.query.articles
+      //   .findMany({
+      //     limit: limit + 1,
+      //     orderBy:
+      //       input.type === "hot"
+      //         ? [desc(articles.likesCount), desc(articles.commentsCount)]
+      //         : [desc(articles.createdAt)],
+      //     ...selectArticleCard,
+      //     where: and(
+      //       eq(articles.isDeleted, false),
+      //       ...(input?.filter?.read_time
+      //         ? input.filter.read_time === "OVER_5"
+      //           ? [gt(articles.read_time, 5)]
+      //           : input.filter.read_time === "UNDER_5"
+      //           ? [lt(articles.read_time, 5)]
+      //           : input.filter.read_time === "5"
+      //           ? [eq(articles.read_time, 5)]
+      //           : []
+      //         : []),
+      //       ...(input?.filter?.tags
+      //         ? input?.filter?.tags.length > 0
+      //           ? [inArray(tags.name, input.filter.tags)]
+      //           : []
+      //         : [])
+      //     ),
+      //   })
+      //   .then((res) =>
+      //     res.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
+      //   );
+
+      if (!res) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tag not found",
+        });
       }
-
       const formattedPosts = await getArticlesWithUserFollowingimages(
         {
           session: ctx.session,
           db: ctx.db,
         },
-        result
+        res
       );
 
       return {
         posts: formattedPosts,
-        // posts: result,
-        nextCursor,
       };
     }),
 
@@ -548,8 +556,8 @@ export const postsRouter = createTRPCRouter({
     }),
 
   new: protectedProcedure
-    .input({
-      ...z.object({
+    .input(
+      z.object({
         title: z
           .string()
           .min(5, "Title should be atleset of 5 characters")
@@ -563,15 +571,15 @@ export const postsRouter = createTRPCRouter({
         cover_image_Key: z.string().optional(),
         tags: z.array(z.string().trim()).default([]),
         slug: z.string().trim(),
-        seriesId: z.string().optional(),
+        seriesId: z.string().optional().nullable(),
         seoTitle: z.string().trim(),
         seoDescription: z.string().trim(),
         seoOgImage: z.string().trim().optional().nullable(),
         disabledComments: z.boolean().default(false).optional(),
 
         edit: z.boolean(), //? article is being edited or created
-      }),
-    })
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       try {
         const existingArticle = await ctx.db.query.articles.findFirst({
@@ -592,56 +600,58 @@ export const postsRouter = createTRPCRouter({
           },
         });
 
-        console.log({existingArticle});
-
         // check for not registered tags
-        let allTags;
+        let allTags: {
+            id: string;
+            articlesCount: number;
+          }[] = [],
+          allTagsDetails: {
+            id: string;
+            articlesCount: number;
+            name: string;
+          }[] = [];
+
         if (input.tags.length > 0) {
           allTags = await ctx.db
-          .insert(tags)
-          .values([
-            ...input.tags.map((tag) => ({
-              name: tag,
-              slug: slugify(tag, slugSetting),
-            })),
-          ])
-          .onConflictDoNothing()
-          .returning({
-            id: tags.id,
-            articlesCount: tags.articlesCount,
+            .insert(tags)
+            .values([
+              ...input.tags.map((tag) => ({
+                name: tag,
+                slug: slugify(tag, slugSetting),
+              })),
+            ])
+            .onConflictDoNothing()
+            .returning({
+              id: tags.id,
+              articlesCount: tags.articlesCount,
+            });
+
+          allTagsDetails = await ctx.db.query.tags.findMany({
+            where: inArray(tags.name, input.tags),
+            columns: {
+              id: true,
+              articlesCount: true,
+              name: true,
+            },
           });
+
+          // update article count;
+          await Promise.all(
+            allTagsDetails.map(async (detail) => {
+              await ctx.db
+                .update(tags)
+                .set({
+                  articlesCount: detail.articlesCount + 1,
+                })
+                .where(eq(tags.id, detail.id));
+            })
+          );
         }
-
-
- 
-
-        const allTagsDetails = await ctx.db.query.tags.findMany({
-          where: inArray(tags.name, input.tags),
-          columns: {
-            id: true,
-            articlesCount: true,
-            name: true,
-          },
-        });
-
-        // update article count;
-        await Promise.all(
-          allTagsDetails.map(async (detail) => {
-            await ctx.db
-              .update(tags)
-              .set({
-                articlesCount: detail.articlesCount + 1,
-              })
-              .where(eq(tags.id, detail.id));
-          })
-        );
-
 
         const { edit, tags: _, ...rest } = input;
 
         if (edit && !!existingArticle) {
           // editing an article
-          console.log("editing article");
           const [updatedArticle] = await ctx.db
             .update(articles)
             .set({
@@ -659,33 +669,34 @@ export const postsRouter = createTRPCRouter({
               id: articles.id,
             });
 
-          await ctx.db
-            .insert(tagsToArticles)
-            .values(
-              allTagsDetails.map((tag) => ({
-                articleId: updatedArticle?.id as string,
-                tagId: tag.id,
-              }))
-            )
-            .onConflictDoNothing();
+          if (allTagsDetails.length > 0) {
+            await ctx.db
+              .insert(tagsToArticles)
+              .values(
+                allTagsDetails.map((tag) => ({
+                  articleId: updatedArticle?.id as string,
+                  tagId: tag.id,
+                }))
+              )
+              .onConflictDoNothing();
+          }
 
           // update article count;
-          if (allTags) {
-
+          if (allTags.length > 0) {
             await ctx.db
-            .update(tags)
-            .set({
-              articlesCount:
-              (allTags.find((e) => e.id === tags.id._.data)?.articlesCount ??
-                  0) + 1,
-                })
-            .where(
-              inArray(
-                tags.id,
-                allTags.map((e) => e.id)
+              .update(tags)
+              .set({
+                articlesCount:
+                  (allTags.find((e) => e.id === tags.id._.data)
+                    ?.articlesCount ?? 0) + 1,
+              })
+              .where(
+                inArray(
+                  tags.id,
+                  allTags.map((e) => e.id)
                 )
-                );
-              }
+              );
+          }
 
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, updatedArticle?.id as string),
@@ -727,16 +738,15 @@ export const postsRouter = createTRPCRouter({
 
           if (allTagsDetails.length > 0) {
             await ctx.db
-            .insert(tagsToArticles)
-            .values(
-              allTagsDetails.map((tag) => ({
-                articleId: newArticle.id,
-                tagId: tag.id,
-              }))
+              .insert(tagsToArticles)
+              .values(
+                allTagsDetails.map((tag) => ({
+                  articleId: newArticle.id,
+                  tagId: tag.id,
+                }))
               )
               .onConflictDoNothing();
-            }
-
+          }
 
           const result = await ctx.db.query.articles.findFirst({
             where: eq(articles.id, newArticle.id),
@@ -752,13 +762,12 @@ export const postsRouter = createTRPCRouter({
                   followers: {
                     columns: {
                       followingId: true,
-                    }
-                  }
-                }
-              }
-            }
+                    },
+                  },
+                },
+              },
+            },
           });
-
 
           if (result?.user.followers && result.user.followers.length > 0) {
             await ctx.db.insert(notifications).values(
@@ -769,11 +778,11 @@ export const postsRouter = createTRPCRouter({
                 type: notificationEnum.enumValues[0],
                 body: `@${ctx.session.user.username} published a new article.`,
                 title: newArticle.title,
-                slug: newArticle.slug,                
+                slug: newArticle.slug,
               }))
             );
           }
-            
+
           return {
             success: true,
             redirectLink: `/u/@${ctx.session.user.username}/${
@@ -1177,9 +1186,9 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().optional().default(6),
-        // skip: z.number().optional(),
-        // cursor: z.string().nullable().optional(),
-        variant: z.enum(["week", "month", "year", "any"]).default("any"),
+        variant: z
+          .enum(["ANY", "WEEK", "MONTH", "YEAR"] as const)
+          .default("ANY" as const),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -1188,11 +1197,11 @@ export const postsRouter = createTRPCRouter({
         const startDate = new Date();
         const endDate = new Date();
 
-        if (input?.variant === "week") {
+        if (input?.variant === FILTER_TIME_OPTIONS.week) {
           startDate.setDate(startDate.getDate() - 7);
-        } else if (input?.variant === "month") {
+        } else if (input?.variant === FILTER_TIME_OPTIONS.month) {
           startDate.setMonth(startDate.getMonth() - 1);
-        } else if (input?.variant === "year") {
+        } else if (input?.variant === FILTER_TIME_OPTIONS.year) {
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
 
@@ -1200,7 +1209,7 @@ export const postsRouter = createTRPCRouter({
           .findMany({
             where: and(
               eq(articles.isDeleted, false),
-              input?.variant === "any"
+              input?.variant === FILTER_TIME_OPTIONS.any
                 ? undefined
                 : and(
                     gte(articles.createdAt, startDate),
@@ -1208,12 +1217,8 @@ export const postsRouter = createTRPCRouter({
                   )
             ),
             limit: limit,
-            // offset: skip,
             ...selectArticleCard,
-            orderBy: [
-              desc(articles.likesCount),
-              desc(articles.commentsCount),
-            ],
+            orderBy: [desc(articles.likesCount), desc(articles.commentsCount)],
           })
           .then((res) =>
             res.map((article) => ({
@@ -1221,12 +1226,6 @@ export const postsRouter = createTRPCRouter({
               tags: article.tags.map((e) => e.tag),
             }))
           );
-
-        // let nextCursor: typeof cursor | undefined = undefined;
-        // if (articlesData.length > limit) {
-        //   const nextItem = articlesData.pop(); // return the last item from the array
-        //   nextCursor = nextItem?.id;
-        // }
 
         const formattedPosts = await getArticlesWithUserFollowingimages(
           {
@@ -1238,7 +1237,6 @@ export const postsRouter = createTRPCRouter({
 
         return {
           posts: formattedPosts,
-          // nextCursor,
         };
       } catch (err) {
         throw new TRPCError({
@@ -1252,9 +1250,9 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().optional().default(6),
-        // skip: z.number().optional(),
-        // cursor: z.string().nullable().optional(),
-        variant: z.enum(["week", "month", "year", "any"]).default("any"),
+        variant: z
+          .enum(["ANY", "WEEK", "MONTH", "YEAR"] as const)
+          .default("ANY" as const),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -1264,14 +1262,13 @@ export const postsRouter = createTRPCRouter({
         const startDate = new Date();
         const endDate = new Date();
 
-        if (input?.variant === "week") {
+        if (input?.variant === FILTER_TIME_OPTIONS.week) {
           startDate.setDate(startDate.getDate() - 7);
-        } else if (input?.variant === "month") {
+        } else if (input?.variant === FILTER_TIME_OPTIONS.month) {
           startDate.setMonth(startDate.getMonth() - 1);
-        } else if (input?.variant === "year") {
+        } else if (input?.variant === FILTER_TIME_OPTIONS.year) {
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
-
         const sessionUser = await ctx.db.query.users.findFirst({
           where: eq(users.id, ctx.session?.user?.id || ""),
           columns: {
@@ -1281,71 +1278,61 @@ export const postsRouter = createTRPCRouter({
             following: {
               columns: {
                 userId: true,
-              }
+              },
             },
           },
         });
 
-        console.log({sessionUser})
-
         if (!sessionUser) {
           return {
             posts: [],
-            nextCursor: null,
           };
         }
         let articlesData = [];
-if (sessionUser?.following.length > 0) {
 
-        articlesData = await ctx.db.query.articles.findMany({
-            where: and(
-              eq(articles.isDeleted, false),
-              inArray(articles.userId, sessionUser?.following.map(e => e.userId)),
-            ),
-            limit: limit,
-            // offset: skip,
-            ...selectArticleCard,
-            orderBy: [
-              desc(articles.createdAt),
-              desc(articles.likesCount),
-              desc(articles.commentsCount),
-            ],
-          })
-          .then((res) =>
-            res.map((article) => ({
-              ...article,
-              tags: article.tags.map((e) => e.tag),
-            }))
+        if (sessionUser?.following.length > 0) {
+          articlesData = await ctx.db.query.articles
+            .findMany({
+              where: and(
+                eq(articles.isDeleted, false),
+                inArray(
+                  articles.userId,
+                  sessionUser?.following.map((e) => e.userId)
+                )
+              ),
+              limit: limit,
+              ...selectArticleCard,
+              orderBy: [
+                desc(articles.createdAt),
+                desc(articles.likesCount),
+                desc(articles.commentsCount),
+              ],
+            })
+            .then((res) =>
+              res.map((article) => ({
+                ...article,
+                tags: article.tags.map((e) => e.tag),
+              }))
+            );
+
+          const formattedPosts = await getArticlesWithUserFollowingimages(
+            {
+              session: ctx.session,
+              db: ctx.db,
+            },
+            articlesData
           );
 
-          console.log({articlesData})
-
-        // let nextCursor: typeof cursor | undefined = undefined;
-        // if (articlesdata.length > limit) {
-        //   const nextItem = articlesdata.pop(); // return the last item from the array
-        //   nextCursor = nextItem?.id;
-        // }
-
-        const formattedPosts = await getArticlesWithUserFollowingimages(
-          {
-            session: ctx.session,
-            db: ctx.db,
-          },
-          articlesData
-        );
+          return {
+            posts: formattedPosts,
+          };
+        }
 
         return {
-          posts: formattedPosts,
-          // nextCursor: null,
+          posts: [],
         };
-      }
-      
-      return {
-        posts: [],
-        // nextCursor: null,
-      };
       } catch (err) {
-console.log({err})
+        // console.log({err})
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -1357,9 +1344,6 @@ console.log({err})
     .input(
       z.object({
         id: z.string().trim(),
-        // limit: z.number().optional().default(6),
-        // skip: z.number().optional(),
-        // cursor: z.string().nullable().optional(),
         type: z
           .enum(["PUBLISHED", "SCHEDULED", "DELETED"])
           .optional()
@@ -1375,18 +1359,13 @@ console.log({err})
           });
         }
 
-        // const { cursor, skip, limit } = input;
-
         const articlesData = await ctx.db.query.articles.findMany({
           where: and(
             eq(articles.userId, input.id),
-            // ...(cursor ? [gt(articles.id, cursor)] : []),
             input.type === "DELETED"
               ? eq(articles.isDeleted, true)
               : eq(articles.isDeleted, false)
           ),
-          // limit: (limit || 6) + 1,
-          // offset: skip,
           columns: {
             id: true,
             title: true,
@@ -1407,15 +1386,8 @@ console.log({err})
           orderBy: [desc(articles.createdAt)],
         });
 
-        // let nextCursor: typeof cursor | undefined = undefined;
-        // if (articlesData.length > limit) {
-        //   const nextItem = articlesData.pop(); // return the last item from the array
-        //   nextCursor = nextItem?.id;
-        // }
-
         return {
           posts: articlesData,
-          // nextCursor,
         };
       } catch (err) {
         if (err instanceof TRPCError) {
@@ -1466,8 +1438,6 @@ console.log({err})
       z.object({
         handleDomain: z.string().trim(),
         limit: z.number().optional().default(6),
-        // skip: z.number().optional(),
-        // cursor: z.string().nullable().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -1494,25 +1464,18 @@ console.log({err})
                   },
                   orderBy: [desc(articles.createdAt)],
                 },
-              }
-            }
+              },
+            },
           },
           columns: {
             id: true,
           },
           limit: limit,
-           orderBy: [desc(articles.createdAt)],
+          orderBy: [desc(articles.createdAt)],
         });
-
-        // let nextCursor: typeof cursor | undefined = undefined;
-        // if (article.length > limit) {
-        //   const nextItem = article.pop(); // return the last item from the array
-        //   nextCursor = nextItem?.id;
-        // }
 
         return {
           posts: article,
-          // nextCursor,
         };
       } catch (err) {
         throw new TRPCError({

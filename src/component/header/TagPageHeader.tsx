@@ -67,7 +67,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
 
         <Link href={`/article/new?tag=${tagDetails.name}`} className="w-full sm:w-max">
           <button className="btn-filled flex w-full items-center justify-center gap-2 text-white md:w-max">
-            <Pencil className="h-5 w-5  fill-none stroke-gray-700 dark:stroke-text-secondary" />
+            <Pencil className="h-5 w-5 stroke-white" />
             Write An Article
           </button>
         </Link>

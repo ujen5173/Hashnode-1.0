@@ -1,119 +1,50 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MainBodyHeader } from "~/component/header";
 import { ArticleLoading } from "~/component/loading";
 import { ManageData } from "~/component/miniComponent";
-import { type FilterData } from "~/types";
+import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
-import { type TrendingArticleTypes } from "~/utils/context";
+import { C, type ContextValue, type TrendingArticleTypes } from "~/utils/context";
 
 const MainBodyArticles = () => {
-  const tab = useRouter().query.tab as string | undefined;
+  const tab = useRouter().query.tab as string | undefined | TrendingArticleTypes;
+  const { filter } = useContext(C) as ContextValue;
 
-  const [filter, setFilter] = useState<FilterData>({
-    status: false,
-    data: {
-      read_time: null,
-      tags: [],
-    },
-  });
-
-  const read_time_options = [
-    { label: "Under 5 min", value: "under_5" },
-    { label: "5 min", value: "5" },
-    { label: "Over 5 min", value: "over_5" },
-  ];
-
-  const [newFilterData, setNewFilterData] = useState<FilterData["data"]>({
-    read_time: filter.data.read_time,
-    tags: filter.data.tags,
-  });
-
-  const filterData = {
-    type: (tab || "personalized") as "personalized" | "latest" | "following",
-    filter: {
-      tags: newFilterData.tags,
-      read_time: newFilterData.read_time
-        ? (read_time_options.find(
-          (option) => option.label === newFilterData.read_time
-        )?.value as "over_5" | "5" | "under_5" | null | undefined)
-        : null,
-    },
-  };
-
-
-  const { isFetching, refetch } = api.posts.getAll.useQuery(
+  const { isFetching, data } = api.posts.getAll.useQuery({
+    type: (tab?.toString().toUpperCase() ?? 'PERSONALIZED') as "LATEST" | "PERSONALIZED" | "FOLLOWING",
+    filter: filter.data
+  },
     {
-      ...({ ...filterData, filter: { ...filterData.filter, tags: filterData.filter.tags.map(tag => tag.name) } }),
-      limit: 4,
-    },
-    {
-      enabled: false,
+      enabled: filter.data.shouldApply,
       refetchOnWindowFocus: false,
     }
   );
 
-  const [articles, setArticles] = useState<TrendingArticleTypes>({ data: [], isLoading: true });
+  const [articles, setArticles] = useState<ArticleCard[]>([]);
 
   useEffect(() => {
-    void (async () => {
-      const { data } = await refetch();
-
-      if (data) {
-        setArticles({ data: data.posts, isLoading: isFetching });
-      }
-    })();
-  }, [tab, newFilterData]);
-
-  const applyFilter = () => {
-    setNewFilterData((prev) => ({ ...prev, ...filter.data }));
-    setFilter({
-      status: false,
-      data: {
-        read_time: null,
-        tags: [],
-      },
-    });
-  };
-
-  const clearFilter = () => {
-    setNewFilterData((prev) => ({
-      ...prev,
-      read_time: null,
-      tags: [],
-    }));
-    setFilter({
-      status: false,
-      data: {
-        read_time: null,
-        tags: [],
-      },
-    });
-  };
+    if (data) {
+      setArticles(data?.posts)
+    }
+  }, [data]);
 
   return (
     <section className="container-main my-4 min-h-[100dvh] w-full overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
-      <MainBodyHeader
-        applyFilter={() => void applyFilter()}
-        clearFilter={() => void clearFilter()}
-        filter={filter}
-        setFilter={setFilter}
-      />
+      <MainBodyHeader />
 
       {
         isFetching ? (
-          <>
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-            <ArticleLoading />
-          </>
+          Array.from({ length: 7 }).map((_, i) => (
+            <ArticleLoading key={i} />
+          ))
         ) : <ManageData
           loading={<ArticleLoading />}
           type="ARTICLE"
-          articleData={articles}
+          articleData={{
+            isLoading: isFetching,
+            data: (articles),
+          }}
         />
       }
 
@@ -121,4 +52,4 @@ const MainBodyArticles = () => {
   );
 };
 
-export default MainBodyArticles;
+export default MainBodyArticles; 

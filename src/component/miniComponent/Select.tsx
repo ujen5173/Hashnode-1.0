@@ -30,6 +30,7 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
     control,
     dropdown,
   ]);
+
   const [select, setSelect] = useState<SelectProps>({
     status: false,
     selected: defaultText,
@@ -40,6 +41,7 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
     setSelect((prev) => ({
       ...prev,
       selected: defaultText,
+      options: options.map(e => ({ ...e, value: e.value.toUpperCase() })),
     }));
   }, [defaultText]);
 
@@ -59,23 +61,25 @@ const Select: FC<Props> = ({ options, defaultText, onChange }) => {
           ref={setDropdown}
           className="absolute left-0 max-h-[300px] overflow-y-auto scroll-area top-full z-50 mt-2 w-56 rounded-md border border-border-light bg-gray-50 text-left shadow-md dark:border-border dark:bg-primary"
         >
-          {select.options.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setSelect({
-                  ...select,
-                  selected: option.label,
-                  status: false,
-                });
-                onChange(option);
-                setOpened(false);
-              }}
-              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-text-primary dark:hover:bg-primary-light"
-            >
-              {option.label}
-            </button>
-          ))}
+          {select.options.map((option, index) => {
+            return (
+              <button
+                key={index}
+                onClick={() => {
+                  setSelect({
+                    ...select,
+                    selected: option.label,
+                    status: false,
+                  });
+                  onChange(option);
+                  setOpened(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-text-primary dark:hover:bg-primary-light"
+              >
+                {option.label}
+              </button>
+            )
+          })}
         </div>
       )}
     </div>

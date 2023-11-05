@@ -1,27 +1,15 @@
+import { Clock, Filter, Users, Wand2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type FC } from "react";
-
-import { Clock, Filter, Users, Wand2 } from "lucide-react";
-import { type FilterData } from "~/types";
+import { useContext, type FC } from "react";
+import { C, type ContextValue } from "~/utils/context";
 import { FilterSection } from "../macroComponent/Tag";
 
-interface Props {
-  filter: FilterData;
-  setFilter: React.Dispatch<React.SetStateAction<FilterData>>;
-  applyFilter: () => void;
-  clearFilter: () => void;
-}
-
-const MainBodyHeader: FC<Props> = ({
-  filter,
-  setFilter,
-  applyFilter,
-  clearFilter,
-}) => {
+const MainBodyHeader: FC = () => {
   const { tab } = useRouter().query;
   const { data: user } = useSession();
+  const { filter, setFilter } = useContext(C) as ContextValue;
 
   return (
     <>
@@ -124,12 +112,7 @@ const MainBodyHeader: FC<Props> = ({
       </header>
 
       {filter.status && (
-        <FilterSection
-          filter={filter}
-          setFilter={setFilter}
-          applyFilter={applyFilter}
-          clearFilter={clearFilter}
-        />
+        <FilterSection />
       )}
     </>
   );

@@ -421,13 +421,13 @@ export const imageDropdownList = [
   {
     name: "My Bookmarks",
     icon: <Bookmark className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />,
-    link: (userId: string) => "/bookmarks",
+    link: () => "/bookmarks",
     hiddenItem: false,
     danger: false,
   }, {
     name: "Account Settings",
     icon: <User className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />,
-    link: (userId: string) => "/settings",
+    link: () => "/settings",
     hiddenItem: false,
     danger: false,
   }, {
@@ -473,13 +473,13 @@ export const articleimageDropdownList = [
   }, {
     name: "New Article",
     icon: <Pencil className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
-    link: (userId: string) => `/article/new`,
+    link: () => `/article/new`,
     hiddenItem: false,
     danger: false,
   }, {
     name: "My Bookmarks",
     icon: <Bookmark className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
-    link: (userId: string) => "/bookmarks",
+    link: () => "/bookmarks",
     hiddenItem: false,
     danger: false,
   }, {
@@ -487,13 +487,13 @@ export const articleimageDropdownList = [
   }, {
     name: "Back to Hashnode",
     icon: <LogonoText className="h-4 w-4 fill-secondary" />,
-    link: (userId: string) => "/",
+    link: () => "/",
     hiddenItem: false,
     danger: false,
   }, {
     name: "image settings",
     icon: <User className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
-    link: (userId: string) => "/settings",
+    link: () => "/settings",
     hiddenItem: false,
     danger: false,
   }, {

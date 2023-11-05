@@ -196,8 +196,7 @@ const Roadmap = () => {
     refetchOnWindowFocus: false,
   });
 
-  console.log({ data })
-
+ 
   return (
     <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">

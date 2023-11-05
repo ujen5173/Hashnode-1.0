@@ -113,8 +113,7 @@ export const CommentCard: FC<Props> = ({
       // this timeout is to make sure the comment is added to the database before fetching the replies
       refetch()
         .then((res) => {
-          console.log({ res });
-          setReplies(
+           setReplies(
             res.data || {
               totalReplies: 0,
               replies: [],
@@ -145,8 +144,7 @@ export const CommentCard: FC<Props> = ({
       setGetReplyComment(comment.id);
       setTimeout(() => {
         void refetch().then((res) => {
-          console.log({ res })
-          setReplies(
+           setReplies(
             res.data || {
               totalReplies: 0,
               replies: [],

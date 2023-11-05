@@ -15,7 +15,7 @@ const TagCard: FC<Props> = ({ tag, type }) => {
     <Link href={`/tag/${tag.slug}`}>
       <div
         title={`#${tag.name}`}
-        className="flex gap-3 rounded-md border  border-border-light bg-light-bg p-2 dark:border-border dark:bg-primary-light"
+        className="flex gap-3 rounded-md border border-border-light bg-light-bg p-2 dark:border-border dark:bg-primary-light"
       >
         {tag.logo ? (
           <Image

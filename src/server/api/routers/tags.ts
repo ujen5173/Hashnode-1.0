@@ -6,6 +6,7 @@ import { tags, tagsToUsers, users } from "~/server/db/schema";
 import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
+import { FILTER_TIME_OPTIONS } from "~/hooks/useFilter";
 
 export const tagsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -154,62 +155,71 @@ export const tagsRouter = createTRPCRouter({
     .input(
       z
         .object({
-          variant: z.enum(["week", "month", "year", "any"]).default("any"),
+          variant: z
+            .enum(["ANY", "WEEK", "MONTH", "YEAR"] as const)
+            .default("ANY" as const),
           limit: z.number().default(6),
         })
         .optional()
     )
-    .query(async ({ ctx, input }) => {  
+    .query(async ({ ctx, input }) => {
       try {
         const startDate = new Date();
         const endDate = new Date();
 
-        if (input?.variant === "week") {
+        if (input?.variant === FILTER_TIME_OPTIONS.week) {
           startDate.setDate(startDate.getDate() - 7);
-        } else if (input?.variant === "month") {
+        } else if (input?.variant === FILTER_TIME_OPTIONS.month) {
           startDate.setMonth(startDate.getMonth() - 1);
-        } else if (input?.variant === "year") {
+        } else if (input?.variant === FILTER_TIME_OPTIONS.year) {
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
 
-        const res = await ctx.db.query.tags.findMany({
-          limit: input?.limit || 6,
-          where: and(
-            gt(tags.articlesCount, 0),
-          ),
-          orderBy: [desc(tags.articlesCount), desc(tags.followersCount)],
-          with: {
-            articles: {
-              columns: {
-                articleId: false,
-                tagId: false,
-              },
-              with: {
-                article: {
-                  columns: {
-                    createdAt: true,
+        const res = await ctx.db.query.tags
+          .findMany({
+            limit: input?.limit || 6,
+            where: and(gt(tags.articlesCount, 0)),
+            orderBy: [desc(tags.articlesCount), desc(tags.followersCount)],
+            with: {
+              articles: {
+                columns: {
+                  articleId: false,
+                  tagId: false,
+                },
+                with: {
+                  article: {
+                    columns: {
+                      createdAt: true,
+                    },
                   },
                 },
               },
             },
-          },
-        }).then(res => {
-          const result = res.map(tag => {
-             return {
-              ...tag,
-              articles: input?.variant === "any" ? tag.articles : tag.articles.filter(article => article.article.createdAt >= startDate && article.article.createdAt <= endDate)
-            }
+          })
+          .then((res) => {
+            const result = res.map((tag) => {
+              return {
+                ...tag,
+                articles:
+                  input?.variant === FILTER_TIME_OPTIONS.any
+                    ? tag.articles
+                    : tag.articles.filter(
+                        (article) =>
+                          article.article.createdAt >= startDate &&
+                          article.article.createdAt <= endDate
+                      ),
+              };
+            });
+            return result;
           });
-           return result;
-        });
- 
+
         const tagData = res.map((tag) => {
           return {
             id: tag.id,
             name: tag.name,
             slug: tag.slug,
             logo: tag.logo,
-            articlesCount: tag.articles.length
+            articlesCount: tag.articles.length,
           };
         });
 
@@ -227,7 +237,9 @@ export const tagsRouter = createTRPCRouter({
   getFollowingTags: protectedProcedure
     .input(
       z.object({
-        variant: z.enum(["week", "month", "year", "any"]).default("any"),
+        variant: z
+          .enum(["ANY", "WEEK", "MONTH", "YEAR"] as const)
+          .default("ANY" as const),
         limit: z.number().default(6),
       })
     )
@@ -236,59 +248,61 @@ export const tagsRouter = createTRPCRouter({
         const startDate = new Date();
         const endDate = new Date();
 
-        if (input?.variant === "week") {
+        if (input?.variant === FILTER_TIME_OPTIONS.week) {
           startDate.setDate(startDate.getDate() - 7);
-        } else if (input?.variant === "month") {
+        } else if (input?.variant === FILTER_TIME_OPTIONS.month) {
           startDate.setMonth(startDate.getMonth() - 1);
-        } else if (input?.variant === "year") {
+        } else if (input?.variant === FILTER_TIME_OPTIONS.year) {
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
 
-        const result = await ctx.db.query.users.findFirst({
-          where: eq(users.id, ctx.session.user.id),
-          columns: {
-            id: true,
-          },
-          with: {
-            followingTags: {
-              with: {
-                tag: {
-                  columns: {
-                    description: false,
-                  },
-                  with: {
-                    articles: {
-                      columns: {
-                        articleId: false,
-                        tagId: false,
-                      },
-                      with: {
-                        article: {
-                          columns: {
-                            createdAt: true,
+        const result = await ctx.db.query.users
+          .findFirst({
+            where: eq(users.id, ctx.session.user.id),
+            columns: {
+              id: true,
+            },
+            with: {
+              followingTags: {
+                with: {
+                  tag: {
+                    columns: {
+                      description: false,
+                    },
+                    with: {
+                      articles: {
+                        columns: {
+                          articleId: false,
+                          tagId: false,
+                        },
+                        with: {
+                          article: {
+                            columns: {
+                              createdAt: true,
+                            },
                           },
                         },
-                      }
-                    }
-                  }
-                }
+                      },
+                    },
+                  },
+                },
+                columns: {
+                  tagId: false,
+                  userId: false,
+                },
               },
-              columns: {
-                tagId: false,
-                userId: false,
-              }
+            },
+          })
+          .then((res) => {
+            if (res) {
+              return res.followingTags.map((e) => e.tag);
+            } else {
+              return undefined;
             }
-          }
-        }).then(res => {
-          if (res) {
-            return res.followingTags.map(e => e.tag);
-          } else {
-            return undefined;
-          }
-        });
+          });
 
         if (!result) {
-          return []
+          return [];
         }
 
         const tagData = result.map((tag) => {
@@ -297,11 +311,14 @@ export const tagsRouter = createTRPCRouter({
             name: tag.name,
             slug: tag.slug,
             logo: tag.logo,
-            articlesCount:  input?.variant === "any" ? tag.articlesCount :  tag.articles.filter(
-              (article) =>
-                article.article.createdAt >= startDate &&
-                article.article.createdAt <= endDate
-            ).length,
+            articlesCount:
+              input?.variant === FILTER_TIME_OPTIONS.any
+                ? tag.articlesCount
+                : tag.articles.filter(
+                    (article) =>
+                      article.article.createdAt >= startDate &&
+                      article.article.createdAt <= endDate
+                  ).length,
           };
         });
 
