@@ -2,14 +2,13 @@ import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, type FC } from "react";
+import React, { useEffect, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 
 import { X } from "lucide-react";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
 import { formattedContent } from "~/utils/miniFunctions";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 import { SelectSeries, SelectTags } from "../miniComponent";
@@ -40,7 +39,6 @@ const NewArticleModal: FC<Props> = ({
   setQuery,
   subtitle,
 }) => {
-  const { handleChange } = useContext(C) as ContextValue;
   const { data: user } = useSession()
 
   const router = useRouter();
@@ -321,7 +319,10 @@ const NewArticleModal: FC<Props> = ({
                 id="seoTitle"
                 name="seoTitle"
                 value={data.seoTitle}
-                onChange={(e) => handleChange(e, setData)}
+                onChange={(e) => {
+                  const { name, value } = e.target;
+                  setData(prev => ({ ...prev, [name]: value }));
+                }}
               />
             </div>
 
@@ -346,7 +347,10 @@ const NewArticleModal: FC<Props> = ({
                 id="seoDescription"
                 name="seoDescription"
                 value={data.seoDescription}
-                onChange={(e) => handleChange(e, setData)}
+                onChange={(e) => {
+                  const { name, value } = e.target;
+                  setData(prev => ({ ...prev, [name]: value }));
+                }}
               />
             </div>
 

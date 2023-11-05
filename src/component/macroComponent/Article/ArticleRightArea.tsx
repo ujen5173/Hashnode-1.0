@@ -65,7 +65,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
     if (error) {
       toast.error("Error Fetching Notifications State");
     }
-    setCount(data || 0);
+    setCount(+(data?.count ?? 0));
   }, [error, data]);
 
   const { mutate: followToggle } = api.users.followUser.useMutation();

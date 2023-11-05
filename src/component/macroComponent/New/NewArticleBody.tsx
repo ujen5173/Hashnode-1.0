@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { FileImage, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState, type FC } from "react";
+import React, { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 import { useDebouncedCallback } from "use-debounce";
@@ -16,7 +16,6 @@ import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
 import { slugSetting } from "~/utils/constants";
-import { C, type ContextValue } from "~/utils/context";
 import { convertToHTML, imageToBlogHandler } from "~/utils/miniFunctions";
 import { useUploadThing } from "~/utils/uploadthing";
 
@@ -49,7 +48,6 @@ const NewArticleBody: FC<{
   setPublishing,
   setSavedState,
 }) => {
-    const { handleChange } = useContext(C) as ContextValue;
     const [query, setQuery] = useState("");
     const [subtitle, setSubTitle] = useState<string>("");
     const router = useRouter();
@@ -233,9 +231,10 @@ const NewArticleBody: FC<{
               <Input
                 value={data.title}
                 onChange={(e) => {
-                  handleChange(e, setData);
+                  const { name, value } = e.target;
                   setData((prev) => ({
                     ...prev,
+                    [name]: value,
                     slug: slugify(e.target.value, slugSetting),
                   }));
                 }}
