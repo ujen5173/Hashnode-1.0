@@ -1,7 +1,5 @@
-import { type Editor } from "@tiptap/core";
-import { Link2 } from "lucide-react";
-import { useEffect, useRef, type Dispatch, type FC, type SetStateAction } from "react";
-
+import { Editor } from "@tiptap/core";
+import { Dispatch, FC, SetStateAction, useEffect, useRef } from "react";
 
 interface LinkSelectorProps {
   editor: Editor;
@@ -24,12 +22,18 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
   return (
     <div className="relative">
       <button
-        className="flex h-full items-center px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-border-light dark:hover:bg-border dark:text-text-primary bg-gray-200 dark:bg-primary-light"
+        className="flex h-full items-center space-x-2 px-3 py-1.5 text-sm font-medium text-stone-600 hover:bg-stone-100 active:bg-stone-200"
         onClick={() => {
           setIsOpen(!isOpen);
         }}
       >
-        <Link2 className="w-4 h-4 fill-none stroke-gray-700 dark:stroke-text-secondary" />
+        <p className="text-base">↗</p>
+        <p
+          className={`underline decoration-stone-400 underline-offset-4 ${editor.isActive("link") ? "text-blue-500" : ""
+            }`}
+        >
+          Link
+        </p>
       </button>
       {isOpen && (
         <form
@@ -40,14 +44,14 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
             editor.chain().focus().setLink({ href: input.value }).run();
             setIsOpen(false);
           }}
-          className="fixed top-full z-[99999] mt-1 flex w-60 overflow-hidden rounded border border-border-light dark:border-border bg-gray-200 dark:bg-primary-light p-1 shadow-xl animate-in fade-in slide-in-from-top-1"
+          className="fixed top-full z-[99999] mt-1 flex w-60 overflow-hidden rounded border border-stone-200 bg-white p-1 shadow-xl animate-in fade-in slide-in-from-top-1"
         >
           <input
             ref={inputRef}
             type="url"
             placeholder="Paste a link"
             className="flex-1 bg-white p-1 text-sm outline-none"
-            defaultValue={editor.getAttributes("link").href as string | undefined || ""}
+            defaultValue={editor.getAttributes("link").href || ""}
           />
           {editor.getAttributes("link").href ? (
             <button
@@ -60,7 +64,7 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
               Delete
             </button>
           ) : (
-            <button className="flex items-center rounded-sm p-1 text-gray-500 dark:text-text-primary transition-all hover:bg-border-light dark:hover:bg-border">
+            <button className="flex items-center rounded-sm p-1 text-stone-600 transition-all hover:bg-stone-100">
               Add
             </button>
           )}

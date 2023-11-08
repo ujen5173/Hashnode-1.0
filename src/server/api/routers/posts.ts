@@ -147,6 +147,95 @@ export const postsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
+        if (input.type === "FOLLOWING") {
+          if (!ctx.session?.user?.id) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Login to see your following feed",
+            });
+          }
+          const followings = await ctx.db.query.users.findFirst({
+            where: eq(users.id, ctx.session.user.id),
+            columns: {
+              id: true,
+            },
+            with: {
+              following: {
+                columns: {
+                  userId: true,
+                },
+              },
+            },
+          });
+
+          if (!followings) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Login to see your following feed",
+            });
+          }
+
+          const { following } = followings;
+
+          if (following.length === 0) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Follow some users to see their articles",
+            });
+          }
+
+          const result = await ctx.db.query.articles
+            .findMany({
+              where: and(
+                eq(articles.isDeleted, false),
+                ...(input?.filter?.read_time
+                  ? input.filter.read_time === "OVER_5"
+                    ? [gt(articles.read_time, 5)]
+                    : input.filter.read_time === "UNDER_5"
+                    ? [lt(articles.read_time, 5)]
+                    : input.filter.read_time === "5"
+                    ? [eq(articles.read_time, 5)]
+                    : []
+                  : []),
+                inArray(
+                  articles.userId,
+                  following.flatMap((e) => e.userId)
+                )
+              ),
+              limit: input.limit,
+              ...selectArticleCard,
+              orderBy: [
+                desc(articles.likesCount),
+                desc(articles.commentsCount),
+                desc(articles.readCount),
+              ],
+            })
+            .then((article) =>
+              article
+                .map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
+                .filter((article) => {
+                  if (input?.filter?.tags) {
+                    return input?.filter?.tags.every((tag) =>
+                      article.tags.some((e) => e.name === tag)
+                    );
+                  } else {
+                    return true;
+                  }
+                })
+            );
+
+          const formattedPosts = await getArticlesWithUserFollowingimages(
+            {
+              session: ctx.session,
+              db: ctx.db,
+            },
+            result
+          );
+
+          return {
+            posts: formattedPosts,
+          };
+        }
         const result = await ctx.db.query.articles
           .findMany({
             where: and(
@@ -199,6 +288,9 @@ export const postsRouter = createTRPCRouter({
           posts: formattedPosts,
         };
       } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -259,36 +351,6 @@ export const postsRouter = createTRPCRouter({
               });
           }
         });
-
-      // const result = await ctx.db.query.articles
-      //   .findMany({
-      //     limit: limit + 1,
-      //     orderBy:
-      //       input.type === "hot"
-      //         ? [desc(articles.likesCount), desc(articles.commentsCount)]
-      //         : [desc(articles.createdAt)],
-      //     ...selectArticleCard,
-      //     where: and(
-      //       eq(articles.isDeleted, false),
-      //       ...(input?.filter?.read_time
-      //         ? input.filter.read_time === "OVER_5"
-      //           ? [gt(articles.read_time, 5)]
-      //           : input.filter.read_time === "UNDER_5"
-      //           ? [lt(articles.read_time, 5)]
-      //           : input.filter.read_time === "5"
-      //           ? [eq(articles.read_time, 5)]
-      //           : []
-      //         : []),
-      //       ...(input?.filter?.tags
-      //         ? input?.filter?.tags.length > 0
-      //           ? [inArray(tags.name, input.filter.tags)]
-      //           : []
-      //         : [])
-      //     ),
-      //   })
-      //   .then((res) =>
-      //     res.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
-      //   );
 
       if (!res) {
         throw new TRPCError({
@@ -664,17 +726,32 @@ export const postsRouter = createTRPCRouter({
                 input.content.slice(0, 40),
               seoOgImage: input.seoOgImage || input.cover_image,
             })
-            .where(eq(articles.id, existingArticle.id))
+            .where(and(eq(articles.id, existingArticle.id)))
             .returning({
               id: articles.id,
+              userId: articles.userId,
             });
+
+          if (!updatedArticle) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Article not found",
+            });
+          }
+
+          if (updatedArticle.userId !== ctx.session.user.id) {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "You are not authorized to edit this article",
+            });
+          }
 
           if (allTagsDetails.length > 0) {
             await ctx.db
               .insert(tagsToArticles)
               .values(
                 allTagsDetails.map((tag) => ({
-                  articleId: updatedArticle?.id as string,
+                  articleId: updatedArticle.id,
                   tagId: tag.id,
                 }))
               )
@@ -699,7 +776,7 @@ export const postsRouter = createTRPCRouter({
           }
 
           const result = await ctx.db.query.articles.findFirst({
-            where: eq(articles.id, updatedArticle?.id as string),
+            where: eq(articles.id, updatedArticle.id),
             columns: {
               slug: true,
             },
@@ -791,7 +868,6 @@ export const postsRouter = createTRPCRouter({
           };
         }
       } catch (err) {
-        console.log(err);
         if (err instanceof TRPCError) {
           throw err;
         } else {
@@ -1269,6 +1345,7 @@ export const postsRouter = createTRPCRouter({
         } else if (input?.variant === FILTER_TIME_OPTIONS.year) {
           startDate.setFullYear(startDate.getFullYear() - 1);
         }
+
         const sessionUser = await ctx.db.query.users.findFirst({
           where: eq(users.id, ctx.session?.user?.id || ""),
           columns: {
@@ -1288,6 +1365,7 @@ export const postsRouter = createTRPCRouter({
             posts: [],
           };
         }
+
         let articlesData = [];
 
         if (sessionUser?.following.length > 0) {
@@ -1309,10 +1387,22 @@ export const postsRouter = createTRPCRouter({
               ],
             })
             .then((res) =>
-              res.map((article) => ({
-                ...article,
-                tags: article.tags.map((e) => e.tag),
-              }))
+              res
+                .map((article) => ({
+                  ...article,
+                  tags: article.tags.map((e) => e.tag),
+                }))
+                .filter((article) => {
+                  if (input?.variant === FILTER_TIME_OPTIONS.any) {
+                    return true;
+                  } else {
+                    return (
+                      new Date(article.createdAt).getTime() >=
+                        startDate.getTime() &&
+                      new Date(article.createdAt).getTime() <= endDate.getTime()
+                    );
+                  }
+                })
             );
 
           const formattedPosts = await getArticlesWithUserFollowingimages(
@@ -1332,7 +1422,6 @@ export const postsRouter = createTRPCRouter({
           posts: [],
         };
       } catch (err) {
-        // console.log({err})
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -1451,7 +1540,7 @@ export const postsRouter = createTRPCRouter({
               with: {
                 articles: {
                   where: eq(articles.isDeleted, false),
-                  limit: (limit || 6) + 1,
+                  limit: limit,
                   columns: {
                     id: true,
                     content: true,

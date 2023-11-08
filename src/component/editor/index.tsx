@@ -1,25 +1,40 @@
+import { Editor as Ed } from "@tiptap/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect, useState, type FC } from "react";
+import { useDebouncedCallback } from "use-debounce";
+import useLocalStorage from "~/hooks/useLocalStorage";
 import { type DefaultEditorContent } from "~/types";
 import { EditorBubbleMenu } from "./components";
 import { TiptapExtensions } from "./extensions";
 import { TiptapEditorProps } from "./props";
 
 const Editor: FC<{
-  renderLocalStorageData?: boolean,
-  value: DefaultEditorContent,
-  onChange: (value: DefaultEditorContent) => void,
-  placeholder?: string | null,
-  showBubbleMenu?: boolean
   minHeight?: string;
-  emptyEditor?: boolean;
-}> = ({ minHeight = "min-h-[500px]", emptyEditor = false, renderLocalStorageData = true, value, onChange, showBubbleMenu = true, placeholder = null }) => {
-  const [hydrated, setHydrated] = useState(false);
+  contentName?: string;
+  defaultContent?: DefaultEditorContent | null;
+  setSavedState: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ minHeight = "min-h-[500px]", defaultContent, contentName = "content", setSavedState }) => {
+  const [content, setContent] = useLocalStorage<DefaultEditorContent>(
+    contentName,
+    defaultContent || {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "",
+            },
+          ],
+        },
+      ],
+    }
+  );
 
-  useEffect(() => {
-    setHydrated(false);
-  }, [value]);
+
+  const [hydrated, setHydrated] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -29,44 +44,43 @@ const Editor: FC<{
           if (node.type.name === "heading") {
             return `Heading ${node.attrs.level as string}`;
           }
-          return placeholder || "Press '/' for commands";
+          return "Press '/' for commands";
         },
         includeChildren: true,
       }),
     ],
     editorProps: TiptapEditorProps,
     onUpdate: (e) => {
-      onChange(e.editor.getJSON() as DefaultEditorContent);
+      setSavedState(false);
+      debouncedUpdates(e)
     },
     autofocus: "end",
   });
 
-  // Hydrate the editor with the content from localStorage.
-  useEffect(() => {
-    if (renderLocalStorageData && editor && !hydrated) {
-      setTimeout(() => {
-        editor.commands.
-          setContent(value);
-      });
-      setHydrated(true);
-    }
-  }, [editor, hydrated]);
+  const debouncedUpdates = useDebouncedCallback(({ editor }: { editor: Ed }) => {
+    const json = editor.getJSON() as DefaultEditorContent;
+    setSavedState(false);
+    setContent(json);
+    // Simulate a delay in saving.
+    setTimeout(() => {
+      setSavedState(true);
+    }, 500);
+  }, 750);
 
   useEffect(() => {
-    if (editor && emptyEditor) {
-      editor.commands.setContent({
-        type: "doc",
-        content: [{
-          type: "paragraph",
-          content: [{
-            type: "text",
-            text: "",
-          }],
-        }],
-      });
-
+    const editArticle = window.location.pathname.includes("edit");
+    if (editArticle) {
+      if (editor && defaultContent && content && !hydrated) {
+        editor.commands.setContent(defaultContent);
+        setHydrated(true);
+      }
+    } else {
+      if (editor && content && !hydrated) {
+        editor.commands.setContent(content);
+        setHydrated(true);
+      }
     }
-  }, [emptyEditor]);
+  }, [editor, content, hydrated, defaultContent]);
 
   return (
     <div
@@ -75,7 +89,7 @@ const Editor: FC<{
       }}
       className={`relative select-none w-full max-w-screen-lg bg-transparent ${minHeight}`}
     >
-      {showBubbleMenu && editor && <EditorBubbleMenu editor={editor} />}
+      {editor && <EditorBubbleMenu editor={editor} />}
       <EditorContent editor={editor} />
     </div>
   );

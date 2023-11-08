@@ -29,7 +29,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let user = null;
 
   if (username) {
-
     user = await db.query.users.findFirst({
       where: eq(users.username, username.slice(1, username.length)),
       with: {
@@ -41,20 +40,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             about: true,
           },
         },
-        followers: {
-          columns: {
-            followingId: false,
-            userId: false,
-          },
-          where: eq(follow.userId, session?.user.id as string),
-          with: {
-            following: {
+        ...(session?.user.id && (
+          {
+            followers: {
               columns: {
-                id: true,
+                followingId: false,
+                userId: false,
               },
-            }
+              where: eq(follow.followingId, session?.user.id),
+              with: {
+                following: {
+                  columns: {
+                    id: true,
+                  },
+                }
+              }
+            },
           }
-        },
+        ))
       },
     })
   }
@@ -67,6 +70,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
+
   const isFollowing = (user?.followers ?? []).length > 0;
 
   return {

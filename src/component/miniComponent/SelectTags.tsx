@@ -5,11 +5,12 @@ import { useDebouncedCallback } from "use-debounce";
 import { Hash } from "lucide-react";
 import { api } from "~/utils/api";
 import { TagLoading } from "../loading";
-import { type ArticleData } from "../macroComponent/New/NewArticleBody";
+import { type ArticleDataNoContent } from "../macroComponent/New/NewArticleBody";
 
 interface Props {
   tags: string[];
-  setData: React.Dispatch<React.SetStateAction<ArticleData>>;
+  data: ArticleDataNoContent;
+  setData: (data: ArticleDataNoContent) => void;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -23,6 +24,7 @@ interface Tag {
 
 const SelectTags: FC<Props> = ({
   tags: t,
+  data,
   setData,
   query,
   setQuery,
@@ -109,10 +111,10 @@ const SelectTags: FC<Props> = ({
                 className="flex w-full cursor-pointer items-center gap-2  border-b border-border-light px-4 py-2 text-lg text-gray-500 last:border-none hover:bg-light-bg dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
                 key={tag.slug}
                 onClick={() => {
-                  setData((prev) => ({
-                    ...prev,
-                    tags: Array.from(new Set([...prev.tags, tag.name])),
-                  }));
+                  setData({
+                    ...data,
+                    tags: Array.from(new Set([...data.tags, tag.name])),
+                  });
                   input.current?.focus();
 
                   setOpened(false);

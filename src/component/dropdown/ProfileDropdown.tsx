@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/router';
 import React, { useContext } from "react";
+import { env } from "~/env.mjs";
 
 import { imageDropdownList } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
@@ -66,7 +67,7 @@ const imageDropdown = React.forwardRef<
           </Link>
         </div>
       ) : (
-        <Link href={`/onboard/blog/setup`}>
+        <Link href={`/onboard/blog/setup?redirect=/`}>
           <div className="flex w-full cursor-pointer gap-2 px-4 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
             <Newspaper className="h-7 w-7 fill-secondary" />
             <div>

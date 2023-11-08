@@ -3,6 +3,7 @@ import { type GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
@@ -14,6 +15,8 @@ import { slugSetting } from "~/utils/constants";
 
 const Setup = () => {
   const { data: session } = useSession();
+  const router = useRouter();
+  const redirectionLink = useSearchParams().get("redirect");
 
   const [handle, setHandle] = useState({
     name: "",
@@ -37,7 +40,7 @@ const Setup = () => {
         });
 
         if (data) {
-          window.location.href = "/";
+          router.push(redirectionLink || "/");
         } else {
           toast.error("Something went wrong!");
         }

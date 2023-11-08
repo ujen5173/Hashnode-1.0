@@ -1,12 +1,11 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside, useViewportSize } from "@mantine/hooks";
+import { Bell, GitBranch, Pencil, Sun } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-
-import { Bell, GitBranch, Pencil, Sun } from "lucide-react";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
 import { Notification } from "../miniComponent";
@@ -15,6 +14,7 @@ const RightArea: FC = () => {
   const { handleTheme } = useContext(C) as ContextValue;
   const { data: user } = useSession();
   const [opened, setOpened] = useState(false);
+  const router = useRouter();
 
   const [control, setControl] = useState<HTMLDivElement | null>(null);
   const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null);
@@ -26,16 +26,14 @@ const RightArea: FC = () => {
 
   const [count, setCount] = useState(0);
   const { width } = useViewportSize();
-  const path = useRouter().pathname;
 
   // notifications are refetched every 15 seconds
   const { data, error } = api.notifications.getCount.useQuery(undefined, {
     refetchOnWindowFocus: false,
-    // refetchInterval: 15000, // 15 seconds
     enabled: !!user,
   });
 
- 
+
   useEffect(() => {
     if (opened) {
       setCount(0);
@@ -53,7 +51,7 @@ const RightArea: FC = () => {
     <>
       {!!user && (
         <>
-          <Link href={user.user.handle ? "/article/new" : "/onboard/blog/setup"}>
+          <Link href={user.user.handle ? "/article/new" : `/onboard/blog/setup?redirect=/article/new`}>
             <button
               aria-label="icon"
               role="button"
@@ -65,7 +63,7 @@ const RightArea: FC = () => {
           </Link>
 
           <div className="block sm:hidden">
-            <Link href={user.user.handle ? "/article/new" : "/onboard/blog/setup"}>
+            <Link href={user.user.handle ? "/article/new" : `/onboard/blog/setup?redirect=/article/new`}>
               <button
                 aria-label="icon"
                 role="button"
@@ -99,7 +97,7 @@ const RightArea: FC = () => {
         </button>
       </Tooltip>
 
-      <div className={`relative ${path === "/notifications" ? "hidden" : ""}`}>
+      <div className={`relative ${router.pathname === "/notifications" ? "hidden" : ""}`}>
         <Tooltip label="Notifications" position="bottom" withArrow>
           <div>
             <div

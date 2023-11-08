@@ -11,12 +11,13 @@ const MainBodyArticles = () => {
   const tab = useRouter().query.tab as string | undefined | TrendingArticleTypes;
   const { filter } = useContext(C) as ContextValue;
 
-  const { isFetching, data } = api.posts.getAll.useQuery({
+  const { isFetching, data, error } = api.posts.getAll.useQuery({
     type: (tab?.toString().toUpperCase() ?? 'PERSONALIZED') as "LATEST" | "PERSONALIZED" | "FOLLOWING",
     filter: filter.data
   },
     {
       enabled: filter.data.shouldApply,
+      retry: 0,
       refetchOnWindowFocus: false,
     }
   );
@@ -41,9 +42,10 @@ const MainBodyArticles = () => {
         ) : <ManageData
           loading={<ArticleLoading />}
           type="ARTICLE"
+          error={error?.message ?? null}
           articleData={{
             isLoading: isFetching,
-            data: (articles),
+            data: articles,
           }}
         />
       }

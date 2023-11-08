@@ -13,7 +13,7 @@ import { useClickOutside } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { SearchBody } from "~/component";
-import useKeyPress from "~/hooks/use-keypress";
+import useKeyPress from "~/hooks/useKeyPress";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

@@ -46,9 +46,7 @@ export interface ArticleCard extends Omit<Article, "subtitle" | "comments"> {
   }[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ArticleCardRemoveCommonUser
-  extends Omit<ArticleCard, "commonUsers"> {}
+ export type ArticleCardRemoveCommonUser = Omit<ArticleCard, "commonUsers">
 
 export interface ArticleCardWithComments extends ArticleCardRemoveCommonUser {
   comments: {

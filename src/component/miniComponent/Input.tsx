@@ -111,11 +111,11 @@ const Input: FC<Props> = ({
             onChange={onChange}
           />
 
-          {max && (
+          {max && value && (
             <span
               className={`text-sm font-medium text-gray-500 dark:text-text-primary`}
             >
-              {max - value.length} / {max}
+              {max - value.trim().length} / {max}
             </span>
           )}
         </>

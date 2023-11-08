@@ -1,26 +1,14 @@
+"use client";
+
 import Highlight from "@tiptap/extension-highlight";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import TiptapLink from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
 import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "tiptap-markdown";
 
 import { InputRule } from "@tiptap/core";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import { ReactNodeViewRenderer } from "@tiptap/react";
-import css from 'highlight.js/lib/languages/css';
-import js from 'highlight.js/lib/languages/javascript';
-import python from 'highlight.js/lib/languages/python';
-import ts from 'highlight.js/lib/languages/typescript';
-import html from 'highlight.js/lib/languages/xml';
-import { lowlight } from 'lowlight';
-import CodeBlock from "../CodeBlock";
 import SlashCommand from "./slash-command";
-
-lowlight.registerLanguage('html', html)
-lowlight.registerLanguage('css', css)
-lowlight.registerLanguage('js', js)
-lowlight.registerLanguage('ts', ts)
-lowlight.registerLanguage('python', python);
 
 export const TiptapExtensions = [
   StarterKit.configure({
@@ -41,24 +29,24 @@ export const TiptapExtensions = [
     },
     blockquote: {
       HTMLAttributes: {
-        class: "border-l-4 px-2 border-border-light dark:border-border",
+        class: "border-l-4 border-stone-700",
       },
     },
     codeBlock: {
       HTMLAttributes: {
         class:
-          "rounded-sm bg-gray-300 dark:bg-primary-light p-5 font-mono font-medium text-gray-700 dark:text-text-secondary",
+          "rounded-sm bg-stone-100 p-5 font-mono font-medium text-stone-800",
       },
     },
     heading: {
       HTMLAttributes: {
-        class: "font-bold text-2xl text-gray-700 dark:text-text-secondary",
+        class: "font-bold text-2xl text-stone-900",
       },
     },
     code: {
       HTMLAttributes: {
         class:
-          "rounded-md bg-gray-300 dark:bg-primary-light px-1.5 py-1 font-mono font-medium text-gray-700 dark:text-text-secondary",
+          "rounded-md bg-stone-200 px-1.5 py-1 font-mono font-medium text-stone-900",
         spellcheck: "false",
       },
     },
@@ -80,7 +68,7 @@ export const TiptapExtensions = [
 
             const { tr } = state;
             const start = range.from;
-            const end = range.to;
+            let end = range.to;
 
             tr.insert(start - 1, this.type.create(attributes)).delete(
               tr.mapping.map(start),
@@ -92,23 +80,23 @@ export const TiptapExtensions = [
     },
   }).configure({
     HTMLAttributes: {
-      class: "mt-4 mb-6 border-t border-border-light dark:border-border",
+      class: "mt-4 mb-6 border-t border-stone-300",
     },
-  }),
-  CodeBlockLowlight.extend({
-    addNodeView() {
-      return ReactNodeViewRenderer(CodeBlock)
-    }
-  }).configure({
-    lowlight,
-    // defaultLanguage: "plaintext",
   }),
   TiptapLink.configure({
-    openOnClick: false,
     HTMLAttributes: {
       class:
-        "text-text-primary dark:text-text-secondary underline underline-offset-[3px] hover:text-secondary transition-colors cursor-pointer",
+        "text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer",
     },
+  }),
+  Placeholder.configure({
+    placeholder: ({ node }) => {
+      if (node.type.name === "heading") {
+        return `Heading ${node.attrs.level}`;
+      }
+      return "Press '/' for commands";
+    },
+    includeChildren: true,
   }),
   SlashCommand,
   Highlight.configure({

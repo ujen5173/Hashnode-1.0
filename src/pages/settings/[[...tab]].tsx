@@ -32,6 +32,7 @@ const EditProfile: NextPage<{
 
               <UserDetailsOptions />
             </div>
+            
             <main className="my-4 lg:my-0 min-h-[100dvh] flex-1 rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary sm:p-6 md:p-8">
               {
                 {

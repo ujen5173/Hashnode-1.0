@@ -2,18 +2,19 @@
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useRef, useState, type FC } from "react";
+import { useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 import { Table2 } from "lucide-react";
 import { api } from "~/utils/api";
 import { TagLoading } from "../loading";
-import { type ArticleData } from "../macroComponent/New/NewArticleBody";
+import { type ArticleDataNoContent } from "../macroComponent/New/NewArticleBody";
 
 const SelectSeries: FC<{
   series: string | null;
-  setData: React.Dispatch<React.SetStateAction<ArticleData>>;
-}> = ({ series: ser, setData }) => {
+  data: ArticleDataNoContent;
+  setData: (data: ArticleDataNoContent) => void;
+}> = ({ series: ser, data, setData }) => {
   const [query, setQuery] = useState("");
   const [series, setSeries] = useState<
     {
@@ -103,18 +104,18 @@ const SelectSeries: FC<{
               <div
                 className="flex w-full cursor-pointer items-center gap-2  border-b border-border-light px-4 py-2 text-lg text-gray-500 last:border-none hover:bg-light-bg dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
                 onClick={() => {
-                  setData((prev) => ({
-                    ...prev,
+                  setData({
+                    ...data,
                     series: s.title,
-                  }));
+                  });
                   input.current?.focus();
 
                   setOpened(false);
                   setQuery("");
-                  setData((prev) => ({
-                    ...prev,
+                  setData({
+                    ...data,
                     series: s.title,
-                  }));
+                  });
                 }}
                 key={index}
               >

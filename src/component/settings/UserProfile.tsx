@@ -8,7 +8,7 @@ import { BasicInfo, SocialInfo } from '../macroComponent/Settings';
 
 const Settings: FC<{ user: UserDetails }> = ({ user }) => {
   const { mutateAsync, isLoading } = api.users.updateUser.useMutation();
-
+  
   const [data, setData] = useState<UserDetails>(user);
 
   const handleChange = (
@@ -37,22 +37,22 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
       name: z.string().min(3, "Name must be atleast 3 characters long"),
       username: z.string().min(3, "Username must be atleast 3 characters long"),
       email: z.string().email("Invalid Email"),
-      location: z.string().optional(),
-      image: z.string().optional(),
-      tagline: z.string().optional(),
-      available: z.string().optional(),
-      cover_image: z.string().optional(),
-      bio: z.string().optional(),
-      skills: z.string().trim().optional(),
+      location: z.string().nullable(),
+      image: z.string().nullable(),
+      tagline: z.string().nullable(),
+      available: z.string().nullable(),
+      cover_image: z.string().nullable(),
+      bio: z.string().nullable(),
+      skills: z.string().trim().nullable(),
       social: z.object({
-        twitter: z.string().optional(),
-        instagram: z.string().optional(),
-        github: z.string().optional(),
-        stackoverflow: z.string().optional(),
-        facebook: z.string().optional(),
-        website: z.string().optional(),
-        linkedin: z.string().optional(),
-        youtube: z.string().optional(),
+        twitter: z.string(),
+        instagram: z.string(),
+        github: z.string(),
+        stackoverflow: z.string(),
+        facebook: z.string(),
+        website: z.string(),
+        linkedin: z.string(),
+        youtube: z.string(),
       }),
     });
 
@@ -101,8 +101,11 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
         social: dataWithSocial.social,
       });
 
-      toast.success("image Updated Successfully");
-      // setData(res.data);
+      toast.success(res.message);
+      setData(JSON.parse(JSON.stringify({
+        ...res.data[0],
+        skills: (res.data[0]?.skills ?? []).join(", "),
+      })) as UserDetails);
     } catch (error) {
       if (error instanceof z.ZodError && error.errors[0]) {
         toast.error(error.errors[0].message);
@@ -111,27 +114,30 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
   };
 
 
-  return (<><div className="flex flex-col gap-8 md:flex-row">
-    <BasicInfo handleChange={handleChange} data={data} />
+  return (
+    <>
+      <div className="flex flex-col gap-8 md:flex-row">
+        <BasicInfo handleChange={handleChange} data={data} />
 
-    <SocialInfo
-      data={data}
-      handleChange={handleChange}
-      handleSocialChange={handleSocialChange}
-    />
-  </div>
+        <SocialInfo
+          data={data}
+          handleChange={handleChange}
+          handleSocialChange={handleSocialChange}
+        />
+      </div>
 
-    <button
-      disabled={isLoading}
-      style={{
-        opacity: isLoading ? 0.5 : 1,
-      }}
-      className={`${isLoading ? "cursor-not-allowed" : ""} btn-filled`}
-      onClick={() => void updateHandler()}
-    >
-      {isLoading ? "Updating..." : "Update"}
-    </button>
-  </>)
+      <button
+        disabled={isLoading}
+        style={{
+          opacity: isLoading ? 0.5 : 1,
+        }}
+        className={`${isLoading ? "cursor-not-allowed" : ""} btn-filled`}
+        onClick={() => void updateHandler()}
+      >
+        {isLoading ? "Updating..." : "Update"}
+      </button>
+    </>
+  )
 }
 
 export default Settings;

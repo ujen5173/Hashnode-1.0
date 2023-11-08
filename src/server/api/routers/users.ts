@@ -8,10 +8,7 @@ export const usersRouter = createTRPCRouter({
   followUser: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
-        // username: z.string().trim(),
-        // userId: z.string(),
-        // followingId: z.string(),
+        userId: z.string(), 
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -71,7 +68,6 @@ export const usersRouter = createTRPCRouter({
         isFollowing &&
         (me.following[0]?.user?.id || otherUser.followers[0]?.user?.id)
       ) {
-        console.log("UnFollowing condition");
         // unfollow the user
         await ctx.db
           .delete(follow)
@@ -104,7 +100,6 @@ export const usersRouter = createTRPCRouter({
           status: 400,
         };
       } else {
-        console.log("Following condition");
         // follow the user
         await ctx.db.insert(follow).values({
           userId: input.userId,
@@ -175,16 +170,7 @@ export const usersRouter = createTRPCRouter({
         username: z.string().trim(),
       })
     )
-    .query(async ({ ctx, input }) => {
-      // const user = await ctx.db
-      //   .select()
-      //   .from(users)
-      //   .leftJoin(follower, eq(follower.followerId, users.id))
-      //   .where(
-      //     eq(users.username, input.username.slice(1, input.username.length))
-      //   );
-
-      // console.log(user);
+    .query(async ({ ctx, input }) => { 
       const user = await ctx.db.query.users.findFirst({
         where: eq(
           users.username,
@@ -226,12 +212,12 @@ export const usersRouter = createTRPCRouter({
         name: z.string().trim(),
         username: z.string().trim(),
         email: z.string().trim(),
-        location: z.string().trim(),
-        image: z.string().trim(),
-        tagline: z.string().trim(),
-        available: z.string().trim(),
-        cover_image: z.string().trim(),
-        bio: z.string().trim(),
+        location: z.string().trim().optional().nullable(),
+        image: z.string().trim().optional().nullable(),
+        tagline: z.string().trim().optional().nullable(),
+        available: z.string().trim().optional().nullable(),
+        cover_image: z.string().trim().optional().nullable(),
+        bio: z.string().trim().optional().nullable(),
         skills: z.array(z.string().trim()),
         social: z.object({
           twitter: z.string().trim().optional(),
@@ -251,23 +237,23 @@ export const usersRouter = createTRPCRouter({
         .set(input)
         .where(eq(users.id, ctx.session.user.id))
         .returning({
-          name: users.name,
-          username: users.username,
-          email: users.email,
-          location: users.location,
-          image: users.image,
-          tagline: users.tagline,
-          stripeSubscriptionStatus: users.stripeSubscriptionStatus,
-          available: users.available,
-          cover_image: users.cover_image,
-          bio: users.bio,
-          skills: users.skills,
-          social: users.social,
+  name:users.name,
+  username:users.username,
+  email:users.email,
+  location:users.location,
+  image:users.image,
+  tagline:users.tagline,
+  stripeSubscriptionStatus:users.stripeSubscriptionStatus,
+  available:users.available,
+  cover_image:users.cover_image,
+  bio:users.bio,
+  skills:users.skills,
+  social:users.social,
         });
 
       return {
         success: true,
-        message: "User updated successfully",
+        message: "Updated successfully",
         status: 200,
         data: updatedUser,
       };

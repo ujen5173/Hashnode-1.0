@@ -1,5 +1,4 @@
 import { useClickOutside } from "@mantine/hooks";
-import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
 import { FileImage, X } from "lucide-react";
 import Image from "next/image";
@@ -7,11 +6,11 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
-import { useDebouncedCallback } from "use-debounce";
 import Editor from "~/component/editor";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
-import { NewArticleModal } from "~/component/popup";
 
+import { NewArticleModal } from "~/component/popup";
+import useLocalStorage from "~/hooks/useLocalStorage";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
@@ -34,6 +33,7 @@ export interface ArticleData {
   seoOgImageKey: string | null;
   disabledComments: boolean;
 }
+export type ArticleDataNoContent = Omit<ArticleData, "content">
 
 const NewArticleBody: FC<{
   publishModal: boolean;
@@ -50,6 +50,7 @@ const NewArticleBody: FC<{
 }) => {
     const [query, setQuery] = useState("");
     const [subtitle, setSubTitle] = useState<string>("");
+    const [defaultContent, setDefaultContent] = useState<DefaultEditorContent | null>(null);
     const router = useRouter();
 
     const { data: articleData, error } = api.posts.getArticleToEdit.useQuery({
@@ -57,12 +58,20 @@ const NewArticleBody: FC<{
     }, {
       enabled: !!(router?.query?.params?.includes("edit")),
       refetchOnWindowFocus: false,
-      retry: false
+      retry: 0
     });
 
     useEffect(() => {
+      if (articleData) {
+        setData(articleData);
+        setDefaultContent(convertToHTML(articleData.content) as DefaultEditorContent);
+        setSubTitle(articleData.subtitle || "");
+      }
+    }, [articleData]);
+
+    useEffect(() => {
       if (error) {
-        if (error instanceof TRPCClientError || error instanceof TRPCError) {
+        if (error instanceof TRPCError) {
           toast.error(error.message)
           void router.push("/")
         } else {
@@ -72,17 +81,23 @@ const NewArticleBody: FC<{
       }
     }, [error]);
 
-
-    const [data, setData] = useState<ArticleData>({
+    // const [data, setData] = useState<ArticleDataNoContent>({
+    //   title: "",
+    //   subtitle: "",
+    //   cover_image: null,
+    //   series: null,
+    //   tags: [],
+    //   cover_image_key: null,
+    //   slug: "",
+    //   seoTitle: "",
+    //   seoDescription: "",
+    //   seoOgImage: null,
+    //   seoOgImageKey: null,
+    //   disabledComments: false,
+    // });
+    const [data, setData] = useLocalStorage<ArticleDataNoContent>("articleData", {
       title: "",
       subtitle: "",
-      content: {
-        type: "doc",
-        content: [{
-          type: "paragraph",
-          text: "",
-        }]
-      },
       cover_image: null,
       series: null,
       tags: [],
@@ -94,32 +109,6 @@ const NewArticleBody: FC<{
       seoOgImageKey: null,
       disabledComments: false,
     });
-
-    useEffect(() => {
-      if (articleData) {
-        setData({ ...articleData, content: convertToHTML(articleData.content) as DefaultEditorContent });
-      }
-    }, [articleData])
-
-
-    const saveData = (): void => {
-      if (router?.query?.params?.includes("edit")) return;
-
-      setSavedState(false);
-      localStorage.setItem("savedData", JSON.stringify(data));
-      setTimeout(() => {
-        setSavedState(true); // for fake saving loading 😂😂
-      }, 500);
-    };
-
-    const debounced = useDebouncedCallback(() => {
-      void saveData();
-      return;
-    }, 500);
-
-    useEffect(() => {
-      void debounced();
-    }, [data]);
 
     const [fileModal, setFileModal] = React.useState(false); // open and close file upload modal
     const ref = useClickOutside<HTMLDivElement>(() => setFileModal(false));
@@ -193,11 +182,11 @@ const NewArticleBody: FC<{
                           toast.error("Error uploading image");
                           return;
                         }
-                        setData((prev) => ({
-                          ...prev,
-                          cover_image: uploaded[0]?.fileUrl || null,
+                        const newData = {
+                          ...data, cover_image: uploaded[0]?.fileUrl || null,
                           cover_image_Key: uploaded[0]?.fileKey || null,
-                        }));
+                        };
+                        setData(newData);
                       }}
                     />
                   </div>
@@ -232,11 +221,11 @@ const NewArticleBody: FC<{
                 value={data.title}
                 onChange={(e) => {
                   const { name, value } = e.target;
-                  setData((prev) => ({
-                    ...prev,
-                    [name]: value,
-                    slug: slugify(e.target.value, slugSetting),
-                  }));
+                  const newData = {
+                    ...data, [name]: value,
+                    slug: slugify(value, slugSetting)
+                  };
+                  setData(newData);
                 }}
                 placeholder="Article Title"
                 input_type="text"
@@ -263,15 +252,7 @@ const NewArticleBody: FC<{
             />
 
             <div className="relative">
-              <Editor
-                value={data.content}
-                onChange={(e) => {
-                  setData((prev) => ({
-                    ...prev,
-                    content: e,
-                  }));
-                }}
-              />
+              <Editor setSavedState={setSavedState} defaultContent={defaultContent} contentName="content" />
             </div>
           </section>
         </div>

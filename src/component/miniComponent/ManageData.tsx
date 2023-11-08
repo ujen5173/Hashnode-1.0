@@ -14,6 +14,7 @@ interface Props {
   type: "TAG" | "ARTICLE" | "MINI_ARTICLES" | "NOTIFICATION";
   notificationData?: NotificationDataTypes;
   filter?: "This week" | "Any" | "This month" | "This year";
+  error?: string | null;
 }
 
 const ManageData: FC<Props> = ({
@@ -23,19 +24,20 @@ const ManageData: FC<Props> = ({
   type,
   notificationData,
   filter,
+  error,
 }) => {
   return (
     <div className="manageData-container">
       {type === "TAG" ? (
         tagsData?.isLoading ? (
           <div className="flex w-full flex-wrap gap-4 p-4">
-           
+
             {Array(6)
               .fill("")
               .map((_, i) => (
                 <div
                   key={i}
-                  className="w-full bg-light-bg rounded-md border border-border-light dark:border-border md:w-[calc(100%/2-0.5rem)]"
+                  className="w-full bg-light-bg dark:bg-primary-light rounded-md border border-border-light dark:border-border md:w-[calc(100%/2-0.5rem)]"
                 >
                   {loading}
                 </div>
@@ -57,7 +59,7 @@ const ManageData: FC<Props> = ({
         ) : (
           <div className="py-16">
             <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-              No Tags found!
+              {error || "No Tags found!"}
             </p>
           </div>
         )
@@ -108,7 +110,7 @@ const ManageData: FC<Props> = ({
         ) : (
           <div className="py-16">
             <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-              No Articles found! 😢
+              {error || "No Articles found! 😢"}
             </p>
           </div>
         )
@@ -138,7 +140,7 @@ const ManageData: FC<Props> = ({
         ) : (
           <div className="py-16">
             <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-              No Notifications yet!
+              {error || "No Notifications yet!"}
             </p>
           </div>
         )

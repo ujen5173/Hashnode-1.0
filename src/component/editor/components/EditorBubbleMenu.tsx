@@ -1,8 +1,10 @@
-import { BubbleMenu, type BubbleMenuProps } from "@tiptap/react";
-import React, { useState, type FC } from "react";
 
-import { Bold, Code, Heading1, Heading2, Heading3, Highlighter, Italic, Strikethrough } from "lucide-react";
+import { BubbleMenu, BubbleMenuProps } from "@tiptap/react";
+import React, { FC, useState } from "react"; 
 import { LinkSelector } from "./link-selector";
+import { Bold, Code, Heading1, Heading2, Heading3, Highlighter, Italic, Strikethrough } from "lucide-react";
+import Strike from "@tiptap/extension-strike";
+import { Highlight } from "@mantine/core";
 
 type EditorBubbleMenuProps = Omit<BubbleMenuProps, "children">;
 
@@ -10,50 +12,51 @@ export interface BubbleMenuItem {
   name: string;
   isActive: () => boolean;
   command: () => void;
-  icon: (isActive: boolean) => React.ReactNode;
+  icon: React.ReactNode;
 }
 
 export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
   const items: BubbleMenuItem[] = [
     {
       name: "heading 1",
-      isActive: () => props.editor.isActive("heading 1"),
+      isActive: () => props.editor.isActive("heading1"),
       command: () =>
         props.editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      icon: (isActive: boolean) => <Heading1 className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: <Heading1 />,
     },
     {
       name: "heading 1",
-      isActive: () => props.editor.isActive("heading 2"),
+      isActive: () => props.editor.isActive("heading2"),
       command: () =>
         props.editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      icon: (isActive: boolean) => <Heading2 className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: <Heading2 />,
     },
     {
       name: "heading 1",
-      isActive: () => props.editor.isActive("heading 3"),
+      isActive: () => props.editor.isActive("heading3"),
       command: () =>
         props.editor.chain().focus().toggleHeading({ level: 3 }).run(),
-      icon: (isActive: boolean) => <Heading3 className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: <Heading3 />,
     },
     {
       name: "bold",
       isActive: () => props.editor.isActive("bold"),
       command: () => props.editor.chain().focus().toggleBold().run(),
-      icon: (isActive: boolean) => <Bold className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: <Bold />,
     },
     {
       name: "italic",
       isActive: () => props.editor.isActive("italic"),
       command: () => props.editor.chain().focus().toggleItalic().run(),
-      icon: (isActive: boolean) => <Italic className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: <Italic />,
     },
     {
       name: "strike",
       isActive: () => props.editor.isActive("strike"),
       command: () => props.editor.chain().focus().toggleStrike().run(),
-      icon: (isActive: boolean) => <Strikethrough className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: <Strikethrough />,
     },
+
     {
       name: "highlight",
       isActive: () => props.editor.isActive("highlight"),
@@ -63,13 +66,13 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
           .focus()
           .toggleHighlight({ color: "#FDE047" })
           .run(),
-      icon: (isActive: boolean) => <Highlighter className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: <Highlighter />,
     },
     {
       name: "code",
       isActive: () => props.editor.isActive("code"),
       command: () => props.editor.chain().focus().toggleCode().run(),
-      icon: (isActive: boolean) => <Code className={`w-4 h-4 fill-none ${isActive ? "stroke-secondary" : "stroke-gray-700 dark:stroke-text-secondary"}`} />,
+      icon: <Code />,
     },
   ];
 
@@ -95,18 +98,16 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
   return (
     <BubbleMenu
       {...bubbleMenuProps}
-      className="flex w-fit select-none divide-x divide-border-light dark:divide-border rounded border border-border-light dark:border-border bg-light-bg dark:bg-primary-light shadow-md"
+      className="flex w-fit divide-x divide-stone-200 rounded border border-stone-200 bg-white shadow-xl"
     >
       <div className="flex">
         {items.map((item, index) => (
           <button
             key={index}
             onClick={item.command}
-            className="p-2 text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-border active:bg-gray-200 dark:active:bg-border"
+            className="p-2 text-stone-600 hover:bg-stone-100 active:bg-stone-200"
           >
-            {
-              item.icon(item.isActive())
-            }
+            {item.icon}
           </button>
         ))}
       </div>

@@ -95,7 +95,7 @@ export const tagsRouter = createTRPCRouter({
           },
           with: {
             followers: {
-              // where: eq(tagsToUsers.userId, ctx.session.user.id),
+              where: eq(tagsToUsers.userId, ctx.session.user.id),
               columns: {
                 userId: true,
               },
@@ -143,7 +143,6 @@ export const tagsRouter = createTRPCRouter({
           status: 200,
         };
       } catch (err) {
-        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
@@ -161,6 +160,10 @@ export const tagsRouter = createTRPCRouter({
           limit: z.number().default(6),
         })
         .optional()
+        .default({
+          variant: "ANY",
+          limit: 6,
+        })
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -177,7 +180,7 @@ export const tagsRouter = createTRPCRouter({
 
         const res = await ctx.db.query.tags
           .findMany({
-            limit: input?.limit || 6,
+            limit: input.limit,
             where: and(gt(tags.articlesCount, 0)),
             orderBy: [desc(tags.articlesCount), desc(tags.followersCount)],
             with: {

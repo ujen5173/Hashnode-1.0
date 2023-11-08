@@ -39,7 +39,7 @@ export const notificationRouter = createTRPCRouter({
           eq(notifications.userId, ctx.session.user.id),
           input.type === "ALL" ? undefined : eq(notifications.type, input.type),
         ),
-        limit: (limit || 6) + 1,
+        limit: limit,
         offset: skip,
         orderBy: [desc(notifications.createdAt)],
         columns: {
