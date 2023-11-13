@@ -137,7 +137,6 @@ const NewArticleModal: FC<Props> = ({
 
     setPublishing(true);
     try {
-      // console.log({ res: { ...data, subtitle, content: contentResponse, edit: router?.query?.params?.includes("edit") || false } })
       const res = await mutateAsync({ ...data, subtitle, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
       if (res.success && res.redirectLink) {
         setPublishModal(false);

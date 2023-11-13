@@ -11,7 +11,6 @@ import { StackedArticleLoading } from "~/component/loading";
 import { ArticleActions } from "~/component/miniComponent";
 import { CommentsModal } from "~/component/popup";
 import { FollowContext } from "~/pages/u/[username]/[slug]";
-
 import type { Article, Tag, User } from "~/types";
 import { api } from "~/utils/api";
 import { formatDate } from "~/utils/miniFunctions";
@@ -153,7 +152,6 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
               commentsModal={commentsModal}
               authorUsername={article.user.username}
               setCommentsModal={setCommentsModal}
-              setCommentsCount={setCommentsCount}
             />
           )}
 

@@ -1,6 +1,5 @@
 import { Heart, MessageCircle } from "lucide-react";
 import { type FC } from "react";
-import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { type Comment } from "~/types";
 
 interface Props {
@@ -10,8 +9,6 @@ interface Props {
     hasLiked: boolean;
     likesCount: number;
   };
-  isLoading: boolean;
-  ShowRepliesSection: () => void;
   replyComment: (data: { id: string; username: string }) => void;
 }
 
@@ -19,8 +16,6 @@ const CommentFooter: FC<Props> = ({
   comment,
   handleLike,
   like,
-  ShowRepliesSection,
-  isLoading,
   replyComment,
 }) => {
   return (
@@ -44,15 +39,10 @@ const CommentFooter: FC<Props> = ({
       </button>
 
       <button
-        onClick={() => void ShowRepliesSection()}
         className="btn-icon flex items-center gap-1 p-1"
       >
         <span>
-          {isLoading ? (
-            <LoadingSpinner className="h-6 w-6 fill-none stroke-gray-700 dark:stroke-text-primary" />
-          ) : (
-            <MessageCircle className="h-6 w-6 fill-none stroke-gray-700 dark:stroke-text-primary" />
-          )}
+          <MessageCircle className="h-6 w-6 fill-none stroke-gray-700 dark:stroke-text-primary" />
         </span>
 
         <span className="text-gray-700 dark:text-text-secondary">

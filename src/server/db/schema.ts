@@ -54,7 +54,9 @@ export const users = pgTable("user", {
   followingCount: integer("followingCount").default(0).notNull(),
   stripeCustomerId: text("stripeCustomerId"),
   stripeSubscriptionId: text("stripeSubscriptionId"),
-  stripeSubscriptionStatus: stripeSubscriptionEnum("stripeSubscriptionStatus"),
+  stripeSubscriptionStatus: stripeSubscriptionEnum(
+    "stripe_subscription_status"
+  ),
 
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
@@ -313,20 +315,22 @@ export const comments = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    userId: text("userId").notNull(),
-    articleId: text("articleId").notNull(),
+    userId: text("user_id").notNull(),
+    articleId: text("article_id").notNull(),
     body: text("body").notNull(),
-    likesCount: integer("likesCount").notNull().default(0),
+    likesCount: integer("likes_count").notNull().default(0),
     type: commentEnum("type").notNull(),
-    parentId: text("parentId"),
-    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+    parentId: text("parent_id"),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
   },
   (comments) => ({
     userIdIdx: index("userId_idx").on(comments.id),
     articleIdIdx: index("articleId_idx").on(comments.id),
   })
 );
+
+export type Comments = typeof comments.$inferSelect;
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
   user: one(users, {
@@ -536,10 +540,7 @@ export const seriesRelations = relations(series, ({ one, many }) => ({
   }),
   articles: many(articles),
 }));
-
-// notification
-
-export const notificationEnum = pgEnum("notificationType", [
+export const notificationEnum = pgEnum("type", [
   "ARTICLE",
   "COMMENT",
   "REPLY",
@@ -547,13 +548,14 @@ export const notificationEnum = pgEnum("notificationType", [
   "LIKE",
 ]);
 
+// notifications
 export const notifications = pgTable(
   "notifications",
   {
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    type: notificationEnum("type").notNull(),
+    type: notificationEnum("type").default("ARTICLE").notNull(),
     isRead: boolean("is_read").default(false),
 
     body: text("body").default(""),

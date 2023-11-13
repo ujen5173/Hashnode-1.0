@@ -46,7 +46,7 @@ export interface ArticleCard extends Omit<Article, "subtitle" | "comments"> {
   }[];
 }
 
- export type ArticleCardRemoveCommonUser = Omit<ArticleCard, "commonUsers">
+export type ArticleCardRemoveCommonUser = Omit<ArticleCard, "commonUsers">;
 
 export interface ArticleCardWithComments extends ArticleCardRemoveCommonUser {
   comments: {
@@ -101,13 +101,12 @@ export interface Comment {
     image: string | null;
     stripeSubscriptionStatus: string | null;
   };
-  likes: { userId: string }[];
+  hasLiked: boolean;
   likesCount: number;
   type: "COMMENT" | "REPLY";
-  parentId?: string | null;
-  articleId?: string | null;
-  repliesCount?: number;
-
+  parentId: string | null;
+  repliesCount: number;
+  replies: Comment[];
   createdAt: Date;
   updatedAt: Date;
 }

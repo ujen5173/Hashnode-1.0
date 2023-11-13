@@ -1,10 +1,11 @@
-import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState, type FC } from "react";
-import { toast } from "react-toastify";
 
+import { TRPCError } from "@trpc/server";
 import { X } from "lucide-react";
+import { toast } from "react-toastify";
+import { type Comment } from "~/types";
 import { api } from "~/utils/api";
 import { CommentCard } from "../card";
 
@@ -13,11 +14,9 @@ const CommentsModal: FC<{
   commentsModal: boolean;
   authorUsername: string;
   setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setCommentsCount: React.Dispatch<React.SetStateAction<number>>;
 }> = ({
   id,
   commentsModal,
-  setCommentsCount,
   authorUsername,
   setCommentsModal,
 }) => {
@@ -28,25 +27,58 @@ const CommentsModal: FC<{
     } | null>(null);
     const [text, setText] = useState("");
     const commentSection = useRef<HTMLDivElement | null>(null);
+    const [commentState, setCommentState] = useState<{
+      articleId: string;
+      parentId?: string | null;
+      type: "INITIAL" | "ALL";
+    }>({
+      articleId: id,
+      type: "INITIAL",
+      parentId: null,
+    });
+
+    const repliesButtonRef = useRef<boolean[]>([]);
+
     const {
       data: comments,
       isLoading,
       refetch,
     } = api.comments.getComments.useQuery(
-      {
-        articleId: id,
-      },
+      commentState,
       {
         enabled: !!id,
         refetchOnWindowFocus: false,
       }
     );
 
+
+    const [commentsData, setCommentsData] = useState<{
+      count: number;
+      comments: Comment[];
+    }>({
+      count: 0,
+      comments: [],
+    });
+
     useEffect(() => {
-      if (comments) {
-        setCommentsCount(comments.totalComments);
+      if (commentState.type === "INITIAL") {
+        setCommentsData({
+          count: comments?.count ?? 0,
+          comments: comments?.comments ?? [],
+        });
+      } else {
+        setCommentsData(prev => ({
+          ...prev,
+          comments: prev.comments.map(e => {
+            if (e.id === commentState.parentId) {
+              return comments?.comments.find(e => e.id === commentState.parentId) ?? e
+            } else {
+              return e;
+            }
+          })
+        }))
       }
-    }, [comments]);
+    }, [commentState, comments]);
 
     const { mutateAsync: comment, isLoading: publishing } =
       api.comments.newComment.useMutation();
@@ -57,25 +89,51 @@ const CommentsModal: FC<{
           toast.error("You need to login to comment");
           return;
         }
+
         if (content.length < 5) {
           toast.error("Comment is too short");
           return;
         }
+
         if (content.length > 255) {
           toast.error("Comment is too long");
           return;
         }
-        await comment({
+
+        const commentData = await comment({
           articleId: id,
           content: content,
           commentId: replyingUserDetails?.id,
           type,
         });
+
+        if (type === 'COMMENT') {
+          setCommentsData((prev) => ({
+            count: prev.count + 1,
+            comments: [commentData, ...prev.comments],
+          }));
+        } else {
+          setCommentsData((prev) => ({
+            count: prev.count,
+            comments: prev.comments.map((e) => {
+              if (e.id === commentState.parentId) {
+                return {
+                  ...e,
+                  replies: [commentData, ...e.replies],
+                };
+              } else {
+                return e;
+              }
+            }),
+          }));
+        }
+
         toast.success("Commented successfully");
         setText("")
+
         await refetch();
       } catch (err) {
-        if (err instanceof TRPCClientError) {
+        if (err instanceof TRPCError) {
           // setEmptyEditor(true);
           toast.error(err.message);
         }
@@ -105,7 +163,8 @@ const CommentsModal: FC<{
         >
           <header className="flex items-center justify-between border-b border-border-light p-4 dark:border-border">
             <h2 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
-              Comments ({comments?.totalComments})
+              Comments
+              ({commentsData.count})
             </h2>
             <button
               onClick={() => {
@@ -164,21 +223,48 @@ const CommentsModal: FC<{
             </div>
           </main>
 
-          <section className="h-full">
-            {!isLoading &&
-              comments?.comments?.map((comment) => (
-                <CommentCard
-                  commentFunc={commentFunc}
-                  type="COMMENT"
-                  publishing={publishing}
-                  comment={comment}
+          <section className="h-max">
+            {isLoading && commentState.type === 'INITIAL' ? (
+              Array(3).fill("").map((_, i) => (
+                <CommentsLoading key={i} />
+              ))
+            ) : commentsData.comments.map((comment, index) => {
+              if (repliesButtonRef.current[index] === undefined) {
+                repliesButtonRef.current[index] = false
+              }
+              return (
+                <div className={`relative px-4 border-b border-border-light py-3 last:border-none dark:border-border`}
                   key={comment.id}
-                  setReplyingUserDetails={setReplyingUserDetails}
-                  replyingUserDetails={replyingUserDetails}
-                  replyComment={replyComment}
-                  authorUsername={authorUsername}
-                />
-              ))}
+                >
+                  <CommentCard
+                    commentFunc={commentFunc}
+                    type="COMMENT"
+                    publishing={publishing}
+                    comment={comment}
+                    commentState={commentState}
+                    setReplyingUserDetails={setReplyingUserDetails}
+                    replyingUserDetails={replyingUserDetails}
+                    replyComment={replyComment}
+                    isLoading={isLoading}
+                    authorUsername={authorUsername}
+                    setCommentState={setCommentState}
+                  />
+                  {
+                    (comment.repliesCount > 1 || (comment.replies[0]?.repliesCount !== undefined && comment.replies[0]?.repliesCount > 0)) && repliesButtonRef.current[index] == false && (
+                      <button
+                        onClick={() => {
+                          repliesButtonRef.current[index] = true
+                          setCommentState(prev => ({
+                            ...prev,
+                            type: "ALL",
+                            parentId: comment.id
+                          }))
+                        }} className="text-twitterColor">View all replies</button>
+                    )
+                  }
+                </div>
+              )
+            })}
           </section>
         </section>
       </>
@@ -186,3 +272,23 @@ const CommentsModal: FC<{
   };
 
 export default CommentsModal;
+
+
+export const CommentsLoading = () => {
+  return (
+    <div className="border-b border-border-light p-4 last:border-0 dark:border-border">
+      <div className="mb-4 flex gap-2">
+        <div className="loading h-10 w-10 rounded-full bg-border-light dark:bg-border" />
+        <div>
+          <div className="loading mb-2 h-3 w-36 rounded-full bg-border-light dark:bg-border" />
+          <div className="loading h-3 w-48 rounded-full bg-border-light dark:bg-border" />
+        </div>
+      </div>
+      <div className="w-full pt-4 pb-6">
+        <div className="loading mb-2 h-3 w-full rounded-full bg-border-light dark:bg-border" />
+        <div className="loading mb-2 h-3 w-full rounded-full bg-border-light dark:bg-border" />
+        <div className="loading h-3 w-full rounded-full bg-border-light dark:bg-border" />
+      </div>
+    </div>
+  )
+}

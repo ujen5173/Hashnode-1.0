@@ -1,12 +1,14 @@
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 import {
   articles,
   comments,
   likesToComment,
   notifications,
+  users,
 } from "~/server/db/schema";
+import { type Comment } from "~/types";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const commentsRouter = createTRPCRouter({
@@ -45,7 +47,6 @@ export const commentsRouter = createTRPCRouter({
         },
       });
 
- 
       if (!article) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -76,7 +77,18 @@ export const commentsRouter = createTRPCRouter({
         });
       }
 
-      const newComment = await ctx.db
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(users.id, ctx.session.user.id),
+        columns: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+          stripeSubscriptionStatus: true,
+        },
+      });
+
+      const newComment = (await ctx.db
         .insert(comments)
         .values({
           body: input.content,
@@ -89,9 +101,26 @@ export const commentsRouter = createTRPCRouter({
             }),
         })
         .returning({
-          id: articles.id,
+          id: comments.id,
+          body: comments.body,
+          likesCount: comments.likesCount,
+          type: comments.type,
+          parentId: comments.parentId,
+          createdAt: comments.createdAt,
+          updatedAt: comments.updatedAt,
         })
-        .then((res) => res[0]?.id as string);
+        .then((res) => ({
+          ...res[0],
+          replies: [],
+          user: user,
+        }))) as Comment;
+
+      if (!newComment) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
 
       await ctx.db
         .update(articles)
@@ -113,7 +142,7 @@ export const commentsRouter = createTRPCRouter({
               : input.content,
           isRead: false,
           articleAuthor: article.user.username,
-          slug: `${article.slug}?commentId=${newComment}`,
+          slug: `${article.slug}?commentId=${newComment.id}`,
         });
       } else if (input.type === "REPLY" && parentComment) {
         await ctx.db.insert(notifications).values([
@@ -128,7 +157,7 @@ export const commentsRouter = createTRPCRouter({
                 : input.content,
             isRead: false,
             articleAuthor: article.user.username,
-            slug: `${article.slug}?commentId=${newComment}`,
+            slug: `${article.slug}?commentId=${newComment.id}`,
           },
           {
             type: "COMMENT",
@@ -141,7 +170,7 @@ export const commentsRouter = createTRPCRouter({
                 : input.content,
             articleAuthor: article.user.username,
             isRead: false,
-            slug: `${article.slug}?commentId=${newComment}`,
+            slug: `${article.slug}?commentId=${newComment.id}`,
           },
         ]);
       }
@@ -161,6 +190,9 @@ export const commentsRouter = createTRPCRouter({
 
         const comment = await ctx.db.query.comments.findFirst({
           where: eq(comments.id, commentId),
+          columns: {
+            likesCount: true,
+          },
           with: {
             likes: {
               where: eq(likesToComment.userId, ctx.session.user.id),
@@ -175,6 +207,22 @@ export const commentsRouter = createTRPCRouter({
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Comment not found",
+          });
+        }
+
+        if (comment.likes.length > 0) {
+          await ctx.db
+            .delete(likesToComment)
+            .where(
+              and(
+                eq(likesToComment.userId, ctx.session.user.id),
+                eq(likesToComment.commentId, commentId)
+              )
+            );
+        } else {
+          await ctx.db.insert(likesToComment).values({
+            userId: ctx.session.user.id,
+            commentId,
           });
         }
 
@@ -209,65 +257,200 @@ export const commentsRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().trim(),
-        type: z.enum(["COMMENT", "REPLY"]).default("COMMENT").optional(),
+        parentId: z.string().trim().optional().nullable(),
+        type: z.enum(["INITIAL", "ALL"]).optional().default("INITIAL"),
+        // here initial means get the first 5 comments with their first one reply.
+        // `INITIAL` is used for getting comments of an article in the initial load
       })
     )
     .query(async ({ ctx, input }) => {
-      const articleId = input.articleId; // Assuming you have the articleId value
+      const articleId = input.articleId;
 
-      const comment = await ctx.db.query.comments.findMany({
-        where: and(
-          eq(comments.articleId, articleId),
-          isNull(comments.parentId)
-        ),
-        limit: 10,
-        with: {
-          replies: {
+      if (input.type === "INITIAL") {
+        const c = await ctx.db.query.articles
+          .findFirst({
+            where: eq(articles.id, articleId),
             columns: {
-              id: true,
+              commentsCount: true,
             },
-          },
-          user: {
+            with: {
+              comments: {
+                columns: {
+                  userId: false,
+                  articleId: false,
+                },
+                where: and(
+                  eq(comments.type, "COMMENT"),
+                  isNull(comments.parentId),
+                  eq(comments.articleId, articleId)
+                ),
+                limit: 5,
+                extras: {
+                  repliesCount:
+                    sql<number>`(
+                    SELECT COUNT(*) FROM ${comments} AS c2 WHERE c2.parent_id = ${comments.id}
+                  )`.as("replies_count") ?? 0,
+                },
+                with: {
+                  replies: {
+                    columns: {
+                      userId: false,
+                      articleId: false,
+                    },
+                    limit: 1,
+                    extras: {
+                      repliesCount:
+                        sql<number>`(
+                        SELECT COUNT(*) FROM ${comments} AS c2 WHERE c2.parent_id = ${comments.id}
+                      )`.as("replies_count") ?? 0,
+                    },
+                    with: {
+                      user: {
+                        columns: {
+                          id: true,
+                          name: true,
+                          username: true,
+                          image: true,
+                          stripeSubscriptionStatus: true,
+                        },
+                      },
+                      likes: {
+                        where: eq(
+                          likesToComment.userId,
+                          ctx?.session?.user.id || ""
+                        ),
+                        columns: {
+                          userId: true,
+                        },
+                      },
+                    },
+                  },
+                  user: {
+                    columns: {
+                      id: true,
+                      name: true,
+                      username: true,
+                      image: true,
+                      stripeSubscriptionStatus: true,
+                    },
+                  },
+                  likes: {
+                    where: eq(
+                      likesToComment.userId,
+                      ctx?.session?.user.id || ""
+                    ),
+                    columns: {
+                      userId: true,
+                    },
+                  },
+                },
+                orderBy: [desc(comments.createdAt)],
+              },
+            },
+          })
+          .then((res) => {
+            return {
+              comments: (res?.comments.map((e) => {
+                const { likes, ...rest } = e;
+                return {
+                  ...rest,
+                  hasLiked: !!likes.length,
+                  replies: e.replies.map((e) => {
+                    const { likes, ...rest } = e;
+                    return {
+                      ...rest,
+                      hasLiked: !!likes.length,
+                    };
+                  }),
+                };
+              }) ?? []) as Comment[],
+              count: res?.commentsCount ?? 0,
+            };
+          });
+
+        return c;
+      } else {
+        // load all comments and replies
+        if (!input.parentId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "ParentId is required",
+          });
+        }
+
+        const commentsofarticle = await ctx.db.query.comments
+          .findMany({
+            where: eq(comments.articleId, input.articleId),
             columns: {
-              id: true,
-              name: true,
-              username: true,
-              stripeSubscriptionStatus: true,
-              image: true,
+              userId: false,
+              articleId: false,
             },
-          },
-          likes: {
-            columns: {
-              userId: true,
+            extras: {
+              repliesCount:
+                sql<number>`(
+                        SELECT COUNT(*) FROM ${comments} AS c2 WHERE c2.parent_id = ${comments.id}
+                      )`.as("replies_count") ?? 0,
             },
-          },
-        },
-        orderBy: [desc(comments.createdAt)],
-      });
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  name: true,
+                  username: true,
+                  image: true,
+                  stripeSubscriptionStatus: true,
+                },
+              },
+              likes: {
+                where: eq(likesToComment.userId, ctx?.session?.user.id || ""),
+                columns: {
+                  userId: true,
+                },
+              },
+            },
+          })
+          .then((res) => {
+            return res.map((e) => {
+              const { likes, ...rest } = e;
+              return {
+                ...rest,
+                hasLiked: !!likes.length,
+                replies: [],
+              };
+            });
+          });
 
-      const totalComments = await ctx.db.query.comments
-        .findMany({
-          where: eq(comments.articleId, articleId),
-          columns: {
-            id: true,
-          },
-        })
-        .then((res) => res.length);
+        function organizeComments(
+          comments: Comment[],
+          parentId: string | null = null
+        ) {
+          const result = [];
 
-      return {
-        totalComments,
-        comments: comment.map((comment) => {
-          const newComment = {
-            ...comment,
-            repliesCount: comment.replies.length,
-            // repliesCount: comment._count.replies,
-          };
+          for (const comment of comments) {
+            if (comment.parentId === parentId) {
+              const replies = organizeComments(comments, comment.id);
+              if (replies.length > 0) {
+                comment.replies = replies;
+              }
+              result.push(comment);
+            }
+          }
 
-          // const { _count, ...res } = newComment;
-          // return res;
-          return newComment;
-        }),
-      };
+          return result;
+        }
+
+        const count = await ctx.db.execute(sql`
+        SELECT COUNT(*) FROM ${comments} WHERE ${comments.articleId} = ${input.articleId}
+        `);
+
+        // Organize the comments
+        const nestedComments = organizeComments(commentsofarticle);
+        const result = {
+          comments: nestedComments,
+          count: (count.rows[0] as { count: number })?.count ?? 0,
+        };
+        return result;
+      }
     }),
 
   getReplies: publicProcedure
