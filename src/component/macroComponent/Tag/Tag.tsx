@@ -62,6 +62,7 @@ const Tag: FC<Props> = ({ filter, setFilter }) => {
                   data: {
                     ...prev.data,
                     tags: prev.data.tags.filter((t) => t !== tag),
+                    shouldApply: false,
                   },
                 }));
               }}

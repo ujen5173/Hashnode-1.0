@@ -46,6 +46,10 @@ const NewArticleModal: FC<Props> = ({
   const router = useRouter();
 
   const [requestedTags, setRequestedTags] = React.useState<string[]>([]);
+  const [selectedSeries, setSelectedSeries] = React.useState<{
+    title: string,
+    id: string
+  } | null>(null);
 
   //TODO: this code is running at page load to fetch only tags from url.
   const { refetch } = api.tags.getSingle.useQuery(
@@ -70,7 +74,7 @@ const NewArticleModal: FC<Props> = ({
 
     if (article && !router?.query?.params?.includes("edit")) {
       const parsedArticle = JSON.parse(article) as ArticleCard;
-      if (parsedArticle.tags.length > 0) {
+      if (parsedArticle && parsedArticle.tags && parsedArticle.tags.length > 0) {
         setRequestedTags(parsedArticle.tags.map((e) => e.slug));
       }
     }
@@ -81,7 +85,7 @@ const NewArticleModal: FC<Props> = ({
       const { tags, ...res } = JSON.parse(storedData) as ArticleData;
       setData({ ...data, ...res });
 
-      if (tags.length === 0) return;
+      if (tags && tags.length === 0) return;
 
       const checkTags = async () => {
         const { data: tagsData } = await refetch();
@@ -137,7 +141,7 @@ const NewArticleModal: FC<Props> = ({
 
     setPublishing(true);
     try {
-      const res = await mutateAsync({ ...data, subtitle, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
+      const res = await mutateAsync({ ...data, subtitle, series: selectedSeries?.id, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
       if (res.success && res.redirectLink) {
         setPublishModal(false);
         if (!router?.query?.params?.includes("edit")) {
@@ -286,12 +290,12 @@ const NewArticleModal: FC<Props> = ({
                 Select Article Series
               </label>
 
-              <SelectSeries data={data} setData={setData} series={data.series} />
+              <SelectSeries setSelectedSeries={setSelectedSeries} series={data.series} />
 
-              {data.series && (
+              {selectedSeries && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   <div className="flex items-center gap-2 rounded-md border border-border-light bg-light-bg px-2 py-1 text-lg text-gray-500 dark:border-border dark:bg-primary-light dark:text-text-primary">
-                    <span>{data.series}</span>
+                    <span>{selectedSeries.title}</span>
 
                     <button
                       onClick={() => {

@@ -49,3 +49,4 @@ yarn-error.log*
 /test.html
 /src/server/db/prisma.ref.ts
 /drizzle
+/important_deprecated_idea.txt

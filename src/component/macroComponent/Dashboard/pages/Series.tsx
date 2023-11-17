@@ -106,7 +106,7 @@ const SeriesCard: FC<{
 
       <div className="flex items-center gap-2">
         <Link href={`/dev/@${author}/series/${item.slug}`} className="inline-flex items-center gap-2 rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
-          <ExternalLink className="h-4 w-4 fill-gray-500 dark:fill-text-primary" />
+          <ExternalLink className="h-4 w-4 stroke-gray-500 dark:stroke-text-primary" />
 
           <span className="font-medium text-gray-500 dark:text-text-primary">
             View Series

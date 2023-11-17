@@ -65,9 +65,7 @@ export const users = pgTable("user", {
 export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   handle: one(handles),
-  articles: many(articles, {
-    relationName: "articles",
-  }),
+  articles: many(articles),
   followingTags: many(tagsToUsers),
   notifications: many(notifications, {
     relationName: "notifications",
@@ -285,10 +283,10 @@ export const tagsToUsersRelations = relations(tagsToUsers, ({ one }) => ({
 export const tagsToArticles = pgTable(
   "tags_to_articles",
   {
-    tagId: text("tagId")
+    tagId: text("tag_id")
       .references(() => tags.id)
       .notNull(),
-    articleId: text("articleId")
+    articleId: text("article_id")
       .references(() => articles.id)
       .notNull(),
   },
@@ -385,28 +383,28 @@ export const articles = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
+    userId: text("user_id").notNull(),
     title: text("title").notNull(),
     cover_image: text("cover_image"),
     cover_image_key: text("cover_image_key"),
-    userId: text("userId").notNull(),
     content: text("body").notNull(),
     read_time: integer("read_time").notNull(),
-    seoTitle: text("seoTitle"),
-    seoDescription: text("seoDescription"),
-    seoOgImage: text("seoOgImage"),
-    seoOgImageKey: text("seoOgImageKey"),
+    seoTitle: text("seo_title"),
+    seoDescription: text("seo_description"),
+    seoOgImage: text("seo_og_image"),
+    seoOgImageKey: text("seo_og_image_key"),
     subtitle: text("subtitle"),
-    disabledComments: boolean("disabledComments").notNull().default(true),
-    likesCount: integer("likesCount").notNull().default(0),
+    disabledComments: boolean("disabled_comments").notNull().default(true),
+    likesCount: integer("likes_count").notNull().default(0),
     slug: text("slug").notNull(),
-    commentsCount: integer("commentsCount").notNull().default(0),
-    readCount: integer("readCount").notNull().default(0),
-    isDeleted: boolean("isDeleted").notNull().default(false),
+    commentsCount: integer("comments_count").notNull().default(0),
+    readCount: integer("read_count").notNull().default(0),
+    isDeleted: boolean("is_deleted").notNull().default(false),
 
-    seriesId: text("seriesId"),
+    seriesId: text("series_id"),
 
-    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
   },
   (articles) => ({
     userIdIdx: index("userId_idx").on(articles.id),
@@ -422,7 +420,6 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
   user: one(users, {
     fields: [articles.userId],
     references: [users.id],
-    relationName: "articles",
   }),
   comments: many(comments),
   tags: many(tagsToArticles),
@@ -433,10 +430,10 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
 export const likesToArticles = pgTable(
   "likes_to_articles",
   {
-    userId: text("userId")
+    userId: text("user_id")
       .references(() => users.id)
       .notNull(),
-    articleId: text("articleId")
+    articleId: text("article_id")
       .references(() => articles.id)
       .notNull(),
   },
@@ -540,13 +537,6 @@ export const seriesRelations = relations(series, ({ one, many }) => ({
   }),
   articles: many(articles),
 }));
-export const notificationEnum = pgEnum("type", [
-  "ARTICLE",
-  "COMMENT",
-  "REPLY",
-  "FOLLOW",
-  "LIKE",
-]);
 
 // notifications
 export const notifications = pgTable(
@@ -555,7 +545,7 @@ export const notifications = pgTable(
     id: text("id")
       .default(sql`gen_random_uuid()`)
       .primaryKey(),
-    type: notificationEnum("type").default("ARTICLE").notNull(),
+    type: text("type").default("ARTICLE").notNull(),
     isRead: boolean("is_read").default(false),
 
     body: text("body").default(""),

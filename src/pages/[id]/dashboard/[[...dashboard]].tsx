@@ -98,7 +98,7 @@ const Dashboard = () => {
       <Header search={false} />
 
       <div className="bg-light-bg dark:bg-black">
-        <div className="mx-auto max-w-[1550px] gap-4 py-8 sm:px-4">
+        <div className="mx-auto max-w-[1550px] gap-4 pt-8 pb-12 sm:px-4">
           <header className="mb-6 flex w-full flex-col items-center justify-between rounded-md border border-border-light bg-white px-6 py-8 dark:border-border dark:bg-primary sm:flex-row">
             <div className="mb-4 flex w-full max-w-[20rem] cursor-pointer items-center justify-between rounded-full border border-border-light bg-light-bg px-4 py-2 hover:bg-border-light dark:border-border dark:bg-primary-light dark:hover:bg-border sm:mb-0">
               <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ const Dashboard = () => {
           <main className="flex flex-col gap-4 md:flex-row">
             <Navigation paths={paths} userId={session?.user.id as string} />
             {/* dashboard component */}
-            <section className="relative min-h-[40rem] w-full flex-1 overflow-hidden rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary md:px-6 md:py-8 lg:p-8">
+            <section className="relative min-h-[40rem] w-full flex-1 rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary md:px-6 md:py-8 lg:p-8">
               {dashboardName}
             </section>
           </main>
@@ -196,7 +196,7 @@ const Roadmap = () => {
     refetchOnWindowFocus: false,
   });
 
- 
+
   return (
     <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">

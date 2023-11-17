@@ -251,7 +251,7 @@ export const generalSettingsSocials = [
     placeholder: "https://instagram.com/username",
     name: "instagram",
     icon: (
-      <Instagram className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+      <Instagram className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
     ),
   },
   {
@@ -266,7 +266,7 @@ export const generalSettingsSocials = [
     label: "Your Website",
     placeholder: "https://something.com",
     name: "website",
-    icon: <Globe className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    icon: <Globe className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />,
   },
   {
     id: uuid(),
@@ -282,14 +282,14 @@ export const generalSettingsSocials = [
     label: "Youtube Channel",
     placeholder: "https://youtube.com/@username",
     name: "youtube",
-    icon: <Youtube className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    icon: <Youtube className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />,
   },
   {
     id: uuid(),
     label: "Daily.dev image",
     placeholder: "https://app.daily.dev/username",
     name: "dailydev",
-    icon: <Dailydev className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
+    icon: <Dailydev className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />,
   },
 ];
 
@@ -343,11 +343,6 @@ export const selectArticleCard = {
             slug: true,
           }
         }
-      }
-    },
-    likes: {
-      columns: {
-        userId: true,
       }
     },
     series: {

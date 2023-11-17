@@ -228,7 +228,7 @@ const CommentsModal: FC<{
               Array(3).fill("").map((_, i) => (
                 <CommentsLoading key={i} />
               ))
-            ) : commentsData.comments.map((comment, index) => {
+            ) : commentsData.comments.length > 0 ? commentsData.comments.map((comment, index) => {
               if (repliesButtonRef.current[index] === undefined) {
                 repliesButtonRef.current[index] = false
               }
@@ -264,7 +264,13 @@ const CommentsModal: FC<{
                   }
                 </div>
               )
-            })}
+            }) : (
+              <div className="flex items-center justify-center h-full py-16">
+                <p className="text-gray-700 dark:text-text-secondary">
+                  No comments yet
+                </p>
+              </div>
+            )}
           </section>
         </section>
       </>

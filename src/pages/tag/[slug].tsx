@@ -70,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)
         : null,
-      tagDetails: JSON.parse(JSON.stringify(tagDetails)) as DetailedTag,
+      tagDetails: tagDetails ? JSON.parse(JSON.stringify(tagDetails)) as DetailedTag : null,
     },
   };
 };

@@ -32,7 +32,7 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
                 {formatDate(article.createdAt)}
               </p>
               <div className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4 fill-secondary" />
+                <BookOpen className="h-4 w-4 storke-secondary" />
                 <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
                   {article.read_time} min read
                 </p>

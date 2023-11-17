@@ -53,6 +53,23 @@ const NewArticleBody: FC<{
     const [defaultContent, setDefaultContent] = useState<DefaultEditorContent | null>(null);
     const router = useRouter();
 
+    const [data, setData] = useLocalStorage<ArticleDataNoContent & {
+      prev_slug?: string | null;
+    }>("articleData", {
+      title: "",
+      subtitle: "",
+      cover_image: null,
+      series: null,
+      tags: [],
+      cover_image_key: null,
+      slug: "",
+      seoTitle: "",
+      seoDescription: "",
+      seoOgImage: null,
+      seoOgImageKey: null,
+      disabledComments: false,
+    });
+
     const { data: articleData, error } = api.posts.getArticleToEdit.useQuery({
       slug: (router?.query?.params as string[])[1] as string,
     }, {
@@ -63,7 +80,7 @@ const NewArticleBody: FC<{
 
     useEffect(() => {
       if (articleData) {
-        setData(articleData);
+        setData({ ...articleData, prev_slug: articleData.slug });
         setDefaultContent(convertToHTML(articleData.content) as DefaultEditorContent);
         setSubTitle(articleData.subtitle || "");
       }
@@ -81,34 +98,6 @@ const NewArticleBody: FC<{
       }
     }, [error]);
 
-    // const [data, setData] = useState<ArticleDataNoContent>({
-    //   title: "",
-    //   subtitle: "",
-    //   cover_image: null,
-    //   series: null,
-    //   tags: [],
-    //   cover_image_key: null,
-    //   slug: "",
-    //   seoTitle: "",
-    //   seoDescription: "",
-    //   seoOgImage: null,
-    //   seoOgImageKey: null,
-    //   disabledComments: false,
-    // });
-    const [data, setData] = useLocalStorage<ArticleDataNoContent>("articleData", {
-      title: "",
-      subtitle: "",
-      cover_image: null,
-      series: null,
-      tags: [],
-      cover_image_key: null,
-      slug: "",
-      seoTitle: "",
-      seoDescription: "",
-      seoOgImage: null,
-      seoOgImageKey: null,
-      disabledComments: false,
-    });
 
     const [fileModal, setFileModal] = React.useState(false); // open and close file upload modal
     const ref = useClickOutside<HTMLDivElement>(() => setFileModal(false));

@@ -2,19 +2,20 @@
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRef, useState, type FC } from "react";
+import React, { useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 import { Table2 } from "lucide-react";
 import { api } from "~/utils/api";
 import { TagLoading } from "../loading";
-import { type ArticleDataNoContent } from "../macroComponent/New/NewArticleBody";
 
 const SelectSeries: FC<{
   series: string | null;
-  data: ArticleDataNoContent;
-  setData: (data: ArticleDataNoContent) => void;
-}> = ({ series: ser, data, setData }) => {
+  setSelectedSeries: React.Dispatch<React.SetStateAction<{
+    title: string;
+    id: string;
+  } | null>>;
+}> = ({ series: ser, setSelectedSeries }) => {
   const [query, setQuery] = useState("");
   const [series, setSeries] = useState<
     {
@@ -104,23 +105,16 @@ const SelectSeries: FC<{
               <div
                 className="flex w-full cursor-pointer items-center gap-2  border-b border-border-light px-4 py-2 text-lg text-gray-500 last:border-none hover:bg-light-bg dark:border-border dark:text-text-primary dark:hover:bg-primary-light"
                 onClick={() => {
-                  setData({
-                    ...data,
-                    series: s.title,
-                  });
                   input.current?.focus();
 
                   setOpened(false);
                   setQuery("");
-                  setData({
-                    ...data,
-                    series: s.title,
-                  });
+                  setSelectedSeries(s)
                 }}
                 key={index}
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
-                  <Table2 className="mx-auto my-3 h-6 w-6 fill-secondary" />
+                  <Table2 className="mx-auto my-3 h-6 w-6 stroke-secondary" />
                 </div>
 
                 <span>{s.title}</span>

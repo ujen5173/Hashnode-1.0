@@ -27,7 +27,7 @@ const ManageData: FC<Props> = ({
   error,
 }) => {
   return (
-    <div className="manageData-container">
+    <div className="manageData-container w-full">
       {type === "TAG" ? (
         tagsData?.isLoading ? (
           <div className="flex w-full flex-wrap gap-4 p-4">

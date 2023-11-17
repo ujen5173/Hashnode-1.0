@@ -182,7 +182,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
         >
           <p className="mr-2 flex items-center gap-1 rounded-full bg-secondary bg-opacity-10 px-2 py-1">
             <span className="text-gray-900 dark:text-text-primary">
-              <Book className="h-3 w-3 fill-secondary" />
+              <Book className="h-3 w-3 stroke-secondary" />
             </span>
             <span className="max-height-one text-xs font-semibold text-secondary">
               {limitText(card.series.title, 20)}
@@ -207,7 +207,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
             </span>
           </button>
 
-          {card.commonUsers.length > 0 && (
+          {/* {card.commonUsers.length > 0 && (
             <div className="hidden flex-1 sm:flex">
               {card.commonUsers.map((user, index) => (
                 <button
@@ -227,7 +227,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
                 </button>
               ))}
             </div>
-          )}
+          )} */}
         </div>
       )}
     </div>

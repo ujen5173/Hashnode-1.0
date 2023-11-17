@@ -39,7 +39,8 @@ export interface Article {
 }
 
 // here `Omit` is used to remove the `subtitle` property from `Article` type and add `commonUsers` property
-export interface ArticleCard extends Omit<Article, "subtitle" | "comments"> {
+export interface ArticleCard
+  extends Omit<Article, "subtitle" | "comments" | "likes"> {
   commonUsers: {
     id: string;
     image: string | null;
@@ -47,8 +48,13 @@ export interface ArticleCard extends Omit<Article, "subtitle" | "comments"> {
 }
 
 export type ArticleCardRemoveCommonUser = Omit<ArticleCard, "commonUsers">;
+export type ArticleCardRemoveCommonUserWithoutLikes = Omit<
+  ArticleCard,
+  "commonUsers"
+>;
 
-export interface ArticleCardWithComments extends ArticleCardRemoveCommonUser {
+export interface ArticleCardWithComments
+  extends ArticleCardRemoveCommonUserWithoutLikes {
   comments: {
     user: {
       id: string;

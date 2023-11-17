@@ -1,23 +1,22 @@
 import { TRPCClientError } from "@trpc/client";
+import { Clock, Filter, Flame } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState, type FC } from "react";
+import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { ArticleCard } from "~/component/card";
 import { ArticleLoading } from "~/component/loading";
-
-import { Clock, Filter, Flame } from "lucide-react";
-import useFilter from "~/hooks/useFilter";
-import type { DetailedTag } from "~/types";
+import { ManageData } from "~/component/miniComponent";
+import type { ArticleCard, DetailedTag } from "~/types";
 import { api } from "~/utils/api";
+import { C, type ContextValue } from "~/utils/context";
 import { TagPageHeader } from "../../header";
 import FilterSection from "./FilterSection";
 
 const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const tab = useRouter().query.tab as string | undefined;
 
-  const { filter, setFilter } = useFilter();
+  const { filter, setFilter } = useContext(C) as ContextValue;
 
   const [following, setFollowing] = useState<{
     status: boolean;
@@ -31,7 +30,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
 
   const { mutate: followToggle } = api.tags.followTag.useMutation();
   const { data: user } = useSession();
-  const { data: articlesData, isLoading } = api.posts.getArticlesUsingTag.useQuery(
+  const { data, isFetching, error } = api.posts.getArticlesUsingTag.useQuery(
     {
       name: tagDetails.name,
       type: (tab || "hot") as "hot" | "new",
@@ -42,8 +41,9 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       },
     },
     {
-      enabled: filter.data.shouldApply,
+      enabled: !!filter.data.shouldApply,
       refetchOnWindowFocus: false,
+      retry: 0,
     }
   );
 
@@ -63,7 +63,15 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
         }));
       }
     }
-  }, [tagDetails, user]);
+  }, [tagDetails, following.updated, user]);
+
+  const [articles, setArticles] = useState<ArticleCard[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      setArticles(data?.posts)
+    }
+  }, [data]);
 
   const followTag = (name: string): void => {
     try {
@@ -97,9 +105,9 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       />
 
       <main className="flex flex-col items-center justify-center overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
-        <div className="flex w-full flex-col items-end justify-between gap-2 pt-2">
-          <div className="flex w-full items-end justify-between border-b border-border-light px-2 dark:border-border">
-            <div className="flex w-full items-center gap-2">
+        <header className="w-full overflow-auto border-b border-border-light pt-2 dark:border-border">
+          <div className="flex w-full items-end justify-between gap-16 px-2">
+            <div className="flex items-center gap-2">
               <Link href={`/tag/${tagDetails.slug}?tab=hot`}>
                 <button
                   aria-label="icon"
@@ -153,16 +161,16 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                   <Filter
                     className={`h-4 w-4 ${filter.data.read_time !== null ||
                       filter.data.tags.length > 0
-                      ? "fill-secondary stroke-secondary"
-                      : ""
-                      } stroke-gray-700 dark:stroke-text-secondary`}
+                      ? "fill-none stroke-secondary"
+                      : "stroke-gray-700 dark:stroke-text-secondary"
+                      }`}
                   />
                 </button>
+
                 <span
-                  className={`${filter.data.read_time !== null ||
-                    filter.data.tags.length > 0
+                  className={`${filter.data.read_time !== null || filter.data.tags.length > 0
                     ? "text-secondary"
-                    : "text-gray-700 dark:text-text-primary"
+                    : "text-gray-700 dark:text-text-secondary"
                     }`}
                 >
                   Filter
@@ -170,48 +178,26 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
               </div>
             </div>
           </div>
+        </header>
 
-          {filter.status && (
-            <FilterSection />
-          )}
-        </div>
-
-        {isLoading ? (
-          <div className="w-full">
-            {Array(4)
-              .fill("")
-              .map((_, i) => {
-                return (
-                  <div
-                    className="border-b border-border-light dark:border-border"
-                    key={i}
-                  >
-                    <ArticleLoading />
-                  </div>
-                );
-              })}
-          </div>
-        ) : (
-          articlesData?.posts?.map((article) => (
-            <div
-              key={article.id}
-              className="w-full border-b border-border-light last:border-0 dark:border-border"
-            >
-              <ArticleCard card={article} key={article.id} />
-            </div>
-          ))
+        {filter.status && (
+          <FilterSection />
         )}
+
         {
-          isLoading && (
-            <>
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-              <ArticleLoading />
-            </>
-          )
+          isFetching ? (
+            Array.from({ length: 7 }).map((_, i) => (
+              <ArticleLoading key={i} />
+            ))
+          ) : <ManageData
+            loading={<ArticleLoading />}
+            type="ARTICLE"
+            error={error?.message ?? null}
+            articleData={{
+              isLoading: isFetching,
+              data: articles,
+            }}
+          />
         }
       </main>
     </section>

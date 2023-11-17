@@ -3,8 +3,13 @@
 This is a **full-stack application** that serves as a clone of the popular blogging website, _Hashnode_. The purpose of this project is to showcase my skills in web development and serve as a learning experience. I have utilized Next.js, Nextjs, Tailwind CSS, and the T3 stack with PostgreSQL as the technology stack for this project. With a plethora of exciting features, this intermediate-level project replicates most of the functionalities found on the original Hashnode website. I hope you enjoy this project as much as I enjoyed building it. Cheers 🍻. Contributions are welcome!
 
 ## Live Urls
-- With Drizzle Orm: https://hashnode-t3.vercel.app/
-- With Prisma Orm: https://hashnode-4moa9m90e-ujen5173.vercel.app/
+
+- With Drizzle Orm
+  - Live: https://hashnode-t3.vercel.app/
+  - Code: https://github.com/ujen5173/Hashnode
+- With Prisma Orm
+  - Live: https://hashnode-4moa9m90e-ujen5173.vercel.app/
+  - Code: https://github.com/ujen5173/Hashnode/tree/ede835b251d16bbe96ac62fb9028137d32380e93
 
 ## Table of Contents
 

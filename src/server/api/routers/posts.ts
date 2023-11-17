@@ -33,7 +33,6 @@ import {
   handles,
   likesToArticles,
   likesToComment,
-  notificationEnum,
   notifications,
   readersToArticles,
   series,
@@ -154,6 +153,7 @@ export const postsRouter = createTRPCRouter({
               message: "Login to see your following feed",
             });
           }
+
           const followings = await ctx.db.query.users.findFirst({
             where: eq(users.id, ctx.session.user.id),
             columns: {
@@ -236,6 +236,7 @@ export const postsRouter = createTRPCRouter({
             posts: formattedPosts,
           };
         }
+
         const result = await ctx.db.query.articles
           .findMany({
             where: and(
@@ -633,21 +634,23 @@ export const postsRouter = createTRPCRouter({
         cover_image_Key: z.string().optional(),
         tags: z.array(z.string().trim()).default([]),
         slug: z.string().trim(),
-        seriesId: z.string().optional().nullable(),
+        series: z.string().optional().nullable(),
         seoTitle: z.string().trim(),
         seoDescription: z.string().trim(),
         seoOgImage: z.string().trim().optional().nullable(),
         disabledComments: z.boolean().default(false).optional(),
 
         edit: z.boolean(), //? article is being edited or created
+        prev_slug: z.string().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
         const existingArticle = await ctx.db.query.articles.findFirst({
-          where: eq(articles.slug, input.slug),
+          where: eq(articles.slug, input.prev_slug || input.slug),
           columns: {
             id: true,
+            userId: true,
           },
           with: {
             tags: {
@@ -712,14 +715,24 @@ export const postsRouter = createTRPCRouter({
 
         const { edit, tags: _, ...rest } = input;
 
-        if (edit && !!existingArticle) {
+        if (edit && existingArticle) {
+          delete rest.prev_slug;
           // editing an article
+
+          if (existingArticle.userId !== ctx.session.user.id) {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "You are not authorized to edit this article",
+            });
+          }
+
           const [updatedArticle] = await ctx.db
             .update(articles)
             .set({
               ...rest,
               read_time: Math.ceil(readingTime(input.content).minutes) || 1,
               seoTitle: input.seoTitle || input.title,
+              seriesId: input.series,
               seoDescription:
                 input.seoDescription ||
                 input.subtitle ||
@@ -736,13 +749,6 @@ export const postsRouter = createTRPCRouter({
             throw new TRPCError({
               code: "NOT_FOUND",
               message: "Article not found",
-            });
-          }
-
-          if (updatedArticle.userId !== ctx.session.user.id) {
-            throw new TRPCError({
-              code: "UNAUTHORIZED",
-              message: "You are not authorized to edit this article",
             });
           }
 
@@ -797,6 +803,7 @@ export const postsRouter = createTRPCRouter({
               userId: ctx.session.user.id,
               read_time: Math.ceil(readingTime(input.content).minutes) || 1,
               slug: input.slug,
+              seriesId: input.series,
               seoTitle: input.seoTitle || input.title,
               seoDescription:
                 input.seoDescription ||
@@ -852,7 +859,7 @@ export const postsRouter = createTRPCRouter({
                 userId: follower.followingId,
                 fromId: ctx.session.user.id,
                 articleId: newArticle.id,
-                type: notificationEnum.enumValues[0],
+                type: "ARTICLE",
                 body: `@${ctx.session.user.username} published a new article.`,
                 title: newArticle.title,
                 slug: newArticle.slug,
@@ -1560,13 +1567,14 @@ export const postsRouter = createTRPCRouter({
             id: true,
           },
           limit: limit,
-          orderBy: [desc(articles.createdAt)],
+          // orderBy: [desc(articles.createdAt)],
         });
 
         return {
           posts: article,
         };
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",
