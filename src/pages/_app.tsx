@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
@@ -38,23 +39,26 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const ref = useClickOutside<HTMLDivElement>(() => setSearchOpen(false));
 
   return (
-    <SessionProvider session={session}>
-      <Context options={{ searchOpen, setSearchOpen }}>
-        <ToastContainer
-          closeButton={false}
-          pauseOnFocusLoss={false}
-          toastClassName={() =>
-            "relative bg-white dark:bg-zinc-900 text-neutral-800 dark:text-white flex p-1 min-h-15 rounded-md justify-between overflow-hidden cursor-pointer p-5 border-2 dark:border-zinc-800 :dark:fill:slate-50 mb-4"
-          }
-        />
+    <>
+      <SessionProvider session={session}>
+        <Context options={{ searchOpen, setSearchOpen }}>
+          <ToastContainer
+            closeButton={false}
+            pauseOnFocusLoss={false}
+            toastClassName={() =>
+              "relative bg-white dark:bg-zinc-900 text-neutral-800 dark:text-white flex p-1 min-h-15 rounded-md justify-between overflow-hidden cursor-pointer p-5 border-2 dark:border-zinc-800 :dark:fill:slate-50 mb-4"
+            }
+          />
 
-        <NextTopLoader color="#2563eb" />
+          <NextTopLoader color="#2563eb" />
 
-        <Component {...pageProps} />
+          <Component {...pageProps} />
 
-        {searchOpen && <SearchBody ref={ref} setOpened={setSearchOpen} />}
-      </Context>
-    </SessionProvider>
+          {searchOpen && <SearchBody ref={ref} setOpened={setSearchOpen} />}
+        </Context>
+      </SessionProvider>
+      <Analytics />
+    </>
   );
 };
 

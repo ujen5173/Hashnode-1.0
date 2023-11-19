@@ -52,6 +52,7 @@
     "@types/remove-markdown": "^0.3.1",
     "@types/uuid": "^9.0.1",
     "@uploadthing/react": "^5.2.0",
+    "@vercel/analytics": "^1.1.1",
     "dotenv-cli": "^7.3.0",
     "drizzle-orm": "^0.28.6",
     "env-cmd": "^10.1.0",
