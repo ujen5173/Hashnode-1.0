@@ -16,7 +16,7 @@ const Editor: FC<{
   setSavedState: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ minHeight = "min-h-[500px]", defaultContent, contentName = "content", setSavedState }) => {
   const [content, setContent] = useLocalStorage<DefaultEditorContent>(
-    contentName,
+    "content",
     defaultContent || {
       type: "doc",
       content: [
@@ -32,7 +32,6 @@ const Editor: FC<{
       ],
     }
   );
-
 
   const [hydrated, setHydrated] = useState(false);
 

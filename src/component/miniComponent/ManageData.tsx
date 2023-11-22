@@ -24,7 +24,7 @@ const ManageData: FC<Props> = ({
   type,
   notificationData,
   filter,
-  error,
+  error = null,
 }) => {
   return (
     <div className="manageData-container w-full">
@@ -43,7 +43,7 @@ const ManageData: FC<Props> = ({
                 </div>
               ))}
           </div>
-        ) : tagsData?.data && tagsData?.data.length > 0 ? (
+        ) : tagsData?.data && tagsData?.data.length > 0 && error === null ? (
           <div className="flex w-full flex-wrap gap-4 p-4">
             {tagsData.data.map((item) => {
               return (
@@ -77,7 +77,7 @@ const ManageData: FC<Props> = ({
                 </div>
               ))}
           </>
-        ) : articleData?.data && articleData?.data.length > 0 ? (
+        ) : articleData?.data && articleData?.data.length > 0 && error === null ? (
           articleData.data.map((item) => {
             return (
               <div
@@ -128,7 +128,7 @@ const ManageData: FC<Props> = ({
                 </div>
               ))}
           </>
-        ) : notificationData?.data && notificationData?.data.length > 0 ? (
+        ) : notificationData?.data && notificationData?.data.length > 0 && error === null ? (
           notificationData.data.map((notification) => {
             return (
               <NotificationCard

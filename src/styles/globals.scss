@@ -1,7 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
-// import editor.css from styles folder
+
 @import url("editor.css");
 @import url("prosemirror.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -199,7 +200,7 @@ body.dark .input-secondary.input-with-opacity::-moz-placeholder {
 }
 .github:hover svg,
 .github:hover path {
-  fill: none!important;
+  fill: none !important;
 }
 
 .btn-social-icon {

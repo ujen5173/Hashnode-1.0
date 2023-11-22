@@ -12,7 +12,7 @@ import {
   SimpleArticleCardLoading,
 } from "~/component";
 import { authOptions } from "~/server/auth";
-import db from "~/server/db";
+import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
 
 import { Pencil } from "lucide-react";

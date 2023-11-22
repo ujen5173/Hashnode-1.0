@@ -1,6 +1,2 @@
-User-agent: Googlebot
-Disallow: /data/
-Disallow: /new
-
 User-agent: *
 Allow: /

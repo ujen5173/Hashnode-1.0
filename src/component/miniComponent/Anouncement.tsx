@@ -1,8 +1,9 @@
 import { Rocket } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-
 const Anouncement = () => {
+  const { data } = useSession();
   return (
     <div className="anouncement rounded-md border border-border-light bg-white p-6 dark:border-border dark:bg-primary">
       <header className="mb-2 flex gap-4">
@@ -20,7 +21,7 @@ const Anouncement = () => {
       </p>
 
       <div className="flex flex-col gap-2">
-        <Link href="/settings/pro">
+        <Link href={data?.user ? "/settings/pro" : "/onboard"}>
           <button
             role="button"
             aria-label="upgrade plan"

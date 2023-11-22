@@ -1,24 +1,21 @@
-import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, type FC } from "react";
+import React, { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 
+import { TRPCClientError } from "@trpc/client";
 import { X } from "lucide-react";
 import { type ArticleCard, type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
 import { formattedContent } from "~/utils/miniFunctions";
-import { type ArticleData, type ArticleDataNoContent } from "../macroComponent/New/NewArticleBody";
+import { defaultArticleData, type ArticleData, type ArticleDataNoContent } from "../macroComponent/New/NewArticleBody";
 import { SelectSeries, SelectTags } from "../miniComponent";
 
 interface Props {
   publishModal: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
-  data: ArticleDataNoContent;
-  // content: DefaultEditorContent;
-  // setData: React.Dispatch<React.SetStateAction<ArticleDataNoContent>>;
   setData: (value: ArticleDataNoContent) => void;
   publishing: boolean;
   setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,16 +29,23 @@ interface Props {
 const NewArticleModal: FC<Props> = ({
   publishModal,
   setPublishModal,
-  data,
   setData,
   publishing,
   setPublishing,
-  // content,
   query,
   setQuery,
   subtitle,
 }) => {
   const { data: user } = useSession()
+  const [articleData, setArticleData] = useState<ArticleDataNoContent>(defaultArticleData);
+
+  useEffect(() => {
+    const articleDataString = localStorage.getItem("articleData");
+    const articleData = JSON.parse(articleDataString ?? JSON.stringify(defaultArticleData)) as ArticleDataNoContent;
+    console.log({ articleData })
+    setArticleData(articleData);
+    setData(articleData);
+  }, []);
 
   const router = useRouter();
 
@@ -83,7 +87,7 @@ const NewArticleModal: FC<Props> = ({
     if (storedData) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { tags, ...res } = JSON.parse(storedData) as ArticleData;
-      setData({ ...data, ...res });
+      setData({ ...articleData, ...res });
 
       if (tags && tags.length === 0) return;
 
@@ -93,8 +97,8 @@ const NewArticleModal: FC<Props> = ({
         if (!tagsData) return;
 
         setData({
-          ...data,
-          tags: [...data.tags, ...tagsData.map((e) => e.name)],
+          ...articleData,
+          tags: [...articleData.tags, ...tagsData.map((e) => e.name)],
         });
       };
 
@@ -111,8 +115,8 @@ const NewArticleModal: FC<Props> = ({
 
       if (!tagsData) return;
       setData({
-        ...data,
-        tags: [...data.tags, ...tagsData.map((e) => e.name)],
+        ...articleData,
+        tags: [...articleData.tags, ...tagsData.map((e) => e.name)],
       });
     })();
   }, [requestedTags]);
@@ -121,6 +125,7 @@ const NewArticleModal: FC<Props> = ({
 
   const handlePublish = async () => {
     const content = localStorage.getItem("content");
+
     if (!content) {
       toast.error("Please fill up the content");
       return;
@@ -129,25 +134,23 @@ const NewArticleModal: FC<Props> = ({
       JSON.parse(content) as DefaultEditorContent
     );
 
-    if (!data.title || !contentResponse) {
+    if (!articleData.title || !contentResponse) {
       toast.error("Please fill up the title and content");
       return;
     }
 
-    if (data.title.length < 5) {
+    if (articleData.title.length < 5) {
       toast.error("Title should be at least 5 characters long");
       return;
     }
 
     setPublishing(true);
     try {
-      const res = await mutateAsync({ ...data, subtitle, series: selectedSeries?.id, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
+      const res = await mutateAsync({ ...articleData, subtitle, seriesId: selectedSeries?.id, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
       if (res.success && res.redirectLink) {
         setPublishModal(false);
-        if (!router?.query?.params?.includes("edit")) {
-          localStorage.removeItem("content");
-          localStorage.removeItem("articleData");
-        }
+        localStorage.removeItem("content");
+        localStorage.removeItem("articleData");
         await router.push(res.redirectLink);
         toast.success("Article published successfully");
       }
@@ -227,10 +230,10 @@ const NewArticleModal: FC<Props> = ({
                   placeholder="article-slug"
                   id="slug"
                   name="slug"
-                  value={data.slug}
+                  value={articleData.slug}
                   onChange={(e) => {
                     setData({
-                      ...data,
+                      ...articleData,
                       slug: slugify(e.target.value, {
                         lower: true,
                         replacement: "-",
@@ -253,14 +256,14 @@ const NewArticleModal: FC<Props> = ({
 
               <SelectTags
                 setData={setData}
-                tags={data.tags}
+                tags={articleData.tags}
                 query={query}
-                data={data}
+                data={articleData}
                 setQuery={setQuery}
               />
 
               <div className="mt-2 flex flex-wrap gap-2">
-                {data.tags.map((tag, index) => (
+                {articleData.tags.map((tag, index) => (
                   <div
                     className="flex items-center gap-2 rounded-md border border-border-light bg-light-bg px-2 py-1 text-lg text-gray-500 dark:border-border dark:bg-primary-light dark:text-text-primary"
                     key={index}
@@ -270,8 +273,8 @@ const NewArticleModal: FC<Props> = ({
                     <div
                       onClick={() => {
                         setData({
-                          ...data,
-                          tags: data.tags.filter((t) => t !== tag),
+                          ...articleData,
+                          tags: articleData.tags.filter((t) => t !== tag),
                         });
                       }}
                     >
@@ -290,7 +293,7 @@ const NewArticleModal: FC<Props> = ({
                 Select Article Series
               </label>
 
-              <SelectSeries setSelectedSeries={setSelectedSeries} series={data.series} />
+              <SelectSeries setSelectedSeries={setSelectedSeries} series={articleData.series} />
 
               {selectedSeries && (
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -300,7 +303,7 @@ const NewArticleModal: FC<Props> = ({
                     <button
                       onClick={() => {
                         setData({
-                          ...data,
+                          ...articleData,
                           series: null,
                         });
                       }}
@@ -335,10 +338,10 @@ const NewArticleModal: FC<Props> = ({
                 placeholder="Enter meta title"
                 id="seoTitle"
                 name="seoTitle"
-                value={data.seoTitle}
+                value={articleData.seoTitle}
                 onChange={(e) => {
                   const { name, value } = e.target;
-                  setData({ ...data, [name]: value });
+                  setData({ ...articleData, [name]: value });
                 }}
               />
             </div>
@@ -363,10 +366,10 @@ const NewArticleModal: FC<Props> = ({
                 placeholder="Enter meta description..."
                 id="seoDescription"
                 name="seoDescription"
-                value={data.seoDescription}
+                value={articleData.seoDescription}
                 onChange={(e) => {
                   const { name, value } = e.target;
-                  setData({ ...data, [name]: value });
+                  setData({ ...articleData, [name]: value });
                 }}
               />
             </div>
@@ -391,7 +394,7 @@ const NewArticleModal: FC<Props> = ({
                     const state = e.target.checked;
 
                     setData({
-                      ...data,
+                      ...articleData,
                       disabledComments: state,
                     });
                   }}

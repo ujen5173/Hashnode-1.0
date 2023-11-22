@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
 import { authOptions } from "~/server/auth";
-import db from "~/server/db";
+import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
 import { api } from "~/utils/api";
 

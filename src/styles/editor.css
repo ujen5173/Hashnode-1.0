@@ -83,7 +83,7 @@
 .article pre {
   background: #1e293b;
   color: #e5e7eb;
-  border-radius: 5px;
+  border-radius: 10px;
   border: 1px solid #1f2937;
   margin: 32px 0;
   padding: 20px;
@@ -180,9 +180,9 @@
 .article ol {
   margin: 24px 0;
 }
-.ProseMirror li,
-.article li {
-  margin: 18px 0;
+.ProseMirror li > *,
+.article li > * {
+  margin: 12px 0;
 }
 .ProseMirror blockquote,
 .article blockquote {

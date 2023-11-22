@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import SettingsSEO from "~/SEO/Settings.seo";
 import { Account, EmailNotification, Header, ManageBlogs, Subscription, UserDetailsOptions, UserProfile } from "~/component";
 import { authOptions } from "~/server/auth";
-import db from "~/server/db";
+import { db } from "~/server/db";
 import { users } from "~/server/db/schema";
 import { type UserDetails } from "~/types";
 
@@ -32,7 +32,7 @@ const EditProfile: NextPage<{
 
               <UserDetailsOptions />
             </div>
-            
+
             <main className="my-4 lg:my-0 min-h-[100dvh] flex-1 rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary sm:p-6 md:p-8">
               {
                 {

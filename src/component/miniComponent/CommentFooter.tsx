@@ -1,5 +1,5 @@
 import { Heart, MessageCircle } from "lucide-react";
-import { type FC } from "react";
+import React, { type FC } from "react";
 import { type Comment } from "~/types";
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
     hasLiked: boolean;
     likesCount: number;
   };
+  setShowReply: React.Dispatch<React.SetStateAction<boolean>>;
   replyComment: (data: { id: string; username: string }) => void;
 }
 
@@ -16,6 +17,7 @@ const CommentFooter: FC<Props> = ({
   comment,
   handleLike,
   like,
+  setShowReply,
   replyComment,
 }) => {
   return (
@@ -39,6 +41,7 @@ const CommentFooter: FC<Props> = ({
       </button>
 
       <button
+        onClick={() => setShowReply(prev => !prev)}
         className="btn-icon flex items-center gap-1 p-1"
       >
         <span>

@@ -447,7 +447,7 @@ export const commentsRouter = createTRPCRouter({
         const nestedComments = organizeComments(commentsofarticle);
         const result = {
           comments: nestedComments,
-          count: (count.rows[0] as { count: number })?.count ?? 0,
+          count: (count[0] as { count: number })?.count ?? 0,
         };
         return result;
       }

@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { type NeonHttpDatabase } from "drizzle-orm/neon-http";
+import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type Stripe from "stripe";
 import type * as schemaFile from "~/server/db/schema";
 import { users } from "~/server/db/schema";
@@ -11,14 +11,9 @@ export const getOrCreateStripeCustomerIdForUser = async ({
   userId,
 }: {
   stripe: Stripe;
-  db: NeonHttpDatabase<typeof schemaFile>;
+  db: PostgresJsDatabase<typeof schemaFile>;
   userId: string;
 }) => {
-  // const user = await db.user.findUnique({
-  //   where: {
-  //     id: userId,
-  //   },
-  // });
   const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
   });
@@ -39,15 +34,6 @@ export const getOrCreateStripeCustomerIdForUser = async ({
     },
   });
 
-  // update with new customer id
-  // const updatedUser = await db.user.update({
-  //   where: {
-  //     id: userId,
-  //   },
-  //   data: {
-  //     stripeCustomerId: customer.id,
-  //   },
-  // });
   const updatedUser = await db
     .update(users)
     .set({
@@ -73,7 +59,7 @@ export const handleInvoicePaid = async ({
 }: {
   event: Stripe.Event;
   stripe: Stripe;
-  db: NeonHttpDatabase<typeof schemaFile>;
+  db: PostgresJsDatabase<typeof schemaFile>;
 }) => {
   const invoice = event.data.object as Stripe.Invoice;
   const subscriptionId = invoice.subscription;
@@ -83,16 +69,6 @@ export const handleInvoicePaid = async ({
   const userId = subscription.metadata.userId;
   if (!userId) return;
 
-  // update user with subscription data
-  // await db.user.update({
-  //   where: {
-  //     id: userId,
-  //   },
-  //   data: {
-  //     stripeSubscriptionId: subscription.id,
-  //     stripeSubscriptionStatus: subscription.status,
-  //   },
-  // });
   await db
     .update(users)
     .set({
@@ -107,7 +83,7 @@ export const handleSubscriptionCreatedOrUpdated = async ({
   db,
 }: {
   event: Stripe.Event;
-  db: NeonHttpDatabase<typeof schemaFile>;
+  db: PostgresJsDatabase<typeof schemaFile>;
 }) => {
   const subscription = event.data.object as Stripe.Subscription;
   const userId = subscription.metadata.userId;
@@ -121,15 +97,6 @@ export const handleSubscriptionCreatedOrUpdated = async ({
       stripeSubscriptionStatus: subscription.status,
     })
     .where(eq(users.id, userId));
-  // await db.user.update({
-  //   where: {
-  //     id: userId,
-  //   },
-  //   data: {
-  //     stripeSubscriptionId: subscription.id,
-  //     stripeSubscriptionStatus: subscription.status,
-  //   },
-  // });
 };
 
 export const handleSubscriptionCanceled = async ({
@@ -137,22 +104,12 @@ export const handleSubscriptionCanceled = async ({
   db,
 }: {
   event: Stripe.Event;
-  db: NeonHttpDatabase<typeof schemaFile>;
+  db: PostgresJsDatabase<typeof schemaFile>;
 }) => {
   const subscription = event.data.object as Stripe.Subscription;
   const userId = subscription.metadata.userId;
   if (!userId) return;
 
-  // remove subscription data from user
-  // await db.user.update({
-  //   where: {
-  //     id: userId,
-  //   },
-  //   data: {
-  //     stripeSubscriptionId: null,
-  //     stripeSubscriptionStatus: null,
-  //   },
-  // });
   await db
     .update(users)
     .set({

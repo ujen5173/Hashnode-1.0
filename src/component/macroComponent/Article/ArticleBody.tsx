@@ -71,7 +71,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             width={1200}
             height={800}
             draggable={false}
-            className="w-full md:w-10/12 lg:w-full mx-auto overflow-hidden md:rounded-b-md object-cover md:px-4"
+            className="w-full md:w-10/12 lg:w-full mx-auto overflow-hidden md:rounded-b-md object-cover"
           />
         )}
 

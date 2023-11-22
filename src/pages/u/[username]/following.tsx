@@ -4,7 +4,8 @@ import { getServerSession, type Session } from "next-auth";
 import Head from "next/head";
 import { FollowArea, FollowHeader, FollowProfileArea, Header } from "~/component";
 import { authOptions } from "~/server/auth";
-import db from "~/server/db";
+import { db } from "~/server/db";
+
 import { users } from "~/server/db/schema";
 
 const Following: NextPage<{

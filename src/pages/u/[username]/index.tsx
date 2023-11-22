@@ -4,7 +4,7 @@ import { getServerSession, type Session } from "next-auth";
 import { Header, UserProfileBody } from "~/component";
 import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
-import db from "~/server/db";
+import { db } from "~/server/db";
 import { follow, users } from "~/server/db/schema";
 import { type DetailedUser, type SocialHandles } from "~/types";
 

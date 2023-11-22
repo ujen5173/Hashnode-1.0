@@ -82,7 +82,7 @@ const SearchBody = React.forwardRef<
     users: null,
   });
 
- 
+
   const [topResults, setTopResults] = useState<any>([]);
 
   const [refetching, setRefetching] = useState(false);
@@ -235,9 +235,8 @@ const SearchBody = React.forwardRef<
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.users.map((user) => (
                       <div
-                        // onClick={() => setOpened(false)}
                         key={user.id}
-                        className="border-b border-border-light dark:border-border"
+                        className="border-b border-border-light dark:border-border last:border-none"
                       >
                         <UserSearchCard
                           key={user.id}
@@ -251,9 +250,8 @@ const SearchBody = React.forwardRef<
                   <ul className="scroll-area max-h-[20rem] overflow-auto">
                     {data.tags.map((tag) => (
                       <div
-                        // onClick={() => setOpened(false)}
                         key={tag.id}
-                        className="border-b border-border-light dark:border-border"
+                        className="border-b border-border-light dark:border-border last:border-none"
                       >
                         <TagsSearchCard
                           key={tag.id}
@@ -271,7 +269,7 @@ const SearchBody = React.forwardRef<
                         <div
                           onClick={() => setOpened(false)}
                           key={article.id}
-                          className="border-b border-border-light dark:border-border"
+                          className="border-b border-border-light dark:border-border last:border-none"
                         >
                           <SearchArticle data={article} />
                         </div>
@@ -284,15 +282,14 @@ const SearchBody = React.forwardRef<
                         <div
                           onClick={() => setOpened(false)}
                           key={rest.id as string}
-                          className="border-b border-border-light dark:border-border"
+                          className="border-b border-border-light dark:border-border last:border-none"
                         >
                           <SearchArticle data={rest as ArticleSeach} />
                         </div>
                       ) : type === "TAGS" ? (
                         <div
-                          // onClick={() => setOpened(false)}
                           key={rest.id as string}
-                          className="border-b border-border-light dark:border-border"
+                          className="border-b border-border-light dark:border-border last:border-none"
                         >
                           <TagsSearchCard
                             key={rest.id as string}
@@ -302,9 +299,8 @@ const SearchBody = React.forwardRef<
                         </div>
                       ) : type === "USERS" ? (
                         <div
-                          // onClick={() => setOpened(false)}
                           key={rest.id as string}
-                          className="border-b border-border-light dark:border-border"
+                          className="border-b border-border-light dark:border-border last:border-none"
                         >
                           <UserSearchCard
                             key={rest.id as string}

@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import slugify from "slugify";
 import Editor from "~/component/editor";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
-
 import { NewArticleModal } from "~/component/popup";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
@@ -33,7 +32,24 @@ export interface ArticleData {
   seoOgImageKey: string | null;
   disabledComments: boolean;
 }
+
+
 export type ArticleDataNoContent = Omit<ArticleData, "content">
+
+export const defaultArticleData: ArticleDataNoContent = {
+  title: "",
+  subtitle: "",
+  cover_image: null,
+  series: null,
+  tags: [],
+  cover_image_key: null,
+  slug: "",
+  seoTitle: "",
+  seoDescription: "",
+  seoOgImage: null,
+  seoOgImageKey: null,
+  disabledComments: false,
+};
 
 const NewArticleBody: FC<{
   publishModal: boolean;
@@ -55,20 +71,9 @@ const NewArticleBody: FC<{
 
     const [data, setData] = useLocalStorage<ArticleDataNoContent & {
       prev_slug?: string | null;
-    }>("articleData", {
-      title: "",
-      subtitle: "",
-      cover_image: null,
-      series: null,
-      tags: [],
-      cover_image_key: null,
-      slug: "",
-      seoTitle: "",
-      seoDescription: "",
-      seoOgImage: null,
-      seoOgImageKey: null,
-      disabledComments: false,
-    });
+    }>("articleData", defaultArticleData);
+
+    console.log({ data })
 
     const { data: articleData, error } = api.posts.getArticleToEdit.useQuery({
       slug: (router?.query?.params as string[])[1] as string,
@@ -80,7 +85,9 @@ const NewArticleBody: FC<{
 
     useEffect(() => {
       if (articleData) {
-        setData({ ...articleData, prev_slug: articleData.slug });
+        const { content, ...rest } = articleData;
+        setData({ ...rest, prev_slug: rest.slug });
+        localStorage.setItem("content", JSON.stringify(convertToHTML(content)));
         setDefaultContent(convertToHTML(articleData.content) as DefaultEditorContent);
         setSubTitle(articleData.subtitle || "");
       }
@@ -190,7 +197,7 @@ const NewArticleBody: FC<{
                 onClick={() => void deleteImage("cover_image_Key")}
                 className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
               >
-                <X className="h-5 w-5 fill-gray-700 stroke-none" />
+                <X className="h-5 w-5 stroke-gray-700 fill-none" />
               </button>
 
               <Image
@@ -256,7 +263,6 @@ const NewArticleBody: FC<{
         <NewArticleModal
           publishModal={publishModal}
           setPublishModal={setPublishModal}
-          data={data}
           setData={setData}
           publishing={publishing}
           setPublishing={setPublishing}

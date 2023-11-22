@@ -281,7 +281,7 @@ const MoreOptions = React.forwardRef<
   return (
     <div
       ref={ref}
-      className="absolute -right-full top-full mt-2 min-w-[190px] rounded-md border border-border-light bg-white shadow-md dark:border-border dark:bg-primary md:-left-2"
+      className="absolute -right-full bottom-full mt-2 min-w-[190px] rounded-md border border-border-light bg-white shadow-md dark:border-border dark:bg-primary md:-left-2"
     >
       <ul className="py-2">
         {user ? userActions.map((option, index) => (

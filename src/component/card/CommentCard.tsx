@@ -56,6 +56,7 @@ export const CommentCard: FC<Props> = ({
 }) => {
   const { data: user } = useSession();
   const { mutate: likeComment } = api.comments.likeComment.useMutation();
+  const [showReply, setShowReply] = useState(false);
   const [replyText, setReplyText] = useState("")
 
   const [like, setLike] = useState({
@@ -172,6 +173,7 @@ export const CommentCard: FC<Props> = ({
           handleLike={handleLike}
           like={like}
           comment={comment}
+          setShowReply={setShowReply}
           replyComment={replyComment}
         />
         {replyingUserDetails && replyingUserDetails.id === comment.id && (
@@ -187,33 +189,35 @@ export const CommentCard: FC<Props> = ({
         )}
       </div>
 
-      <div>
-        {
-          isLoading && commentState.type === 'ALL' && commentState.parentId === comment.id ? (
-            Array(2).fill("").map((_, i) => (
-              <CommentLoading key={i} />
-            ))
-          ) : comment.replies?.map((reply) =>
-            <div className={`relative px-4 pt-6`}
-              key={reply.id}
-            >
-              <CommentCard
-                commentFunc={commentFunc}
-                comment={reply}
-                type="REPLY"
-                setReplyingUserDetails={setReplyingUserDetails}
-                replyingUserDetails={replyingUserDetails}
-                replyComment={replyComment}
-                publishing={publishing}
-                authorUsername={authorUsername}
-                isLoading={isLoading}
-                commentState={commentState}
-                setCommentState={setCommentState}
-              />
-            </div>
-            // )
-          )}
-      </div>
+      {showReply && (
+
+        <div>
+          {
+            isLoading && commentState.type === 'ALL' && commentState.parentId === comment.id ? (
+              Array(2).fill("").map((_, i) => (
+                <CommentLoading key={i} />
+              ))
+            ) : comment.replies?.map((reply) =>
+              <div className={`relative px-4 pt-6`}
+                key={reply.id}
+              >
+                <CommentCard
+                  commentFunc={commentFunc}
+                  comment={reply}
+                  type="REPLY"
+                  setReplyingUserDetails={setReplyingUserDetails}
+                  replyingUserDetails={replyingUserDetails}
+                  replyComment={replyComment}
+                  publishing={publishing}
+                  authorUsername={authorUsername}
+                  isLoading={isLoading}
+                  commentState={commentState}
+                  setCommentState={setCommentState}
+                />
+              </div>
+            )}
+        </div>
+      )}
     </div>
   );
 };

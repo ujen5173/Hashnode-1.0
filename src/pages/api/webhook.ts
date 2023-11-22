@@ -2,7 +2,8 @@ import { buffer } from "micro";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type Stripe from "stripe";
 import { env } from "~/env.mjs";
-import db from "~/server/db";
+import { db } from "~/server/db";
+
 import { stripeEvents } from "~/server/db/schema";
 import { stripe } from "../../server/stripe/client";
 import {
@@ -32,7 +33,6 @@ export default async function handler(
 
     try {
       event = stripe.webhooks.constructEvent(buf, sig as string, webhookSecret);
-
       // Handle the event
       switch (event.type) {
         case "invoice.paid":

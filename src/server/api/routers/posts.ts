@@ -12,7 +12,7 @@ import {
   lte,
   or,
 } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { Session } from "next-auth";
 import readingTime from "reading-time";
 import slugify from "slugify";
@@ -33,6 +33,7 @@ import {
   handles,
   likesToArticles,
   likesToComment,
+  newArticleSchema,
   notifications,
   readersToArticles,
   series,
@@ -55,7 +56,7 @@ import {
 const getArticlesWithUserFollowingimages = async (
   ctx: {
     session: Session | null;
-    db: NeonHttpDatabase<typeof schemaFile>;
+    db: PostgresJsDatabase<typeof schemaFile>;
   },
   articles: ArticleCardWithComments[]
 ) => {
@@ -620,29 +621,13 @@ export const postsRouter = createTRPCRouter({
 
   new: protectedProcedure
     .input(
-      z.object({
-        title: z
-          .string()
-          .min(5, "Title should be atleset of 5 characters")
-          .trim(),
-        subtitle: z.string().trim(),
-        content: z
-          .string()
-          .min(25, "Content should be atleast of 25 characters")
-          .trim(),
-        cover_image: z.string().optional().nullable(),
-        cover_image_Key: z.string().optional(),
-        tags: z.array(z.string().trim()).default([]),
-        slug: z.string().trim(),
-        series: z.string().optional().nullable(),
-        seoTitle: z.string().trim(),
-        seoDescription: z.string().trim(),
-        seoOgImage: z.string().trim().optional().nullable(),
-        disabledComments: z.boolean().default(false).optional(),
-
-        edit: z.boolean(), //? article is being edited or created
-        prev_slug: z.string().optional().nullable(),
-      })
+      newArticleSchema.merge(
+        z.object({
+          edit: z.boolean(), //? article is being edited or created
+          prev_slug: z.string().optional().nullable(),
+          tags: z.array(z.string().trim()).default([]),
+        })
+      )
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -714,7 +699,6 @@ export const postsRouter = createTRPCRouter({
         }
 
         const { edit, tags: _, ...rest } = input;
-
         if (edit && existingArticle) {
           delete rest.prev_slug;
           // editing an article
@@ -732,7 +716,6 @@ export const postsRouter = createTRPCRouter({
               ...rest,
               read_time: Math.ceil(readingTime(input.content).minutes) || 1,
               seoTitle: input.seoTitle || input.title,
-              seriesId: input.series,
               seoDescription:
                 input.seoDescription ||
                 input.subtitle ||
@@ -742,7 +725,7 @@ export const postsRouter = createTRPCRouter({
             .where(and(eq(articles.id, existingArticle.id)))
             .returning({
               id: articles.id,
-              userId: articles.userId,
+              slug: articles.slug,
             });
 
           if (!updatedArticle) {
@@ -781,21 +764,13 @@ export const postsRouter = createTRPCRouter({
               );
           }
 
-          const result = await ctx.db.query.articles.findFirst({
-            where: eq(articles.id, updatedArticle.id),
-            columns: {
-              slug: true,
-            },
-          });
-
           return {
             success: true,
-            redirectLink: `/u/@${ctx.session.user.username}/${
-              result?.slug as string
-            }`,
+            redirectLink: `/u/@${ctx.session.user.username}/${updatedArticle.slug}`,
           };
         } else {
           // creating article
+
           const [newArticle] = await ctx.db
             .insert(articles)
             .values({
@@ -803,7 +778,6 @@ export const postsRouter = createTRPCRouter({
               userId: ctx.session.user.id,
               read_time: Math.ceil(readingTime(input.content).minutes) || 1,
               slug: input.slug,
-              seriesId: input.series,
               seoTitle: input.seoTitle || input.title,
               seoDescription:
                 input.seoDescription ||
@@ -1574,7 +1548,6 @@ export const postsRouter = createTRPCRouter({
           posts: article,
         };
       } catch (err) {
-        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong, try again later",

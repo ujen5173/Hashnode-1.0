@@ -4,7 +4,8 @@ import { getServerSession, type Session } from "next-auth";
 import { Aside, Header, MainTagBody, RightAsideMain } from "~/component";
 import TagSEO from "~/SEO/Tag.seo";
 import { authOptions } from "~/server/auth";
-import db from "~/server/db";
+import { db } from "~/server/db";
+
 import { tags, tagsToUsers } from "~/server/db/schema";
 import type { DetailedTag } from "~/types";
 

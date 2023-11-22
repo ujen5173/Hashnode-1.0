@@ -14,7 +14,7 @@ import slugify from "slugify";
 import { env } from "~/env.mjs";
 import { type BlogSocial } from "~/pages/dev/[username]";
 import { slugSetting } from "~/utils/constants";
-import db from "./db";
+import { db } from "./db";
 import {
   accounts,
   articles,
@@ -33,7 +33,6 @@ import {
   tagsToArticles,
   tagsToUsers,
   users,
-  verificationToken,
   verificationTokens,
 } from "./db/schema";
 
@@ -80,8 +79,6 @@ const pgTableHijack: PgTableFn = (name, columns, extraConfig) => {
       return accounts;
     case "session":
       return sessions;
-    case "verificationToken":
-      return verificationTokens;
     case "handles":
       return handles;
     case "customTabs":
@@ -108,8 +105,8 @@ const pgTableHijack: PgTableFn = (name, columns, extraConfig) => {
       return series;
     case "notifications":
       return notifications;
-    case "verificationToken":
-      return verificationToken;
+    case "verificationTokens":
+      return verificationTokens;
     default:
       return pgTable(name, columns, extraConfig);
   }

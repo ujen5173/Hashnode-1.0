@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {  FilterTimeOption } from "~/hooks/useFilter";
+import { FilterTimeOption } from "~/hooks/useFilter";
 import { api } from "~/utils/api";
 import { BookmarkLoading } from "../loading";
 import ManageData from "./ManageData";
@@ -11,6 +11,7 @@ const Trending = () => {
       limit: 4,
     },
     {
+      retry: 0,
       refetchOnWindowFocus: false,
     }
   );
