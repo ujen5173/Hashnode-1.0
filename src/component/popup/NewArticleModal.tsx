@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useState, type FC } from "react";
+import React, { useEffect, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 
@@ -10,46 +10,42 @@ import { X } from "lucide-react";
 import { type ArticleCard, type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
 import { formattedContent } from "~/utils/miniFunctions";
-import { defaultArticleData, type ArticleData, type ArticleDataNoContent } from "../macroComponent/New/NewArticleBody";
+import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 import { SelectSeries, SelectTags } from "../miniComponent";
 
 interface Props {
   publishModal: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setData: (value: ArticleDataNoContent) => void;
+
+  data: ArticleData;
+  setData: React.Dispatch<React.SetStateAction<ArticleData>>;
+
   publishing: boolean;
   setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
 
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
 
-  subtitle: string
+  requestedTags: string[];
+  setRequestedTags: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const NewArticleModal: FC<Props> = ({
   publishModal,
   setPublishModal,
+  data,
   setData,
   publishing,
   setPublishing,
   query,
   setQuery,
-  subtitle,
+  requestedTags,
+  setRequestedTags,
 }) => {
   const { data: user } = useSession()
-  const [articleData, setArticleData] = useState<ArticleDataNoContent>(defaultArticleData);
-
-  useEffect(() => {
-    const articleDataString = localStorage.getItem("articleData");
-    const articleData = JSON.parse(articleDataString ?? JSON.stringify(defaultArticleData)) as ArticleDataNoContent;
-    console.log({ articleData })
-    setArticleData(articleData);
-    setData(articleData);
-  }, []);
 
   const router = useRouter();
 
-  const [requestedTags, setRequestedTags] = React.useState<string[]>([]);
   const [selectedSeries, setSelectedSeries] = React.useState<{
     title: string,
     id: string
@@ -87,7 +83,7 @@ const NewArticleModal: FC<Props> = ({
     if (storedData) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { tags, ...res } = JSON.parse(storedData) as ArticleData;
-      setData({ ...articleData, ...res });
+      setData(prev => ({ ...prev, ...res }));
 
       if (tags && tags.length === 0) return;
 
@@ -96,10 +92,10 @@ const NewArticleModal: FC<Props> = ({
 
         if (!tagsData) return;
 
-        setData({
-          ...articleData,
-          tags: [...articleData.tags, ...tagsData.map((e) => e.name)],
-        });
+        setData(prev => ({
+          ...prev,
+          tags: [...prev.tags, ...tagsData.map((e) => e.name)],
+        }));
       };
 
       void checkTags();
@@ -114,45 +110,47 @@ const NewArticleModal: FC<Props> = ({
       const { data: tagsData } = await refetch();
 
       if (!tagsData) return;
-      setData({
-        ...articleData,
-        tags: [...articleData.tags, ...tagsData.map((e) => e.name)],
-      });
+      setData(prev => ({
+        ...prev,
+        tags: [...prev.tags, ...tagsData.map((e) => e.name)],
+      }));
     })();
   }, [requestedTags]);
 
   const { mutateAsync } = api.posts.new.useMutation();
 
   const handlePublish = async () => {
-    const content = localStorage.getItem("content");
+    const { content, title } = data;
 
     if (!content) {
       toast.error("Please fill up the content");
       return;
     }
     const contentResponse = formattedContent(
-      JSON.parse(content) as DefaultEditorContent
+      JSON.parse(JSON.stringify(content)) as DefaultEditorContent
     );
 
-    if (!articleData.title || !contentResponse) {
+    if (!title || !contentResponse) {
       toast.error("Please fill up the title and content");
       return;
     }
 
-    if (articleData.title.length < 5) {
+    if (title.length < 5) {
       toast.error("Title should be at least 5 characters long");
       return;
     }
 
     setPublishing(true);
     try {
-      const res = await mutateAsync({ ...articleData, subtitle, seriesId: selectedSeries?.id, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
+      const res = await mutateAsync({ ...data, seriesId: selectedSeries?.id, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
       if (res.success && res.redirectLink) {
         setPublishModal(false);
-        localStorage.removeItem("content");
-        localStorage.removeItem("articleData");
         await router.push(res.redirectLink);
-        toast.success("Article published successfully");
+        if (router?.query?.params?.includes("edit")) {
+          toast.success("Article updated successfully");
+        } else {
+          toast.success("Article published successfully");
+        }
       }
     } catch (error) {
       if (error instanceof TRPCClientError) {
@@ -230,10 +228,10 @@ const NewArticleModal: FC<Props> = ({
                   placeholder="article-slug"
                   id="slug"
                   name="slug"
-                  value={articleData.slug}
+                  value={data.slug}
                   onChange={(e) => {
-                    setData({
-                      ...articleData,
+                    setData(prev => ({
+                      ...prev,
                       slug: slugify(e.target.value, {
                         lower: true,
                         replacement: "-",
@@ -241,7 +239,7 @@ const NewArticleModal: FC<Props> = ({
                         trim: false,
                         locale: "en",
                       }),
-                    });
+                    }));
                   }} />
               </div>
             </div>
@@ -256,14 +254,14 @@ const NewArticleModal: FC<Props> = ({
 
               <SelectTags
                 setData={setData}
-                tags={articleData.tags}
+                tags={data.tags}
                 query={query}
-                data={articleData}
+                data={data}
                 setQuery={setQuery}
               />
 
               <div className="mt-2 flex flex-wrap gap-2">
-                {articleData.tags.map((tag, index) => (
+                {data.tags.map((tag, index) => (
                   <div
                     className="flex items-center gap-2 rounded-md border border-border-light bg-light-bg px-2 py-1 text-lg text-gray-500 dark:border-border dark:bg-primary-light dark:text-text-primary"
                     key={index}
@@ -272,10 +270,10 @@ const NewArticleModal: FC<Props> = ({
 
                     <div
                       onClick={() => {
-                        setData({
-                          ...articleData,
-                          tags: articleData.tags.filter((t) => t !== tag),
-                        });
+                        setData(prev => ({
+                          ...prev,
+                          tags: prev.tags.filter((t) => t !== tag),
+                        }));
                       }}
                     >
                       <X className="h-5 w-5 fill-red" />
@@ -293,7 +291,7 @@ const NewArticleModal: FC<Props> = ({
                 Select Article Series
               </label>
 
-              <SelectSeries setSelectedSeries={setSelectedSeries} series={articleData.series} />
+              <SelectSeries setSelectedSeries={setSelectedSeries} series={data.series} />
 
               {selectedSeries && (
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -303,7 +301,7 @@ const NewArticleModal: FC<Props> = ({
                     <button
                       onClick={() => {
                         setData({
-                          ...articleData,
+                          ...data,
                           series: null,
                         });
                       }}
@@ -338,10 +336,10 @@ const NewArticleModal: FC<Props> = ({
                 placeholder="Enter meta title"
                 id="seoTitle"
                 name="seoTitle"
-                value={articleData.seoTitle}
+                value={data.seoTitle}
                 onChange={(e) => {
                   const { name, value } = e.target;
-                  setData({ ...articleData, [name]: value });
+                  setData({ ...data, [name]: value });
                 }}
               />
             </div>
@@ -366,10 +364,10 @@ const NewArticleModal: FC<Props> = ({
                 placeholder="Enter meta description..."
                 id="seoDescription"
                 name="seoDescription"
-                value={articleData.seoDescription}
+                value={data.seoDescription}
                 onChange={(e) => {
                   const { name, value } = e.target;
-                  setData({ ...articleData, [name]: value });
+                  setData({ ...data, [name]: value });
                 }}
               />
             </div>
@@ -394,7 +392,7 @@ const NewArticleModal: FC<Props> = ({
                     const state = e.target.checked;
 
                     setData({
-                      ...articleData,
+                      ...data,
                       disabledComments: state,
                     });
                   }}

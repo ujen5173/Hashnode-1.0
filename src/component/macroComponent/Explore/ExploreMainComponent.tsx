@@ -22,7 +22,7 @@ const ExploreMainComponent = () => {
   const { data } = useSession();
   const { timeFilter } = useContext(C) as ContextValue;
 
-  const trendingTags = api.tags.getTredingTags.useQuery(
+  const trendingTags = api.tags.getTrendingTags.useQuery(
     {
       limit: 10,
     },

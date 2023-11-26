@@ -10,7 +10,6 @@ import { authOptions } from "~/server/auth";
 const NewArticle: NextPage = () => {
   const [publishModal, setPublishModal] = useState<boolean>(false);
   const [publishing, setPublishing] = useState<boolean>(false); // upload loading
-  const [savedState, setSavedState] = useState<boolean>(true);
 
 
   return (
@@ -19,14 +18,12 @@ const NewArticle: NextPage = () => {
       <NewArticleHeader
         setPublishModal={setPublishModal}
         publishing={publishing}
-        savedState={savedState}
       />
       <NewArticleBody
         publishModal={publishModal}
         setPublishModal={setPublishModal}
         publishing={publishing}
         setPublishing={setPublishing}
-        setSavedState={setSavedState}
       />
     </>
   );

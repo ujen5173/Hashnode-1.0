@@ -1,37 +1,20 @@
 import { Editor as Ed } from "@tiptap/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useLayoutEffect, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import useLocalStorage from "~/hooks/useLocalStorage";
 import { type DefaultEditorContent } from "~/types";
+import { ArticleData } from "../macroComponent/New/NewArticleBody";
 import { EditorBubbleMenu } from "./components";
 import { TiptapExtensions } from "./extensions";
 import { TiptapEditorProps } from "./props";
 
 const Editor: FC<{
   minHeight?: string;
-  contentName?: string;
-  defaultContent?: DefaultEditorContent | null;
-  setSavedState: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ minHeight = "min-h-[500px]", defaultContent, contentName = "content", setSavedState }) => {
-  const [content, setContent] = useLocalStorage<DefaultEditorContent>(
-    "content",
-    defaultContent || {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            {
-              type: "text",
-              text: "",
-            },
-          ],
-        },
-      ],
-    }
-  );
+  data: ArticleData;
+  editData?: boolean;
+  setData: React.Dispatch<React.SetStateAction<ArticleData>>;
+}> = ({ minHeight = "min-h-[500px]", editData = false, data, setData }) => {
 
   const [hydrated, setHydrated] = useState(false);
 
@@ -50,7 +33,6 @@ const Editor: FC<{
     ],
     editorProps: TiptapEditorProps,
     onUpdate: (e) => {
-      setSavedState(false);
       debouncedUpdates(e)
     },
     autofocus: "end",
@@ -58,28 +40,25 @@ const Editor: FC<{
 
   const debouncedUpdates = useDebouncedCallback(({ editor }: { editor: Ed }) => {
     const json = editor.getJSON() as DefaultEditorContent;
-    setSavedState(false);
-    setContent(json);
-    // Simulate a delay in saving.
-    setTimeout(() => {
-      setSavedState(true);
-    }, 500);
+    setData(prev => ({ ...prev, content: json }));
   }, 750);
+
 
   useEffect(() => {
     const editArticle = window.location.pathname.includes("edit");
-    if (editArticle) {
-      if (editor && defaultContent && content && !hydrated) {
-        editor.commands.setContent(defaultContent);
-        setHydrated(true);
+    if (editor) {
+      if (editArticle) {
+        editor.commands.setContent(data.content);
       }
-    } else {
-      if (editor && content && !hydrated) {
-        editor.commands.setContent(content);
+      if (!hydrated) {
         setHydrated(true);
       }
     }
-  }, [editor, content, hydrated, defaultContent]);
+  }, [editor, hydrated, editData]);
+
+  useLayoutEffect(() => {
+    setHydrated(false);
+  }, [editData]);
 
   return (
     <div

@@ -131,22 +131,8 @@ export const commentsRouter = createTRPCRouter({
 
       // Notify the author of the article
       if (input.type === "COMMENT") {
-        await ctx.db.insert(notifications).values({
-          type: "COMMENT",
-          fromId: ctx.session.user.id,
-          userId: article.user.id,
-          title: article.title,
-          body:
-            input.content.length > 50
-              ? input.content.slice(0, 50) + "..."
-              : input.content,
-          isRead: false,
-          articleAuthor: article.user.username,
-          slug: `${article.slug}?commentId=${newComment.id}`,
-        });
-      } else if (input.type === "REPLY" && parentComment) {
-        await ctx.db.insert(notifications).values([
-          {
+        if (ctx.session.user.id !== article.user.id) {
+          await ctx.db.insert(notifications).values({
             type: "COMMENT",
             fromId: ctx.session.user.id,
             userId: article.user.id,
@@ -158,8 +144,11 @@ export const commentsRouter = createTRPCRouter({
             isRead: false,
             articleAuthor: article.user.username,
             slug: `${article.slug}?commentId=${newComment.id}`,
-          },
-          {
+          });
+        }
+      } else if (input.type === "REPLY" && parentComment) {
+        if (ctx.session.user.id !== parentComment.user.id) {
+          await ctx.db.insert(notifications).values({
             type: "COMMENT",
             fromId: ctx.session.user.id,
             userId: parentComment.user.id,
@@ -171,8 +160,8 @@ export const commentsRouter = createTRPCRouter({
             articleAuthor: article.user.username,
             isRead: false,
             slug: `${article.slug}?commentId=${newComment.id}`,
-          },
-        ]);
+          });
+        }
       }
 
       return newComment;

@@ -1,20 +1,17 @@
-import { ChevronLeft, Sun, UploadCloud } from "lucide-react";
+import { ChevronLeft, Sun } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useContext, type FC } from "react";
 import { LogonoText } from "~/svgs";
 
-import LoadingSpinner from "~/svgs/LoadingSpinner";
 import { C, type ContextValue } from "~/utils/context";
 
 interface Props {
   publishing: boolean;
-  savedState: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const NewArticleHeader: FC<Props> = ({
-  savedState,
   setPublishModal,
   publishing,
 }) => {
@@ -50,20 +47,6 @@ const NewArticleHeader: FC<Props> = ({
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-4 border-r border-border-light px-4 dark:border-border">
-            <div className="hidden items-center gap-2 sm:flex">
-              {savedState ? (
-                <div className="flex items-center justify-center gap-2">
-                  <UploadCloud className="h-6 w-6 fill-none stroke-green" />
-                  <span className="text-base text-green">Saved</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-2">
-                  <LoadingSpinner className="h-6 w-6 fill-none stroke-gray-500" />
-                  <span className="text-base text-gray-500">Saving...</span>
-                </div>
-              )}
-            </div>
-
             <button onClick={handleTheme} className="btn-icon-large flex">
               <Sun className="h-6 w-6 stroke-gray-700 dark:stroke-text-secondary" />
             </button>

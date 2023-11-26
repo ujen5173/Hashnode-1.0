@@ -1,7 +1,6 @@
 // TODO: REMOVE SERIES POPUP WHEN CLICKED OUTSIDE. THIS ISSUE IS ALSO IN TAGS SECTION.
 
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import React, { useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -126,13 +125,15 @@ const SelectSeries: FC<{
                 No series found
               </p>
 
-              <Link
+              <a
+                rel="noopener noreferrer"
                 href={`/${user?.user.id as string}/dashboard/series/create`}
+                target="_blank"
               >
                 <button aria-label="Create New Tag" className="btn-filled">
                   Create One
                 </button>
-              </Link>
+              </a>
             </div>
           )}
         </div>

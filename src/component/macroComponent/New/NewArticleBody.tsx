@@ -1,25 +1,18 @@
-import { useClickOutside } from "@mantine/hooks";
-import { TRPCError } from "@trpc/server";
-import { FileImage, X } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from 'next/router';
 import React, { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 import Editor from "~/component/editor";
-import { ImagePlaceholder, Input } from "~/component/miniComponent";
-import { NewArticleModal } from "~/component/popup";
-import useLocalStorage from "~/hooks/useLocalStorage";
-import LoadingSpinner from "~/svgs/LoadingSpinner";
+import { Input } from "~/component/miniComponent";
+import { NewArticleModal } from '~/component/popup';
 import { type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
 import { slugSetting } from "~/utils/constants";
-import { convertToHTML, imageToBlogHandler } from "~/utils/miniFunctions";
-import { useUploadThing } from "~/utils/uploadthing";
+import { convertToHTML } from "~/utils/miniFunctions";
 
 export interface ArticleData {
   title: string;
-  subtitle: string | null;
+  subtitle: string;
   content: DefaultEditorContent;
   cover_image: string | null;
   cover_image_key: string | null;
@@ -33,107 +26,104 @@ export interface ArticleData {
   disabledComments: boolean;
 }
 
-
-export type ArticleDataNoContent = Omit<ArticleData, "content">
-
-export const defaultArticleData: ArticleDataNoContent = {
+export const defaultArticleData = {
   title: "",
   subtitle: "",
+  content: {
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: "",
+          },
+        ],
+      },
+    ],
+  },
   cover_image: null,
-  series: null,
-  tags: [],
   cover_image_key: null,
+  tags: [],
   slug: "",
+  series: null,
   seoTitle: "",
   seoDescription: "",
   seoOgImage: null,
   seoOgImageKey: null,
   disabledComments: false,
-};
+}
 
 const NewArticleBody: FC<{
   publishModal: boolean;
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
   publishing: boolean;
   setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
-  setSavedState: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({
   setPublishModal,
   publishModal,
   publishing,
   setPublishing,
-  setSavedState,
 }) => {
-    const [query, setQuery] = useState("");
-    const [subtitle, setSubTitle] = useState<string>("");
-    const [defaultContent, setDefaultContent] = useState<DefaultEditorContent | null>(null);
     const router = useRouter();
 
-    const [data, setData] = useLocalStorage<ArticleDataNoContent & {
-      prev_slug?: string | null;
-    }>("articleData", defaultArticleData);
+    const [hydrate, setHydrate] = useState(false);
+    const [edit, setEdit] = useState(false);
+    const [query, setQuery] = useState("");
 
-    console.log({ data })
+    const [data, setData] = useState<ArticleData>(defaultArticleData);
 
-    const { data: articleData, error } = api.posts.getArticleToEdit.useQuery({
-      slug: (router?.query?.params as string[])[1] as string,
-    }, {
-      enabled: !!(router?.query?.params?.includes("edit")),
-      refetchOnWindowFocus: false,
-      retry: 0
-    });
-
-    useEffect(() => {
-      if (articleData) {
-        const { content, ...rest } = articleData;
-        setData({ ...rest, prev_slug: rest.slug });
-        localStorage.setItem("content", JSON.stringify(convertToHTML(content)));
-        setDefaultContent(convertToHTML(articleData.content) as DefaultEditorContent);
-        setSubTitle(articleData.subtitle || "");
+    const { data: editData, isSuccess, error } = api.posts.getArticleToEdit.useQuery(
+      { slug: router?.query?.params?.[1] as string },
+      {
+        enabled: !!(hydrate && edit),
+        retry: 0,
+        refetchOnWindowFocus: false,
       }
-    }, [articleData]);
+    );
 
     useEffect(() => {
       if (error) {
-        if (error instanceof TRPCError) {
-          toast.error(error.message)
-          void router.push("/")
-        } else {
-          toast.error("Something went wrong getting article")
-          void router.push("/")
-        }
+        toast.error(error.message);
       }
-    }, [error]);
 
-
-    const [fileModal, setFileModal] = React.useState(false); // open and close file upload modal
-    const ref = useClickOutside<HTMLDivElement>(() => setFileModal(false));
-
-    const { startUpload, isUploading } = useUploadThing("imageUploader");
-
-    const deleteImage = (key: string | undefined): void => {
-      if (!key) return;
-      //! Missing UPLOADTHING_SECRET env variable bug occured!!!
-      // await utapi.deleteFiles(key);
-      if (key === "seoOgImageKey") {
-        setData({
-          ...data,
-          seoOgImage: null,
-          seoOgImageKey: null,
-        });
-      } else {
-        setData({
-          ...data,
-          cover_image: null,
-          cover_image_key: null,
-        });
+      if (editData) {
+        const { subtitle, ...rest } = editData;
+        setData({ ...rest, subtitle: subtitle || "", content: convertToHTML(editData.content) as DefaultEditorContent });
       }
-    };
+    }, [error, editData]);
 
+    const [requestedTags, setRequestedTags] = useState<string[]>([]);
+
+    const { data: tagsData } = api.tags.getSingle.useQuery({
+      slug: requestedTags,
+    }, {
+      enabled: !!requestedTags.length,
+      retry: 0,
+      refetchOnWindowFocus: false,
+    });
+
+    useEffect(() => {
+      if (tagsData) {
+        setData({ ...data, tags: tagsData.map((tag) => tag.name) });
+      }
+    }, [tagsData]);
+
+    useEffect(() => {
+      if (router?.query.params?.includes("edit")) {
+        setEdit(true);
+      }
+
+      setHydrate(true);
+      const tagsFromUrl = new URLSearchParams(window.location.search).get("tag");
+      if (tagsFromUrl) setRequestedTags(tagsFromUrl.split(" "));
+
+    }, [router]);
     return (
       <main className="relative min-h-[100dvh] w-full overflow-hidden border-b border-border-light bg-white dark:border-border dark:bg-primary">
         <div className="mx-auto w-full max-w-[1000px] px-4 py-6">
-          <div className="relative mb-5 flex items-center gap-2">
+          {/* <div className="relative mb-5 flex items-center gap-2">
             {isUploading ? (
               <span className="flex items-center gap-2 px-4 py-2">
                 <LoadingSpinner className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
@@ -209,7 +199,7 @@ const NewArticleBody: FC<{
                   } max-h-[30rem] w-full rounded-lg object-cover`}
               />
             </div>
-          )}
+          )} */}
 
           <section className="px-2">
             <div className="relative">
@@ -234,9 +224,9 @@ const NewArticleBody: FC<{
               />
             </div>
             <Input
-              value={subtitle}
+              value={data.subtitle}
               onChange={(e) => {
-                setSubTitle(e.target.value);
+                setData({ ...data, subtitle: e.target.value });
               }}
               placeholder="Article Subtitle (optional)"
               input_type="text"
@@ -248,7 +238,7 @@ const NewArticleBody: FC<{
             />
 
             <div className="relative">
-              <Editor setSavedState={setSavedState} defaultContent={defaultContent} contentName="content" />
+              <Editor data={data} setData={setData} editData={isSuccess} />
             </div>
           </section>
         </div>
@@ -263,12 +253,14 @@ const NewArticleBody: FC<{
         <NewArticleModal
           publishModal={publishModal}
           setPublishModal={setPublishModal}
+          data={data}
           setData={setData}
           publishing={publishing}
           setPublishing={setPublishing}
           query={query}
           setQuery={setQuery}
-          subtitle={subtitle}
+          requestedTags={requestedTags}
+          setRequestedTags={setRequestedTags}
         />
       </main>
     );

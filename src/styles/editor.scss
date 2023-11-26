@@ -66,8 +66,9 @@
   }
 
   code {
-    background: #1e293b;
-    color: #e5e7eb;
+    background: #e5e5e5;
+    color: #000000;
+    border: 1px solid #c9c9c9;
     padding: 0.2rem 0.5rem;
     border-radius: 7px;
     font-weight: 400;
@@ -76,17 +77,18 @@
   }
 
   pre {
-    background: #1e293b;
-    color: #e5e7eb;
+    background: #e5e5e5;
+    color: #000000;
+    border: 1px solid #c9c9c9;
     border-radius: 10px;
-    border: 1px solid #1f2937;
     margin: 32px 0;
     padding: 20px;
     overflow: auto;
     width: 100%;
     code {
-      background: transparent !important;
-      color: #e5e7eb;
+      background: #e5e5e5;
+      color: #000000;
+      border: none !important;
       margin: 0 !important;
       padding: 0 !important;
       * {
@@ -173,13 +175,17 @@ body.dark .ProseMirror {
   code {
     background: #1e293b;
     color: #e5e7eb;
+    border: 1px solid #3b4657;
   }
 
   pre {
     background: #1e293b;
+    border: 1px solid #3b4657;
+
     color: #e5e7eb;
     code {
       background: transparent !important;
+      border: none !important;
     }
   }
 }

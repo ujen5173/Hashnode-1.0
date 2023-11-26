@@ -2,11 +2,11 @@ import { TRPCError } from "@trpc/server";
 import { and, desc, eq, gt, ilike, inArray, or } from "drizzle-orm";
 import slugify from "slugify";
 import { z } from "zod";
+import { FILTER_TIME_OPTIONS } from "~/hooks/useFilter";
 import { tags, tagsToUsers, users } from "~/server/db/schema";
 import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
-import { FILTER_TIME_OPTIONS } from "~/hooks/useFilter";
 
 export const tagsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -150,7 +150,7 @@ export const tagsRouter = createTRPCRouter({
       }
     }),
 
-  getTredingTags: publicProcedure
+  getTrendingTags: publicProcedure
     .input(
       z
         .object({
@@ -213,7 +213,9 @@ export const tagsRouter = createTRPCRouter({
                       ),
               };
             });
-            return result;
+            return result
+              .filter((e) => e.articles.length > 0)
+              .sort((a, b) => b.articles.length - a.articles.length);
           });
 
         const tagData = res.map((tag) => {

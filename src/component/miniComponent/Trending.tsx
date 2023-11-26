@@ -38,6 +38,7 @@ const Trending = () => {
         <ManageData
           loading={<BookmarkLoading />}
           type="MINI_ARTICLES"
+          error={articlesData?.posts?.length === 0 ? "No Trending Articles" : null}
           articleData={{ isLoading, data: articlesData?.posts }}
         />
       </div>

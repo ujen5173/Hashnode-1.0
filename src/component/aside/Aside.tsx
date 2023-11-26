@@ -11,7 +11,7 @@ import { Divider } from "../miniComponent";
 import AsideNavigation from "./AsideNavigation";
 
 const Aside = () => {
-  const { data: tagsData, isLoading } = api.tags.getTredingTags.useQuery(
+  const { data: tagsData, isLoading } = api.tags.getTrendingTags.useQuery(
     {
       variant: FilterTimeOption.any,
       limit: 6,

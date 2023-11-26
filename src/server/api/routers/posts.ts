@@ -699,6 +699,7 @@ export const postsRouter = createTRPCRouter({
         }
 
         const { edit, tags: _, ...rest } = input;
+
         if (edit && existingArticle) {
           delete rest.prev_slug;
           // editing an article
@@ -770,7 +771,6 @@ export const postsRouter = createTRPCRouter({
           };
         } else {
           // creating article
-
           const [newArticle] = await ctx.db
             .insert(articles)
             .values({
@@ -849,6 +849,7 @@ export const postsRouter = createTRPCRouter({
           };
         }
       } catch (err) {
+        console.log({ err });
         if (err instanceof TRPCError) {
           throw err;
         } else {
@@ -1266,6 +1267,8 @@ export const postsRouter = createTRPCRouter({
           .findMany({
             where: and(
               eq(articles.isDeleted, false),
+              gte(articles.readCount, 1),
+              gte(articles.likesCount, 1),
               input?.variant === FILTER_TIME_OPTIONS.any
                 ? undefined
                 : and(
@@ -1275,7 +1278,11 @@ export const postsRouter = createTRPCRouter({
             ),
             limit: limit,
             ...selectArticleCard,
-            orderBy: [desc(articles.likesCount), desc(articles.commentsCount)],
+            orderBy: [
+              desc(articles.likesCount),
+              desc(articles.commentsCount),
+              desc(articles.readCount),
+            ],
           })
           .then((res) =>
             res.map((article) => ({
