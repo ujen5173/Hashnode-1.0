@@ -36,6 +36,7 @@ const SelectSeries: FC<{
     {
       enabled: false,
       refetchOnWindowFocus: false,
+      retry: 0
     }
   );
 

@@ -141,7 +141,7 @@ const SeriesContainer = () => {
     {
       enabled: !!slug,
       refetchOnWindowFocus: false,
-      retry: false,
+      retry: 0,
     }
   );
 

@@ -28,8 +28,8 @@ const ExploreMainComponent = () => {
     },
     {
       refetchOnWindowFocus: false,
-      retry: false,
       enabled: !slug || slug[0] === "tags",
+      retry: 0,
     }
   );
 
@@ -39,8 +39,8 @@ const ExploreMainComponent = () => {
     },
     {
       refetchOnWindowFocus: false,
-      retry: false,
       enabled: !!data && (!slug || slug[0] === "tags-following"),
+      retry: 0,
     }
   );
 
@@ -51,8 +51,8 @@ const ExploreMainComponent = () => {
     },
     {
       refetchOnWindowFocus: false,
-      retry: false,
       enabled: !!data && (!slug || slug[0] === "articles-following"),
+      retry: 0,
     }
   );
 
@@ -63,8 +63,8 @@ const ExploreMainComponent = () => {
     },
     {
       refetchOnWindowFocus: false,
-      retry: false,
       enabled: !slug || slug[0] === "articles",
+      retry: 0,
     }
   );
 

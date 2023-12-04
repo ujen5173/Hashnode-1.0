@@ -50,6 +50,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
     refetchOnWindowFocus: false,
     refetchInterval: 15000, // 15 seconds
     enabled: !!user,
+    retry: 0
   });
 
   const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened

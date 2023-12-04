@@ -16,6 +16,7 @@ const Series = () => {
     },
     {
       enabled: !!user?.user,
+      retry: 0
     }
   );
 

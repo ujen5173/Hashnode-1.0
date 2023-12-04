@@ -14,6 +14,7 @@ const Bookmarks = () => {
     {
       enabled: bookmarks && bookmarks.length > 0,
       refetchOnWindowFocus: false,
+      retry: 0
     }
   );
 

@@ -18,6 +18,7 @@ const Aside = () => {
     },
     {
       refetchOnWindowFocus: false,
+      retry: 0
     }
   );
 

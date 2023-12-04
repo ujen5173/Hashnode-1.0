@@ -12,6 +12,7 @@ const Home: NextPage = () => {
   const { data } = api.users.subscriptionStatus.useQuery(undefined, {
     enabled: !!session,
     refetchOnWindowFocus: false,
+    retry: 0
   });
 
   return (

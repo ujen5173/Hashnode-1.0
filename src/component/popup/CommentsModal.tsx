@@ -48,6 +48,7 @@ const CommentsModal: FC<{
       {
         enabled: !!id,
         refetchOnWindowFocus: false,
+        retry: 0,
       }
     );
 

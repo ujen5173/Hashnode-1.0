@@ -31,6 +31,7 @@ const RightArea: FC = () => {
   const { data, error } = api.notifications.getCount.useQuery(undefined, {
     refetchOnWindowFocus: false,
     enabled: !!user,
+    retry: 0
   });
 
 

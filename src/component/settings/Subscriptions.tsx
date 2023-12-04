@@ -9,7 +9,9 @@ const Subscription = () => {
   const { data: subscriptionStatus } = api.users.subscriptionStatus.useQuery(undefined, {
     enabled: !!session,
     refetchOnWindowFocus: false,
+    retry: 0
   });
+
   const { push } = useRouter();
 
   const handleUpgrade = async () => {

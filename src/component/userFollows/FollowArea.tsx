@@ -16,6 +16,7 @@ const FollowArea = ({ userId }: {
       {
         enabled: router.pathname?.includes("followers"),
         refetchOnWindowFocus: false,
+        retry: 0
       }
     );
 
@@ -27,6 +28,7 @@ const FollowArea = ({ userId }: {
       {
         enabled: router.pathname?.includes("following"),
         refetchOnWindowFocus: false,
+        retry: 0
       }
     );
 
@@ -38,7 +40,7 @@ const FollowArea = ({ userId }: {
     });
   }
 
- 
+
   return (
     <div className="flex-1 py-6">
       {router.pathname.includes("followers") ? (

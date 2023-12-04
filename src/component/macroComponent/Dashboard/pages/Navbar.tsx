@@ -17,6 +17,7 @@ const Navbar = () => {
     {
       enabled: !!user?.user.handle?.handle,
       refetchOnWindowFocus: false,
+      retry: 0
     }
   );
 

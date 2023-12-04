@@ -177,6 +177,7 @@ const SeriesSection: FC<{
     slug: series.slug,
   }, {
     refetchOnWindowFocus: false,
+    retry: 0,
   });
 
   return (

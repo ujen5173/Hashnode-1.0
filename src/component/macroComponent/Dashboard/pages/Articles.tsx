@@ -24,6 +24,7 @@ const Articles = () => {
     {
       enabled: !!user?.user,
       refetchOnWindowFocus: false,
+      retry: 0
     }
   );
 

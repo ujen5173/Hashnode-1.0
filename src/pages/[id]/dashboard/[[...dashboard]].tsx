@@ -194,6 +194,7 @@ const Roadmap = () => {
   const { data: user } = useSession();
   const { data } = api.users.getUserDashboardRoadmapDetails.useQuery(undefined, {
     refetchOnWindowFocus: false,
+    retry: 0
   });
 
 

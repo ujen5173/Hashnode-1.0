@@ -102,6 +102,7 @@ export const NotificationContainer: FC<{
     },
     {
       refetchOnWindowFocus: false,
+      retry: 0
     }
   );
 

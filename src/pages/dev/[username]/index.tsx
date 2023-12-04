@@ -81,6 +81,7 @@ const AuthorBlogs: NextPage<{
       {
         enabled: !!router.query.username,
         refetchOnWindowFocus: false,
+        retry: 0
       }
     );
 

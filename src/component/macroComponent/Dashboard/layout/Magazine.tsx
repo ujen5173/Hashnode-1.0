@@ -32,7 +32,7 @@ const Magazine: FC<LayoutProps> = (({ data, isLoading, author }) => {
               </>
             ) : data.length === 2 ? (
               <>
-                {data?.slice(1, 3).map((article) => (
+                {data?.slice(1, 2).map((article) => (
                   <div className="child-block" key={article.id}>
                     <SimpleArticleCard type="group" article={article} />
                   </div>

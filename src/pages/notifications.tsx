@@ -36,6 +36,7 @@ const Notifications = () => {
     },
     {
       refetchOnWindowFocus: false,
+      retry: 0,
     }
   );
 

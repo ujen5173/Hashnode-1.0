@@ -14,6 +14,7 @@ const BookmarkMainComponent = () => {
     {
       enabled: !!bookmarks.length,
       refetchOnWindowFocus: false,
+      retry: 0,
     }
   );
 

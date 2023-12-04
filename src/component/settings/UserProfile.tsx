@@ -8,7 +8,7 @@ import { BasicInfo, SocialInfo } from '../macroComponent/Settings';
 
 const Settings: FC<{ user: UserDetails }> = ({ user }) => {
   const { mutateAsync, isLoading } = api.users.updateUser.useMutation();
-  
+
   const [data, setData] = useState<UserDetails>(user);
 
   const handleChange = (
@@ -97,7 +97,7 @@ const Settings: FC<{ user: UserDetails }> = ({ user }) => {
       }
       const res = await mutateAsync({
         ...dataWithSocial,
-        skills: dataWithSocial.skills.trim().length > 0 ? dataWithSocial.skills.split(",").map((e) => e.trim()) : [],
+        skills: dataWithSocial.skills.trim().length > 0 ? dataWithSocial.skills.split(",").map((e) => e.trim()).filter(e => e !== "") : [],
         social: dataWithSocial.social,
       });
 

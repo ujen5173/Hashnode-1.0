@@ -1,16 +1,15 @@
+import { Hash } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState, type FC } from "react";
 import { useDebouncedCallback } from "use-debounce";
-
-import { Hash } from "lucide-react";
 import { api } from "~/utils/api";
 import { TagLoading } from "../loading";
-import { type ArticleDataNoContent } from "../macroComponent/New/NewArticleBody";
+import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 
 interface Props {
   tags: string[];
-  data: ArticleDataNoContent;
-  setData: (data: ArticleDataNoContent) => void;
+  data: ArticleData;
+  setData: (data: ArticleData) => void;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -43,6 +42,7 @@ const SelectTags: FC<Props> = ({
     {
       enabled: false,
       refetchOnWindowFocus: false,
+      retry: 0
     }
   );
 
