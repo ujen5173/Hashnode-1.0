@@ -553,6 +553,7 @@ export const postsRouter = createTRPCRouter({
             eq(articles.isDeleted, false)
           ),
           columns: {
+            id: true,
             title: true,
             subtitle: true,
             content: true,
@@ -850,6 +851,62 @@ export const postsRouter = createTRPCRouter({
         }
       } catch (err) {
         console.log({ err });
+        if (err instanceof TRPCError) {
+          throw err;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong, try again later",
+          });
+        }
+      }
+    }),
+
+  disableComments: protectedProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const article = await ctx.db.query.articles.findFirst({
+          where: and(
+            eq(articles.slug, input.slug),
+            eq(articles.isDeleted, false)
+          ),
+          columns: {
+            id: true,
+            userId: true,
+            disabledComments: true,
+          },
+        });
+
+        if (!article) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Article not found",
+          });
+        }
+
+        if (article.userId !== ctx.session.user.id) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You are not authorized to edit this article",
+          });
+        }
+
+        await ctx.db
+          .update(articles)
+          .set({
+            disabledComments: !article.disabledComments,
+          })
+          .where(eq(articles.id, article.id));
+
+        return {
+          success: true,
+        };
+      } catch (err) {
         if (err instanceof TRPCError) {
           throw err;
         } else {

@@ -11,7 +11,6 @@ const NewArticle: NextPage = () => {
   const [publishModal, setPublishModal] = useState<boolean>(false);
   const [publishing, setPublishing] = useState<boolean>(false); // upload loading
 
-
   return (
     <>
       <NewSEO />

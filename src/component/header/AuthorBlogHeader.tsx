@@ -225,7 +225,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                   .filter((e) => e[0] !== "handle" && e[1] !== "")
                   .map((e) => {
                     const iconStyle =
-                      "h-5 w-5 stroke-none fill-gray-500 dark:fill-text-primary";
+                      "h-5 w-5 stroke-gray-500 dark:stroke-text-primary";
                     const social = {
                       twitter: <Twitter className={iconStyle} />,
                       github: <Github className={iconStyle} />,

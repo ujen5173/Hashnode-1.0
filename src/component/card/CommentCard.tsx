@@ -145,7 +145,7 @@ export const CommentCard: FC<Props> = ({
                     fontWeight: "400",
                     letterSpacing: "0.5px"
                   }}>
-                    <span className="px-2 py-1 tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-semibold text-xs text-gray-700 dark:text-text-secondary">PRO</span>
+                    <span className="px-2 py-[1px] tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-semibold text-xs text-gray-700 dark:text-text-secondary">PRO</span>
                   </Tooltip>
                 )
               }

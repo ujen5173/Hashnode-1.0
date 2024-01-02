@@ -47,8 +47,8 @@ const Editor: FC<{
   useEffect(() => {
     const editArticle = window.location.pathname.includes("edit");
     if (editor) {
+      editor.commands.setContent(data.content);
       if (editArticle) {
-        editor.commands.setContent(data.content);
       }
       if (!hydrated) {
         setHydrated(true);

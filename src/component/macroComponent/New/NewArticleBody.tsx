@@ -1,19 +1,26 @@
+import { useClickOutside } from '@mantine/hooks';
+import { FileImage, X } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
+import { utapi } from 'uploadthing/server';
 import Editor from "~/component/editor";
-import { Input } from "~/component/miniComponent";
+import { ImagePlaceholder, Input } from "~/component/miniComponent";
 import { NewArticleModal } from '~/component/popup';
+import { LoadingSpinner } from '~/svgs';
 import { type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
 import { slugSetting } from "~/utils/constants";
-import { convertToHTML } from "~/utils/miniFunctions";
+import { convertToHTML, imageToBlogHandler } from "~/utils/miniFunctions";
+import { useUploadThing } from '~/utils/uploadthing';
 
 export interface ArticleData {
   title: string;
   subtitle: string;
   content: DefaultEditorContent;
+  userId: string | null;
   cover_image: string | null;
   cover_image_key: string | null;
   tags: string[];
@@ -29,6 +36,7 @@ export interface ArticleData {
 export const defaultArticleData = {
   title: "",
   subtitle: "",
+  userId: null,
   content: {
     type: "doc",
     content: [
@@ -71,6 +79,7 @@ const NewArticleBody: FC<{
     const [hydrate, setHydrate] = useState(false);
     const [edit, setEdit] = useState(false);
     const [query, setQuery] = useState("");
+    const [prev_slug, setPrev_slug] = useState<string | null>(null);
 
     const [data, setData] = useState<ArticleData>(defaultArticleData);
 
@@ -90,6 +99,7 @@ const NewArticleBody: FC<{
 
       if (editData) {
         const { subtitle, ...rest } = editData;
+        setPrev_slug(editData.slug)
         setData({ ...rest, subtitle: subtitle || "", content: convertToHTML(editData.content) as DefaultEditorContent });
       }
     }, [error, editData]);
@@ -120,10 +130,35 @@ const NewArticleBody: FC<{
       if (tagsFromUrl) setRequestedTags(tagsFromUrl.split(" "));
 
     }, [router]);
+
+    const [fileModal, setFileModal] = React.useState(false); // open and close file upload modal
+    const ref = useClickOutside<HTMLDivElement>(() => setFileModal(false));
+
+    const { startUpload, isUploading } = useUploadThing("imageUploader");
+
+    const deleteImage = async (key: string | undefined): Promise<void> => {
+      if (!key) return;
+      //! Missing UPLOADTHING_SECRET env variable bug occured!!!
+      await utapi.deleteFiles(key);
+      if (key === "seoOgImageKey") {
+        setData({
+          ...data,
+          seoOgImage: null,
+          seoOgImageKey: null,
+        });
+      } else {
+        setData({
+          ...data,
+          cover_image: null,
+          cover_image_key: null,
+        });
+      }
+    };
+
     return (
       <main className="relative min-h-[100dvh] w-full overflow-hidden border-b border-border-light bg-white dark:border-border dark:bg-primary">
         <div className="mx-auto w-full max-w-[1000px] px-4 py-6">
-          {/* <div className="relative mb-5 flex items-center gap-2">
+          <div className="relative mb-5 flex items-center gap-2">
             {isUploading ? (
               <span className="flex items-center gap-2 px-4 py-2">
                 <LoadingSpinner className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
@@ -170,7 +205,7 @@ const NewArticleBody: FC<{
                         }
                         const newData = {
                           ...data, cover_image: uploaded[0]?.fileUrl || null,
-                          cover_image_Key: uploaded[0]?.fileKey || null,
+                          cover_image_key: uploaded[0]?.fileKey || null,
                         };
                         setData(newData);
                       }}
@@ -184,7 +219,7 @@ const NewArticleBody: FC<{
           {data.cover_image && (
             <div className="relative mb-5 w-full rounded-md border border-border-light dark:border-border">
               <button
-                onClick={() => void deleteImage("cover_image_Key")}
+                onClick={() => void deleteImage("cover_image_key")}
                 className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
               >
                 <X className="h-5 w-5 stroke-gray-700 fill-none" />
@@ -199,7 +234,7 @@ const NewArticleBody: FC<{
                   } max-h-[30rem] w-full rounded-lg object-cover`}
               />
             </div>
-          )} */}
+          )}
 
           <section className="px-2">
             <div className="relative">
@@ -261,6 +296,7 @@ const NewArticleBody: FC<{
           setQuery={setQuery}
           requestedTags={requestedTags}
           setRequestedTags={setRequestedTags}
+          prev_slug={prev_slug}
         />
       </main>
     );

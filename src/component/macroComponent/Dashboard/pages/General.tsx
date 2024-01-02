@@ -141,7 +141,6 @@ const General = () => {
             </label>
 
             <Input
-              input_type="text"
               name={e.name}
               onChange={(value) => {
                 setData({
@@ -153,6 +152,7 @@ const General = () => {
                 });
               }}
               opacity={true}
+              input_type={"email"}
               placeholder={e.placeholder}
               type="INPUT"
               value={data.social[e.name as keyof typeof data.social]}

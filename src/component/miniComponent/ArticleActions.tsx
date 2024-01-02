@@ -6,6 +6,7 @@ import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 
 import { Bookmark, BookmarkMinus, Heart, MessageCircle, MoreVertical, Share2 } from "lucide-react";
+import { useRouter } from "next/router";
 import type { Article } from "~/types";
 import { api } from "~/utils/api";
 import { C, type ContextValue } from "~/utils/context";
@@ -237,7 +238,9 @@ const MoreOptions = React.forwardRef<
     slug: string
   }
 >(({ setOptionsOpen, slug, user }, ref) => {
+  const router = useRouter();
   const { mutateAsync: deleteArticle } = api.posts.deleteTemporarily.useMutation();
+  const { mutateAsync: disableComment } = api.posts.disableComments.useMutation();
   const userActions = [
     "Edit",
     "Delete",
@@ -249,8 +252,7 @@ const MoreOptions = React.forwardRef<
   const guestActions = [
     "Report",
     "Follow",
-  ]
-
+  ];
 
   const actionControler = async (name: string) => {
     switch (name) {
@@ -270,6 +272,29 @@ const MoreOptions = React.forwardRef<
             toast.error(err.message);
           } else {
             toast.error("Failed to delete article");
+          }
+        }
+        break;
+      case "Edit":
+        void router.push(`/article/edit/${slug}`);
+        break;
+
+      case "Disable Comments":
+        try {
+          const res = await disableComment({
+            slug,
+          })
+
+          if (res.success) {
+            toast.success("Comments disabled successfully");
+          } else {
+            toast.error("Failed to disable comments");
+          }
+        } catch (err) {
+          if (err instanceof TRPCClientError) {
+            toast.error(err.message);
+          } else {
+            toast.error("Failed to disable comments");
           }
         }
         break;

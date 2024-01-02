@@ -144,7 +144,6 @@ const ArticleCard: FC<{
 
   const restoreArticle = async () => {
     try {
-
       const res = await mutateAsync({
         slug: data.slug
       });
@@ -154,6 +153,8 @@ const ArticleCard: FC<{
       } else {
         toast.error("Something went wrong");
       }
+      window.location.reload()
+
     } catch (err) {
       if (err instanceof TRPCClientError) {
         toast.error(err.message)

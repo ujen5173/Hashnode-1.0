@@ -20,7 +20,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "Permalink",
       icon: (
-        <Link className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
+        <Link className="h-4 w-4 stroke-border dark:stroke-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         void navigator.clipboard.writeText(window.location.href);
@@ -57,7 +57,7 @@ const ShareOptions = React.forwardRef<
     {
       name: "LinkedIn",
       icon: (
-        <Linkedin className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
+        <Linkedin className="h-4 w-4 stroke-border dark:stroke-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(
@@ -67,23 +67,10 @@ const ShareOptions = React.forwardRef<
         setShareOpen(false);
       },
     },
-    // {
-    //   name: "Hacker News",
-    //   icon: (
-    //     <HackerNews className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
-    //   ),
-    //   action: () => {
-    //     window.open(
-    //       `https://news.ycombinator.com/submitlink?u=${window.location.href}&t=${acticleDetails.title}`,
-    //       "_blank"
-    //     );
-    //     setShareOpen(false);
-    //   },
-    // },
     {
       name: "Facebook",
       icon: (
-        <Facebook className="h-4 w-4 fill-border dark:fill-text-primary md:h-5 md:w-5" />
+        <Facebook className="h-4 w-4 stroke-border dark:stroke-text-primary md:h-5 md:w-5" />
       ),
       action: () => {
         window.open(

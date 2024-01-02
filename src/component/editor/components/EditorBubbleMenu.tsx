@@ -1,10 +1,8 @@
 
 import { BubbleMenu, BubbleMenuProps } from "@tiptap/react";
-import React, { FC, useState } from "react"; 
-import { LinkSelector } from "./link-selector";
 import { Bold, Code, Heading1, Heading2, Heading3, Highlighter, Italic, Strikethrough } from "lucide-react";
-import Strike from "@tiptap/extension-strike";
-import { Highlight } from "@mantine/core";
+import React, { FC, useState } from "react";
+import { LinkSelector } from "./link-selector";
 
 type EditorBubbleMenuProps = Omit<BubbleMenuProps, "children">;
 
@@ -22,39 +20,39 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
       isActive: () => props.editor.isActive("heading1"),
       command: () =>
         props.editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      icon: <Heading1 />,
+      icon: <Heading1 size={18} />,
     },
     {
       name: "heading 1",
       isActive: () => props.editor.isActive("heading2"),
       command: () =>
         props.editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      icon: <Heading2 />,
+      icon: <Heading2 size={18} />,
     },
     {
       name: "heading 1",
       isActive: () => props.editor.isActive("heading3"),
       command: () =>
         props.editor.chain().focus().toggleHeading({ level: 3 }).run(),
-      icon: <Heading3 />,
+      icon: <Heading3 size={18} />,
     },
     {
       name: "bold",
       isActive: () => props.editor.isActive("bold"),
       command: () => props.editor.chain().focus().toggleBold().run(),
-      icon: <Bold />,
+      icon: <Bold size={18} />,
     },
     {
       name: "italic",
       isActive: () => props.editor.isActive("italic"),
       command: () => props.editor.chain().focus().toggleItalic().run(),
-      icon: <Italic />,
+      icon: <Italic size={18} />,
     },
     {
       name: "strike",
       isActive: () => props.editor.isActive("strike"),
       command: () => props.editor.chain().focus().toggleStrike().run(),
-      icon: <Strikethrough />,
+      icon: <Strikethrough size={18} />,
     },
 
     {
@@ -66,13 +64,13 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
           .focus()
           .toggleHighlight({ color: "#FDE047" })
           .run(),
-      icon: <Highlighter />,
+      icon: <Highlighter size={18} />,
     },
     {
       name: "code",
       isActive: () => props.editor.isActive("code"),
       command: () => props.editor.chain().focus().toggleCode().run(),
-      icon: <Code />,
+      icon: <Code size={18} />,
     },
   ];
 
@@ -98,14 +96,14 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
   return (
     <BubbleMenu
       {...bubbleMenuProps}
-      className="flex w-fit divide-x divide-stone-200 rounded border border-stone-200 bg-white shadow-xl"
+      className="flex w-fit select-none divide-x divide-border-light dark:divide-border rounded border border-border-light dark:border-border bg-light-bg dark:bg-primary-light shadow-md"
     >
       <div className="flex">
         {items.map((item, index) => (
           <button
             key={index}
             onClick={item.command}
-            className="p-2 text-stone-600 hover:bg-stone-100 active:bg-stone-200"
+            className="p-2 text-gray-700 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-border active:bg-gray-200 dark:active:bg-border"
           >
             {item.icon}
           </button>

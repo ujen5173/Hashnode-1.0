@@ -1,7 +1,7 @@
 import { Editor, Extension, Range } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
 import Suggestion from "@tiptap/suggestion";
-import { Text, Bold, Code, Heading1, Heading2, Heading3, Highlighter, Italic, Strikethrough, Quote, Code2, List, ListOrdered } from "lucide-react";
+import { Code2, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Text } from "lucide-react";
 import {
   ReactNode,
   useCallback,
@@ -10,7 +10,7 @@ import {
   useRef,
   useState
 } from "react";
-import tippy from "tippy.js"; 
+import tippy from "tippy.js";
 
 interface CommandItemProps {
   title: string;
@@ -72,7 +72,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
     {
       title: "Heading 1",
       description: "Big section heading.",
-      searchTerms: ["title", "big", "large"],
+      searchTerms: ["title", "big", "large", "h1", "heading"],
       icon: <Heading1 />,
       command: ({ editor, range }: CommandProps) => {
         editor
@@ -86,7 +86,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
     {
       title: "Heading 2",
       description: "Medium section heading.",
-      searchTerms: ["subtitle", "medium"],
+      searchTerms: ["subtitle", "medium", "h2", "heading"],
       icon: <Heading2 />,
       command: ({ editor, range }: CommandProps) => {
         editor
@@ -100,7 +100,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
     {
       title: "Heading 3",
       description: "Small section heading.",
-      searchTerms: ["subtitle", "small"],
+      searchTerms: ["subtitle", "small", "h3", "heading"],
       icon: <Heading3 />,
       command: ({ editor, range }: CommandProps) => {
         editor
@@ -114,7 +114,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
     {
       title: "Bullet List",
       description: "Create a simple bullet list.",
-      searchTerms: ["unordered", "point"],
+      searchTerms: ["unordered", "point", "list", "bullet"],
       icon: <List />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).toggleBulletList().run();
@@ -123,7 +123,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
     {
       title: "Numbered List",
       description: "Create a list with numbering.",
-      searchTerms: ["ordered"],
+      searchTerms: ["ordered", "list", "number"],
       icon: <ListOrdered />,
       command: ({ editor, range }: CommandProps) => {
         editor.chain().focus().deleteRange(range).toggleOrderedList().run();
@@ -132,7 +132,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
     {
       title: "Quote",
       description: "Capture a quote.",
-      searchTerms: ["blockquote"],
+      searchTerms: ["blockquote", "quote"],
       icon: <Quote />,
       command: ({ editor, range }: CommandProps) =>
         editor
@@ -247,22 +247,22 @@ const CommandList = ({
     <div
       id="slash-command"
       ref={commandListContainer}
-      className="z-50 h-auto max-h-[330px] w-72 overflow-y-auto rounded-md border border-stone-200 bg-white px-1 py-2 shadow-md transition-all"
+      className="z-50 h-auto max-h-[330px] w-72 scroll-area overflow-y-auto rounded-md border border-border-light dark:border-border bg-white dark:bg-primary-light py-2 shadow-md transition-all"
     >
       {items.map((item: CommandItemProps, index: number) => {
         return (
           <button
-            className={`flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm text-stone-900 hover:bg-stone-100 ${index === selectedIndex ? "bg-stone-100 text-stone-900" : ""
+            className={`border-b border-border-light dark:border-border last:border-0 flex w-full items-center space-x-3 px-3 py-4 text-left text-sm text-gray-700 dark:text-text-secondary hover:bg-border-light dark:hover:bg-border ${index === selectedIndex ? "bg-gray-200 dark:bg-border text-gray-700 dark:text-text-secondary" : ""
               }`}
             key={index}
             onClick={() => selectItem(index)}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-md border border-stone-200 bg-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border border-border-light dark:border-border bg-white dark:bg-primary-light">
               {item.icon}
             </div>
             <div>
               <p className="font-medium">{item.title}</p>
-              <p className="text-xs text-stone-500">{item.description}</p>
+              <p className="text-xs text-gray-500 dark:text-text-primary">{item.description}</p>
             </div>
           </button>
         );

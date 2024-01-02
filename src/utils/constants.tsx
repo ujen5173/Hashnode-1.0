@@ -1,4 +1,4 @@
-import { Book, Bookmark, Compass, Github, Globe, Heart, Instagram, Laptop2, LogOut, MessageCircle, Newspaper, Palette, Pencil, Search, Settings, Table2, Twitter, User, Users, Youtube } from "lucide-react";
+import { Book, Bookmark, Compass, Github, Globe, Heart, Instagram, Laptop2, Linkedin, LogOut, MessageCircle, Newspaper, Palette, Pencil, Search, Settings, Table2, Twitter, User, Users, Youtube } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { Dailydev, Discord, LogonoText, Mastodon } from "~/svgs";
 
@@ -233,21 +233,21 @@ export const dashboardNavigations = [
 export const generalSettingsSocials = [
   {
     id: uuid(),
-    label: "Twitter image",
+    label: "Twitter Profile",
     placeholder: "https://twitter.com/username",
     name: "twitter",
     icon: <Twitter className="h-5 w-5 stroke-none fill-gray-500 dark:fill-text-primary" />,
   },
   {
     id: uuid(),
-    label: "Mastodon image",
+    label: "Mastodon Profile",
     placeholder: "https://mastodon.social/@username",
     name: "mastodon",
     icon: <Mastodon className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />,
   },
   {
     id: uuid(),
-    label: "Instagram image",
+    label: "Instagram Profile",
     placeholder: "https://instagram.com/username",
     name: "instagram",
     icon: (
@@ -256,7 +256,7 @@ export const generalSettingsSocials = [
   },
   {
     id: uuid(),
-    label: "Github image",
+    label: "Github Profile",
     placeholder: "https://github.com/username",
     name: "github",
     icon: <Github className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />,
@@ -270,11 +270,11 @@ export const generalSettingsSocials = [
   },
   {
     id: uuid(),
-    label: "Hashnode image",
-    placeholder: "https://hashnode.com/@username",
-    name: "hashnode",
+    label: "Linkedin Profile",
+    placeholder: "https://linkedin.com/@username",
+    name: "linkedin",
     icon: (
-      <LogonoText className="h-5 w-5 fill-gray-500 dark:fill-text-primary" />
+      <Linkedin className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
     ),
   },
   {
@@ -286,7 +286,7 @@ export const generalSettingsSocials = [
   },
   {
     id: uuid(),
-    label: "Daily.dev image",
+    label: "Daily.dev Profile",
     placeholder: "https://app.daily.dev/username",
     name: "dailydev",
     icon: <Dailydev className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />,

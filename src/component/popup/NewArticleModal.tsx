@@ -28,6 +28,7 @@ interface Props {
 
   requestedTags: string[];
   setRequestedTags: React.Dispatch<React.SetStateAction<string[]>>;
+  prev_slug: string | null;
 }
 
 const NewArticleModal: FC<Props> = ({
@@ -41,6 +42,7 @@ const NewArticleModal: FC<Props> = ({
   setQuery,
   requestedTags,
   setRequestedTags,
+  prev_slug
 }) => {
   const { data: user } = useSession()
 
@@ -140,9 +142,13 @@ const NewArticleModal: FC<Props> = ({
       return;
     }
 
+    if (data.userId) {
+      delete (data as { userId?: string }).userId;
+    }
+
     setPublishing(true);
     try {
-      const res = await mutateAsync({ ...data, seriesId: selectedSeries?.id, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
+      const res = await mutateAsync({ ...data, seriesId: selectedSeries?.id, prev_slug, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
       if (res.success && res.redirectLink) {
         setPublishModal(false);
         await router.push(res.redirectLink);
