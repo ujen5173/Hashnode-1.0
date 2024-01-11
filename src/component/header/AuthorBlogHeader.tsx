@@ -1,10 +1,25 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
-import { Check, ChevronLeft, Github, Globe, Instagram, Linkedin, Menu, Plus, Search, Settings, Sun, Twitter, Youtube } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  Github,
+  Globe,
+  Instagram,
+  Linkedin,
+  Menu,
+  Plus,
+  Search,
+  Settings,
+  Sun,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState, type FC } from "react";
+import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import { type BlogSocial, type CustomTabs } from "~/pages/dev/[username]";
 import { Dailydev, Mastodon } from "~/svgs";
@@ -36,21 +51,10 @@ interface Props {
 }
 
 const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
-  const {
-    handleTheme,
-    setSearchOpen
-  } = useContext(C) as ContextValue;
+  const { handleTheme, setSearchOpen } = useContext(C) as ContextValue;
   const { mutate: followToggle } = api.users.followUser.useMutation();
 
   const [following, setFollowing] = useState(false);
-
-  const followUser = () => {
-    setFollowing(prev => !prev);
-
-    followToggle({
-      userId: author.id,
-    });
-  }
 
   const [opened, setOpened] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -63,11 +67,20 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
     dropdown,
   ]);
 
+  const followUser = () => {
+    if (!user) return toast.error("You need to be logged in to follow users.");
+    setFollowing((prev) => !prev);
+
+    followToggle({
+      userId: author.id,
+    });
+  };
+
   useEffect(() => {
     if (author && user) {
-      setFollowing(author.followers.find((e) => e.id === user?.user.id)
-        ? true
-        : false);
+      setFollowing(
+        author.followers.find((e) => e.id === user?.user.id) ? true : false
+      );
     }
   }, [user, author]);
 
@@ -230,15 +243,32 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                       twitter: <Twitter className={iconStyle} />,
                       github: <Github className={iconStyle} />,
                       linkedin: <Linkedin className={iconStyle} />,
-                      mastodon: <Mastodon className={iconStyle} />,
+                      mastodon: (
+                        <Mastodon
+                          className={
+                            "h-5 w-5 fill-gray-500 dark:fill-text-primary"
+                          }
+                        />
+                      ),
                       instagram: <Instagram className={iconStyle} />,
                       website: <Globe className={iconStyle} />,
                       youtube: <Youtube className={iconStyle} />,
-                      dailydev: <Dailydev className={iconStyle} />,
+                      dailydev: (
+                        <Dailydev
+                          className={
+                            "h-5 w-5 fill-gray-500 dark:fill-text-primary"
+                          }
+                        />
+                      ),
                     };
 
                     return (
-                      <a target="_blank" key={uuid()} href={e[1] as string}>
+                      <a
+                        target="_blank"
+                        key={uuid()}
+                        title={e[0]}
+                        href={e[1] as string}
+                      >
                         <button className="btn-icon-large flex">
                           {social[e[0] as keyof typeof social]}
                         </button>

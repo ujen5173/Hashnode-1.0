@@ -1,5 +1,12 @@
 import { Tooltip } from "@mantine/core";
-import { Book, BookOpen, Bookmark, BookmarkCheck, MessageCircle, ThumbsUp } from "lucide-react";
+import {
+  Book,
+  BookOpen,
+  Bookmark,
+  BookmarkCheck,
+  MessageCircle,
+  ThumbsUp,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
@@ -27,24 +34,28 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
         </Link>
 
         <div className="flex-1">
-          <div className="flex itmes-center gap-2">
+          <div className="itmes-center flex gap-2">
             <Link href={`/u/@${card.user.username}`}>
               <h1 className="text-sm font-semibold text-gray-900 dark:text-text-secondary">
                 {card.user.name}
               </h1>
             </Link>
 
-            {
-              card.user.stripeSubscriptionStatus === "active" && (
-                <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
+            {card.user.stripeSubscriptionStatus === "active" && (
+              <Tooltip
+                label="Hashnode Clone Pro User"
+                position="bottom"
+                style={{
                   fontSize: "0.8rem",
                   fontWeight: "400",
-                  letterSpacing: "0.5px"
-                }}>
-                  <span className="py-0 px-1 leading-5 tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-medium text-xs text-gray-700 dark:text-text-secondary">PRO</span>
-                </Tooltip>
-              )
-            }
+                  letterSpacing: "0.5px",
+                }}
+              >
+                <span className="rounded-md border border-border-light bg-light-bg px-1 py-0 text-xs font-medium leading-5 tracking-wider text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary">
+                  PRO
+                </span>
+              </Tooltip>
+            )}
           </div>
 
           {card.user.handle && (
@@ -86,10 +97,11 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
 
             <Link href={`/u/@${card.user.username}/${card.slug}`}>
               <p
-                className={`${card.cover_image
-                  ? "max-height-four"
-                  : "max-height-three mb-0 w-full md:mb-3"
-                  } break-words text-sm text-gray-500 dark:text-text-primary`}
+                className={`${
+                  card.cover_image
+                    ? "max-height-four"
+                    : "max-height-three mb-0 w-full md:mb-3"
+                } break-words text-sm text-gray-500 dark:text-text-primary`}
               >
                 {limitText(removeMd(card.content), 350)}
               </p>
@@ -107,7 +119,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                   alt={`${card.title} image not found!`}
                   width={500}
                   height={300}
-                  className="w-full rounded-md bg-white object-cover text-gray-700 dark:bg-primary-light dark:text-text-secondary"
+                  className="max-h-40  w-full rounded-md bg-white object-cover text-gray-700 dark:bg-primary-light dark:text-text-secondary"
                 />
               </div>
             </Link>
@@ -120,10 +132,11 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               aria-label="icon"
               onClick={() => updateBookmark(card.id)}
               role="button"
-              className={`${bookmarks.find((bookmark) => bookmark.id === card.id)
-                ? "bg-secondary bg-opacity-20"
-                : ""
-                } btn-icon-large flex w-max items-center justify-center`}
+              className={`${
+                bookmarks.find((bookmark) => bookmark.id === card.id)
+                  ? "bg-secondary bg-opacity-20"
+                  : ""
+              } btn-icon-large flex w-max items-center justify-center`}
             >
               {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
                 <BookmarkCheck className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
@@ -169,16 +182,17 @@ export default ArticleCard;
 const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
   return (
     <div className="flex items-center">
-      {
-        card.readCount > 0 && (
-          <span className="px-2 hidden md:inline-flex py-1 rounded-md bg-gray-200 dark:bg-primary-light text-gray-500 mr-2 dark:text-text-primary text-xs">{card.readCount} reads</span>
-        )
-      }
+      {card.readCount > 0 && (
+        <span className="mr-2 hidden rounded-md bg-gray-200 px-2 py-1 text-xs text-gray-500 dark:bg-primary-light dark:text-text-primary md:inline-flex">
+          {card.readCount} reads
+        </span>
+      )}
 
       {card.series && (
         <Link
-          href={`/dev/@${card.user?.handle?.handle as string}/series/${card.series.slug
-            }`}
+          href={`/dev/@${card.user?.handle?.handle as string}/series/${
+            card.series.slug
+          }`}
         >
           <p className="mr-2 flex items-center gap-1 rounded-full bg-secondary bg-opacity-10 px-2 py-1">
             <span className="text-gray-900 dark:text-text-primary">

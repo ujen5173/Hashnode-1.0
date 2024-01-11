@@ -9,7 +9,7 @@ export const likesRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().trim(),
-       })
+      })
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -65,12 +65,12 @@ export const likesRouter = createTRPCRouter({
 
         if (article.likes.length > 0) {
           // like
-           await ctx.db
+          await ctx.db
             .delete(likesToArticles)
             .where(eq(likesToArticles.articleId, articleId));
         } else {
           // unlike
-           await ctx.db.insert(likesToArticles).values({
+          await ctx.db.insert(likesToArticles).values({
             articleId,
             userId: ctx.session.user.id,
           });

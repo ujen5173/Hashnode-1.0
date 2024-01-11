@@ -17,7 +17,7 @@ const Navbar = () => {
     {
       enabled: !!user?.user.handle?.handle,
       refetchOnWindowFocus: false,
-      retry: 0
+      retry: 0,
     }
   );
 
@@ -317,7 +317,7 @@ const NavBarItem: FC<{
                 onClick={() => void removeItem(e.id)}
                 className="btn-icon-large flex items-center gap-2"
               >
-                <X className="h-5 w-5 fill-gray-700 stroke-none dark:fill-text-secondary" />
+                <X className="h-5 w-5 fill-none stroke-gray-700 dark:stroke-text-secondary" />
               </button>
             </div>
           )
@@ -368,8 +368,9 @@ const NavBarItem: FC<{
                 type="button"
                 disabled={isUpdating}
                 onClick={() => void editItem()}
-                className={`btn-outline flex items-center gap-2 ${isUpdating ? "cursor-not-allowed opacity-40" : ""
-                  }}`}
+                className={`btn-outline flex items-center gap-2 ${
+                  isUpdating ? "cursor-not-allowed opacity-40" : ""
+                }}`}
               >
                 <span>{isUpdating ? "Updating" : "Update"}</span>
               </button>

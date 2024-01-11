@@ -1,7 +1,28 @@
-import { Book, Bookmark, Compass, Github, Globe, Heart, Instagram, Laptop2, Linkedin, LogOut, MessageCircle, Newspaper, Palette, Pencil, Search, Settings, Table2, Twitter, User, Users, Youtube } from "lucide-react";
+import {
+  Book,
+  Bookmark,
+  Compass,
+  Github,
+  Globe,
+  Heart,
+  Instagram,
+  Laptop2,
+  Linkedin,
+  LogOut,
+  MessageCircle,
+  Newspaper,
+  Palette,
+  Pencil,
+  Search,
+  Settings,
+  Table2,
+  Twitter,
+  User,
+  Users,
+  Youtube,
+} from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { Dailydev, Discord, LogonoText, Mastodon } from "~/svgs";
-
 
 export const slugSetting = {
   lower: true,
@@ -38,7 +59,9 @@ export const asideItems = [
   },
   {
     name: "Team Blogs",
-    icon: <Users className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
+    icon: (
+      <Users className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
+    ),
     href: "/team-blogs",
     type: "link",
   },
@@ -65,10 +88,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Comments",
       icon: (name: string) => (
         <MessageCircle
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -78,10 +102,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Likes",
       icon: (name: string) => (
         <Heart
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -91,10 +116,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Articles",
       icon: (name: string) => (
         <Newspaper
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -178,8 +204,9 @@ export const dashboardNavigations = [
     name: "General",
     icon: (state: boolean) => (
       <Settings
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/general",
@@ -189,8 +216,9 @@ export const dashboardNavigations = [
     name: "Appearance",
     icon: (state: boolean) => (
       <Palette
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/appearance",
@@ -200,8 +228,9 @@ export const dashboardNavigations = [
     name: "Navbar",
     icon: (state: boolean) => (
       <Table2
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/navbar",
@@ -211,8 +240,9 @@ export const dashboardNavigations = [
     name: "Articles",
     icon: (state: boolean) => (
       <Newspaper
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/articles",
@@ -222,8 +252,9 @@ export const dashboardNavigations = [
     name: "Series",
     icon: (state: boolean) => (
       <Book
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/series",
@@ -236,7 +267,9 @@ export const generalSettingsSocials = [
     label: "Twitter Profile",
     placeholder: "https://twitter.com/username",
     name: "twitter",
-    icon: <Twitter className="h-5 w-5 stroke-none fill-gray-500 dark:fill-text-primary" />,
+    icon: (
+      <Twitter className="h-5 w-5 fill-gray-500 stroke-none dark:fill-text-primary" />
+    ),
   },
   {
     id: uuid(),
@@ -259,14 +292,18 @@ export const generalSettingsSocials = [
     label: "Github Profile",
     placeholder: "https://github.com/username",
     name: "github",
-    icon: <Github className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />,
+    icon: (
+      <Github className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+    ),
   },
   {
     id: uuid(),
     label: "Your Website",
     placeholder: "https://something.com",
     name: "website",
-    icon: <Globe className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />,
+    icon: (
+      <Globe className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
+    ),
   },
   {
     id: uuid(),
@@ -282,26 +319,34 @@ export const generalSettingsSocials = [
     label: "Youtube Channel",
     placeholder: "https://youtube.com/@username",
     name: "youtube",
-    icon: <Youtube className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />,
+    icon: (
+      <Youtube className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
+    ),
   },
   {
     id: uuid(),
     label: "Daily.dev Profile",
     placeholder: "https://app.daily.dev/username",
     name: "dailydev",
-    icon: <Dailydev className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />,
+    icon: (
+      <Dailydev className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
+    ),
   },
 ];
 
 export const HashnodeSocials = [
   {
     name: "Twitter",
-    icon: <Twitter className="h-5 w-5 stroke-none fill-gray-500 dark:fill-text-primary" />,
+    icon: (
+      <Twitter className="h-5 w-5 fill-gray-500 stroke-none dark:fill-text-primary" />
+    ),
     link: "https://twitter.com/ujen_basi/",
   },
   {
     name: "Github",
-    icon: <Github className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary fill-none" />,
+    icon: (
+      <Github className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+    ),
     link: "https://github.com/ujen5173",
   },
   {
@@ -327,8 +372,8 @@ export const selectArticleCard = {
             id: true,
             image: true,
           },
-        }
-      }
+        },
+      },
     },
     tags: {
       columns: {
@@ -341,9 +386,9 @@ export const selectArticleCard = {
             id: true,
             name: true,
             slug: true,
-          }
-        }
-      }
+          },
+        },
+      },
     },
     series: {
       columns: {
@@ -367,10 +412,10 @@ export const selectArticleCard = {
             handle: true,
             name: true,
             about: true,
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   },
   columns: {
     id: true,
@@ -408,32 +453,42 @@ export function displayUniqueObjects(
   return uniqueObjects;
 }
 
-
-export const imageDropdownList = [
+export const profileDropdownList = [
   {
     type: "divider",
   },
   {
     name: "My Bookmarks",
-    icon: <Bookmark className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />,
+    icon: (
+      <Bookmark className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />
+    ),
     link: () => "/bookmarks",
     hiddenItem: false,
     danger: false,
-  }, {
+  },
+  {
     name: "Account Settings",
-    icon: <User className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />,
+    icon: (
+      <User className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />
+    ),
     link: () => "/settings",
     hiddenItem: false,
     danger: false,
-  }, {
+  },
+  {
     name: "Manage your blogs",
-    icon: <Table2 className="h-4 w-4 fill-none stroke-gray-900 dark:stroke-text-secondary" />,
+    icon: (
+      <Table2 className="h-4 w-4 fill-none stroke-gray-900 dark:stroke-text-secondary" />
+    ),
     link: (userId: string) => `/${userId}/dashboard`,
     hiddenItem: false,
     danger: false,
-  }, {
+  },
+  {
     name: "Search",
-    icon: <Search className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />,
+    icon: (
+      <Search className="h-4 w-4 stroke-gray-900 dark:stroke-text-secondary" />
+    ),
     link: null,
     hiddenItem: true,
     danger: false,
@@ -443,17 +498,19 @@ export const imageDropdownList = [
     ) => {
       setOpened(false);
       setSearchOpen(true);
-    }
-  }, {
+    },
+  },
+  {
     type: "divider",
-  }, {
+  },
+  {
     name: "Log out",
     icon: <LogOut className="h-4 w-4 stroke-red" />,
     hiddenItem: false,
     link: null,
     danger: true,
-  }
-]
+  },
+];
 
 export const articleimageDropdownList = [
   {
@@ -461,43 +518,58 @@ export const articleimageDropdownList = [
   },
   {
     name: "Dashboard",
-    icon: <Settings className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
+    icon: (
+      <Settings className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
+    ),
     link: (userId: string) => `/${userId}/dashboard`,
     hiddenItem: false,
     danger: false,
-  }, {
+  },
+  {
     name: "New Article",
-    icon: <Pencil className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
+    icon: (
+      <Pencil className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
+    ),
     link: () => `/article/new`,
     hiddenItem: false,
     danger: false,
-  }, {
+  },
+  {
     name: "My Bookmarks",
-    icon: <Bookmark className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
+    icon: (
+      <Bookmark className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
+    ),
     link: () => "/bookmarks",
     hiddenItem: false,
     danger: false,
-  }, {
+  },
+  {
     type: "divider",
-  }, {
+  },
+  {
     name: "Back to Hashnode",
     icon: <LogonoText className="h-4 w-4 fill-secondary" />,
     link: () => "/",
     hiddenItem: false,
     danger: false,
-  }, {
-    name: "image settings",
-    icon: <User className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />,
+  },
+  {
+    name: "Profile settings",
+    icon: (
+      <User className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
+    ),
     link: () => "/settings",
     hiddenItem: false,
     danger: false,
-  }, {
+  },
+  {
     type: "divider",
-  }, {
+  },
+  {
     name: "Log out",
     icon: <LogOut className="h-4 w-4 stroke-red" />,
     hiddenItem: false,
     link: null,
     danger: true,
-  }
-]
+  },
+];

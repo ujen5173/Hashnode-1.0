@@ -1,6 +1,14 @@
 import { Tooltip } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
-import { AlertOctagon, Check, ChevronDown, Linkedin, Plus, Share, Twitter } from "lucide-react";
+import {
+  AlertOctagon,
+  Check,
+  ChevronDown,
+  Linkedin,
+  Plus,
+  Share,
+  Twitter,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,7 +60,6 @@ const UserimageArea: FC<{
     }
   };
 
- 
   return (
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
       <div className="h-28 w-28 overflow-hidden rounded-full bg-light-bg dark:bg-primary-light md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40">
@@ -74,17 +81,21 @@ const UserimageArea: FC<{
                 <h3 className="text-xl font-semibold text-gray-700 dark:text-text-secondary md:text-2xl">
                   {userDetails?.name}
                 </h3>
-                {
-                  userDetails?.stripeSubscriptionStatus === "active" && (
-                    <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
+                {userDetails?.stripeSubscriptionStatus === "active" && (
+                  <Tooltip
+                    label="Hashnode Clone Pro User"
+                    position="bottom"
+                    style={{
                       fontSize: "0.8rem",
                       fontWeight: "400",
-                      letterSpacing: "0.5px"
-                    }}>
-                      <span className="px-2 py-1 tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-semibold text-xs text-gray-700 dark:text-text-secondary">PRO</span>
-                    </Tooltip>
-                  )
-                }
+                      letterSpacing: "0.5px",
+                    }}
+                  >
+                    <span className="rounded-md border border-border-light bg-light-bg px-2 py-1 text-xs font-semibold tracking-wider text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary">
+                      PRO
+                    </span>
+                  </Tooltip>
+                )}
               </div>
 
               <p className="text-base font-medium text-gray-500 dark:text-text-primary lg:text-lg">
@@ -142,8 +153,9 @@ const UserimageArea: FC<{
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`https://twitter.com/intent/tweet?text=${process.env.NEXT_PUBLIC_VERCEL_URL as string
-                          }u/@${userDetails?.username || ""}`}
+                        href={`https://twitter.com/intent/tweet?text=${
+                          process.env.NEXT_PUBLIC_VERCEL_URL as string
+                        }u/@${userDetails?.username || ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
@@ -159,8 +171,9 @@ const UserimageArea: FC<{
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${process.env.NEXT_PUBLIC_VERCEL_URL as string
-                          }u/@${userDetails?.username || ""}`}
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${
+                          process.env.NEXT_PUBLIC_VERCEL_URL as string
+                        }u/@${userDetails?.username || ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
@@ -196,7 +209,7 @@ const UserimageArea: FC<{
                           <AlertOctagon className="h-6 w-6 fill-twitterColor" />
                         </span>
 
-                        <span>Report this image</span>
+                        <span>Report this Profile</span>
                       </button>
                     </li>
                   </ul>

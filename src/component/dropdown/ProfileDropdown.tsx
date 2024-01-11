@@ -3,11 +3,10 @@ import type { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import React, { useContext } from "react";
-import { env } from "~/env.mjs";
+import { profileDropdownList } from "~/utils/constants";
 
-import { imageDropdownList } from "~/utils/constants";
 import { C, type ContextValue } from "~/utils/context";
 
 const imageDropdown = React.forwardRef<
@@ -23,7 +22,6 @@ const imageDropdown = React.forwardRef<
   const logout = async () => {
     await signOut({ callbackUrl: "/" });
   };
-
 
   return (
     <div
@@ -82,12 +80,18 @@ const imageDropdown = React.forwardRef<
         </Link>
       )}
 
-      {
-        imageDropdownList.map((item, index) => (
-          <>
-            {item?.type ? (
-              <div key={index} className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
-            ) : <div className={`${item.hiddenItem ? "block lg:hidden" : ""} cursor-pointer`}
+      {profileDropdownList.map((item, index) => (
+        <>
+          {item?.type ? (
+            <div
+              key={index}
+              className="my-2 h-[1px] w-full bg-border-light dark:bg-border"
+            />
+          ) : (
+            <div
+              className={`${
+                item.hiddenItem ? "block lg:hidden" : ""
+              } cursor-pointer`}
               onClick={() => {
                 if (item.danger) {
                   void logout();
@@ -96,24 +100,25 @@ const imageDropdown = React.forwardRef<
                   void router.push(link);
                   setOpened(false);
                 } else if (item.onClick) {
-                  item.onClick(
-                    setOpened,
-                    setSearchOpen,
-                  );
+                  item.onClick(setOpened, setSearchOpen);
                 }
               }}
-              key={index}>
+              key={index}
+            >
               <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
-                <span>
-                  {item.icon}
+                <span>{item.icon}</span>
+                <span
+                  className={`${
+                    item.danger ? "text-red" : ""
+                  } text-sm font-medium`}
+                >
+                  {item.name}
                 </span>
-                <span className={`${item.danger ? "text-red" : ""} text-sm font-medium`}>{item.name}</span>
               </div>
             </div>
-            }
-          </>
-        ))
-      }
+          )}
+        </>
+      ))}
     </div>
   );
 });

@@ -29,14 +29,15 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
 
   return (
     <div
-      className={`${type === "main"
+      className={`${
+        type === "main"
           ? "main-block"
           : type === "group"
-            ? "w-full"
-            : perRow === 2
-              ? "w-full md:w-[calc(100%/2-0.5rem)]"
-              : "w-full md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-0.67rem)]"
-        }`}
+          ? "w-full"
+          : perRow === 2
+          ? "w-full md:w-[calc(100%/2-0.5rem)]"
+          : "w-full md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-0.67rem)]"
+      }`}
       key={article.id}
     >
       <Link
@@ -49,13 +50,13 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
               article.cover_image
                 ? article.cover_image
                 : theme === "light"
-                  ? "/imagePlaceholder-light.avif"
-                  : "/imagePlaceholder-dark.avif"
+                ? "/imagePlaceholder-light.avif"
+                : "/imagePlaceholder-dark.avif"
             }
             alt={`${article.title} image not found!`}
             width={500}
             height={300}
-            className="w-full rounded-md border border-border-light bg-white object-cover text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary"
+            className="max-h-96 w-full rounded-md border border-border-light bg-white object-cover text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary"
           />
         </div>
       </Link>

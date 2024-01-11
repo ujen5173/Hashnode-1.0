@@ -10,13 +10,14 @@ import { type CardProps } from "./SimpleArticleCard";
 
 const StackedArticleCard: FC<CardProps> = ({ article }) => {
   const { theme } = useContext(C) as ContextValue;
+
   return (
     <div
-      className="w-full border-b-0 sm:border-b border-border-light sm:py-4 last:border-none dark:border-border"
+      className="w-full border-b-0 border-border-light last:border-none dark:border-border sm:border-b sm:py-4"
       key={article.id}
     >
       <main className="">
-        <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col-reverse items-center justify-between gap-4 sm:flex-row">
           <div className="flex-[2]">
             <Link href={`/u/@${article.user.username}/${article.slug}`}>
               <h1 className="max-height-two mb-2 text-2xl font-semibold text-gray-700 dark:text-text-secondary">
@@ -41,10 +42,11 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
 
             <Link href={`/u/@${article.user.username}/${article.slug}`}>
               <p
-                className={`${article.cover_image
-                  ? "max-height-four"
-                  : "max-height-three mb-0 w-full md:mb-3"
-                  } break-words text-base text-gray-500 dark:text-text-primary`}
+                className={`${
+                  article.cover_image
+                    ? "max-height-four"
+                    : "max-height-three mb-0 w-full md:mb-3"
+                } break-words text-base text-gray-500 dark:text-text-primary`}
               >
                 {limitText(removeMd(article.content), 150)}
               </p>
@@ -61,13 +63,13 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
                   article.cover_image
                     ? article.cover_image
                     : theme === "light"
-                      ? "/imagePlaceholder-light.avif"
-                      : "/imagePlaceholder-dark.avif"
+                    ? "/imagePlaceholder-light.avif"
+                    : "/imagePlaceholder-dark.avif"
                 }
                 alt={`${article.title} image not found!`}
                 width={500}
                 height={300}
-                className="w-full rounded-md border border-border-light bg-white object-cover text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary"
+                className="max-h-40 w-full rounded-md border border-border-light bg-white object-cover text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary"
               />
             </div>
           </Link>

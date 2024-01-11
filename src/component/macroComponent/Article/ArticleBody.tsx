@@ -33,7 +33,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
       mutate({
         slug: article.slug,
       });
-    }, 5000) // 5 seconds
+    }, 5000); // 5 seconds
   }, []);
 
   useEffect(() => {
@@ -49,8 +49,9 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
       const copyButtonElements = `
         <span class="text-xs sm:text-sm text-[#e2e8f0!important]">Copy</span>
           <svg class="w-4 h-4 fill-[#e2e8f0]" viewBox="0 0 384 512"><path d="M336 64h-88.6c.4-2.6.6-5.3.6-8 0-30.9-25.1-56-56-56s-56 25.1-56 56c0 2.7.2 5.4.6 8H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM192 32c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm160 432c0 8.8-7.2 16-16 16H48c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h48v20c0 6.6 5.4 12 12 12h168c6.6 0 12-5.4 12-12V96h48c8.8 0 16 7.2 16 16z"></path></svg>
-        `
-      copyButton.className = "absolute top-2 right-2 flex items-center justify-center gap-1";
+        `;
+      copyButton.className =
+        "absolute top-2 right-2 flex items-center justify-center gap-1";
       copyButton.innerHTML = copyButtonElements;
       copyButton.addEventListener("click", () => {
         void navigator.clipboard.writeText(copy[i]?.textContent || "");
@@ -71,20 +72,20 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             width={1200}
             height={800}
             draggable={false}
-            className="w-full md:w-10/12 lg:w-full mx-auto overflow-hidden md:rounded-b-md object-cover"
+            className="mx-auto max-h-[35rem] w-full overflow-hidden object-cover md:w-10/12 md:rounded-b-md lg:w-full"
           />
         )}
 
         <section className={`relative pt-8 md:pb-0 md:pt-14`}>
           <div className="px-4">
-            <div className="flex items-center w-full justify-center">
-              <Balancer className="mx-auto block text-center mb-6 text-2xl sm:text-3xl font-bold leading-snug text-gray-700 dark:text-text-secondary w-full md:mb-8 md:text-5xl md:leading-tight">
+            <div className="flex w-full items-center justify-center">
+              <Balancer className="mx-auto mb-6 block w-full text-center text-2xl font-bold leading-snug text-gray-700 dark:text-text-secondary sm:text-3xl md:mb-8 md:text-5xl md:leading-tight">
                 {article.title}
               </Balancer>
             </div>
 
             {article?.subtitle && (
-              <div className="flex items-center w-full justify-center">
+              <div className="flex w-full items-center justify-center">
                 <Balancer className="mx-auto mb-5 break-words text-center text-xl font-normal text-gray-600 dark:text-text-primary md:mb-10 md:text-3xl">
                   {article?.subtitle}
                 </Balancer>
@@ -93,7 +94,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
             <div className="mx-auto mb-6 flex w-full flex-col items-center justify-center gap-2 md:mb-10 md:w-fit lg:flex-row">
               <Link
-                aria-label="Visit image"
+                aria-label="Visit profile"
                 className="mb-10 flex items-center gap-2 lg:mb-0"
                 href={`/u/@${article?.user.username}`}
               >
@@ -132,7 +133,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
 
             <div
               dangerouslySetInnerHTML={{ __html: article.content || "" }}
-              className="article mx-auto w-full break-words text-gray-700 dark:text-text-secondary pb-10 pt-2 sm:pt-6 md:py-6"
+              className="article mx-auto w-full break-words pb-10 pt-2 text-gray-700 dark:text-text-secondary sm:pt-6 md:py-6"
             />
           </div>
 
@@ -173,12 +174,15 @@ const SeriesSection: FC<{
   const { data: user } = useSession();
   const username = useRouter().query.username as string;
 
-  const { data, isLoading } = api.series.getSeriesOfArticle.useQuery({
-    slug: series.slug,
-  }, {
-    refetchOnWindowFocus: false,
-    retry: 0,
-  });
+  const { data, isLoading } = api.series.getSeriesOfArticle.useQuery(
+    {
+      slug: series.slug,
+    },
+    {
+      refetchOnWindowFocus: false,
+      retry: 0,
+    }
+  );
 
   return (
     <div className="px-4 py-16">
@@ -200,8 +204,9 @@ const SeriesSection: FC<{
             data && (
               <span className="text-lg font-bold text-secondary hover:underline">
                 <Link
-                  href={`/dev/@${user?.user?.handle?.handle as string
-                    }/series/${data.slug}`}
+                  href={`/dev/@${user?.user?.handle?.handle as string}/series/${
+                    data.slug
+                  }`}
                 >
                   {data.title}
                 </Link>
@@ -218,22 +223,30 @@ const SeriesSection: FC<{
                 key={article.id}
               >
                 <div
-                  className={`flex  h-10 w-10 items-center justify-center rounded-full ${article.slug === slug
-                    ? "bg-secondary text-white"
-                    : "bg-slate-200 text-primary"
-                    }`}
+                  className={`flex  h-10 w-10 items-center justify-center rounded-full ${
+                    article.slug === slug
+                      ? "bg-secondary text-white"
+                      : "bg-slate-200 text-primary"
+                  }`}
                 >
                   <h1 className="text-lg font-black">{index + 1}</h1>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8 flex-1">
+                <div className="flex flex-1 flex-col items-center gap-2 md:flex-row md:gap-8">
                   <div className="flex flex-1 items-center gap-4">
-                    <Link target="_blank" href={`/u/${username}/${article.slug}`}>
+                    <Link
+                      target="_blank"
+                      href={`/u/${username}/${article.slug}`}
+                    >
                       <h1 className="max-height-two mb-1 text-xl font-bold text-gray-700 dark:text-text-secondary">
                         {article.title}
                       </h1>
 
-                      <p className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${article?.cover_image ? "" : "w-[95%]"}`}>
+                      <p
+                        className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${
+                          article?.cover_image ? "" : "w-[95%]"
+                        }`}
+                      >
                         {removeMd(article.content)}
                       </p>
                     </Link>
@@ -285,7 +298,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
   const { following, setFollowing } = useContext(FollowContext) as {
     following: boolean;
     setFollowing: React.Dispatch<React.SetStateAction<boolean>>;
-  }
+  };
 
   const { mutate: followToggle } = api.users.followUser.useMutation();
 
@@ -294,7 +307,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
       toast.error("You need to login to follow a user");
       return;
     }
-    setFollowing(prev => !prev);
+    setFollowing((prev) => !prev);
 
     followToggle({
       userId: author.id,
@@ -316,7 +329,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
           </Link>
 
           <div className={"flex-1"}>
-            <div className="flex flex-col sm:flex-row w-full items-start justify-between">
+            <div className="flex w-full flex-col items-start justify-between sm:flex-row">
               <div className="mb-3 sm:mb-0">
                 <h2 className="text-uppercase mb-1 text-sm font-medium text-gray-600 dark:text-text-primary">
                   WRITTEN BY
@@ -332,7 +345,7 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
               {user?.user.username === author.username ? (
                 <Link href={`/${user?.user.id}/dashboard`}>
                   <button className="btn-filled flex w-full items-center justify-center gap-2 text-secondary md:w-max">
-                    <Settings className="h-5 w-5 stroke-white fill-none" />
+                    <Settings className="h-5 w-5 fill-none stroke-white" />
                     Dashboard
                   </button>
                 </Link>

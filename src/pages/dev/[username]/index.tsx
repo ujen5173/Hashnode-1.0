@@ -55,8 +55,8 @@ const AuthorBlogs: NextPage<{
   const { data: session } = useSession();
   const [appearance, setAppearance] = useState<
     | {
-      layout: "MAGAZINE" | "STACKED" | "GRID";
-    }
+        layout: "MAGAZINE" | "STACKED" | "GRID";
+      }
     | undefined
   >(undefined);
 
@@ -68,20 +68,20 @@ const AuthorBlogs: NextPage<{
 
   const router = useRouter();
 
-  const { data, isLoading, isError, } =
+  const { data, isLoading, isError } =
     api.posts.getAuthorArticlesByHandle.useQuery(
       {
         handleDomain: router.query.username
           ? (router.query?.username.slice(
-            1,
-            router.query?.username.length
-          ) as string) || ""
+              1,
+              router.query?.username.length
+            ) as string) || ""
           : "",
       },
       {
         enabled: !!router.query.username,
         refetchOnWindowFocus: false,
-        retry: 0
+        retry: 0,
       }
     );
 
@@ -91,21 +91,18 @@ const AuthorBlogs: NextPage<{
     }
   }, [isError]);
 
-
-  const articles = useMemo(
-    () => {
-      const newData = data?.posts;
-      const transformedPosts = newData?.map(({ user, ...rest }) => {
-        const { articles, ...restUserData } = user;
-        return articles.map(e => ({ ...e, user: restUserData }))
-      });
-      if (transformedPosts) {
-        return transformedPosts[0];
-      } else {
-        return [];
-      }
-    }, [data]);
-
+  const articles = useMemo(() => {
+    const newData = data?.posts;
+    const transformedPosts = newData?.map(({ user, ...rest }) => {
+      const { articles, ...restUserData } = user;
+      return articles.map((e) => ({ ...e, user: restUserData }));
+    });
+    if (transformedPosts) {
+      return transformedPosts[0];
+    } else {
+      return [];
+    }
+  }, [data]);
 
   return (
     <>
@@ -175,49 +172,56 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
   const handleDomain = context.query.username as string;
 
-  const user = await db.query.handles.findFirst({
-    where: eq(handles.handle, handleDomain.slice(1, handleDomain.length)),
-    columns: {
-      about: false,
-      handle: false,
-      id: false,
-      social: false,
-      appearance: false,
-      name: false,
-      userId: false,
-    },
-    with: {
-      user: {
-        columns: {
-          id: true,
-          name: true,
-          username: true,
-          image: true,
-          bio: true,
-        },
-        with: {
-          handle: {
-            columns: {
-              id: true,
-              handle: true,
-              name: true,
-              about: true,
-              social: true,
-            },
-            with: {
-              customTabs: true,
-            }
+  const user = await db.query.handles
+    .findFirst({
+      where: eq(handles.handle, handleDomain.slice(1, handleDomain.length)),
+      columns: {
+        about: false,
+        handle: false,
+        id: false,
+        social: false,
+        appearance: false,
+        name: false,
+        userId: false,
+      },
+      with: {
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+            bio: true,
           },
-          followers: {
-            columns: {
-              followingId: true,
-              userId: false,
-            }
-          }
+          with: {
+            handle: {
+              columns: {
+                id: true,
+                handle: true,
+                name: true,
+                about: true,
+                social: true,
+              },
+              with: {
+                customTabs: true,
+              },
+            },
+            followers: {
+              columns: {
+                followingId: true,
+                userId: false,
+              },
+            },
+          },
         },
       },
-    },
-  }).then(res => ({ ...res?.user, followers: res?.user?.followers?.map(follower => ({ id: follower.followingId })) }));
+    })
+    .then((res) => ({
+      ...res?.user,
+      followers: res?.user?.followers?.map((follower) => ({
+        id: follower.followingId,
+      })),
+    }));
 
   if (!user) {
     return {
@@ -232,16 +236,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-          username: string;
-          image: string;
-          handle: {
-            handle: string;
-            name: string;
-            social: BlogSocial;
-            customTabs: CustomTabs[];
-          };
-          followers: { id: string }[];
-        })
+            username: string;
+            image: string;
+            handle: {
+              handle: string;
+              name: string;
+              social: BlogSocial;
+              customTabs: CustomTabs[];
+            };
+            followers: { id: string }[];
+          })
         : null,
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)
@@ -303,7 +307,7 @@ export const AuthorArea: FC<{
             width={120}
             height={120}
             alt="User image"
-            className="h-16 md:h-20 w-16 md:w-20 rounded-full object-cover"
+            className="h-16 w-16 rounded-full object-cover md:h-20 md:w-20"
           />
           <h1 className="mb-4 text-2xl font-semibold text-gray-900 dark:text-text-secondary">
             {author.name}
