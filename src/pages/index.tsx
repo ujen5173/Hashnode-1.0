@@ -1,4 +1,3 @@
-
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -12,7 +11,7 @@ const Home: NextPage = () => {
   const { data } = api.users.subscriptionStatus.useQuery(undefined, {
     enabled: !!session,
     refetchOnWindowFocus: false,
-    retry: 0
+    retry: 0,
   });
 
   return (

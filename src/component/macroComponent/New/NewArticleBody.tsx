@@ -8,7 +8,7 @@ import slugify from "slugify";
 import { utapi } from "uploadthing/server";
 import Editor from "~/component/editor";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
-import { NewArticleModal } from "~/component/popup";
+import NewArticleModal from "~/component/popup/NewArticleModal";
 import { LoadingSpinner } from "~/svgs";
 import { type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
