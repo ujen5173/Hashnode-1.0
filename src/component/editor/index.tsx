@@ -14,8 +14,14 @@ const Editor: FC<{
   data: ArticleData;
   editData?: boolean;
   setData: React.Dispatch<React.SetStateAction<ArticleData>>;
-}> = ({ minHeight = "min-h-[500px]", editData = false, data, setData }) => {
-
+  contentRendered: boolean;
+}> = ({
+  minHeight = "min-h-[500px]",
+  editData = false,
+  data,
+  setData,
+  contentRendered,
+}) => {
   const [hydrated, setHydrated] = useState(false);
 
   const editor = useEditor({
@@ -33,16 +39,18 @@ const Editor: FC<{
     ],
     editorProps: TiptapEditorProps,
     onUpdate: (e) => {
-      debouncedUpdates(e)
+      debouncedUpdates(e);
     },
     autofocus: "end",
   });
 
-  const debouncedUpdates = useDebouncedCallback(({ editor }: { editor: Ed }) => {
-    const json = editor.getJSON() as DefaultEditorContent;
-    setData(prev => ({ ...prev, content: json }));
-  }, 750);
-
+  const debouncedUpdates = useDebouncedCallback(
+    ({ editor }: { editor: Ed }) => {
+      const json = editor.getJSON() as DefaultEditorContent;
+      setData((prev) => ({ ...prev, content: json }));
+    },
+    750
+  );
 
   useEffect(() => {
     const editArticle = window.location.pathname.includes("edit");
@@ -54,7 +62,7 @@ const Editor: FC<{
         setHydrated(true);
       }
     }
-  }, [editor, hydrated, editData]);
+  }, [editor, hydrated, editData, contentRendered]);
 
   useLayoutEffect(() => {
     setHydrated(false);
@@ -65,13 +73,12 @@ const Editor: FC<{
       onClick={() => {
         editor?.chain().focus().run();
       }}
-      className={`relative select-none w-full max-w-screen-lg bg-transparent ${minHeight}`}
+      className={`relative w-full max-w-screen-lg select-none bg-transparent ${minHeight}`}
     >
       {editor && <EditorBubbleMenu editor={editor} />}
       <EditorContent editor={editor} />
     </div>
   );
-}
-
+};
 
 export default Editor;

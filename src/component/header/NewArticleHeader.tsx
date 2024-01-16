@@ -11,12 +11,9 @@ interface Props {
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const NewArticleHeader: FC<Props> = ({
-  setPublishModal,
-  publishing,
-}) => {
+const NewArticleHeader: FC<Props> = ({ setPublishModal, publishing }) => {
   const { handleTheme } = useContext(C) as ContextValue;
-  const { data: user } = useSession()
+  const { data: user } = useSession();
 
   return (
     <header className="w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
@@ -55,7 +52,7 @@ const NewArticleHeader: FC<Props> = ({
           <div className="flex items-center gap-2">
             <button className="gradient-button hidden items-center justify-center gap-1 lg:flex">
               <UpgradeRocket />
-              <span className="gradient-text font-semibold">Upgrade</span>
+              <span className="gradient-text font-semibold">Rix</span>
             </button>
 
             <button

@@ -34,6 +34,7 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_VERCEL_URL: z.string().min(1),
+    NEXT_PUBLIC_GENERATIVE_AI_KEY: z.string().min(1),
   },
 
   /**
@@ -51,6 +52,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 
     NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
+    NEXT_PUBLIC_GENERATIVE_AI_KEY: process.env.NEXT_PUBLIC_GENERATIVE_AI_KEY,
 
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
 
