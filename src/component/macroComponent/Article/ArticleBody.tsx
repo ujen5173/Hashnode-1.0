@@ -9,7 +9,7 @@ import { Balancer } from "react-wrap-balancer";
 import removeMd from "remove-markdown";
 import { StackedArticleLoading } from "~/component/loading";
 import { ArticleActions } from "~/component/miniComponent";
-import { CommentsModal } from "~/component/popup";
+import CommentsModal from "~/component/popup/CommentsModal";
 import { FollowContext } from "~/pages/u/[username]/[slug]";
 import type { Article, Tag, User } from "~/types";
 import { api } from "~/utils/api";
