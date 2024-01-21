@@ -6,15 +6,6 @@ This is a **full-stack application** that serves as a clone of the popular blogg
 
 I'm creating Hashnode in React Native from the ground up, using React Native, Tailwind, and MongoDB. If you're curious about the project's progress, check it out! If you enjoy it, give it a star. This is my first time diving into React Native, so it's a bit of a challenge for me.
 
-## Live Urls
-
-- With Drizzle Orm
-  - Live: https://hashnode-t3.vercel.app/
-  - Code: https://github.com/ujen5173/Hashnode
-- With Prisma Orm
-  - Live: https://hashnode-4moa9m90e-ujen5173.vercel.app/
-  - Code: https://github.com/ujen5173/Hashnode/tree/ede835b251d16bbe96ac62fb9028137d32380e93
-
 ## Table of Contents
 
 - Features
@@ -25,15 +16,12 @@ I'm creating Hashnode in React Native from the ground up, using React Native, Ta
 ## Features
 
 1. Authentication
-2. User images
-3. Comments with Replies
-4. Tags
-5. Search Functionality
-6. Likes and Bookmarks
-7. Follow System
-8. Notifications
-9. Dashboard
-10. Payment Gateway using stripe
+2. User blogging dashboard
+3. Search Functionality
+4. Follow user/tag
+5. Notifications
+6. Text completion AI
+7. Payment Gateway using stripe
 
 ## Installation
 
