@@ -26,7 +26,7 @@ const generateContent = async ({
       prompt = subject
         ? "Write 1 short, simple and interesting subtitle for a tech blog post on '" +
           subject +
-          "'. "
+          "'. Don't add quotation marks."
         : "Write 1 short, simple and interesting subtitle for a blog post on tech genre. Don't add quotation marks.";
       break;
     case "CONTENT":

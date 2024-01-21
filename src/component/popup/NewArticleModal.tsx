@@ -42,15 +42,15 @@ const NewArticleModal: FC<Props> = ({
   setQuery,
   requestedTags,
   setRequestedTags,
-  prev_slug
+  prev_slug,
 }) => {
-  const { data: user } = useSession()
+  const { data: user } = useSession();
 
   const router = useRouter();
 
   const [selectedSeries, setSelectedSeries] = React.useState<{
-    title: string,
-    id: string
+    title: string;
+    id: string;
   } | null>(null);
 
   //TODO: this code is running at page load to fetch only tags from url.
@@ -62,7 +62,7 @@ const NewArticleModal: FC<Props> = ({
       refetchOnMount: false,
       enabled: !!(requestedTags.length > 0),
       refetchOnWindowFocus: false,
-      retry: 0
+      retry: 0,
     }
   );
 
@@ -70,13 +70,18 @@ const NewArticleModal: FC<Props> = ({
     if (router?.query?.params?.includes("edit")) return;
     //? Getting tag from server if it is in the url or localstorage saved tags.
     const tagsFromUrl = new URLSearchParams(window.location.search).get("tag");
+    console.log({ tagsFromUrl })
     if (tagsFromUrl) setRequestedTags(tagsFromUrl.split(" "));
 
     const article = localStorage.getItem("content");
 
     if (article && !router?.query?.params?.includes("edit")) {
       const parsedArticle = JSON.parse(article) as ArticleCard;
-      if (parsedArticle && parsedArticle.tags && parsedArticle.tags.length > 0) {
+      if (
+        parsedArticle &&
+        parsedArticle.tags &&
+        parsedArticle.tags.length > 0
+      ) {
         setRequestedTags(parsedArticle.tags.map((e) => e.slug));
       }
     }
@@ -85,7 +90,7 @@ const NewArticleModal: FC<Props> = ({
     if (storedData) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { tags, ...res } = JSON.parse(storedData) as ArticleData;
-      setData(prev => ({ ...prev, ...res }));
+      setData((prev) => ({ ...prev, ...res }));
 
       if (tags && tags.length === 0) return;
 
@@ -94,7 +99,7 @@ const NewArticleModal: FC<Props> = ({
 
         if (!tagsData) return;
 
-        setData(prev => ({
+        setData((prev) => ({
           ...prev,
           tags: [...prev.tags, ...tagsData.map((e) => e.name)],
         }));
@@ -112,7 +117,7 @@ const NewArticleModal: FC<Props> = ({
       const { data: tagsData } = await refetch();
 
       if (!tagsData) return;
-      setData(prev => ({
+      setData((prev) => ({
         ...prev,
         tags: [...prev.tags, ...tagsData.map((e) => e.name)],
       }));
@@ -142,13 +147,15 @@ const NewArticleModal: FC<Props> = ({
       return;
     }
 
-    if (data.userId) {
-      delete (data as { userId?: string }).userId;
-    }
-
     setPublishing(true);
     try {
-      const res = await mutateAsync({ ...data, seriesId: selectedSeries?.id, prev_slug, content: contentResponse, edit: router?.query?.params?.includes("edit") || false });
+      const res = await mutateAsync({
+        ...data,
+        seriesId: selectedSeries?.id,
+        prev_slug,
+        content: contentResponse,
+        edit: router?.query?.params?.includes("edit") || false,
+      });
       if (res.success && res.redirectLink) {
         setPublishModal(false);
         await router.push(res.redirectLink);
@@ -187,13 +194,13 @@ const NewArticleModal: FC<Props> = ({
             onClick={() => void handlePublish()}
             className={`${publishing ? "opacity-50" : ""} btn-filled`}
           >
-            {
-              router?.query?.params?.includes("edit") ? (
-                publishing ? "Updating..." : "Update"
-              ) : (
-                publishing ? "Publishing..." : "Publish"
-              )
-            }
+            {router?.query?.params?.includes("edit")
+              ? publishing
+                ? "Updating..."
+                : "Update"
+              : publishing
+                ? "Publishing..."
+                : "Publish"}
           </button>
         </header>
 
@@ -219,8 +226,8 @@ const NewArticleModal: FC<Props> = ({
               </label>
 
               <div className="relative flex items-stretch gap-2 rounded-md border border-border-light dark:border-border md:px-4 ">
-                <div className="hidden select-none w-max max-w-32 border-r items-center border-border-light pr-3 dark:border-border md:flex">
-                  <span className="text-gray-500 dark:text-text-primary line-clamp-1">
+                <div className="max-w-32 hidden w-max select-none items-center border-r border-border-light pr-3 dark:border-border md:flex">
+                  <span className="line-clamp-1 text-gray-500 dark:text-text-primary">
                     /@{user?.user.username}/
                   </span>
                 </div>
@@ -236,7 +243,7 @@ const NewArticleModal: FC<Props> = ({
                   name="slug"
                   value={data.slug}
                   onChange={(e) => {
-                    setData(prev => ({
+                    setData((prev) => ({
                       ...prev,
                       slug: slugify(e.target.value, {
                         lower: true,
@@ -246,7 +253,8 @@ const NewArticleModal: FC<Props> = ({
                         locale: "en",
                       }),
                     }));
-                  }} />
+                  }}
+                />
               </div>
             </div>
 
@@ -276,7 +284,7 @@ const NewArticleModal: FC<Props> = ({
 
                     <div
                       onClick={() => {
-                        setData(prev => ({
+                        setData((prev) => ({
                           ...prev,
                           tags: prev.tags.filter((t) => t !== tag),
                         }));
@@ -297,7 +305,10 @@ const NewArticleModal: FC<Props> = ({
                 Select Article Series
               </label>
 
-              <SelectSeries setSelectedSeries={setSelectedSeries} series={data.series} />
+              <SelectSeries
+                setSelectedSeries={setSelectedSeries}
+                series={data.series}
+              />
 
               {selectedSeries && (
                 <div className="mt-2 flex flex-wrap gap-2">

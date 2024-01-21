@@ -1,7 +1,6 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { Divider } from "~/component";
 import { Google, Logo } from "~/svgs";
 
 const Onboard = () => {
@@ -20,49 +19,19 @@ const Onboard = () => {
               Sign up / Log in
             </h1>
 
-            <div className="mb-5 flex flex-wrap justify-center gap-4">
+            <div className="mb-5 flex flex-col justify-center gap-4">
               <button
                 onClick={() =>
                   void signIn("google", {
                     callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
                   })
                 }
-                className="btn-oauth w-full lg:w-auto"
+                className="btn-oauth w-full lg:w-7/12 mx-auto"
               >
                 <Google className="h-5 w-5 fill-gray-700 dark:fill-white" />
                 <span>Continue with Google</span>
               </button>
-              {/* <button
-                onClick={() =>
-                  void signIn("github", {
-                    callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
-                  })
-                }
-                className="btn-oauth w-full lg:w-auto"
-              >
-                <Github className="h-5 w-5 fill-gray-700 dark:fill-white" />
-                <span>Continue with Github</span>
-              </button> */}
-            </div>
 
-            <Divider />
-
-            <div className="my-5 flex flex-col items-center">
-              <label
-                htmlFor="magic_link"
-                className="mb-3 inline-block text-lg font-medium text-gray-700 dark:text-text-secondary"
-              >
-                Or sign in using a magic link
-              </label>
-
-              <input
-                type="email"
-                placeholder="johndoe@example.com"
-                id="magic_link"
-                className="input-oauth mb-3"
-              />
-
-              <button className="btn-filled-large w-4/12">Submit</button>
             </div>
           </div>
           <div className="hidden w-full md:block md:w-7/12 xl:w-full">
@@ -93,7 +62,7 @@ const Onboard = () => {
             </div>
           </div>
         </div>
-      </main>
+      </main >
     </>
   );
 };

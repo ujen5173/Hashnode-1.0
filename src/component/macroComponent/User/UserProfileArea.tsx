@@ -155,7 +155,7 @@ const UserimageArea: FC<{
                         rel="noopener noreferrer"
                         href={`https://twitter.com/intent/tweet?text=${
                           process.env.NEXT_PUBLIC_VERCEL_URL as string
-                        }u/@${userDetails?.username || ""}`}
+                        }/u/@${userDetails?.username || ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
@@ -173,11 +173,11 @@ const UserimageArea: FC<{
                         rel="noopener noreferrer"
                         href={`https://www.linkedin.com/sharing/share-offsite/?url=${
                           process.env.NEXT_PUBLIC_VERCEL_URL as string
-                        }u/@${userDetails?.username || ""}`}
+                        }/u/@${userDetails?.username || ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
-                            <Linkedin className="h-6 w-6 fill-linkedinColor" />
+                            <Linkedin className="h-6 w-6 stroke-linkedinColor" />
                           </span>
 
                           <span>Linkedin</span>
@@ -206,7 +206,7 @@ const UserimageArea: FC<{
                     <li className="w-full p-4 text-base font-semibold text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-primary-light">
                       <button className="flex w-full items-center justify-center gap-2 pr-8 text-left">
                         <span>
-                          <AlertOctagon className="h-6 w-6 fill-twitterColor" />
+                          <AlertOctagon className="h-6 w-6 stroke-twitterColor" />
                         </span>
 
                         <span>Report this Profile</span>

@@ -8,7 +8,7 @@ export const usersRouter = createTRPCRouter({
   followUser: protectedProcedure
     .input(
       z.object({
-        userId: z.string(), 
+        userId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -129,18 +129,14 @@ export const usersRouter = createTRPCRouter({
       }
     }),
 
-  getUser: protectedProcedure.query(async ({ ctx }) => {
+  sessionUser: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user?.id;
     const user = await ctx.db.query.users.findFirst({
-      where: eq(users.id, "927e54ca-fbb9-48d3-ab53-0e04e63367d7"),
+      where: eq(users.id, userId),
       with: {
-        following: {
-          columns: {
-            userId: true,
-          },
-        },
-        followers: {
-          columns: {
-            userId: true,
+        handle: {
+          with: {
+            customTabs: true,
           },
         },
       },
@@ -170,7 +166,7 @@ export const usersRouter = createTRPCRouter({
         username: z.string().trim(),
       })
     )
-    .query(async ({ ctx, input }) => { 
+    .query(async ({ ctx, input }) => {
       const user = await ctx.db.query.users.findFirst({
         where: eq(
           users.username,
@@ -237,18 +233,18 @@ export const usersRouter = createTRPCRouter({
         .set(input)
         .where(eq(users.id, ctx.session.user.id))
         .returning({
-  name:users.name,
-  username:users.username,
-  email:users.email,
-  location:users.location,
-  image:users.image,
-  tagline:users.tagline,
-  stripeSubscriptionStatus:users.stripeSubscriptionStatus,
-  available:users.available,
-  cover_image:users.cover_image,
-  bio:users.bio,
-  skills:users.skills,
-  social:users.social,
+          name: users.name,
+          username: users.username,
+          email: users.email,
+          location: users.location,
+          image: users.image,
+          tagline: users.tagline,
+          stripeSubscriptionStatus: users.stripeSubscriptionStatus,
+          available: users.available,
+          cover_image: users.cover_image,
+          bio: users.bio,
+          skills: users.skills,
+          social: users.social,
         });
 
       return {
@@ -266,56 +262,70 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const result = await ctx.db.query.users.findFirst({
-        where: eq(users.id, input.userId),
-        columns: {
-          id: true,
-        },
-        with: {
-          followers: {
-            limit: 20,
-            columns: {
-              followingId: false,
-              userId: false,
-            },
-            with: {
-              following: {
-                columns: {
-                  id: true,
-                  username: true,tagline: true,
-                  name: true,
-                  image: true,
-                },
-                ...(ctx?.session?.user?.id ? ({with: {
-                  following: {
-                    where: eq(follow.userId, ctx?.session?.user?.id ),
-                    columns: {
-                      userId: true,
-                    },
+      const result = await ctx.db.query.users
+        .findFirst({
+          where: eq(users.id, input.userId),
+          columns: {
+            id: true,
+          },
+          with: {
+            followers: {
+              limit: 20,
+              columns: {
+                followingId: false,
+                userId: false,
+              },
+              with: {
+                following: {
+                  columns: {
+                    id: true,
+                    username: true,
+                    tagline: true,
+                    name: true,
+                    image: true,
                   },
-                }}) : {})
-               }
-            }
-          }
-        }
-       }).then((e: {
-        id: string;
-        followers: {
-            following: {
-              followers?: {
-                userId: string;
-              }[];
-                id: string;
-                tagline: string | null;
-                name: string;
-                username: string;
-                image: string | null;
-            };
-        }[];
-    } | undefined) => e?.followers.map(f => {
-      const {followers, ...rest} = f.following;
-      return ({...rest, isFollowing: (followers ?? []).length > 0})
-      }));
+                  ...(ctx?.session?.user?.id
+                    ? {
+                        with: {
+                          following: {
+                            where: eq(follow.userId, ctx?.session?.user?.id),
+                            columns: {
+                              userId: true,
+                            },
+                          },
+                        },
+                      }
+                    : {}),
+                },
+              },
+            },
+          },
+        })
+        .then(
+          (
+            e:
+              | {
+                  id: string;
+                  followers: {
+                    following: {
+                      followers?: {
+                        userId: string;
+                      }[];
+                      id: string;
+                      tagline: string | null;
+                      name: string;
+                      username: string;
+                      image: string | null;
+                    };
+                  }[];
+                }
+              | undefined
+          ) =>
+            e?.followers.map((f) => {
+              const { followers, ...rest } = f.following;
+              return { ...rest, isFollowing: (followers ?? []).length > 0 };
+            })
+        );
 
       return result;
     }),
@@ -327,57 +337,73 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-       const result = await ctx.db.query.users.findFirst({
-        where: eq(users.id, input.userId),
-        columns: {
-          id: true,
-        },
-        with: {
-          following: {
-            limit: 20,
-            columns: {
-              followingId: false,
-              userId: false,
-            }, 
-            with: {
-              user: {
-                columns: {
-                  id: true,
-                  username: true,
-                  name: true,
-                  tagline: true,
-                  image: true,
-                },
-                ...(ctx?.session?.user?.id ? ({with: {
-                  followers: {
-                    where: eq(follow.followingId, ctx?.session?.user?.id ),
-                    columns: { 
-                      userId: true,
-                    },
+      const result = await ctx.db.query.users
+        .findFirst({
+          where: eq(users.id, input.userId),
+          columns: {
+            id: true,
+          },
+          with: {
+            following: {
+              limit: 20,
+              columns: {
+                followingId: false,
+                userId: false,
+              },
+              with: {
+                user: {
+                  columns: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    tagline: true,
+                    image: true,
                   },
-                }}) : {})
-               }
-            }
-          }
-        }
-      }).then((e: {
-        id: string;
-        following: {
-            user: {
-              followers?: {
-                userId: string;
-              }[];
-                id: string;
-                name: string;
-                username: string;
-                tagline: string | null;
-                image: string | null;
-            };
-        }[];
-    } | undefined) => e?.following.map(f => {
-      const {followers, ...rest} = f.user;
-      return ({...rest, isFollowing: (followers ?? []).length > 0})
-      }));
+                  ...(ctx?.session?.user?.id
+                    ? {
+                        with: {
+                          followers: {
+                            where: eq(
+                              follow.followingId,
+                              ctx?.session?.user?.id
+                            ),
+                            columns: {
+                              userId: true,
+                            },
+                          },
+                        },
+                      }
+                    : {}),
+                },
+              },
+            },
+          },
+        })
+        .then(
+          (
+            e:
+              | {
+                  id: string;
+                  following: {
+                    user: {
+                      followers?: {
+                        userId: string;
+                      }[];
+                      id: string;
+                      name: string;
+                      username: string;
+                      tagline: string | null;
+                      image: string | null;
+                    };
+                  }[];
+                }
+              | undefined
+          ) =>
+            e?.following.map((f) => {
+              const { followers, ...rest } = f.user;
+              return { ...rest, isFollowing: (followers ?? []).length > 0 };
+            })
+        );
 
       return result;
     }),

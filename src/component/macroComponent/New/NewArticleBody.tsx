@@ -5,33 +5,31 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
-import { utapi } from "uploadthing/server";
 import Editor from "~/component/editor";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
 import NewArticleModal from "~/component/popup/NewArticleModal";
 import { LoadingSpinner } from "~/svgs";
-import { type DefaultEditorContent } from "~/types";
+import { type ArticleForEdit, type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
 import { slugSetting } from "~/utils/constants";
 import generateContent from "~/utils/contentGenerator";
 import { convertToHTML, imageToBlogHandler } from "~/utils/miniFunctions";
 import { useUploadThing } from "~/utils/uploadthing";
 
-export interface ArticleData {
+export type ArticleData = {
+  content: DefaultEditorContent;
   title: string;
   subtitle: string;
-  content: DefaultEditorContent;
-  userId: string | null;
   cover_image: string | null;
   cover_image_key: string | null;
-  tags: string[];
   slug: string;
-  series: string | null;
   seoTitle: string;
   seoDescription: string;
   seoOgImage: string | null;
   seoOgImageKey: string | null;
   disabledComments: boolean;
+  series: string | null;
+  tags: string[];
 }
 
 export const defaultArticleData = {
@@ -69,14 +67,19 @@ const NewArticleBody: FC<{
   setPublishModal: React.Dispatch<React.SetStateAction<boolean>>;
   publishing: boolean;
   setPublishing: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setPublishModal, publishModal, publishing, setPublishing }) => {
+  article: ArticleForEdit | undefined;
+}> = ({ setPublishModal, publishModal, publishing, setPublishing, article }) => {
   const router = useRouter();
 
-  const [hydrate, setHydrate] = useState(false);
   const [contentRendered, setContentRendered] = useState(false);
-  const [edit, setEdit] = useState(false);
   const [query, setQuery] = useState("");
-  const [prev_slug, setPrev_slug] = useState<string | null>(null);
+  const [prev_slug] = useState<string | null>((() => {
+    if (article) {
+      return article.slug
+    }
+    return null
+  })());
+
   const [generatingContent, setGeneratingContent] = useState({
     title: false,
     subtitle: false,
@@ -85,34 +88,18 @@ const NewArticleBody: FC<{
 
   const [data, setData] = useState<ArticleData>(defaultArticleData);
 
-  const {
-    data: editData,
-    isSuccess,
-    error,
-  } = api.posts.getArticleToEdit.useQuery(
-    { slug: router?.query?.params?.[1] as string },
-    {
-      enabled: !!(hydrate && edit),
-      retry: 0,
-      refetchOnWindowFocus: false,
-    }
-  );
-
   useEffect(() => {
-    if (error) {
-      toast.error(error.message);
-    }
-
-    if (editData) {
-      const { subtitle, ...rest } = editData;
-      setPrev_slug(editData.slug);
+    if (article) {
       setData({
-        ...rest,
-        subtitle: subtitle || "",
-        content: convertToHTML(editData.content) as DefaultEditorContent,
-      });
+        ...article,
+        subtitle: article.subtitle || "",
+        seoDescription: article.seoDescription || "",
+        seoTitle: article.seoTitle || "",
+        content: convertToHTML(article.content) as DefaultEditorContent
+      })
     }
-  }, [error, editData]);
+  }, [article]);
+
 
   const [requestedTags, setRequestedTags] = useState<string[]>([]);
 
@@ -129,16 +116,11 @@ const NewArticleBody: FC<{
 
   useEffect(() => {
     if (tagsData) {
-      setData({ ...data, tags: tagsData.map((tag) => tag.name) });
+      setData({ ...data, tags: tagsData.map(({ name }) => name) });
     }
   }, [tagsData]);
 
   useEffect(() => {
-    if (router?.query.params?.includes("edit")) {
-      setEdit(true);
-    }
-
-    setHydrate(true);
     const tagsFromUrl = new URLSearchParams(window.location.search).get("tag");
     if (tagsFromUrl) setRequestedTags(tagsFromUrl.split(" "));
   }, [router]);
@@ -148,10 +130,13 @@ const NewArticleBody: FC<{
 
   const { startUpload, isUploading } = useUploadThing("imageUploader");
 
+  const { mutateAsync } = api.posts.deleteImage.useMutation();
+
   const deleteImage = async (key: string | undefined): Promise<void> => {
     if (!key) return;
-    //! Missing UPLOADTHING_SECRET env variable bug occured!!!
-    await utapi.deleteFiles(key);
+
+    await mutateAsync({ key });
+
     if (key === "seoOgImageKey") {
       setData({
         ...data,
@@ -261,7 +246,9 @@ const NewArticleBody: FC<{
         {data.cover_image && (
           <div className="relative mb-5 w-full rounded-md border border-border-light dark:border-border">
             <button
-              onClick={() => void deleteImage("cover_image_key")}
+              onClick={() =>
+                void deleteImage(data.cover_image_key || undefined)
+              }
               className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
             >
               <X className="h-5 w-5 fill-none stroke-gray-700" />
@@ -272,9 +259,8 @@ const NewArticleBody: FC<{
               alt="cover"
               width={1600}
               height={840}
-              className={`${
-                isUploading ? "loading" : ""
-              } max-h-[30rem] w-full rounded-lg object-cover`}
+              className={`${isUploading ? "loading" : ""
+                } max-h-[30rem] w-full rounded-lg object-cover`}
             />
           </div>
         )}
@@ -299,6 +285,7 @@ const NewArticleBody: FC<{
                   const newData = {
                     ...data,
                     [name]: value,
+                    slug: slugify(value, slugSetting),
                   };
                   setData(newData);
                 }}
@@ -322,7 +309,7 @@ const NewArticleBody: FC<{
                 <LoadingSpinner className="h-5 w-5 fill-none stroke-white" />
               ) : (
                 <Sparkles className="h-5 w-5 stroke-slate-200" />
-              )}{" "}
+              )}
             </button>
             <div className="flex-1">
               <Input
@@ -343,19 +330,18 @@ const NewArticleBody: FC<{
           <div className="relative flex items-center justify-between">
             <button
               onClick={() => void generateContents.content()}
-              className="absolute right-0 top-0 z-50 rounded-md bg-blue-500 p-2"
+              className="absolute right-0 top-0 z-40 rounded-md bg-blue-500 p-2"
             >
               {generatingContent.content ? (
                 <LoadingSpinner className="h-5 w-5 fill-none stroke-white" />
               ) : (
                 <Sparkles className="h-5 w-5 stroke-slate-200" />
-              )}{" "}
+              )}
             </button>
             <Editor
               contentRendered={contentRendered}
               data={data}
               setData={setData}
-              editData={isSuccess}
             />
           </div>
         </section>
@@ -363,7 +349,7 @@ const NewArticleBody: FC<{
 
       {publishModal && (
         <div
-          className="fixed inset-0 bg-transparent backdrop-blur-[2px]"
+          className="fixed inset-0 z-50 bg-transparent backdrop-blur-[2px]"
           onClick={() => setPublishModal((prev) => !prev)}
         />
       )}

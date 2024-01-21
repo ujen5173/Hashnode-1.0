@@ -3,7 +3,7 @@ import { type GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
@@ -14,7 +14,7 @@ import { api } from "~/utils/api";
 import { slugSetting } from "~/utils/constants";
 
 const Setup = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const redirectionLink = useSearchParams().get("redirect");
 
@@ -24,10 +24,13 @@ const Setup = () => {
   });
 
   useEffect(() => {
+    if (status !== "loading" && !session) {
+      router.replace("/onboard");
+    }
     if (session) {
       setHandle({ name: session.user.name, domain: session.user.username });
     }
-  }, []);
+  }, [status]);
 
   const { mutateAsync, isLoading } =
     api.handles.createPersonalHandle.useMutation();
@@ -120,8 +123,9 @@ const Setup = () => {
 
             <button
               onClick={() => void handleSubdomain()}
-              className={`${isLoading ? "cursor-not-allowed opacity-40" : ""
-                } btn-filled`}
+              className={`${
+                isLoading ? "cursor-not-allowed opacity-40" : ""
+              } btn-filled`}
               disabled={isLoading}
             >
               <div className="px-4">

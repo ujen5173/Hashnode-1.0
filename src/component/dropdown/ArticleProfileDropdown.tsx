@@ -1,11 +1,11 @@
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import React from "react";
 import { articleimageDropdownList } from "~/utils/constants";
 
-const ArticleimageDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
+const ArticleimageDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
   const { data: user } = useSession();
   const router = useRouter();
 
@@ -38,21 +38,37 @@ const ArticleimageDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
           </div>
         </div>
       </Link>
-      {
-        articleimageDropdownList.map((item, index) => (
-          item?.type ? (
-            <div key={index} className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
-          ) : <div className="cursor-pointer" onClick={() => {
-            if (item.name === "Logout") void logout();
-            if (item.link && user?.user.id) void router.push(item.link(user?.user.id))
-          }} key={index}>
-            <div className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light cursor-pointer">
+      {articleimageDropdownList.map((item, index) =>
+        item?.type ? (
+          <div
+            key={index}
+            className="my-2 h-[1px] w-full bg-border-light dark:bg-border"
+          />
+        ) : (
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              if (item.name === "Log out") void logout();
+              if (item.link && user?.user.id)
+                void router.push(item.link(user?.user.id));
+            }}
+            key={index}
+          >
+            <div className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
               {item.icon}
-              <span className={`${item.danger ? "text-red" : "text-gray-700 dark:text-text-secondary"} text-sm font-normal`}>{item.name}</span>
+              <span
+                className={`${
+                  item.danger
+                    ? "text-red"
+                    : "text-gray-700 dark:text-text-secondary"
+                } text-sm font-normal`}
+              >
+                {item.name}
+              </span>
             </div>
           </div>
-        ))
-      }
+        )
+      )}
     </div>
   );
 });

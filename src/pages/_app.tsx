@@ -35,22 +35,28 @@ const MyApp: AppType<{ session: Session | null }> = ({
   }, [popup]);
 
   useEffect(() => {
-    const tm = setTimeout(() => {
-      const body = document.querySelector("body");
-      if (body) {
-        body.style.overflow = "hidden";
-        setPopup(true);
-      }
-    }, 2000);
+    const popup = JSON.parse(
+      localStorage.getItem("remove_popup") || "false"
+    ) as boolean;
 
-    return () => {
-      const body = document.querySelector("body");
-      if (body) {
-        body.style.overflow = "auto";
-      }
+    if (!popup) {
+      const tm = setTimeout(() => {
+        const body = document.querySelector("body");
+        if (body) {
+          body.style.overflow = "hidden";
+          setPopup(true);
+        }
+      }, 2000);
 
-      clearTimeout(tm);
-    };
+      return () => {
+        const body = document.querySelector("body");
+        if (body) {
+          body.style.overflow = "auto";
+        }
+
+        clearTimeout(tm);
+      };
+    }
   }, []);
 
   const handleKeyPress = (): void => {

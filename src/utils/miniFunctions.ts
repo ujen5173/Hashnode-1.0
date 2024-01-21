@@ -148,7 +148,6 @@ export const imageToBlogHandler = (file: File): Promise<File | null> => {
 };
 
 export const formattedContent = (content: DefaultEditorContent) => {
-  console.log({ content });
   return generateHTML(content, [
     Document,
     Text,

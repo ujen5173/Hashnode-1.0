@@ -39,7 +39,11 @@ const config = {
         hostname: "upload.wikimedia.org",
         port: "",
       },
-
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+        port: "",
+      },
       {
         protocol: "https",
         hostname: "uploadthing.com",

@@ -108,7 +108,7 @@ body.dark .anouncement {
 }
 
 .btn-oauth {
-  @apply flex items-center justify-center gap-2 rounded-full border border-border-light bg-transparent px-6 py-3 text-base font-medium tracking-wider text-gray-700 transition duration-150 hover:border-border-light hover:bg-light-bg hover:shadow-md dark:border-primary-light dark:bg-primary-light dark:text-white dark:hover:bg-border;
+  @apply flex items-center justify-center gap-2 rounded-full border border-border-light bg-white px-6 py-3 text-base font-medium tracking-wider text-gray-700 transition duration-150 hover:border-border-light hover:bg-light-bg hover:shadow-md dark:border-primary-light dark:bg-primary-light dark:text-white dark:hover:bg-border;
 }
 
 .btn-follow {
@@ -152,7 +152,7 @@ body.dark .anouncement {
 }
 
 .input-primary {
-  @apply rounded-full border border-border-light bg-light-bg px-10 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-secondary hover:dark:border-border;
+  @apply rounded-full border border-border-light bg-white px-10 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-secondary hover:dark:border-border;
 }
 
 .input-primary::-webkit-input-placeholder {
@@ -160,7 +160,7 @@ body.dark .anouncement {
 }
 
 .input-filled {
-  @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-3 text-base text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-secondary hover:dark:border-border dark:focus:bg-primary;
+  @apply w-full rounded-md border border-border-light bg-white px-4 py-3 text-base text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-primary-light dark:text-text-secondary hover:dark:border-border dark:focus:bg-primary;
 }
 
 body.dark .input-filled.input-with-opacity::-webkit-input-placeholder {

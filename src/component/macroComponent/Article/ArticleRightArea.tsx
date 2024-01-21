@@ -8,7 +8,7 @@ import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import {
   ArticleProfileDropdown,
-  NotAuthenticatedProfileDropdown
+  NotAuthenticatedProfileDropdown,
 } from "~/component/dropdown";
 import { Notification } from "~/component/miniComponent";
 import { FollowContext } from "~/pages/u/[username]/[slug]";
@@ -20,7 +20,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
   const { handleTheme, setSearchOpen } = useContext(C) as ContextValue;
   const { following, setFollowing } = useContext(FollowContext) as {
     following: boolean;
-    setFollowing: React.Dispatch<React.SetStateAction<boolean>>
+    setFollowing: React.Dispatch<React.SetStateAction<boolean>>;
   };
   const { data: user } = useSession();
   const [count, setCount] = useState(0);
@@ -50,7 +50,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
     refetchOnWindowFocus: false,
     refetchInterval: 15000, // 15 seconds
     enabled: !!user,
-    retry: 0
+    retry: 0,
   });
 
   const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened

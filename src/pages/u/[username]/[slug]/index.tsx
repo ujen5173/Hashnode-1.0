@@ -29,7 +29,7 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
   return (
     <>
       <ArticleSEO article={article} />
-      <FollowContext.Provider value={{ following, setFollowing }} >
+      <FollowContext.Provider value={{ following, setFollowing }}>
         <ArticleHeader user={article.user} />
         <ArticleBody article={article} />
       </FollowContext.Provider>
@@ -62,8 +62,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           : null,
         article: data
           ? (JSON.parse(JSON.stringify(data)) as Article & {
-            isFollowing: boolean;
-          })
+              isFollowing: boolean;
+            })
           : null,
       },
     };

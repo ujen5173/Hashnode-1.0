@@ -1,8 +1,10 @@
 import { Hash } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState, type FC } from "react";
+import slugify from "slugify";
 import { useDebouncedCallback } from "use-debounce";
 import { api } from "~/utils/api";
+import { slugSetting } from "~/utils/constants";
 import { TagLoading } from "../loading";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 
@@ -68,6 +70,17 @@ const SelectTags: FC<Props> = ({
   const debounced = useDebouncedCallback(async (value: string) => {
     const response = await search(value);
     const newData = response.filter((tag) => !t.includes(tag.name));
+
+    // add the tag user want if it doesn't exist
+    if (value.trim().length > 0 && !newData.some((e) => e.name === value)) {
+      newData.unshift({
+        name: value,
+        logo: null,
+        slug: slugify(value, slugSetting),
+        articlesCount: 0,
+      });
+    }
+
     setTags(newData);
   }, 200);
 

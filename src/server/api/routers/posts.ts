@@ -42,6 +42,7 @@ import {
   tagsToUsers,
   users,
 } from "~/server/db/schema";
+import { utapi } from "~/server/ut";
 import type { ArticleCardWithComments, SearchResults } from "~/types";
 import {
   displayUniqueObjects,
@@ -539,6 +540,27 @@ export const postsRouter = createTRPCRouter({
       }
     }),
 
+  deleteImage: protectedProcedure
+    .input(
+      z.object({
+        key: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await utapi.deleteFiles([input.key]);
+        return {
+          success: true,
+        };
+      } catch (err) {
+        console.log(err);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
+
   getArticleToEdit: protectedProcedure
     .input(
       z.object({
@@ -778,8 +800,10 @@ export const postsRouter = createTRPCRouter({
               ...rest,
               userId: ctx.session.user.id,
               read_time: Math.ceil(readingTime(input.content).minutes) || 1,
-              slug: input.slug,
               seoTitle: input.seoTitle || input.title,
+              slug: existingArticle
+                ? input.slug + `-${Math.floor(Math.random() * 9999999)}`
+                : input.slug,
               seoDescription:
                 input.seoDescription ||
                 input.subtitle ||
@@ -850,7 +874,7 @@ export const postsRouter = createTRPCRouter({
           };
         }
       } catch (err) {
-        console.log({ err });
+        console.log(err);
         if (err instanceof TRPCError) {
           throw err;
         } else {

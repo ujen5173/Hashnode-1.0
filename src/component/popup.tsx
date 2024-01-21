@@ -11,13 +11,17 @@ const Popup = ({
 }) => {
   const { width, height } = useWindowSize();
   const { data: user } = useSession();
+
   return (
     <>
       <Confetti width={width} height={height} />
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div
           className="absolute inset-0 h-full w-full bg-black opacity-50"
-          onClick={() => setPopup(false)}
+          onClick={() => {
+            setPopup(false);
+            localStorage.setItem("remove_popup", JSON.stringify(true));
+          }}
         />
         <div className="relative z-[60] rounded-md border border-border-light bg-white p-4 shadow-xl dark:border-border dark:bg-primary">
           <header className="flex items-center justify-between border-b border-border-light pb-4 dark:border-border">
@@ -25,7 +29,10 @@ const Popup = ({
             <button
               className="text-2xl text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               aria-label="close"
-              onClick={() => setPopup(false)}
+              onClick={() => {
+                setPopup(false);
+                localStorage.setItem("remove_popup", JSON.stringify(true));
+              }}
             >
               <X />
             </button>
@@ -33,9 +40,7 @@ const Popup = ({
 
           <section className="border-b border-border-light py-4 dark:border-border">
             <ul className="list-inside list-disc">
-              <li className="py-2 text-slate-700 dark:text-white">
-                Fixed UI problems
-              </li>
+
               <li className="py-2 text-slate-700 dark:text-white">
                 Added AI generation for free/paid users (MUST TRY)
               </li>
@@ -44,7 +49,10 @@ const Popup = ({
 
           <footer className="flex justify-end pt-4">
             <Link
-              onClick={() => setPopup(false)}
+              onClick={() => {
+                setPopup(false);
+                localStorage.setItem("remove_popup", JSON.stringify(true));
+              }}
               href={user ? "/article/new" : "/onboard"}
               className="btn-filled"
             >

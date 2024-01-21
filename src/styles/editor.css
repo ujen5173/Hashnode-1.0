@@ -19,7 +19,7 @@
 .ProseMirror ul,
 .article ol,
 .article ul {
-  list-style-type: initial;
+  list-style-type: auto;
   padding-left: 25px;
 }
 .ProseMirror h1,
