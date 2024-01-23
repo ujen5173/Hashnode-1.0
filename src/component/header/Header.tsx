@@ -20,7 +20,7 @@ const Header: React.FC<{ search?: boolean }> = ({ search = true }) => {
   ]);
 
   return (
-    <header className="sticky left-0 top-0 z-40 w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
+    <header className="sticky left-0 top-0 z-50 w-full border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto flex max-w-[1550px] items-center justify-between gap-4 px-4 py-2 md:py-4">
         <div className="flex flex-1 items-center justify-between gap-8 md:gap-4">
           <LeftArea />

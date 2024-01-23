@@ -1,10 +1,11 @@
-import { useViewportSize } from "@mantine/hooks";
+
 import { type GetServerSideProps } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Header, ManageData, NotificationLoading } from "~/component";
+import useWindowSize from "~/hooks/useWindow";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
@@ -20,13 +21,13 @@ enum Type {
 const Notifications = () => {
   const { data: session } = useSession();
   const { mutate } = api.notifications.markAsRead.useMutation(); // mark all notifications as read when notification popup is opened
-  const { width } = useViewportSize();
+  const { width } = useWindowSize();
 
   useEffect(() => {
     if (session) {
       mutate();
     }
-  }, []);
+  }, [session]);
 
   const [notificationType, setNotificationType] = useState<Type>(Type.all);
   const { data, isLoading, isError } = api.notifications.get.useQuery(

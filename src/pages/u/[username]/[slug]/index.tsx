@@ -62,17 +62,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           : null,
         article: data
           ? (JSON.parse(JSON.stringify(data)) as Article & {
-              isFollowing: boolean;
-            })
+            isFollowing: boolean;
+          })
           : null,
       },
     };
   } catch (err) {
     return {
-      redirect: {
-        destination: "/404",
-        permanent: false,
-      },
+      notFound: true,
     };
   }
 };

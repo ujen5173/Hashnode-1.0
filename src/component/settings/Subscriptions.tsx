@@ -6,11 +6,6 @@ import { api } from "~/utils/api";
 const Subscription = () => {
   const { mutateAsync: createCheckoutSession } = api.stripe.createCheckoutSession.useMutation();
   const { data: session } = useSession();
-  const { data: subscriptionStatus } = api.users.subscriptionStatus.useQuery(undefined, {
-    enabled: !!session,
-    refetchOnWindowFocus: false,
-    retry: 0
-  });
 
   const { push } = useRouter();
 
@@ -29,7 +24,7 @@ const Subscription = () => {
     </header>
 
     <section className="py-4">
-      {subscriptionStatus === "active" ? (
+      {session?.user.stripeSubscriptionStatus === "active" ? (
         <div className="py-4">
           <h1 className="text-2xl mb-4 font-semibold text-gray-700 dark:text-text-secondary">
             You are already subscribed to Hashnode Pro

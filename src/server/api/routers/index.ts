@@ -1,4 +1,5 @@
 export { commentsRouter } from "./comments";
+export { feedbackRouter } from "./feedback";
 export { handleRouter } from "./handle";
 export { likesRouter } from "./likes";
 export { notificationRouter } from "./notifications";

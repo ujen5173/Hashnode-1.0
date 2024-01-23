@@ -49,6 +49,11 @@ const config = {
         hostname: "uploadthing.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+      },
     ],
   },
 };

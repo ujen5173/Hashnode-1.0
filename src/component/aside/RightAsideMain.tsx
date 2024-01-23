@@ -1,17 +1,11 @@
 import { useSession } from "next-auth/react";
 import type { FC } from "react";
 import type { DetailedTag } from "~/types";
-import { api } from "~/utils/api";
 import { Bookmarks } from "../macroComponent/Bookmark";
 import { Anouncement, Others, Trending } from "../miniComponent";
 
 const RightAsideMain: FC<{ tagDetails?: DetailedTag }> = ({ tagDetails }) => {
   const { data: session } = useSession();
-  const { data } = api.users.subscriptionStatus.useQuery(undefined, {
-    enabled: !!session,
-    refetchOnWindowFocus: false,
-    retry: 0
-  });
 
   return (
     <aside className="container-right-aside my-4 hidden min-h-[100dvh] lg:block">
@@ -28,7 +22,7 @@ const RightAsideMain: FC<{ tagDetails?: DetailedTag }> = ({ tagDetails }) => {
           </p>
         </div>
       ) : (
-        data !== "active" && (
+        session?.user.stripeSubscriptionStatus !== "active" && (
           <div className="mb-4">
             <Anouncement />
           </div>

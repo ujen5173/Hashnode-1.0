@@ -314,6 +314,20 @@ body.dark button.btn-filled:focus {
   background: #2563eb;
 }
 
+.feedback-div {
+  opacity: 0;
+  animation: animate-feedback 300ms ease-in-out;
+  opacity: 1;
+}
+
+@keyframes animate-feedback {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* Light theme */
 .activity_date {
   align-items: center;

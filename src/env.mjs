@@ -25,6 +25,9 @@ export const env = createEnv({
     STRIPE_SK: z.string(),
     STRIPE_PRICE_ID: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
+    USER: z.string(),
+    PASS: z.string(),
+    TO: z.string(),
   },
 
   /**
@@ -60,5 +63,8 @@ export const env = createEnv({
     STRIPE_SK: process.env.STRIPE_SK,
     STRIPE_PRICE_ID: process.env.STRIPE_PRICE_ID,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    USER: process.env.USER,
+    PASS: process.env.PASS,
+    TO: process.env.TO,
   },
 });
