@@ -113,11 +113,15 @@ const MyApp: AppType<{ session: Session | null }> = ({
         </Context>
       </SessionProvider>
       <Analytics />
+
+      {/* Feedback popup */}
       {feedback && (
         <div className="feedback-div fixed bottom-5 right-5">
-          <Feedback close={close} />
+          <Feedback close={close} setFeedbackForm={setFeedbackForm} />
         </div>
       )}
+
+      {/* Feedback Icon */}
       {!feedback && (
         <div className="feedback-div fixed bottom-5 right-5">
           <div
@@ -136,10 +140,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
           </div>
         </div>
       )}
+
+      {/* Feedback Form */}
       {feedbackForm && (
-        <div className="feedback-div fixed bottom-5 right-5">
-          <FeedbackForm setFeedbackForm={setFeedbackForm} close={close} />
-        </div>
+        <FeedbackForm setFeedbackForm={setFeedbackForm} close={close} />
       )}
     </>
   );

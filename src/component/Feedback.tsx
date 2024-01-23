@@ -5,38 +5,38 @@ import { api } from "~/utils/api";
 
 const Feedback: FC<{
   close: () => void;
-}> = ({ close }) => {
-  const [feedbackForm, setFeedbackForm] = useState(false);
+  setFeedbackForm: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ close, setFeedbackForm }) => {
 
   return (
-    <div className="relative w-80 rounded-xl p-4 shadow-xl shadow-white/10 bg-blue-600">
-      <div onClick={() => close()} className="absolute right-2 top-2 p-2">
-        <X className="h-5 w-5 cursor-pointer text-white" />
-      </div>
-      <h1 className="mb-4 text-xl font-bold text-white">
-        How would you rate your experience?
-      </h1>
+    <>
+      <div className="relative w-80 rounded-xl p-4 shadow-xl shadow-white/10 bg-blue-600">
+        <div onClick={() => close()} className="absolute right-2 top-2 p-2">
+          <X className="h-5 w-5 cursor-pointer text-white" />
+        </div>
+        <h1 className="mb-4 text-xl font-bold text-white">
+          How would you rate your experience?
+        </h1>
 
-      <div className="flex gap-4">
-        <button
-          className="rounded-lg bg-black px-4 py-2 font-bold text-white transition hover:bg-slate-800"
-          onClick={() => {
-            setFeedbackForm(true);
-          }}
-        >
-          Send Feedback
-        </button>
-        <button
-          className="rounded-lg bg-white px-4 py-2 font-bold text-black transition hover:bg-slate-200"
-          onClick={() => void close()}
-        >
-          Cancel
-        </button>
+        <div className="flex gap-4">
+          <button
+            className="rounded-lg bg-black px-4 py-2 font-bold text-white transition hover:bg-slate-800"
+            onClick={() => {
+              setFeedbackForm(true);
+            }}
+          >
+            Send Feedback
+          </button>
+          <button
+            className="rounded-lg bg-white px-4 py-2 font-bold text-black transition hover:bg-slate-200"
+            onClick={() => void close()}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
-      {feedbackForm && (
-        <FeedbackForm close={close} setFeedbackForm={setFeedbackForm} />
-      )}
-    </div>
+
+    </>
   );
 };
 
@@ -56,6 +56,7 @@ export const FeedbackForm = ({
   const [rating, setRating] = useState<"0" | "1" | "2" | "3" | "4">("2");
 
   const sendFeedback = async () => {
+    if (!feedback) return;
     await mutateAsync({
       name,
       feedback,
@@ -65,6 +66,7 @@ export const FeedbackForm = ({
     setSend(true);
     setTimeout(() => {
       close();
+      setFeedbackForm(false);
     }, 1000);
   };
 
@@ -102,7 +104,7 @@ export const FeedbackForm = ({
 
         <div className="mb-4">
           <label className="mb-2 block text-slate-800 dark:text-slate-200">
-            Name or Email Address:
+            Name or Email Address: (Optional)
           </label>
           <input
             value={name}

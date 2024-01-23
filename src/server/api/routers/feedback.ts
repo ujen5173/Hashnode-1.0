@@ -9,7 +9,7 @@ const feedbackRouter = createTRPCRouter({
       z.object({
         rating: z.enum(["0", "1", "2", "3", "4"]),
         feedback: z.string(),
-        name: z.string(),
+        name: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -20,7 +20,11 @@ const feedbackRouter = createTRPCRouter({
         html: `
         <div>
           <h1 style="font-weight: bold; font-size: 24px;">Hashnode Clone Feedback</h1>
-          <strong  style="font-weight: bold; margin-bottom:8px; font-size: 18px;">Experience: ${(() => {
+          <br />
+          <strong style="font-weight: bold; font-size: 18px;">Name: ${
+            input.name || "Anonymous"
+          }</strong>
+          <strong style="font-weight: bold; margin-bottom:8px; font-size: 18px;">Experience: ${(() => {
             switch (input.rating) {
               case "0":
                 return "Amazed 😲";
@@ -35,9 +39,9 @@ const feedbackRouter = createTRPCRouter({
             }
           })()}</strong>
           <br />
-          <strong  style="font-weight: bold; font-size: 18px;">Feedback:</strong> ${
+          <strong style="font-weight: bold; font-size: 18px;">Feedback: ${
             input.feedback
-          }
+          }</strong>
         </div>
       `,
       });
