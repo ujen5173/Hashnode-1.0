@@ -5,7 +5,7 @@ import removeMd from "remove-markdown";
 
 import { BookOpen } from "lucide-react";
 import { C, type ContextValue } from "~/utils/context";
-import { formatDate, limitText } from "~/utils/miniFunctions";
+import { formatDate } from "~/utils/miniFunctions";
 import { type CardProps } from "./SimpleArticleCard";
 
 const StackedArticleCard: FC<CardProps> = ({ article }) => {
@@ -42,13 +42,12 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
 
             <Link href={`/u/@${article.user.username}/${article.slug}`}>
               <p
-                className={`${
-                  article.cover_image
-                    ? "max-height-four"
-                    : "max-height-three mb-0 w-full md:mb-3"
-                } break-words text-base text-gray-500 dark:text-text-primary`}
+                className={`${article.cover_image
+                  ? "max-height-four"
+                  : "max-height-three mb-0 w-full md:mb-3"
+                  } break-words text-base text-gray-500 dark:text-text-primary`}
               >
-                {limitText(removeMd(article.content), 150)}
+                {removeMd(article.subContent ?? "")}
               </p>
             </Link>
           </div>
@@ -63,8 +62,8 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
                   article.cover_image
                     ? article.cover_image
                     : theme === "light"
-                    ? "/imagePlaceholder-light.avif"
-                    : "/imagePlaceholder-dark.avif"
+                      ? "/imagePlaceholder-light.avif"
+                      : "/imagePlaceholder-dark.avif"
                 }
                 alt={`${article.title} image not found!`}
                 width={500}

@@ -10,7 +10,9 @@ const SearchArea: FC = () => {
   return (
     <>
       <div className="hidden items-center gap-2 xl:flex">
-        <Link href="/">
+        <Link href="/"
+          aria-label="Go to my feed"
+        >
           <button
             aria-label="Go to my feed"
             role="button"
@@ -21,7 +23,7 @@ const SearchArea: FC = () => {
         </Link>
 
         <button
-          aria-label="Unlock the power of AI"
+          aria-label="Unlock the power of AI using RIX"
           role="button"
           className="btn-subtle flex items-center justify-center gap-1"
         >

@@ -25,7 +25,7 @@ const Trending = () => {
 
         <Link href={"/explore/articles"}>
           <button
-            aria-label="view all the trending articles"
+            aria-label="See all the trending articles"
             role="button"
             className="btn-outline-small"
           >

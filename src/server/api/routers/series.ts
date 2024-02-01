@@ -85,7 +85,7 @@ export const seriesRouter = createTRPCRouter({
                 id: true,
                 title: true,
                 slug: true,
-                content: true,
+                subContent: true,
                 cover_image: true,
                 read_time: true,
                 createdAt: true,

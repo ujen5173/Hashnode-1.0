@@ -16,7 +16,7 @@ export interface CardProps {
     id: string;
     slug: string;
     title: string;
-    content: string;
+    subContent: string | null;
     cover_image: string | null;
     createdAt: Date;
     read_time: number;
@@ -29,15 +29,14 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
 
   return (
     <div
-      className={`${
-        type === "main"
-          ? "main-block"
-          : type === "group"
+      className={`${type === "main"
+        ? "main-block"
+        : type === "group"
           ? "w-full"
           : perRow === 2
-          ? "w-full md:w-[calc(100%/2-0.5rem)]"
-          : "w-full md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-0.67rem)]"
-      }`}
+            ? "w-full md:w-[calc(100%/2-0.5rem)]"
+            : "w-full md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-0.67rem)]"
+        }`}
       key={article.id}
     >
       <Link
@@ -50,8 +49,8 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
               article.cover_image
                 ? article.cover_image
                 : theme === "light"
-                ? "/imagePlaceholder-light.avif"
-                : "/imagePlaceholder-dark.avif"
+                  ? "/imagePlaceholder-light.avif"
+                  : "/imagePlaceholder-dark.avif"
             }
             alt={`${article.title} image not found!`}
             width={500}
@@ -88,7 +87,7 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
           <p
             className={`max-height-three break-words text-base text-gray-500 dark:text-text-primary`}
           >
-            {removeMd(article.content)}
+            {removeMd(article.subContent ?? "")}...
           </p>
         </Link>
       </div>

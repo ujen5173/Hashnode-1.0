@@ -15,7 +15,7 @@ const Popup = ({
   return (
     <>
       <Confetti width={width} height={height} />
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-[70] flex items-center justify-center">
         <div
           className="absolute inset-0 h-full w-full bg-black opacity-50"
           onClick={() => {

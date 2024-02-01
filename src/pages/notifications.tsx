@@ -1,12 +1,9 @@
 
-import { type GetServerSideProps } from "next";
-import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Header, ManageData, NotificationLoading } from "~/component";
 import useWindowSize from "~/hooks/useWindow";
-import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
 import type { NotificationTypesEnum } from "~/utils/context";
@@ -109,18 +106,18 @@ const Notifications = () => {
 
 export default Notifications;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const session = await getServerSession(context.req, context.res, authOptions);
 
-  if (!session?.user) {
-    return { props: { session: null }, redirect: { destination: "/" } };
-  }
+//   if (!session?.user) {
+//     return { props: { session: null }, redirect: { destination: "/" } };
+//   }
 
-  return {
-    props: {
-      session: session
-        ? (JSON.parse(JSON.stringify(session)) as Session)
-        : null,
-    },
-  };
-};
+//   return {
+//     props: {
+//       session: session
+//         ? (JSON.parse(JSON.stringify(session)) as Session)
+//         : null,
+//     },
+//   };
+// };

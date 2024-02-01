@@ -204,9 +204,8 @@ const SeriesSection: FC<{
             data && (
               <span className="text-lg font-bold text-secondary hover:underline">
                 <Link
-                  href={`/dev/@${user?.user?.handle?.handle as string}/series/${
-                    data.slug
-                  }`}
+                  href={`/dev/@${user?.user?.handle?.handle as string}/series/${data.slug
+                    }`}
                 >
                   {data.title}
                 </Link>
@@ -223,11 +222,10 @@ const SeriesSection: FC<{
                 key={article.id}
               >
                 <div
-                  className={`flex  h-10 w-10 items-center justify-center rounded-full ${
-                    article.slug === slug
-                      ? "bg-secondary text-white"
-                      : "bg-slate-200 text-primary"
-                  }`}
+                  className={`flex  h-10 w-10 items-center justify-center rounded-full ${article.slug === slug
+                    ? "bg-secondary text-white"
+                    : "bg-slate-200 text-primary"
+                    }`}
                 >
                   <h1 className="text-lg font-black">{index + 1}</h1>
                 </div>
@@ -243,11 +241,10 @@ const SeriesSection: FC<{
                       </h1>
 
                       <p
-                        className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${
-                          article?.cover_image ? "" : "w-[95%]"
-                        }`}
+                        className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${article?.cover_image ? "" : "w-[95%]"
+                          }`}
                       >
-                        {removeMd(article.content)}
+                        {removeMd(article.subContent ?? "")}
                       </p>
                     </Link>
                   </div>

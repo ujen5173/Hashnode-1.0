@@ -24,7 +24,7 @@ const Anouncement = () => {
         <Link href={data?.user ? "/settings/pro" : "/onboard"}>
           <button
             role="button"
-            aria-label="upgrade plan"
+            aria-label="upgrade now plan"
             className="btn-tertiary w-fit"
           >
             Upgrade now
@@ -32,7 +32,7 @@ const Anouncement = () => {
         </Link>
         <button
           role="button"
-          aria-label="lean more on Hashnode pro"
+          aria-label="learn more on Hashnode pro"
           className="btn-outline w-fit text-sm text-white"
         >
           Learn more

@@ -7,10 +7,9 @@ const Feedback: FC<{
   close: () => void;
   setFeedbackForm: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ close, setFeedbackForm }) => {
-
   return (
     <>
-      <div className="relative w-80 rounded-xl p-4 shadow-xl shadow-white/10 bg-blue-600">
+      <div className="relative w-80 rounded-xl bg-blue-600 p-4 shadow-xl shadow-white/10">
         <div onClick={() => close()} className="absolute right-2 top-2 p-2">
           <X className="h-5 w-5 cursor-pointer text-white" />
         </div>
@@ -35,7 +34,6 @@ const Feedback: FC<{
           </button>
         </div>
       </div>
-
     </>
   );
 };
@@ -71,11 +69,11 @@ export const FeedbackForm = ({
   };
 
   const emojies = {
-    "0": <Amazed />,
-    "1": <Nice />,
-    "2": <Average />,
-    "3": <Disapointed />,
-    "4": <Vomit />,
+    "0": "Astonished%20Face.png",
+    "1": "Disappointed%20Face.png",
+    "2": "Pink%20Heart.png",
+    "3": "Slightly%20Smiling%20Face.png",
+    "4": "Face%20Vomiting.png",
   } as const;
 
   return (
@@ -88,7 +86,7 @@ export const FeedbackForm = ({
         className="absolute inset-0 z-[70] bg-black/20 backdrop-blur-sm"
       ></div>
 
-      <div className="relative z-[80] w-7/12 max-w-[400px] rounded-xl border border-border-light bg-white p-4 dark:border-border dark:bg-slate-900">
+      <div className="relative z-[80] w-11/12 max-w-[400px] rounded-xl border border-border-light bg-white p-4 dark:border-border dark:bg-slate-900 md:w-7/12">
         <h1 className="mb-4 text-xl font-bold text-black dark:text-white">
           Share your Feedback
         </h1>
@@ -99,7 +97,7 @@ export const FeedbackForm = ({
           }}
           className="absolute right-2 top-2 p-2"
         >
-          <X className="h-5 w-5 cursor-pointer text-white" />
+          <X className="h-5 w-5 cursor-pointer text-black dark:text-white" />
         </div>
 
         <div className="mb-4">
@@ -125,12 +123,17 @@ export const FeedbackForm = ({
                 <div
                   key={key}
                   className={`cursor-pointer rounded-xl p-2 ${rating.toString() === key
-                    ? "bg-blue-600"
-                    : "bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800"
+                      ? "bg-blue-600"
+                      : "bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800"
                     }`}
                   onClick={() => setRating(key as "0" | "1" | "2" | "3" | "4")}
                 >
-                  {value}
+                  <Image
+                    src={`/emojies/${value}`}
+                    alt={`${value.replace("%20", " ")}`}
+                    width="55"
+                    height="55"
+                  />
                 </div>
               );
             })}
@@ -166,60 +169,5 @@ export const FeedbackForm = ({
         </div>
       </div>
     </div>
-  );
-};
-
-const Amazed = () => {
-  return (
-    <Image
-      src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Astonished%20Face.png"
-      alt="Astonished Face"
-      width="55"
-      height="55"
-    />
-  );
-};
-
-const Disapointed = () => {
-  return (
-    <Image
-      src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Disappointed%20Face.png"
-      alt="Disappointed Face"
-      width="55"
-      height="55"
-    />
-  );
-};
-
-const Nice = () => {
-  return (
-    <Image
-      src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Pink%20Heart.png"
-      alt="Pink Heart"
-      width="55"
-      height="55"
-    />
-  );
-};
-
-const Average = () => {
-  return (
-    <Image
-      src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Slightly%20Smiling%20Face.png"
-      alt="Slightly Smiling Face"
-      width="55"
-      height="55"
-    />
-  );
-};
-
-const Vomit = () => {
-  return (
-    <Image
-      src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20Vomiting.png"
-      alt="Face Vomiting"
-      width="55"
-      height="55"
-    />
   );
 };

@@ -1,5 +1,4 @@
 import { TrendingUp } from "lucide-react";
-import Link from "next/link";
 import { type FC } from "react";
 import { FilterTimeOption } from "~/hooks/useFilter";
 import { api } from "~/utils/api";
@@ -18,7 +17,7 @@ const Aside = () => {
     },
     {
       refetchOnWindowFocus: false,
-      retry: 0
+      retry: 0,
     }
   );
 
@@ -30,6 +29,7 @@ const Aside = () => {
         <TrendingComponent
           trendingItems={{ data: tagsData, isLoading: isLoading }}
         />
+
         <SocialHandles />
 
         <div className="w-4/12 px-4">
@@ -55,13 +55,7 @@ const Navigations = () => {
         return item.type !== "link" ? (
           <AsideNavigation key={index} item={item} />
         ) : (
-          <Link
-            aria-label={`Go to ${item.name} Page`}
-            href={item.href}
-            key={index}
-          >
-            <AsideNavigation item={item} />
-          </Link>
+          <AsideNavigation item={item} key={index} />
         );
       })}
     </div>
@@ -94,7 +88,7 @@ const TrendingComponent: FC<{
           <TrendingNavigation key={item.id} item={item} />
         ))
       ) : (
-        <div className="h-24 flex justify-center items-center">
+        <div className="flex h-24 items-center justify-center">
           <p className="text-sm text-gray-700 dark:text-text-primary">
             No trending tags
           </p>
@@ -113,15 +107,15 @@ const SocialHandles = () => {
             target="_blank"
             aria-label={`Follow us on ${item.name}`}
             title={`Follow us on ${item.name}`}
-            className={`btn-social-icon flex h-8 w-8 transition-colors items-center justify-center ${item.name === "Twitter"
-              ? "hover:bg-[#1da1f2]"
-              : item.name === "Discord"
-                ? "hover:bg-[#7289da]"
-                : item.name === "Github"
-                  ? "hover:bg-[#2c3646] github"
-                  : item.name === "Hashnode"
-                    ? "hover:bg-[#2c3646]"
-                    : ""
+            className={`btn-social-icon flex h-8 w-8 items-center justify-center transition-colors ${item.name === "Twitter"
+                ? "hover:bg-[#1da1f2]"
+                : item.name === "Discord"
+                  ? "hover:bg-[#7289da]"
+                  : item.name === "Github"
+                    ? "github hover:bg-[#2c3646]"
+                    : item.name === "Hashnode"
+                      ? "hover:bg-[#2c3646]"
+                      : ""
               }`}
             href={`${item.link}`}
           >

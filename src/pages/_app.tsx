@@ -112,6 +112,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           {searchOpen && <SearchBody ref={ref} setOpened={setSearchOpen} />}
         </Context>
       </SessionProvider>
+
       <Analytics />
 
       {/* Feedback popup */}

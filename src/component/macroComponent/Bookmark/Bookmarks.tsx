@@ -28,7 +28,7 @@ const Bookmarks = () => {
 
         <Link href={`/bookmarks`}>
           <button
-            aria-label="view all the saved bookmarks"
+            aria-label="See all the saved bookmarks"
             role="button"
             className="btn-outline-small"
           >

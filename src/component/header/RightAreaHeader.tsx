@@ -54,7 +54,7 @@ const RightArea: FC = () => {
         <>
           <Link href={user.user.handle ? "/article/new" : `/onboard/blog/setup?redirect=/article/new`}>
             <button
-              aria-label="icon"
+              aria-label="Write"
               role="button"
               className="btn-filled hidden items-center justify-center gap-2 hover:bg-blue-500 sm:flex"
             >

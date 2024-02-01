@@ -13,7 +13,7 @@ interface Props {
 const TrendingNavigation: FC<Props> = ({ item }) => {
   return (
     <Link
-      aria-label="Read more on this article"
+      aria-label={`${item.name} ${item.articlesCount}`}
       href={`/tag/${item.slug}`}
       title={item.name}
     >

@@ -64,7 +64,7 @@ const Notification = () => {
           <NotificationContainer res={notificationType} />
         </section>
 
-        <Link href="/notifications" className="font-semibold text-secondary">
+        <Link href="/notifications" aria-label="See all notifications" className="font-semibold text-secondary">
           <div className="sticky bottom-0 left-0 flex items-center justify-center border-t border-border-light bg-white p-4 dark:border-border dark:bg-black">
             See all notifications
           </div>

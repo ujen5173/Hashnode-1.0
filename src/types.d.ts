@@ -56,7 +56,8 @@ export type ArticleForEdit = {
 
 // here `Omit` is used to remove the `subtitle` property from `Article` type and add `commonUsers` property
 export interface ArticleCard
-  extends Omit<Article, "subtitle" | "comments" | "likes"> {
+  extends Omit<Article, "subtitle" | "comments" | "likes" | "content"> {
+  subContent: string | null;
   commonUsers: {
     id: string;
     image: string | null;
@@ -187,7 +188,7 @@ export interface DataType {
   title: string;
   slug: string;
   read_time: number;
-  content: string;
+  subContent: string | null;
   subtitle: string | null;
   cover_image: string | null;
   createdAt: Date;

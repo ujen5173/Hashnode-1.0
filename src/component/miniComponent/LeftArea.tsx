@@ -10,17 +10,18 @@ const LeftArea = () => {
   return (
     <div className="flex items-center justify-center gap-4">
       <button
-        aria-label="menu icon"
         role="button"
+        aria-label="Home"
         className="btn-icon flex h-10 w-10 lg:hidden"
         onClick={() => setMenu((prev) => !prev)}
       >
+        <span aria-hidden="true">Home</span>
         <Menu className="h-5 w-5 stroke-black dark:stroke-white" />
       </button>
 
       <HamburgerMenu menu={menu} setMenu={setMenu} />
 
-      <Link aria-label="Go to Home Page" href={"/"}>
+      <Link href={"/"}>
         <Logo className="hidden h-6 fill-secondary md:block" />
         <LogonoText className="block h-7 fill-secondary md:hidden" />
       </Link>

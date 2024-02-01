@@ -18,7 +18,7 @@ const MainBodyHeader: FC = () => {
           <div className="flex items-center gap-2">
             <Link href="/?tab=personalized">
               <button
-                aria-label="icon"
+                aria-label="Personalized"
                 role="button"
                 className={`${tab === undefined || tab === "personalized"
                   ? "btn-tab-active"
@@ -39,7 +39,7 @@ const MainBodyHeader: FC = () => {
             {user?.user && (
               <Link href="/?tab=following">
                 <button
-                  aria-label="icon"
+                  aria-label="Following"
                   role="button"
                   className={`${tab === "following" ? "btn-tab-active" : "btn-tab"
                     }`}
@@ -58,7 +58,7 @@ const MainBodyHeader: FC = () => {
 
             <Link href="/?tab=latest">
               <button
-                aria-label="icon"
+                aria-label="Latest"
                 role="button"
                 className={`${tab === "latest" ? "btn-tab-active" : "btn-tab"}`}
               >
@@ -85,7 +85,7 @@ const MainBodyHeader: FC = () => {
               className="btn-tab cursor-pointer"
             >
               <button
-                aria-label="icon"
+                aria-label="Filter"
                 role="button"
                 className="relative flex items-center justify-center"
               >

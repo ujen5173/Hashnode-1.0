@@ -8,10 +8,10 @@
     "dev-prod": "env-cmd -f .env.production next dev",
     "lint": "next lint",
     "start": "next start",
-    "db:stdio": "dotenv drizzle-kit studio --port 5000 --verbose",
+    "db:stdio": "env-cmd -f .env drizzle-kit studio --port 4000 --verbose",
     "db:dev": "yarn db:generate && yarn db:push && yarn db:stdio",
-    "db:generate": "dotenv drizzle-kit generate:pg",
-    "db:push": "dotenv drizzle-kit push:pg"
+    "db:generate": "env-cmd -f .env drizzle-kit generate:pg",
+    "db:push": "env-cmd -f .env drizzle-kit push:pg"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.3.4",
@@ -51,6 +51,7 @@
     "@trpc/server": "^10.18.0",
     "@uploadthing/react": "^5.2.0",
     "@vercel/analytics": "^1.1.1",
+    "dotenv": "^16.4.0",
     "drizzle-orm": "^0.28.6",
     "drizzle-zod": "^0.5.1",
     "env-cmd": "^10.1.0",
@@ -61,6 +62,7 @@
     "next-auth": "^4.21.0",
     "nextjs-toploader": "^1.4.2",
     "nodemailer": "^6.9.8",
+    "pg": "^8.11.3",
     "postgres": "^3.4.3",
     "react": "18.2.0",
     "react-confetti": "^6.1.0",

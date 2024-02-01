@@ -18,7 +18,6 @@ import readingTime from "reading-time";
 import slugify from "slugify";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
-import { FILTER_TIME_OPTIONS } from "~/hooks/useFilter";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -43,16 +42,252 @@ import {
   users,
 } from "~/server/db/schema";
 import { utapi } from "~/server/ut";
-import type { ArticleCardWithComments, SearchResults } from "~/types";
-import {
-  displayUniqueObjects,
-  selectArticleCard,
-  slugSetting,
-} from "~/utils/constants";
-import {
-  refactorActivityHelper,
-  type Activity,
-} from "./../../../utils/microFunctions";
+
+interface SearchResults {
+  users:
+    | {
+        id: string;
+        name: string;
+        username: string;
+        image: string | null;
+        stripeSubscriptionStatus: string | null;
+        isFollowing: boolean;
+        isAuthor: boolean;
+      }[]
+    | null;
+  tags:
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        isFollowing: boolean;
+      }[]
+    | null;
+  articles:
+    | {
+        id: string;
+        title: string;
+        cover_image: string | null;
+        slug: string;
+        likesCount: number;
+        commentsCount: number;
+        createdAt: Date;
+        updatedAt: Date;
+        user: {
+          id: string;
+          name: string;
+          username: string;
+          image: string | null;
+          stripeSubscriptionStatus: string | null;
+        };
+      }[]
+    | null;
+}
+
+const selectArticleCard = {
+  with: {
+    comments: {
+      with: {
+        user: {
+          columns: {
+            id: true,
+            image: true,
+          },
+        },
+      },
+    },
+    tags: {
+      columns: {
+        articleId: false,
+        tagId: false,
+      },
+      with: {
+        tag: {
+          columns: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    },
+    series: {
+      columns: {
+        title: true,
+        slug: true,
+      },
+    },
+    user: {
+      columns: {
+        id: true,
+        name: true,
+        username: true,
+        image: true,
+        bio: true,
+        stripeSubscriptionStatus: true,
+      },
+      with: {
+        handle: {
+          columns: {
+            id: true,
+            handle: true,
+            name: true,
+            about: true,
+          },
+        },
+      },
+    },
+  },
+  columns: {
+    id: true,
+    title: true,
+    slug: true,
+    cover_image: true,
+    disabledComments: true,
+    readCount: true,
+    likesCount: true,
+    commentsCount: true,
+    createdAt: true,
+    subContent: true,
+    read_time: true,
+  },
+} as const;
+
+export interface Article {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  slug: string;
+  cover_image: string | null;
+  disabledComments: boolean;
+  readCount: number;
+  content: string;
+  read_time: number;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: Date;
+  comments: Comment[];
+  likes: { userId: string }[];
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    image: string | null;
+    bio: string | null;
+    stripeSubscriptionStatus: string | null;
+    handle: {
+      id: string;
+      handle: string;
+      name: string;
+      about: string | null;
+    } | null;
+  };
+  series: {
+    title: string;
+    slug: string;
+  } | null;
+  tags: {
+    id: string;
+    name: string;
+    slug: string;
+  }[];
+}
+
+export type ArticleForEdit = {
+  title: string;
+  subtitle: string | null;
+  content: string;
+  cover_image: string | null;
+  cover_image_key: string | null;
+  slug: string;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  seoOgImage: string | null;
+  seoOgImageKey: string | null;
+  disabledComments: boolean;
+  series: string | null;
+  tags: string[];
+};
+
+// here `Omit` is used to remove the `subtitle` property from `Article` type and add `commonUsers` property
+export interface ArticleCard
+  extends Omit<Article, "subtitle" | "comments" | "likes" | "content"> {
+  subContent: string | null;
+  commonUsers: {
+    id: string;
+    image: string | null;
+  }[];
+}
+
+export type ArticleCardRemoveCommonUser = Omit<ArticleCard, "commonUsers">;
+export type ArticleCardRemoveCommonUserWithoutLikes = Omit<
+  ArticleCard,
+  "commonUsers"
+>;
+
+export interface ArticleCardWithComments
+  extends ArticleCardRemoveCommonUserWithoutLikes {
+  comments: {
+    user: {
+      id: string;
+      image: string | null;
+    };
+  }[];
+}
+export interface Activity {
+  id: string;
+  title: string;
+  slug: string;
+  activity_type: "ARTICLE" | "JOINED";
+  createdAt: Date;
+}
+
+export function refactorActivityHelper(
+  activity: Activity[]
+): Map<string, Activity[]> {
+  const res = new Map<string, Activity[]>();
+
+  for (const value of activity) {
+    const { createdAt } = value;
+    const formatedDate = new Date(createdAt).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+    const activities = res.get(formatedDate) ?? [];
+    activities.push(value);
+    res.set(formatedDate, activities);
+  }
+
+  return res;
+}
+const FILTER_TIME_OPTIONS = {
+  any: "ANY",
+  week: "WEEK",
+  month: "MONTH",
+  year: "YEAR",
+};
+
+function displayUniqueObjects(
+  objects: Array<{ id: string; image: string | null }>
+) {
+  // Create a set to store the unique IDs.
+  const uniqueIds = new Set();
+  // Create an array to store the unique objects.
+  const uniqueObjects = [];
+
+  // Iterate over the objects and add them to the set if they are not already present.
+  for (const object of objects) {
+    const id = object.id;
+    if (!uniqueIds.has(id)) {
+      uniqueIds.add(id);
+      uniqueObjects.push(object);
+    }
+  }
+
+  // Return the list of unique objects.
+  return uniqueObjects;
+}
 
 const getArticlesWithUserFollowingimages = async (
   ctx: {
@@ -291,6 +526,7 @@ export const postsRouter = createTRPCRouter({
           posts: formattedPosts,
         };
       } catch (err) {
+        console.log({ err });
         if (err instanceof TRPCError) {
           throw err;
         }
@@ -469,7 +705,7 @@ export const postsRouter = createTRPCRouter({
               user: {
                 with: {
                   followers: {
-                    where: eq(follow.followingId, ctx.session?.user?.id || ""),
+                    where: eq(follow.followingId, ctx.session?.user?.id ?? ""),
                     columns: {
                       userId: true,
                     },
@@ -506,7 +742,7 @@ export const postsRouter = createTRPCRouter({
           })
           .then((res) => ({ ...res, tags: res?.tags.map((e) => e.tag) }));
 
-        if (!article || !article.user) {
+        if (!article?.user) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Article not found",
@@ -626,9 +862,9 @@ export const postsRouter = createTRPCRouter({
         return {
           ...article,
           tags: article.tags.map((e) => e.tag.name),
-          series: article.series?.title || null,
-          seoTitle: article.seoTitle || "",
-          seoDescription: article.seoDescription || "",
+          series: article.series?.title ?? null,
+          seoTitle: article.seoTitle ?? "",
+          seoDescription: article.seoDescription ?? "",
         };
       } catch (err) {
         if (err instanceof TRPCError) {
@@ -655,7 +891,7 @@ export const postsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const existingArticle = await ctx.db.query.articles.findFirst({
-          where: eq(articles.slug, input.prev_slug || input.slug),
+          where: eq(articles.slug, input.prev_slug ?? input.slug),
           columns: {
             id: true,
             userId: true,
@@ -690,7 +926,7 @@ export const postsRouter = createTRPCRouter({
             .values([
               ...input.tags.map((tag) => ({
                 name: tag,
-                slug: slugify(tag, slugSetting),
+                slug: slugify(tag),
               })),
             ])
             .onConflictDoNothing()
@@ -734,12 +970,21 @@ export const postsRouter = createTRPCRouter({
             });
           }
 
+          const regex = /<[^>]*>([^<]+)<\/[^>]*>/g;
+
+          // Extract matches and concatenate them
+          const matches = input.content.match(regex) || [];
+          const result = matches
+            .map((match) => match.replace(regex, "$1"))
+            .join(" ");
+
           const [updatedArticle] = await ctx.db
             .update(articles)
             .set({
               ...rest,
               read_time: Math.ceil(readingTime(input.content).minutes) || 1,
               seoTitle: input.seoTitle || input.title,
+              subContent: result,
               seoDescription:
                 input.seoDescription ||
                 input.subtitle ||
@@ -794,21 +1039,30 @@ export const postsRouter = createTRPCRouter({
           };
         } else {
           // creating article
+
+          const regex = /<[^>]*>([^<]+)<\/[^>]*>/g;
+
+          // Extract matches and concatenate them
+          const matches = input.content.match(regex) || [];
+          const subContentResult = matches
+            .map((match) => match.replace(regex, "$1"))
+            .join(" ");
           const [newArticle] = await ctx.db
             .insert(articles)
             .values({
               ...rest,
               userId: ctx.session.user.id,
-              read_time: Math.ceil(readingTime(input.content).minutes) || 1,
-              seoTitle: input.seoTitle || input.title,
+              read_time: Math.ceil(readingTime(input.content).minutes) ?? 1,
+              seoTitle: input.seoTitle ?? input.title,
+              subContent: subContentResult,
               slug: existingArticle
                 ? input.slug + `-${Math.floor(Math.random() * 9999999)}`
                 : input.slug,
               seoDescription:
-                input.seoDescription ||
-                input.subtitle ||
+                input.seoDescription ??
+                input.subtitle ??
                 input.content.slice(0, 40),
-              seoOgImage: input.seoOgImage || input.cover_image,
+              seoOgImage: input.seoOgImage ?? input.cover_image,
             })
             .returning();
 
@@ -869,7 +1123,7 @@ export const postsRouter = createTRPCRouter({
           return {
             success: true,
             redirectLink: `/u/@${ctx.session.user.username}/${
-              result?.slug as string
+              result?.slug ?? ""
             }`,
           };
         }
@@ -1072,7 +1326,7 @@ export const postsRouter = createTRPCRouter({
             },
             with: {
               followers: {
-                where: eq(tagsToUsers.userId, ctx.session?.user?.id || ""),
+                where: eq(tagsToUsers.userId, ctx.session?.user?.id ?? ""),
                 columns: {
                   userId: true,
                 },
@@ -1095,7 +1349,7 @@ export const postsRouter = createTRPCRouter({
           const usersData = await ctx.db.query.users.findMany({
             with: {
               followers: {
-                where: eq(follow.followingId, ctx.session?.user?.id || ""),
+                where: eq(follow.followingId, ctx.session?.user?.id ?? ""),
                 columns: {
                   userId: false,
                 },
@@ -1177,7 +1431,7 @@ export const postsRouter = createTRPCRouter({
             },
             with: {
               followers: {
-                where: eq(tagsToUsers.userId, ctx.session?.user?.id || ""),
+                where: eq(tagsToUsers.userId, ctx.session?.user?.id ?? ""),
                 columns: {
                   userId: true,
                 },
@@ -1256,7 +1510,7 @@ export const postsRouter = createTRPCRouter({
             },
             with: {
               followers: {
-                where: eq(tagsToUsers.userId, ctx.session?.user?.id || ""),
+                where: eq(tagsToUsers.userId, ctx.session?.user?.id ?? ""),
                 columns: {
                   userId: true,
                 },
@@ -1269,7 +1523,7 @@ export const postsRouter = createTRPCRouter({
           const topUsersData = ctx.db.query.users.findMany({
             with: {
               followers: {
-                where: eq(follow.followingId, ctx.session?.user?.id || ""),
+                where: eq(follow.followingId, ctx.session?.user?.id ?? ""),
                 columns: {
                   userId: false,
                 },
@@ -1416,7 +1670,7 @@ export const postsRouter = createTRPCRouter({
         }
 
         const sessionUser = await ctx.db.query.users.findFirst({
-          where: eq(users.id, ctx.session?.user?.id || ""),
+          where: eq(users.id, ctx.session?.user?.id ?? ""),
           columns: {
             id: true,
           },
@@ -1606,13 +1860,17 @@ export const postsRouter = createTRPCRouter({
           where: eq(handles.handle, input.handleDomain),
           with: {
             user: {
+              columns: {
+                image: true,
+                username: true,
+              },
               with: {
                 articles: {
                   where: eq(articles.isDeleted, false),
                   limit: limit,
                   columns: {
                     id: true,
-                    content: true,
+                    subContent: true,
                     title: true,
                     subtitle: true,
                     slug: true,
