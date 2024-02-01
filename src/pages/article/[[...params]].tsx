@@ -4,10 +4,10 @@ import { and, eq } from "drizzle-orm";
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useState } from "react";
-import NewSEO from "~/SEO/New.seo";
 import { NewArticleBody, NewArticleHeader } from "~/component";
 import { authOptions } from "~/server/auth";
-import { articles, db } from "~/server/db";
+import { db } from "~/server/db";
+import { articles } from "~/server/db/schema";
 import { type ArticleForEdit } from "~/types";
 
 
@@ -18,7 +18,6 @@ const NewArticle: NextPage<{ article: ArticleForEdit }> = ({ article }) => {
 
   return (
     <>
-      <NewSEO />
       <NewArticleHeader
         setPublishModal={setPublishModal}
         publishing={publishing}
@@ -95,9 +94,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       return {
         ...article,
         tags: article.tags.map((e) => e.tag.name),
-        series: article.series?.title || null,
-        seoTitle: article.seoTitle || "",
-        seoDescription: article.seoDescription || "",
+        series: article.series?.title ?? null,
+        seoTitle: article.seoTitle ?? "",
+        seoDescription: article.seoDescription ?? "",
       };
     });
   }
