@@ -9,7 +9,7 @@ const useOnScreen = (
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => entry && setIntersecting(entry.isIntersecting),
-      { threshold: 1, ...(options || {}) }
+      { threshold: 1, ...(options ?? {}) }
     );
 
     if (ref.current) {
