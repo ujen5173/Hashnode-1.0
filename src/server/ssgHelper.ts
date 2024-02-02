@@ -6,9 +6,7 @@ import { appRouter } from "./api/root";
 import { createTRPCContext } from "./api/trpc";
 
 type RequestType = IncomingMessage & {
-  cookies: Partial<{
-    [key: string]: string;
-  }>;
+  cookies: Partial<Record<string, string>>;
 };
 
 type ResponseType = ServerResponse;

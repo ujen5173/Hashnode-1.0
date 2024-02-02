@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { Header, UserProfileBody } from "~/component";
-import UserBlogSEO from "~/SEO/UserBlog.seo";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 import { follow, users } from "~/server/db/schema";
@@ -13,7 +12,6 @@ const UserBlog: NextPage<{
 }> = ({ user }) => {
   return (
     <>
-      <UserBlogSEO user={user} />
       <Header />
       <UserProfileBody user={user} />
     </>

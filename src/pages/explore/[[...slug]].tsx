@@ -1,13 +1,11 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { ExploreMainBody, Header } from "~/component";
-import ExploreSEO from "~/SEO/Explore.seo";
 import { authOptions } from "~/server/auth";
 
 const ExplorePage: NextPage = () => {
   return (
     <>
-      <ExploreSEO />
       <Header />
       <ExploreMainBody />
     </>

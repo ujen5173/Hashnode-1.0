@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
-import HomeSEO from "~/SEO/Home.seo";
 import { Anouncement, Header, MainBody } from "~/component";
 
 const Home: NextPage = () => {
@@ -8,7 +7,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <HomeSEO />
       <Header />
       {session?.user.stripeSubscriptionStatus !== "active" && (
         <div className="w-full bg-light-bg px-0 pt-4 dark:bg-black sm:px-4 lg:hidden lg:pt-0">

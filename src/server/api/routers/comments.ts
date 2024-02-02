@@ -19,7 +19,7 @@ export const commentsRouter = createTRPCRouter({
         content: z.string().trim().min(5).max(255),
         type: z.enum(["COMMENT", "REPLY"]),
         commentId: z.string().trim().optional().nullable(), // comment to who we want to reply
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { articleId, commentId } = input;
@@ -171,7 +171,7 @@ export const commentsRouter = createTRPCRouter({
     .input(
       z.object({
         commentId: z.string().trim(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -205,8 +205,8 @@ export const commentsRouter = createTRPCRouter({
             .where(
               and(
                 eq(likesToComment.userId, ctx.session.user.id),
-                eq(likesToComment.commentId, commentId)
-              )
+                eq(likesToComment.commentId, commentId),
+              ),
             );
         } else {
           await ctx.db.insert(likesToComment).values({
@@ -250,7 +250,7 @@ export const commentsRouter = createTRPCRouter({
         type: z.enum(["INITIAL", "ALL"]).optional().default("INITIAL"),
         // here initial means get the first 5 comments with their first one reply.
         // `INITIAL` is used for getting comments of an article in the initial load
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const articleId = input.articleId;
@@ -271,7 +271,7 @@ export const commentsRouter = createTRPCRouter({
                 where: and(
                   eq(comments.type, "COMMENT"),
                   isNull(comments.parentId),
-                  eq(comments.articleId, articleId)
+                  eq(comments.articleId, articleId),
                 ),
                 limit: 5,
                 extras: {
@@ -306,7 +306,7 @@ export const commentsRouter = createTRPCRouter({
                       likes: {
                         where: eq(
                           likesToComment.userId,
-                          ctx?.session?.user.id || ""
+                          ctx?.session?.user.id ?? "",
                         ),
                         columns: {
                           userId: true,
@@ -326,7 +326,7 @@ export const commentsRouter = createTRPCRouter({
                   likes: {
                     where: eq(
                       likesToComment.userId,
-                      ctx?.session?.user.id || ""
+                      ctx?.session?.user.id ?? "",
                     ),
                     columns: {
                       userId: true,
@@ -391,7 +391,7 @@ export const commentsRouter = createTRPCRouter({
                 },
               },
               likes: {
-                where: eq(likesToComment.userId, ctx?.session?.user.id || ""),
+                where: eq(likesToComment.userId, ctx?.session?.user.id ?? ""),
                 columns: {
                   userId: true,
                 },
@@ -411,7 +411,7 @@ export const commentsRouter = createTRPCRouter({
 
         function organizeComments(
           comments: Comment[],
-          parentId: string | null = null
+          parentId: string | null = null,
         ) {
           const result = [];
 
@@ -446,7 +446,7 @@ export const commentsRouter = createTRPCRouter({
     .input(
       z.object({
         commentId: z.string().trim(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const commentId = input.commentId; // Assuming you have the articleId value

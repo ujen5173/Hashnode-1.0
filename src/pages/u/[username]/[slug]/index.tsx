@@ -1,7 +1,6 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import React, { createContext } from "react";
-import ArticleSEO from "~/SEO/Article.seo";
 import { ArticleBody, ArticleHeader, Footer } from "~/component";
 import { authOptions } from "~/server/auth";
 import { generateSSGHelper } from "~/server/ssgHelper";
@@ -28,7 +27,6 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
 
   return (
     <>
-      <ArticleSEO article={article} />
       <FollowContext.Provider value={{ following, setFollowing }}>
         <ArticleHeader user={article.user} />
         <ArticleBody article={article} />

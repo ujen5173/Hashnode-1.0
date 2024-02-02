@@ -22,7 +22,7 @@ export const seriesRouter = createTRPCRouter({
         cover_image: z.string().optional(),
         slug: z.string().optional(),
         edit: z.boolean().default(false),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { edit, ...restInput } = input;
@@ -34,19 +34,19 @@ export const seriesRouter = createTRPCRouter({
             .update(series)
             .set({
               ...restInput,
-              slug: restInput.slug || slugify(restInput.title, slugSetting),
+              slug: restInput.slug ?? slugify(restInput.title, slugSetting),
               authorId: ctx.session.user.id,
             })
             .where(
               eq(
                 series.slug,
-                restInput.slug || slugify(restInput.title, slugSetting)
-              )
+                restInput.slug ?? slugify(restInput.title, slugSetting),
+              ),
             );
         } else {
           result = await ctx.db.insert(series).values({
             ...restInput,
-            slug: restInput.slug || slugify(restInput.title, slugSetting),
+            slug: restInput.slug ?? slugify(restInput.title, slugSetting),
             authorId: ctx.session.user.id,
           });
         }
@@ -67,7 +67,7 @@ export const seriesRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -124,7 +124,7 @@ export const seriesRouter = createTRPCRouter({
     .input(
       z.object({
         username: z.string(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -172,7 +172,7 @@ export const seriesRouter = createTRPCRouter({
     .input(
       z.object({
         query: z.string().trim(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -180,9 +180,9 @@ export const seriesRouter = createTRPCRouter({
           where: and(
             or(
               ilike(series.title, input.query),
-              ilike(series.description, input.query)
+              ilike(series.description, input.query),
             ),
-            eq(series.authorId, ctx.session.user.id)
+            eq(series.authorId, ctx.session.user.id),
           ),
           columns: {
             id: true,
@@ -206,7 +206,7 @@ export const seriesRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {

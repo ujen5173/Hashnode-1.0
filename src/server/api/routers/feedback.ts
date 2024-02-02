@@ -10,7 +10,7 @@ const feedbackRouter = createTRPCRouter({
         rating: z.enum(["0", "1", "2", "3", "4"]),
         feedback: z.string(),
         name: z.string().optional(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       await transporter.sendMail({
@@ -22,7 +22,7 @@ const feedbackRouter = createTRPCRouter({
           <h1 style="font-weight: bold; font-size: 24px;">Hashnode Clone Feedback</h1>
           <br />
           <strong style="font-weight: bold; font-size: 18px;">Name: ${
-            input.name || "Anonymous"
+            input.name ?? "Anonymous"
           }</strong>
           <strong style="font-weight: bold; margin-bottom:8px; font-size: 18px;">Experience: ${(() => {
             switch (input.rating) {

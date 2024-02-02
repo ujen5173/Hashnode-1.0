@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { Aside, Header, MainTagBody, RightAsideMain } from "~/component";
-import TagSEO from "~/SEO/Tag.seo";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 
@@ -12,7 +11,6 @@ import type { DetailedTag } from "~/types";
 const SingleTag: NextPage<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   return (
     <>
-      <TagSEO tagDetails={tagDetails} />
 
       <Header />
 

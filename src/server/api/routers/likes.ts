@@ -9,7 +9,7 @@ export const likesRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().trim(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -61,7 +61,7 @@ export const likesRouter = createTRPCRouter({
           .returning({
             likesCount: articles.likesCount,
           })
-          .then((res) => res[0]?.likesCount as number);
+          .then((res) => res[0]?.likesCount ?? 0);
 
         if (article.likes.length > 0) {
           // like

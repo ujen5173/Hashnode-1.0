@@ -266,7 +266,7 @@ export interface SocialHandles {
 
 interface ContentNode {
   type: string;
-  attrs?: Record<string, any>;
+  attrs?: Record<string, unknown>;
   content?: ContentNode[];
   marks?: Mark[];
   text?: string;
@@ -278,7 +278,7 @@ interface ContentNode {
 
 interface Mark {
   type: string;
-  attrs?: Record<string, any>;
+  attrs?: Record<string, unknown>;
   text?: string;
 }
 

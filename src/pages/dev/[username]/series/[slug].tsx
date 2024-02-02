@@ -4,7 +4,6 @@ import { getServerSession, type Session } from "next-auth";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import {
   AuthorBlogHeader,
   Footer,
@@ -39,7 +38,6 @@ const SeiesPage: NextPage<{
 }> = ({ user }) => {
   return (
     <>
-      <AuthorBlog author={user} />
       <AuthorBlogHeader user={user} />
       {/* Home, Badge, Newsletter */}
       <AuthorBlogNavigation tabs={user.handle.customTabs} />

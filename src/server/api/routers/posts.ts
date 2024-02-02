@@ -243,7 +243,7 @@ export interface Activity {
 }
 
 export function refactorActivityHelper(
-  activity: Activity[]
+  activity: Activity[],
 ): Map<string, Activity[]> {
   const res = new Map<string, Activity[]>();
 
@@ -269,7 +269,7 @@ const FILTER_TIME_OPTIONS = {
 };
 
 function displayUniqueObjects(
-  objects: Array<{ id: string; image: string | null }>
+  objects: Array<{ id: string; image: string | null }>,
 ) {
   // Create a set to store the unique IDs.
   const uniqueIds = new Set();
@@ -294,7 +294,7 @@ const getArticlesWithUserFollowingimages = async (
     session: Session | null;
     db: PostgresJsDatabase<typeof schemaFile>;
   },
-  articles: ArticleCardWithComments[]
+  articles: ArticleCardWithComments[],
 ) => {
   // If user is logged in, get the user's following images else return empty array for commenUsers
   // Retrieve user following outside the loop
@@ -324,8 +324,8 @@ const getArticlesWithUserFollowingimages = async (
         comments
           .map((c) => c.user)
           .filter((user) =>
-            userFollowing.following.some((f) => f.userId === user.id)
-          )
+            userFollowing.following.some((f) => f.userId === user.id),
+          ),
       );
     }
 
@@ -379,7 +379,7 @@ export const postsRouter = createTRPCRouter({
           .enum(["PERSONALIZED", "FOLLOWING", "LATEST"])
           .optional()
           .default("PERSONALIZED"),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -429,15 +429,15 @@ export const postsRouter = createTRPCRouter({
                   ? input.filter.read_time === "OVER_5"
                     ? [gt(articles.read_time, 5)]
                     : input.filter.read_time === "UNDER_5"
-                    ? [lt(articles.read_time, 5)]
-                    : input.filter.read_time === "5"
-                    ? [eq(articles.read_time, 5)]
-                    : []
+                      ? [lt(articles.read_time, 5)]
+                      : input.filter.read_time === "5"
+                        ? [eq(articles.read_time, 5)]
+                        : []
                   : []),
                 inArray(
                   articles.userId,
-                  following.flatMap((e) => e.userId)
-                )
+                  following.flatMap((e) => e.userId),
+                ),
               ),
               limit: input.limit,
               ...selectArticleCard,
@@ -453,12 +453,12 @@ export const postsRouter = createTRPCRouter({
                 .filter((article) => {
                   if (input?.filter?.tags) {
                     return input?.filter?.tags.every((tag) =>
-                      article.tags.some((e) => e.name === tag)
+                      article.tags.some((e) => e.name === tag),
                     );
                   } else {
                     return true;
                   }
-                })
+                }),
             );
 
           const formattedPosts = await getArticlesWithUserFollowingimages(
@@ -466,7 +466,7 @@ export const postsRouter = createTRPCRouter({
               session: ctx.session,
               db: ctx.db,
             },
-            result
+            result,
           );
 
           return {
@@ -482,11 +482,11 @@ export const postsRouter = createTRPCRouter({
                 ? input.filter.read_time === "OVER_5"
                   ? [gt(articles.read_time, 5)]
                   : input.filter.read_time === "UNDER_5"
-                  ? [lt(articles.read_time, 5)]
-                  : input.filter.read_time === "5"
-                  ? [eq(articles.read_time, 5)]
-                  : []
-                : [])
+                    ? [lt(articles.read_time, 5)]
+                    : input.filter.read_time === "5"
+                      ? [eq(articles.read_time, 5)]
+                      : []
+                : []),
             ),
 
             orderBy:
@@ -506,12 +506,12 @@ export const postsRouter = createTRPCRouter({
               .filter((article) => {
                 if (input?.filter?.tags) {
                   return input?.filter?.tags.every((tag) =>
-                    article.tags.some((e) => e.name === tag)
+                    article.tags.some((e) => e.name === tag),
                   );
                 } else {
                   return true;
                 }
-              })
+              }),
           );
 
         const formattedPosts = await getArticlesWithUserFollowingimages(
@@ -519,7 +519,7 @@ export const postsRouter = createTRPCRouter({
             session: ctx.session,
             db: ctx.db,
           },
-          result
+          result,
         );
 
         return {
@@ -549,7 +549,7 @@ export const postsRouter = createTRPCRouter({
           .optional(),
         limit: z.number().optional().default(6),
         type: z.enum(["hot", "new"]).optional().default("new"),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { limit } = input;
@@ -602,7 +602,7 @@ export const postsRouter = createTRPCRouter({
           session: ctx.session,
           db: ctx.db,
         },
-        res
+        res,
       );
 
       return {
@@ -617,7 +617,7 @@ export const postsRouter = createTRPCRouter({
           .array(z.object({ id: z.string().trim() }))
           .optional()
           .default([]),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const articlesData = await ctx.db.query.articles
@@ -628,12 +628,12 @@ export const postsRouter = createTRPCRouter({
             eq(articles.isDeleted, false),
             inArray(
               articles.id,
-              input.ids.map((id) => id.id)
-            )
+              input.ids.map((id) => id.id),
+            ),
           ),
         })
         .then((res) =>
-          res.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) }))
+          res.map((ele) => ({ ...ele, tags: ele.tags.map((e) => e.tag) })),
         );
 
       return await getArticlesWithUserFollowingimages(
@@ -641,7 +641,7 @@ export const postsRouter = createTRPCRouter({
           session: ctx.session,
           db: ctx.db,
         },
-        articlesData
+        articlesData,
       );
     }),
 
@@ -652,7 +652,7 @@ export const postsRouter = createTRPCRouter({
           .array(z.object({ id: z.string().trim() }))
           .optional()
           .default([]),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -661,8 +661,8 @@ export const postsRouter = createTRPCRouter({
             eq(articles.isDeleted, false),
             inArray(
               articles.id,
-              input.ids.map((id) => id.id)
-            )
+              input.ids.map((id) => id.id),
+            ),
           ),
           with: {
             user: {
@@ -695,7 +695,7 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string().trim(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -737,7 +737,7 @@ export const postsRouter = createTRPCRouter({
             },
             where: and(
               eq(articles.isDeleted, false),
-              eq(articles.slug, input.slug)
+              eq(articles.slug, input.slug),
             ),
           })
           .then((res) => ({ ...res, tags: res?.tags.map((e) => e.tag) }));
@@ -780,7 +780,7 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         key: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -801,14 +801,14 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
         const article = await ctx.db.query.articles.findFirst({
           where: and(
             eq(articles.slug, input.slug),
-            eq(articles.isDeleted, false)
+            eq(articles.isDeleted, false),
           ),
           columns: {
             id: true,
@@ -885,8 +885,8 @@ export const postsRouter = createTRPCRouter({
           edit: z.boolean(), //? article is being edited or created
           prev_slug: z.string().optional().nullable(),
           tags: z.array(z.string().trim()).default([]),
-        })
-      )
+        }),
+      ),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -953,7 +953,7 @@ export const postsRouter = createTRPCRouter({
                   articlesCount: detail.articlesCount + 1,
                 })
                 .where(eq(tags.id, detail.id));
-            })
+            }),
           );
         }
 
@@ -973,7 +973,7 @@ export const postsRouter = createTRPCRouter({
           const regex = /<[^>]*>([^<]+)<\/[^>]*>/g;
 
           // Extract matches and concatenate them
-          const matches = input.content.match(regex) || [];
+          const matches = input.content.match(regex) ?? [];
           const result = matches
             .map((match) => match.replace(regex, "$1"))
             .join(" ");
@@ -982,14 +982,14 @@ export const postsRouter = createTRPCRouter({
             .update(articles)
             .set({
               ...rest,
-              read_time: Math.ceil(readingTime(input.content).minutes) || 1,
-              seoTitle: input.seoTitle || input.title,
+              read_time: Math.ceil(readingTime(input.content).minutes) ?? 1,
+              seoTitle: input.seoTitle ?? input.title,
               subContent: result,
               seoDescription:
-                input.seoDescription ||
-                input.subtitle ||
+                input.seoDescription ??
+                input.subtitle ??
                 input.content.slice(0, 40),
-              seoOgImage: input.seoOgImage || input.cover_image,
+              seoOgImage: input.seoOgImage ?? input.cover_image,
             })
             .where(and(eq(articles.id, existingArticle.id)))
             .returning({
@@ -1011,7 +1011,7 @@ export const postsRouter = createTRPCRouter({
                 allTagsDetails.map((tag) => ({
                   articleId: updatedArticle.id,
                   tagId: tag.id,
-                }))
+                })),
               )
               .onConflictDoNothing();
           }
@@ -1028,8 +1028,8 @@ export const postsRouter = createTRPCRouter({
               .where(
                 inArray(
                   tags.id,
-                  allTags.map((e) => e.id)
-                )
+                  allTags.map((e) => e.id),
+                ),
               );
           }
 
@@ -1043,7 +1043,7 @@ export const postsRouter = createTRPCRouter({
           const regex = /<[^>]*>([^<]+)<\/[^>]*>/g;
 
           // Extract matches and concatenate them
-          const matches = input.content.match(regex) || [];
+          const matches = input.content.match(regex) ?? [];
           const subContentResult = matches
             .map((match) => match.replace(regex, "$1"))
             .join(" ");
@@ -1080,7 +1080,7 @@ export const postsRouter = createTRPCRouter({
                 allTagsDetails.map((tag) => ({
                   articleId: newArticle.id,
                   tagId: tag.id,
-                }))
+                })),
               )
               .onConflictDoNothing();
           }
@@ -1116,7 +1116,7 @@ export const postsRouter = createTRPCRouter({
                 body: `@${ctx.session.user.username} published a new article.`,
                 title: newArticle.title,
                 slug: newArticle.slug,
-              }))
+              })),
             );
           }
 
@@ -1144,14 +1144,14 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
         const article = await ctx.db.query.articles.findFirst({
           where: and(
             eq(articles.slug, input.slug),
-            eq(articles.isDeleted, false)
+            eq(articles.isDeleted, false),
           ),
           columns: {
             id: true,
@@ -1202,7 +1202,7 @@ export const postsRouter = createTRPCRouter({
       const user = await ctx.db.query.users.findFirst({
         where: eq(
           users.username,
-          input.username.slice(1, input.username.length)
+          input.username.slice(1, input.username.length),
         ),
         columns: {
           createdAt: true,
@@ -1261,7 +1261,7 @@ export const postsRouter = createTRPCRouter({
       z.object({
         type: z.enum(["TOP", "ARTICLES", "TAGS", "USERS", "LATEST"]),
         query: z.string().trim(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const result: SearchResults = {
@@ -1278,8 +1278,8 @@ export const postsRouter = createTRPCRouter({
               or(
                 ilike(articles.title, `%${input.query}%`),
                 ilike(articles.slug, `%${input.query}%`),
-                ilike(articles.subtitle, `%${input.query}%`)
-              )
+                ilike(articles.subtitle, `%${input.query}%`),
+              ),
             ),
             columns: {
               id: true,
@@ -1317,7 +1317,7 @@ export const postsRouter = createTRPCRouter({
             where: or(
               ilike(tags.name, `%${input.query}%`),
               ilike(tags.slug, `%${input.query}%`),
-              ilike(tags.description, `%${input.query}%`)
+              ilike(tags.description, `%${input.query}%`),
             ),
             columns: {
               id: true,
@@ -1366,7 +1366,7 @@ export const postsRouter = createTRPCRouter({
               ilike(users.name, `%${input.query}%`),
               ilike(users.username, `%${input.query}%`),
               ilike(users.bio, `%${input.query}%`),
-              ilike(users.email, `%${input.query}%`)
+              ilike(users.email, `%${input.query}%`),
             ),
             orderBy: [desc(users.followersCount)],
             limit: 7,
@@ -1389,8 +1389,8 @@ export const postsRouter = createTRPCRouter({
               or(
                 ilike(articles.title, `%${input.query}%`),
                 ilike(articles.slug, `%${input.query}%`),
-                ilike(articles.subtitle, `%${input.query}%`)
-              )
+                ilike(articles.subtitle, `%${input.query}%`),
+              ),
             ),
             columns: {
               id: true,
@@ -1422,7 +1422,7 @@ export const postsRouter = createTRPCRouter({
             where: or(
               ilike(tags.name, `%${input.query}%`),
               ilike(tags.slug, `%${input.query}%`),
-              ilike(tags.description, `%${input.query}%`)
+              ilike(tags.description, `%${input.query}%`),
             ),
             columns: {
               id: true,
@@ -1464,8 +1464,8 @@ export const postsRouter = createTRPCRouter({
               or(
                 ilike(articles.title, `%${input.query}%`),
                 ilike(articles.slug, `%${input.query}%`),
-                ilike(articles.subtitle, `%${input.query}%`)
-              )
+                ilike(articles.subtitle, `%${input.query}%`),
+              ),
             ),
             orderBy: [
               desc(articles.likesCount),
@@ -1501,7 +1501,7 @@ export const postsRouter = createTRPCRouter({
             where: or(
               ilike(tags.name, `%${input.query}%`),
               ilike(tags.slug, `%${input.query}%`),
-              ilike(tags.description, `%${input.query}%`)
+              ilike(tags.description, `%${input.query}%`),
             ),
             columns: {
               id: true,
@@ -1540,7 +1540,7 @@ export const postsRouter = createTRPCRouter({
               ilike(users.name, `%${input.query}%`),
               ilike(users.username, `%${input.query}%`),
               ilike(users.bio, `%${input.query}%`),
-              ilike(users.email, `%${input.query}%`)
+              ilike(users.email, `%${input.query}%`),
             ),
             orderBy: [desc(users.followersCount)],
             limit: 7,
@@ -1582,7 +1582,7 @@ export const postsRouter = createTRPCRouter({
         variant: z
           .enum(["ANY", "WEEK", "MONTH", "YEAR"] as const)
           .default("ANY" as const),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -1608,8 +1608,8 @@ export const postsRouter = createTRPCRouter({
                 ? undefined
                 : and(
                     gte(articles.createdAt, startDate),
-                    lte(articles.createdAt, endDate)
-                  )
+                    lte(articles.createdAt, endDate),
+                  ),
             ),
             limit: limit,
             ...selectArticleCard,
@@ -1623,7 +1623,7 @@ export const postsRouter = createTRPCRouter({
             res.map((article) => ({
               ...article,
               tags: article.tags.map((e) => e.tag),
-            }))
+            })),
           );
 
         const formattedPosts = await getArticlesWithUserFollowingimages(
@@ -1631,7 +1631,7 @@ export const postsRouter = createTRPCRouter({
             session: ctx.session,
             db: ctx.db,
           },
-          articlesData
+          articlesData,
         );
 
         return {
@@ -1652,7 +1652,7 @@ export const postsRouter = createTRPCRouter({
         variant: z
           .enum(["ANY", "WEEK", "MONTH", "YEAR"] as const)
           .default("ANY" as const),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -1698,8 +1698,8 @@ export const postsRouter = createTRPCRouter({
                 eq(articles.isDeleted, false),
                 inArray(
                   articles.userId,
-                  sessionUser?.following.map((e) => e.userId)
-                )
+                  sessionUser?.following.map((e) => e.userId),
+                ),
               ),
               limit: limit,
               ...selectArticleCard,
@@ -1725,7 +1725,7 @@ export const postsRouter = createTRPCRouter({
                       new Date(article.createdAt).getTime() <= endDate.getTime()
                     );
                   }
-                })
+                }),
             );
 
           const formattedPosts = await getArticlesWithUserFollowingimages(
@@ -1733,7 +1733,7 @@ export const postsRouter = createTRPCRouter({
               session: ctx.session,
               db: ctx.db,
             },
-            articlesData
+            articlesData,
           );
 
           return {
@@ -1760,7 +1760,7 @@ export const postsRouter = createTRPCRouter({
           .enum(["PUBLISHED", "SCHEDULED", "DELETED"])
           .optional()
           .default("PUBLISHED"),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -1776,7 +1776,7 @@ export const postsRouter = createTRPCRouter({
             eq(articles.userId, input.id),
             input.type === "DELETED"
               ? eq(articles.isDeleted, true)
-              : eq(articles.isDeleted, false)
+              : eq(articles.isDeleted, false),
           ),
           columns: {
             id: true,
@@ -1816,7 +1816,7 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string().trim(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -1850,7 +1850,7 @@ export const postsRouter = createTRPCRouter({
       z.object({
         handleDomain: z.string().trim(),
         limit: z.number().optional().default(6),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -1905,7 +1905,7 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string().trim(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -1949,7 +1949,7 @@ export const postsRouter = createTRPCRouter({
         }
 
         const hasRead = article.readers.some(
-          (reader) => reader.userId === ctx.session?.user?.id
+          (reader) => reader.userId === ctx.session?.user?.id,
         );
 
         if (!hasRead) {
@@ -1986,7 +1986,7 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string().trim(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -2060,7 +2060,7 @@ export const postsRouter = createTRPCRouter({
     .input(
       z.object({
         slug: z.string().trim(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {

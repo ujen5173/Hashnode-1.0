@@ -9,7 +9,7 @@ export const usersRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // get following user data
@@ -66,7 +66,7 @@ export const usersRouter = createTRPCRouter({
 
       if (
         isFollowing &&
-        (me.following[0]?.user?.id || otherUser.followers[0]?.user?.id)
+        (me.following[0]?.user?.id ?? otherUser.followers[0]?.user?.id)
       ) {
         // unfollow the user
         await ctx.db
@@ -74,8 +74,8 @@ export const usersRouter = createTRPCRouter({
           .where(
             and(
               eq(follow.userId, input.userId),
-              eq(follow.followingId, ctx.session?.user.id)
-            )
+              eq(follow.followingId, ctx.session?.user.id),
+            ),
           );
 
         // update the following count
@@ -152,7 +152,7 @@ export const usersRouter = createTRPCRouter({
         email: z.string().trim(),
         image: z.string().trim(),
         tagline: z.string().trim(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.db.insert(users).values(input).returning();
@@ -164,13 +164,13 @@ export const usersRouter = createTRPCRouter({
     .input(
       z.object({
         username: z.string().trim(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const user = await ctx.db.query.users.findFirst({
         where: eq(
           users.username,
-          input.username.slice(1, input.username.length)
+          input.username.slice(1, input.username.length),
         ),
         with: {
           following: {
@@ -225,7 +225,7 @@ export const usersRouter = createTRPCRouter({
           linkedin: z.string().trim().optional(),
           youtube: z.string().trim().optional(),
         }),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const updatedUser = await ctx.db
@@ -259,7 +259,7 @@ export const usersRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string().trim(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const result = await ctx.db.query.users
@@ -319,12 +319,12 @@ export const usersRouter = createTRPCRouter({
                     };
                   }[];
                 }
-              | undefined
+              | undefined,
           ) =>
             e?.followers.map((f) => {
               const { followers, ...rest } = f.following;
               return { ...rest, isFollowing: (followers ?? []).length > 0 };
-            })
+            }),
         );
 
       return result;
@@ -334,7 +334,7 @@ export const usersRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string().trim(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const result = await ctx.db.query.users
@@ -365,7 +365,7 @@ export const usersRouter = createTRPCRouter({
                           followers: {
                             where: eq(
                               follow.followingId,
-                              ctx?.session?.user?.id
+                              ctx?.session?.user?.id,
                             ),
                             columns: {
                               userId: true,
@@ -397,12 +397,12 @@ export const usersRouter = createTRPCRouter({
                     };
                   }[];
                 }
-              | undefined
+              | undefined,
           ) =>
             e?.following.map((f) => {
               const { followers, ...rest } = f.user;
               return { ...rest, isFollowing: (followers ?? []).length > 0 };
-            })
+            }),
         );
 
       return result;

@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useRouter } from 'next/router';
-import SettingsSEO from "~/SEO/Settings.seo";
 import { Account, EmailNotification, Header, ManageBlogs, Subscription, UserDetailsOptions, UserProfile } from "~/component";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
@@ -16,7 +15,6 @@ const EditProfile: NextPage<{
 
   return (
     <>
-      <SettingsSEO />
 
       <Header />
 

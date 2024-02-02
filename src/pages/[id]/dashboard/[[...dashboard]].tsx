@@ -17,7 +17,6 @@ import {
   Series
 } from "~/component";
 import { Navigation } from "~/component/macroComponent/Dashboard";
-import DashboardSEO from "~/SEO/Dashboard.seo";
 import { authOptions } from "~/server/auth";
 import { LogonoText } from "~/svgs";
 
@@ -93,7 +92,6 @@ const Dashboard = () => {
 
   return (
     <>
-      <DashboardSEO />
 
       <Header search={false} />
 

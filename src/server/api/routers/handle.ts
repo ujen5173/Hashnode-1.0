@@ -29,7 +29,7 @@ export const handleRouter = createTRPCRouter({
             logo: z.string().optional(),
           })
           .optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const handle = await ctx.db.query.handles.findFirst({
@@ -56,7 +56,7 @@ export const handleRouter = createTRPCRouter({
           domain: z.string().min(4),
           name: z.string().optional(),
         }),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const findExistingHandle = await ctx.db.query.handles.findFirst({
@@ -74,7 +74,7 @@ export const handleRouter = createTRPCRouter({
         .insert(handles)
         .values({
           handle: input.handle.domain,
-          name: input.handle.name || "HASHNODE CLONE HANDLE",
+          name: input.handle.name ?? "HASHNODE CLONE HANDLE",
           userId: ctx.session.user.id,
         })
         .returning();
@@ -92,7 +92,7 @@ export const handleRouter = createTRPCRouter({
           value: z.string(),
           priority: z.number().default(0),
         }),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const handle = await ctx.db.query.handles.findFirst({
@@ -130,7 +130,7 @@ export const handleRouter = createTRPCRouter({
           value: z.string().optional(),
           priority: z.number().default(0).optional(),
         }),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db
@@ -145,7 +145,7 @@ export const handleRouter = createTRPCRouter({
     .input(
       z.object({
         handleId: z.string(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const result = await ctx.db.query.customTabs.findMany({
@@ -160,7 +160,7 @@ export const handleRouter = createTRPCRouter({
     .input(
       z.object({
         tabId: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db

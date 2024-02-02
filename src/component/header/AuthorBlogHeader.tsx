@@ -267,7 +267,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                         target="_blank"
                         key={uuid()}
                         title={e[0]}
-                        href={e[1] || "#"}
+                        href={e[1] as string}
                       >
                         <button className="btn-icon-large flex">
                           {social[e[0] as keyof typeof social]}
