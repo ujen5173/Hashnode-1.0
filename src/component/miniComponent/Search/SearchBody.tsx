@@ -83,6 +83,7 @@ const SearchBody = React.forwardRef<
   });
 
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [topResults, setTopResults] = useState<any>([]);
 
   const [refetching, setRefetching] = useState(false);
@@ -101,10 +102,10 @@ const SearchBody = React.forwardRef<
           const data = response;
           const randomizeResponse = faker.helpers.shuffle(
             [
-              ...(data.articles?.map((e) => ({ ...e, type: "ARTICLES" })) ||
+              ...(data.articles?.map((e) => ({ ...e, type: "ARTICLES" })) ??
                 []),
-              ...(data.tags?.map((e) => ({ ...e, type: "TAGS" })) || []),
-              ...(data.users?.map((e) => ({ ...e, type: "USERS" })) || []),
+              ...(data.tags?.map((e) => ({ ...e, type: "TAGS" })) ?? []),
+              ...(data.users?.map((e) => ({ ...e, type: "USERS" })) ?? []),
             ].flat()
           );
           setTopResults(randomizeResponse);
@@ -142,9 +143,9 @@ const SearchBody = React.forwardRef<
         const data = res.data as SearchResults;
         const randomizeResponse = faker.helpers.shuffle(
           [
-            ...(data.articles?.map((e) => ({ ...e, type: "ARTICLES" })) || []),
-            ...(data.tags?.map((e) => ({ ...e, type: "TAGS" })) || []),
-            ...(data.users?.map((e) => ({ ...e, type: "USERS" })) || []),
+            ...(data.articles?.map((e) => ({ ...e, type: "ARTICLES" })) ?? []),
+            ...(data.tags?.map((e) => ({ ...e, type: "TAGS" })) ?? []),
+            ...(data.users?.map((e) => ({ ...e, type: "USERS" })) ?? []),
           ].flat()
         );
         setTopResults(randomizeResponse);
@@ -276,7 +277,8 @@ const SearchBody = React.forwardRef<
                       ))}
                     </ul>
                   ) : <NoSearchResults /> : type === "TOP" ? (
-                    topResults.length > 0 ? topResults.map((search: any) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    topResults.length > 0 ? topResults.map((search: { [x: string]: any; type: any; }) => {
                       const { type, ...rest } = search;
                       return type === "ARTICLES" ? (
                         <div
