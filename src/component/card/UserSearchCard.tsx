@@ -59,7 +59,7 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
           <Image
             width={50}
             height={50}
-            src={searchedUser.image as string}
+            src={searchedUser.image ?? "/default.avif"}
             alt={searchedUser.name}
             className="h-9 w-9 rounded-full md:h-12 md:w-12"
           />

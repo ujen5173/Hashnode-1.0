@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 
 interface Props {
   user: Session | null;
@@ -19,7 +19,7 @@ interface Props {
 }
 
 const NoArticlesUploadedError: FC<Props> = ({ user, author }) => {
-  const { theme } = useContext(C) as ContextValue;
+  const { theme } = useContext(C)!;
 
   return (
     <div className="w-full border-t border-border-light bg-light-bg px-4 py-8 dark:border-border dark:bg-primary">

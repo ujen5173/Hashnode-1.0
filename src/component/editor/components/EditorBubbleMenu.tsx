@@ -17,50 +17,49 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
   const items: BubbleMenuItem[] = [
     {
       name: "heading 1",
-      isActive: () => props.editor.isActive("heading1"),
+      isActive: () => props.editor?.isActive("heading1") ?? false,
       command: () =>
-        props.editor.chain().focus().toggleHeading({ level: 1 }).run(),
+        props.editor?.chain().focus().toggleHeading({ level: 1 }).run(),
       icon: <Heading1 size={18} />,
     },
     {
       name: "heading 1",
-      isActive: () => props.editor.isActive("heading2"),
+      isActive: () => props.editor?.isActive("heading2") ?? false,
       command: () =>
-        props.editor.chain().focus().toggleHeading({ level: 2 }).run(),
+        props.editor?.chain().focus().toggleHeading({ level: 2 }).run(),
       icon: <Heading2 size={18} />,
     },
     {
       name: "heading 1",
-      isActive: () => props.editor.isActive("heading3"),
+      isActive: () => props.editor?.isActive("heading3") ?? false,
       command: () =>
-        props.editor.chain().focus().toggleHeading({ level: 3 }).run(),
+        props.editor?.chain().focus().toggleHeading({ level: 3 }).run(),
       icon: <Heading3 size={18} />,
     },
     {
       name: "bold",
-      isActive: () => props.editor.isActive("bold"),
-      command: () => props.editor.chain().focus().toggleBold().run(),
+      isActive: () => props.editor?.isActive("bold") ?? false,
+      command: () => props.editor?.chain().focus().toggleBold().run(),
       icon: <Bold size={18} />,
     },
     {
       name: "italic",
-      isActive: () => props.editor.isActive("italic"),
-      command: () => props.editor.chain().focus().toggleItalic().run(),
+      isActive: () => props.editor?.isActive("italic") ?? false,
+      command: () => props.editor?.chain().focus().toggleItalic().run(),
       icon: <Italic size={18} />,
     },
     {
       name: "strike",
-      isActive: () => props.editor.isActive("strike"),
-      command: () => props.editor.chain().focus().toggleStrike().run(),
+      isActive: () => props.editor?.isActive("strike") ?? false,
+      command: () => props.editor?.chain().focus().toggleStrike().run(),
       icon: <Strikethrough size={18} />,
     },
 
     {
       name: "highlight",
-      isActive: () => props.editor.isActive("highlight"),
+      isActive: () => props.editor?.isActive("highlight") ?? false,
       command: () =>
-        props.editor
-          .chain()
+        props.editor?.chain()
           .focus()
           .toggleHighlight({ color: "#FDE047" })
           .run(),
@@ -68,8 +67,8 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
     },
     {
       name: "code",
-      isActive: () => props.editor.isActive("code"),
-      command: () => props.editor.chain().focus().toggleCode().run(),
+      isActive: () => props.editor?.isActive("code") ?? false,
+      command: () => props.editor?.chain().focus().toggleCode().run(),
       icon: <Code size={18} />,
     },
   ];

@@ -2,7 +2,7 @@ import { Editor } from "@tiptap/core";
 import { Dispatch, FC, SetStateAction, useEffect, useRef } from "react";
 
 interface LinkSelectorProps {
-  editor: Editor;
+  editor: Editor | undefined;
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -29,7 +29,7 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
       >
         <p className="text-base text-slate-900 dark:text-slate-200">↗</p>
         <p
-          className={`underline text-slate-900 dark:text-slate-200 underline-offset-4 ${editor.isActive("link") ? "text-blue-500" : ""
+          className={`underline text-slate-900 dark:text-slate-200 underline-offset-4 ${editor?.isActive("link") ? "text-blue-500" : ""
             }`}
         >
           Link
@@ -42,7 +42,7 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
             const input = (e.target as HTMLFormElement)
               .elements[0] as HTMLInputElement;
 
-            editor.chain().focus().setLink({ href: input.value }).run();
+            editor?.chain().focus().setLink({ href: input.value }).run();
             setIsOpen(false);
           }}
           className="fixed top-full z-[99999] mt-1 flex min-w-60 overflow-hidden rounded border border-border-light dark:border-border bg-white dark:bg-slate-700 p-1 shadow-xl animate-in fade-in slide-in-from-top-1"
@@ -52,9 +52,9 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
             type="url"
             placeholder="Paste a link"
             className="flex-1 bg-transparent p-1 text-slate-800 dark:text-slate-200 text-sm outline-none"
-            defaultValue={editor.getAttributes("link").href || ""}
+            defaultValue={editor?.getAttributes("link").href || ""}
           />
-          {editor.getAttributes("link").href ? (
+          {editor?.getAttributes("link").href ? (
             <div className="flex gap-2 items-center">
               <button className="px-3 py-1 rounded-md bg-blue-600 text-white outline-none font-semibold"
                 type="submit"
@@ -63,7 +63,7 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
               </button>
               <button type="button" className="px-3 py-1 rounded-md bg-red text-white outline-none font-semibold"
                 onClick={() => {
-                  editor.chain().focus().unsetLink().run();
+                  editor?.chain().focus().unsetLink().run();
                   setIsOpen(false);
                 }}
               >

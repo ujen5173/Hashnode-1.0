@@ -70,7 +70,7 @@ const Notifications = () => {
                     : "btn-tab-secondary"
                     }`}
                 >
-                  {type.icon && type.icon(type.name)}
+                  {type.icon ? type.icon(type.name) : null}
                   {type.label}
                 </button>
               ))}
@@ -106,18 +106,3 @@ const Notifications = () => {
 
 export default Notifications;
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const session = await getServerSession(context.req, context.res, authOptions);
-
-//   if (!session?.user) {
-//     return { props: { session: null }, redirect: { destination: "/" } };
-//   }
-
-//   return {
-//     props: {
-//       session: session
-//         ? (JSON.parse(JSON.stringify(session)) as Session)
-//         : null,
-//     },
-//   };
-// };

@@ -14,7 +14,7 @@ const UserBlogSEO: FC<{ user: User }> = ({ user }) => {
       <meta property="og:image" content="/hashnode-social-banner.png" />
       <meta
         property="og:url"
-        content={process.env.NEXT_PUBLIC_VERCEL_URL as string}
+        content={process.env.NEXT_PUBLIC_VERCEL_URL}
       />
 
       {/* Twitter card tags for Twitter banner */}
@@ -29,7 +29,7 @@ const UserBlogSEO: FC<{ user: User }> = ({ user }) => {
       {/* Other necessary tags */}
       <link
         rel="canonical"
-        href={process.env.NEXT_PUBLIC_VERCEL_URL as string}
+        href={process.env.NEXT_PUBLIC_VERCEL_URL}
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 

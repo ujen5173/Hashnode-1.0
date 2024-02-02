@@ -108,14 +108,14 @@ const SocialHandles = () => {
             aria-label={`Follow us on ${item.name}`}
             title={`Follow us on ${item.name}`}
             className={`btn-social-icon flex h-8 w-8 items-center justify-center transition-colors ${item.name === "Twitter"
-                ? "hover:bg-[#1da1f2]"
-                : item.name === "Discord"
-                  ? "hover:bg-[#7289da]"
-                  : item.name === "Github"
-                    ? "github hover:bg-[#2c3646]"
-                    : item.name === "Hashnode"
-                      ? "hover:bg-[#2c3646]"
-                      : ""
+              ? "hover:bg-[#1da1f2]"
+              : item.name === "Discord"
+                ? "hover:bg-[#7289da]"
+                : item.name === "Github"
+                  ? "github hover:bg-[#2c3646]"
+                  : item.name === "Hashnode"
+                    ? "hover:bg-[#2c3646]"
+                    : ""
               }`}
             href={`${item.link}`}
           >

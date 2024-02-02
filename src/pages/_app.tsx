@@ -10,8 +10,9 @@ import { ToastContainer } from "react-toastify";
 import "~/styles/globals.css";
 import Context from "~/utils/context";
 
+import { MantineProvider } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { SearchBody } from "~/component";
 import Feedback, { FeedbackForm } from "~/component/Feedback";
@@ -37,7 +38,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   useEffect(() => {
     const popup = JSON.parse(
-      localStorage.getItem("remove_popup") || "false"
+      localStorage.getItem("remove_popup") ?? "false"
     ) as boolean;
 
     if (!popup) {
@@ -66,7 +67,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   useKeyPress(handleKeyPress);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (searchOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -95,22 +96,24 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <>
       <SessionProvider session={session}>
-        <Context options={{ searchOpen, setSearchOpen }}>
-          <ToastContainer
-            closeButton={false}
-            pauseOnFocusLoss={false}
-            toastClassName={() =>
-              "relative bg-white dark:bg-zinc-900 text-neutral-800 dark:text-white flex p-1 min-h-15 rounded-md justify-between overflow-hidden cursor-pointer p-5 border-2 dark:border-zinc-800 :dark:fill:slate-50 mb-4"
-            }
-          />
-          {popup && <Popup setPopup={setPopup} />}
+        <MantineProvider>
+          <Context options={{ searchOpen, setSearchOpen }}>
+            <ToastContainer
+              closeButton={false}
+              pauseOnFocusLoss={false}
+              toastClassName={() =>
+                "relative bg-white dark:bg-zinc-900 text-neutral-800 dark:text-white flex p-1 min-h-15 rounded-md justify-between overflow-hidden cursor-pointer p-5 border-2 dark:border-zinc-800 :dark:fill:slate-50 mb-4"
+              }
+            />
+            {popup && <Popup setPopup={setPopup} />}
 
-          <NextTopLoader color="#2563eb" />
+            <NextTopLoader color="#2563eb" />
 
-          <Component {...pageProps} />
+            <Component {...pageProps} />
 
-          {searchOpen && <SearchBody ref={ref} setOpened={setSearchOpen} />}
-        </Context>
+            {searchOpen && <SearchBody ref={ref as React.MutableRefObject<HTMLDivElement>} setOpened={setSearchOpen} />}
+          </Context>
+        </MantineProvider>
       </SessionProvider>
 
       <Analytics />

@@ -54,7 +54,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
         "absolute top-2 right-2 flex items-center justify-center gap-1";
       copyButton.innerHTML = copyButtonElements;
       copyButton.addEventListener("click", () => {
-        void navigator.clipboard.writeText(copy[i]?.textContent || "");
+        void navigator.clipboard.writeText(copy[i]?.textContent ?? "");
         toast.success("Copied to clipboard");
       });
 
@@ -99,7 +99,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
                 href={`/u/@${article?.user.username}`}
               >
                 <Image
-                  src={article?.user.image as string}
+                  src={article?.user.image ?? "/default.avif"}
                   alt={article?.user.name}
                   width={70}
                   height={70}
@@ -204,7 +204,7 @@ const SeriesSection: FC<{
             data && (
               <span className="text-lg font-bold text-secondary hover:underline">
                 <Link
-                  href={`/dev/@${user?.user?.handle?.handle as string}/series/${data.slug
+                  href={`/dev/@${user?.user?.handle?.handle}/series/${data.slug
                     }`}
                 >
                   {data.title}
@@ -215,8 +215,8 @@ const SeriesSection: FC<{
         </header>
 
         <main className="">
-          {data &&
-            data.articles.map((article, index) => (
+          {
+            data?.articles.map((article, index) => (
               <div
                 className="flex flex-col gap-4 border-b border-border-light p-4 last:border-none dark:border-border md:flex-row md:items-center"
                 key={article.id}
@@ -289,7 +289,7 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
 };
 
 export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
-  // const { following, followUser } = useContext(C) as ContextValue;
+  // const { following, followUser } = useContext(C)!;
   const { data: user } = useSession();
 
   const { following, setFollowing } = useContext(FollowContext) as {

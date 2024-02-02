@@ -51,7 +51,7 @@ const ManageData: FC<Props> = ({
                   key={item.id}
                   className="w-full md:w-[calc(100%/2-0.5rem)]"
                 >
-                  <TagCard tag={item} type={filter || "Any"} />
+                  <TagCard tag={item} type={filter ?? "Any"} />
                 </div>
               );
             })}
@@ -59,7 +59,7 @@ const ManageData: FC<Props> = ({
         ) : (
           <div className="py-16">
             <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-              {error || "No Tags found!"}
+              {error ?? "No Tags found!"}
             </p>
           </div>
         )
@@ -110,7 +110,7 @@ const ManageData: FC<Props> = ({
         ) : (
           <div className="py-16">
             <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-              {error || "No Articles found! 😢"}
+              {error ?? "No Articles found! 😢"}
             </p>
           </div>
         )
@@ -140,7 +140,7 @@ const ManageData: FC<Props> = ({
         ) : (
           <div className="py-16">
             <p className="text-center text-lg text-gray-500 dark:text-gray-400">
-              {error || "No Notifications yet!"}
+              {error ?? "No Notifications yet!"}
             </p>
           </div>
         )

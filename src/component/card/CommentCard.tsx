@@ -122,7 +122,7 @@ export const CommentCard: FC<Props> = ({
       <div className="my-2 flex gap-2">
         <Link href={`/u/@${comment?.user.username}`}>
           <Image
-            src={comment?.user.image as string}
+            src={comment?.user.image ?? "/default_user.avif"}
             alt={comment?.user.name}
             width={40}
             height={40}

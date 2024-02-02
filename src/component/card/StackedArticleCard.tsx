@@ -4,12 +4,12 @@ import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
 
 import { BookOpen } from "lucide-react";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import { formatDate } from "~/utils/miniFunctions";
 import { type CardProps } from "./SimpleArticleCard";
 
 const StackedArticleCard: FC<CardProps> = ({ article }) => {
-  const { theme } = useContext(C) as ContextValue;
+  const { theme } = useContext(C)!;
 
   return (
     <div

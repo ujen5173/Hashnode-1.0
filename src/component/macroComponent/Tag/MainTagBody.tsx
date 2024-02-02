@@ -9,14 +9,14 @@ import { ArticleLoading } from "~/component/loading";
 import { ManageData } from "~/component/miniComponent";
 import type { ArticleCard, DetailedTag } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import { TagPageHeader } from "../../header";
 import FilterSection from "./FilterSection";
 
 const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const tab = useRouter().query.tab as string | undefined;
 
-  const { filter, setFilter } = useContext(C) as ContextValue;
+  const { filter, setFilter } = useContext(C)!;
 
   const [following, setFollowing] = useState<{
     status: boolean;
@@ -33,7 +33,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const { data, isFetching, error } = api.posts.getArticlesUsingTag.useQuery(
     {
       name: tagDetails.name,
-      type: (tab || "hot") as "hot" | "new",
+      type: (tab ?? "hot") as "hot" | "new",
       limit: 2,
       filter: {
         read_time: filter.data.read_time,

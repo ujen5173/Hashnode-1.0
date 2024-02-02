@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Select } from "~/component/miniComponent";
 import { READ_TIME_DEFAULT_TEXTS, READ_TIME_OPTIONS } from "~/hooks/useFilter";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import Tag from "./Tag";
 
 const FilterSection = () => {
@@ -9,7 +9,7 @@ const FilterSection = () => {
     filter,
     setFilter,
     filterActions
-  } = useContext(C) as ContextValue;
+  } = useContext(C)!;
 
   return (
     <section className="relative flex w-full flex-col justify-between gap-4 border-b border-border-light p-4 dark:border-border sm:flex-row sm:gap-12">

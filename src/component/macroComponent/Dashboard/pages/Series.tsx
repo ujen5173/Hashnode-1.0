@@ -12,10 +12,10 @@ const Series = () => {
 
   const { data, isLoading } = api.series.getSeriesOfAuthor.useQuery(
     {
-      username: user?.user.username as string,
+      username: user?.user.username ?? "",
     },
     {
-      enabled: !!user?.user,
+      enabled: !!user?.user.username,
       retry: 0
     }
   );
@@ -44,7 +44,7 @@ const Series = () => {
           Series
         </h1>
 
-        <Link href={`/${user?.user.id as string}/dashboard/series/create`}>
+        <Link href={`/${user?.user.id}/dashboard/series/create`}>
           <button className="btn-outline">
             <span className="text-secondary">Create new Series</span>
           </button>
@@ -62,7 +62,7 @@ const Series = () => {
         ) : data && data.length > 0 ? (
           <div className="">
             {data.map((item) => (
-              <SeriesCard author={user?.user.handle?.handle as string} item={item} key={item.id} deleteSeries={deleteSeries} />
+              <SeriesCard author={user?.user.handle?.handle} item={item} key={item.id} deleteSeries={deleteSeries} />
             ))}
           </div>
         ) : (
@@ -91,7 +91,7 @@ const SeriesCard: FC<{
     title: string;
     slug: string;
   };
-  author: string;
+  author: string | undefined;
   deleteSeries: (id: string) => Promise<void>;
 }> = ({ item, author, deleteSeries }) => {
   return (
@@ -106,7 +106,7 @@ const SeriesCard: FC<{
       </div>
 
       <div className="flex items-center gap-2">
-        <Link href={`/dev/@${author}/series/${item.slug}`} className="inline-flex items-center gap-2 rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
+        <Link href={`/dev/@${author ?? ""}/series/${item.slug}`} className="inline-flex items-center gap-2 rounded-md px-3 py-1 hover:bg-gray-200 dark:hover:bg-primary-light">
           <ExternalLink className="h-4 w-4 stroke-gray-500 dark:stroke-text-primary" />
 
           <span className="font-medium text-gray-500 dark:text-text-primary">

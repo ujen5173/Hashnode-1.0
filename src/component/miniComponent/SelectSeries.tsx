@@ -128,7 +128,7 @@ const SelectSeries: FC<{
 
               <a
                 rel="noopener noreferrer"
-                href={`/${user?.user.id as string}/dashboard/series/create`}
+                href={`/${user?.user.id}/dashboard/series/create`}
                 target="_blank"
               >
                 <button aria-label="Create New Tag" className="btn-filled">

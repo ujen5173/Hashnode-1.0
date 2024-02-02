@@ -2,10 +2,10 @@ import { useContext } from "react";
 import { ArticleLoading } from "~/component/loading";
 import { ManageData } from "~/component/miniComponent";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 
 const BookmarkMainComponent = () => {
-  const { bookmarks } = useContext(C) as ContextValue;
+  const { bookmarks } = useContext(C)!;
 
   const { data: bookmarksData, isLoading } = api.posts.getMany.useQuery(
     {

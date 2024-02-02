@@ -142,7 +142,7 @@ export const authOptions: NextAuthOptions = {
       };
     },
   },
-  adapter: DrizzleAdapter(db, pgTableHijack) as Adapter<User>,
+  adapter: DrizzleAdapter(db, pgTableHijack) as Adapter,
   providers: [
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
@@ -180,7 +180,7 @@ export const authOptions: NextAuthOptions = {
             slugify(profile.name, {
               ...slugSetting,
               replacement: "_",
-            })
+            }),
           ),
           email: profile.email,
           image: profile.picture,

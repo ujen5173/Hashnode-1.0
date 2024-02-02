@@ -11,16 +11,15 @@ import {
 import { api } from "~/utils/api";
 import {
   C,
-  type ContextValue,
   type TrendingArticleTypes,
-  type TrendingTagsTypes,
+  type TrendingTagsTypes
 } from "~/utils/context";
 import ExploreMainComponentNavigation from "./ExploreMainComponentNavigation";
 
 const ExploreMainComponent = () => {
   const { slug } = useRouter().query;
   const { data } = useSession();
-  const { timeFilter } = useContext(C) as ContextValue;
+  const { timeFilter } = useContext(C)!;
 
   const trendingTags = api.tags.getTrendingTags.useQuery(
     {
@@ -152,7 +151,7 @@ const ExploreMainComponent = () => {
                 showFilter={true}
               />
             ),
-          }[(slug ? slug[0] : "default") as string]
+          }[(slug ? slug[0]! : "default")]
         }
       </div>
     </section>
@@ -177,7 +176,7 @@ const ExploreSection: FC<{
   subtitle,
   showFilter = false,
 }) => {
-    const { setTimeFilter } = useContext(C) as ContextValue;
+    const { setTimeFilter } = useContext(C)!;
 
     return (
       <>

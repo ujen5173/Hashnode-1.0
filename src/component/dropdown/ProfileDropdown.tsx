@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import React, { useContext } from "react";
 import { profileDropdownList } from "~/utils/constants";
 
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 
 const imageDropdown = React.forwardRef<
   HTMLDivElement,
@@ -16,7 +16,7 @@ const imageDropdown = React.forwardRef<
     setOpened: React.Dispatch<React.SetStateAction<boolean>>;
   }
 >(({ user, setOpened }, ref) => {
-  const { setSearchOpen } = useContext(C) as ContextValue;
+  const { setSearchOpen } = useContext(C)!;
   const router = useRouter();
 
   const logout = async () => {
@@ -28,11 +28,11 @@ const imageDropdown = React.forwardRef<
       ref={ref}
       className="absolute right-0 top-full z-20 mt-2 w-64 rounded-md border border-border-light bg-gray-50 py-2 text-left shadow-lg dark:border-border dark:bg-primary"
     >
-      <Link href={`/u/@${user?.user.username as string} `}>
+      <Link href={`/u/@${user?.user.username} `}>
         <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
           <Image
-            src={user?.user.image || "/default_user.avif"}
-            alt={user?.user.name || "user"}
+            src={user?.user.image ?? "/default_user.avif"}
+            alt={user?.user.name ?? "user"}
             width={100}
             height={100}
             className="h-10 w-10 rounded-full object-cover"
@@ -51,7 +51,7 @@ const imageDropdown = React.forwardRef<
 
       <div className="my-2 h-[1px] w-full bg-border-light dark:bg-border" />
 
-      {user?.user && user?.user.handle ? (
+      {user?.user.handle ? (
         <div>
           <h1 className="mb-1 px-4 text-xs font-semibold text-gray-500 dark:text-text-primary">
             Personal Blogs
@@ -89,9 +89,8 @@ const imageDropdown = React.forwardRef<
             />
           ) : (
             <div
-              className={`${
-                item.hiddenItem ? "block lg:hidden" : ""
-              } cursor-pointer`}
+              className={`${item.hiddenItem ? "block lg:hidden" : ""
+                } cursor-pointer`}
               onClick={() => {
                 if (item.danger) {
                   void logout();
@@ -108,9 +107,8 @@ const imageDropdown = React.forwardRef<
               <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
                 <span>{item.icon}</span>
                 <span
-                  className={`${
-                    item.danger ? "text-red" : ""
-                  } text-sm font-medium`}
+                  className={`${item.danger ? "text-red" : ""
+                    } text-sm font-medium`}
                 >
                   {item.name}
                 </span>

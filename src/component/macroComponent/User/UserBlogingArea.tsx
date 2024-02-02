@@ -28,7 +28,7 @@ const UserBlogingArea: FC<{
           </h1>
         </div>
 
-        <Link href={`/dev/@${userDetails?.handle?.handle as string}`}>
+        <Link href={`/dev/@${userDetails?.handle?.handle}`}>
           <button className="btn-outline flex items-center justify-center gap-2">
             <MoveUpRight className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
 

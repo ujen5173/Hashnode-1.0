@@ -78,7 +78,6 @@ const NewArticleModal: FC<Props> = ({
     if (article && !router?.query?.params?.includes("edit")) {
       const parsedArticle = JSON.parse(article) as ArticleCard;
       if (
-        parsedArticle &&
         parsedArticle.tags &&
         parsedArticle.tags.length > 0
       ) {
@@ -154,7 +153,7 @@ const NewArticleModal: FC<Props> = ({
         seriesId: selectedSeries?.id,
         prev_slug,
         content: contentResponse,
-        edit: router?.query?.params?.includes("edit") || false,
+        edit: router?.query?.params?.includes("edit") ?? false,
       });
       if (res.success && res.redirectLink) {
         setPublishModal(false);

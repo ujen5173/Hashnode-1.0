@@ -92,9 +92,9 @@ const NewArticleBody: FC<{
     if (article) {
       setData({
         ...article,
-        subtitle: article.subtitle || "",
-        seoDescription: article.seoDescription || "",
-        seoTitle: article.seoTitle || "",
+        subtitle: article.subtitle ?? "",
+        seoDescription: article.seoDescription ?? "",
+        seoTitle: article.seoTitle ?? "",
         content: convertToHTML(article.content) as DefaultEditorContent
       })
     }
@@ -207,7 +207,7 @@ const NewArticleBody: FC<{
 
               {fileModal && (
                 <div
-                  ref={ref}
+                  ref={ref as React.MutableRefObject<HTMLDivElement>}
                   className="absolute left-0 top-full z-30 mt-2 w-full sm:w-96"
                 >
                   <ImagePlaceholder
@@ -231,8 +231,8 @@ const NewArticleBody: FC<{
                       }
                       const newData = {
                         ...data,
-                        cover_image: uploaded[0]?.fileUrl || null,
-                        cover_image_key: uploaded[0]?.fileKey || null,
+                        cover_image: uploaded[0]?.url ?? null,
+                        cover_image_key: uploaded[0]?.key ?? null,
                       };
                       setData(newData);
                     }}
@@ -247,7 +247,7 @@ const NewArticleBody: FC<{
           <div className="relative mb-5 w-full rounded-md border border-border-light dark:border-border">
             <button
               onClick={() =>
-                void deleteImage(data.cover_image_key || undefined)
+                void deleteImage(data.cover_image_key ?? undefined)
               }
               className="absolute right-4 top-4 rounded-md border border-border-light bg-white bg-opacity-60 px-3 py-2"
             >

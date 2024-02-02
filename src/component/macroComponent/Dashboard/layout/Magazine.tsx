@@ -4,7 +4,6 @@ import { SimpleArticleCard } from "~/component/card";
 import { SimpleArticleCardLoading } from "~/component/loading";
 import { NoArticlesUploadedError } from "~/component/miniComponent";
 import { AuthorArea } from "~/pages/dev/[username]";
-import { type DataType } from "~/types";
 import { type LayoutProps } from "./Stacked";
 
 const Magazine: FC<LayoutProps> = (({ data, isLoading, author }) => {
@@ -19,7 +18,7 @@ const Magazine: FC<LayoutProps> = (({ data, isLoading, author }) => {
       ) : data && data.length > 0 ? (
         <div className="w-full border-b border-border-light bg-light-bg dark:border-border dark:bg-black">
           <div className="author-blog-grid mx-auto max-w-[1300px] px-4 py-4 sm:py-8">
-            <SimpleArticleCard type="main" article={data[0] as DataType} />
+            <SimpleArticleCard type="main" article={data[0]!} />
             {data.length === 1 ? (
               <>
                 {data?.slice(1, 3).map((article) => (

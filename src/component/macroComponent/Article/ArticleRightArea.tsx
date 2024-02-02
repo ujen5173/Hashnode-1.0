@@ -14,10 +14,10 @@ import { Notification } from "~/component/miniComponent";
 import { FollowContext } from "~/pages/u/[username]/[slug]";
 import { type UserSimple } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 
 const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
-  const { handleTheme, setSearchOpen } = useContext(C) as ContextValue;
+  const { handleTheme, setSearchOpen } = useContext(C)!;
   const { following, setFollowing } = useContext(FollowContext) as {
     following: boolean;
     setFollowing: React.Dispatch<React.SetStateAction<boolean>>;
@@ -173,8 +173,8 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
       >
         <div ref={setControl}>
           <Image
-            src={user?.user.image || "/default_user.avif"}
-            alt={user?.user.name || "Guest User"}
+            src={user?.user.image ?? "/default_user.avif"}
+            alt={user?.user.name ?? "Guest User"}
             width={100}
             height={100}
             draggable={false}

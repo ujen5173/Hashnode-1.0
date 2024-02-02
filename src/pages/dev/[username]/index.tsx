@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import AuthorBlog from "~/SEO/AuthorBlog.seo";
 import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
@@ -55,13 +54,13 @@ const AuthorBlogs: NextPage<{
   const { data: session } = useSession();
   const [appearance, setAppearance] = useState<
     | {
-        layout: "MAGAZINE" | "STACKED" | "GRID";
-      }
+      layout: "MAGAZINE" | "STACKED" | "GRID";
+    }
     | undefined
   >(undefined);
 
   useEffect(() => {
-    if (session && session.user.handle) {
+    if (session?.user.handle) {
       setAppearance(session.user.handle.appearance);
     }
   }, [session]);
@@ -73,9 +72,9 @@ const AuthorBlogs: NextPage<{
       {
         handleDomain: router.query.username
           ? (router.query?.username.slice(
-              1,
-              router.query?.username.length
-            ) as string) || ""
+            1,
+            router.query?.username.length
+          ) as string) ?? ""
           : "",
       },
       {
@@ -106,7 +105,6 @@ const AuthorBlogs: NextPage<{
 
   return (
     <>
-      <AuthorBlog author={user} />
       <AuthorBlogHeader user={user} />
       {/* Home, Badge, Newsletter */}
       <AuthorBlogNavigation tabs={user.handle.customTabs} />
@@ -122,6 +120,14 @@ const AuthorBlogs: NextPage<{
                   handle: {
                     about: handle.about,
                   },
+                } as {
+                  name: string;
+                  username: string;
+                  image: string;
+                  bio: string;
+                  handle: {
+                    about: string;
+                  };
                 };
               })()}
               data={articles}
@@ -137,6 +143,14 @@ const AuthorBlogs: NextPage<{
                   handle: {
                     about: handle.about,
                   },
+                } as {
+                  name: string;
+                  username: string;
+                  image: string;
+                  bio: string;
+                  handle: {
+                    about: string;
+                  };
                 };
               })()}
               data={articles}
@@ -152,13 +166,21 @@ const AuthorBlogs: NextPage<{
                   handle: {
                     about: handle.about,
                   },
+                } as {
+                  name: string;
+                  username: string;
+                  image: string;
+                  bio: string;
+                  handle: {
+                    about: string;
+                  };
                 };
               })()}
               data={articles}
               isLoading={isLoading}
             />
           ),
-        }[appearance?.layout || "MAGAZINE"]
+        }[appearance?.layout ?? "MAGAZINE"]
       }
 
       <Footer />
@@ -226,9 +248,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!user) {
     return {
       notFound: true,
-      redirect: {
-        destination: "/404",
-      },
     };
   }
 
@@ -236,16 +255,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-            username: string;
-            image: string;
-            handle: {
-              handle: string;
-              name: string;
-              social: BlogSocial;
-              customTabs: CustomTabs[];
-            };
-            followers: { id: string }[];
-          })
+          username: string;
+          image: string;
+          handle: {
+            handle: string;
+            name: string;
+            social: BlogSocial;
+            customTabs: CustomTabs[];
+          };
+          followers: { id: string }[];
+        })
         : null,
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)
@@ -303,7 +322,7 @@ export const AuthorArea: FC<{
       <div className="mx-auto flex max-w-[1000px] flex-col items-center justify-center px-4 py-14 md:py-16">
         <div className="flex flex-col items-center justify-center gap-2">
           <Image
-            src={author.image || ""}
+            src={author.image ?? ""}
             width={120}
             height={120}
             alt="User image"
@@ -313,7 +332,7 @@ export const AuthorArea: FC<{
             {author.name}
           </h1>
           <p className="text-center text-base text-gray-500 dark:text-text-primary">
-            {author.handle.about || "No bio added yet!"}
+            {author.handle.about ?? "No bio added yet!"}
           </p>
         </div>
       </div>

@@ -35,8 +35,8 @@ const UserimageArea: FC<{
 
   useEffect(() => {
     setFollowing({
-      status: userDetails?.isFollowing || false,
-      followerCount: userDetails?.followersCount || 0,
+      status: userDetails?.isFollowing ?? false,
+      followerCount: userDetails?.followersCount ?? 0,
     });
   }, [userDetails]);
 
@@ -64,8 +64,8 @@ const UserimageArea: FC<{
     <div className="mb-10 flex flex-col gap-8 md:flex-row">
       <div className="h-28 w-28 overflow-hidden rounded-full bg-light-bg dark:bg-primary-light md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40">
         <Image
-          src={userDetails?.image || ""}
-          alt={userDetails?.name || ""}
+          src={userDetails?.image ?? ""}
+          alt={userDetails?.name ?? ""}
           width={160}
           height={160}
           decoding="async"
@@ -108,25 +108,25 @@ const UserimageArea: FC<{
             </p>
 
             <div className="flex gap-4 text-gray-700 dark:text-text-primary">
-              <Link href={`/u/@${userDetails?.username as string}/followers`}>
+              <Link href={`/u/@${userDetails?.username}/followers`}>
                 <span className="hover:underline">
                   <span className="font-medium">
                     {Intl.NumberFormat("en-US", {
                       notation: "compact",
                       compactDisplay: "short",
-                    }).format(following?.followerCount || 0)}{" "}
+                    }).format(following?.followerCount ?? 0)}{" "}
                   </span>
                   Follower
                 </span>
               </Link>
 
-              <Link href={`/u/@${userDetails?.username as string}/following`}>
+              <Link href={`/u/@${userDetails?.username}/following`}>
                 <span className="hover:underline">
                   <span className="font-medium">
                     {Intl.NumberFormat("en-US", {
                       notation: "compact",
                       compactDisplay: "short",
-                    }).format(userDetails?.followingCount || 0)}{" "}
+                    }).format(userDetails?.followingCount ?? 0)}{" "}
                   </span>
                   Following
                 </span>
@@ -145,7 +145,7 @@ const UserimageArea: FC<{
 
               {opened && (
                 <div
-                  ref={ref}
+                  ref={ref as React.MutableRefObject<HTMLDivElement>}
                   className="absolute right-0 top-full z-50 mt-2 rounded-md border border-border-light shadow-lg dark:border-border"
                 >
                   <ul className="w-40 overflow-hidden rounded-md bg-white dark:bg-black">
@@ -153,9 +153,8 @@ const UserimageArea: FC<{
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`https://twitter.com/intent/tweet?text=${
-                          process.env.NEXT_PUBLIC_VERCEL_URL as string
-                        }/u/@${userDetails?.username || ""}`}
+                        href={`https://twitter.com/intent/tweet?text=${process.env.NEXT_PUBLIC_VERCEL_URL!
+                          }/u/@${userDetails?.username ?? ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
@@ -171,9 +170,8 @@ const UserimageArea: FC<{
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${
-                          process.env.NEXT_PUBLIC_VERCEL_URL as string
-                        }/u/@${userDetails?.username || ""}`}
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${process.env.NEXT_PUBLIC_VERCEL_URL!
+                          }/u/@${userDetails?.username ?? ""}`}
                       >
                         <button className="flex w-full items-center justify-center gap-2 p-4 text-left">
                           <span>
@@ -199,7 +197,7 @@ const UserimageArea: FC<{
 
               {opened2 && (
                 <div
-                  ref={ref2}
+                  ref={ref2 as React.MutableRefObject<HTMLDivElement>}
                   className="absolute right-0 top-full z-50 mt-2 block overflow-hidden rounded-md border border-border-light shadow-lg dark:border-border"
                 >
                   <ul className="w-max bg-white dark:bg-black">

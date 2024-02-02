@@ -3,10 +3,10 @@ import { useContext } from "react";
 import { BookmarkCard } from "~/component/card";
 import { BookmarkLoading } from "~/component/loading";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 
 const Bookmarks = () => {
-  const { bookmarks } = useContext(C) as ContextValue;
+  const { bookmarks } = useContext(C)!;
   const { data: bookmarksData, isFetching } = api.posts.getBookmarks.useQuery(
     {
       ids: bookmarks,
@@ -23,7 +23,7 @@ const Bookmarks = () => {
     <div className="my-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <header className="flex items-center justify-between border-b border-border-light py-2 dark:border-border">
         <h1 className="text-xl font-bold text-gray-700 dark:text-text-secondary">
-          Bookmarks ({bookmarksData?.length || 0})
+          Bookmarks ({bookmarksData?.length ?? 0})
         </h1>
 
         <Link href={`/bookmarks`}>

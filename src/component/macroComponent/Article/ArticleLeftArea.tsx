@@ -38,7 +38,7 @@ const ArticleLeftArea: FC<{ user: UserSimple }> = ({ user }) => {
         href={`/u/@${user.username}`}
       >
         <Image
-          src={user?.image || ""}
+          src={user?.image ?? ""}
           alt={user?.name}
           width={70}
           height={70}

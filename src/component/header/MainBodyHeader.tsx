@@ -3,13 +3,13 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, type FC } from "react";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import { FilterSection } from "../macroComponent/Tag";
 
 const MainBodyHeader: FC = () => {
   const { tab } = useRouter().query;
   const { data: user } = useSession();
-  const { filter, setFilter } = useContext(C) as ContextValue;
+  const { filter, setFilter } = useContext(C)!;
 
   return (
     <>

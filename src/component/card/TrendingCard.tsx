@@ -28,7 +28,7 @@ const TrendingCard: FC<Props> = ({ article }) => {
         className="block"
       >
         <Image
-          src={article.user.image || "/default_user.avif"}
+          src={article.user.image ?? "/default_user.avif"}
           alt="User image"
           width={180}
           height={180}

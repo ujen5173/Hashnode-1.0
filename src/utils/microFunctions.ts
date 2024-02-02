@@ -18,7 +18,7 @@ export function refactorActivityHelper(
       day: "numeric",
       year: "numeric",
     });
-    const activities = res.get(formatedDate) || [];
+    const activities = res.get(formatedDate) ?? [];
     activities.push(value);
     res.set(formatedDate, activities);
   }

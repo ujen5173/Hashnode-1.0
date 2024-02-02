@@ -16,6 +16,8 @@ const Trending = () => {
     }
   );
 
+  console.log({ articlesData })
+
   return (
     <div className="mb-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
       <header className="flex items-center justify-between border-b border-border-light pb-2 dark:border-border">

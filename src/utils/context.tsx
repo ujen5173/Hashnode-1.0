@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import React, {
   createContext,
-  useEffect,
+  useLayoutEffect,
   useState,
   type ChangeEvent,
   type Dispatch,
-  type SetStateAction,
+  type SetStateAction
 } from "react";
 import useFilter, { DEFAULT_FILTER_DATA, type FilterTimeOption } from "~/hooks/useFilter";
 import { type ArticleCard, type FilterData } from "~/types";
@@ -91,7 +91,7 @@ const Context = ({ children, options }: Props) => {
 
   const routerPath = useRouter().asPath;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // setting filter data to default every time the router changes to avoid unexpected behavior
     setFilter(DEFAULT_FILTER_DATA);
   }, [routerPath]);
@@ -99,7 +99,7 @@ const Context = ({ children, options }: Props) => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const savedBookmarks = localStorage.getItem("bookmarks");
     const newBookmarks = savedBookmarks
       ? (JSON.parse(savedBookmarks) as { id: string }[])
@@ -122,7 +122,7 @@ const Context = ({ children, options }: Props) => {
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setState: Dispatch<SetStateAction<{ [key: string]: string }>> // Specify the type of state properties
+    setState: Dispatch<SetStateAction<Record<string, string>>> // Specify the type of state properties
   ) => {
     const { value, name } = e.target;
     setState((prev) => ({ ...prev, [name]: value })); // Remove the unnecessary type annotation
@@ -134,7 +134,7 @@ const Context = ({ children, options }: Props) => {
     localStorage.setItem("theme", newTheme);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const body = document.querySelector("body");
 
     // theme init
@@ -145,7 +145,7 @@ const Context = ({ children, options }: Props) => {
     body?.classList.remove(newTheme === "light" ? "dark" : "light");
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const body = document.querySelector("body");
 
     body?.classList.add(theme);

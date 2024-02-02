@@ -31,7 +31,9 @@ const CreateNewSeries = () => {
 
     if (res) {
       toast.success("Series created successfully");
-      void router.push(`/${router.query.id as string}/dashboard/series`);
+      if (typeof router.query.id === "string") {
+        void router.push(`/${router.query.id}/dashboard/series`);
+      }
     } else {
       toast.error("Something went wrong");
     }

@@ -12,7 +12,7 @@ const Navbar = () => {
 
   const { data, isLoading, refetch } = api.handles.getNavbarData.useQuery(
     {
-      handleId: user?.user.handle?.id as string,
+      handleId: user?.user.handle?.id ?? "",
     },
     {
       enabled: !!user?.user.handle?.handle,
@@ -368,9 +368,8 @@ const NavBarItem: FC<{
                 type="button"
                 disabled={isUpdating}
                 onClick={() => void editItem()}
-                className={`btn-outline flex items-center gap-2 ${
-                  isUpdating ? "cursor-not-allowed opacity-40" : ""
-                }}`}
+                className={`btn-outline flex items-center gap-2 ${isUpdating ? "cursor-not-allowed opacity-40" : ""
+                  }}`}
               >
                 <span>{isUpdating ? "Updating" : "Update"}</span>
               </button>

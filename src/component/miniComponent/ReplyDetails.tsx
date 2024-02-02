@@ -29,7 +29,7 @@ const ReplyDetails: FC<Props> = ({
       <div className="mb-2 rounded-md border border-border-light dark:border-border">
         <textarea
           className="w-full h-20 p-2 rounded-md resize-none outline-none text-gray-700 dark:text-text-secondary bg-transparent"
-          placeholder={`Reply to @${replyingUserDetails?.username as string}`}
+          placeholder={`Reply to @${replyingUserDetails?.username}`}
           value={replyText}
           onChange={(e) => setReplyText(e.target.value)}
         />

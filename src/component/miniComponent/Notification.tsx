@@ -47,7 +47,7 @@ const Notification = () => {
               {notificationNavigation(notificationType).map((type) => (
                 <button
                   key={type.id}
-                  onClick={() => setNotificationType(type.name as Type)}
+                  onClick={() => setNotificationType(type.name)}
                   className={`${notificationType === type.name
                     ? "btn-tab-active"
                     : "btn-tab-secondary"

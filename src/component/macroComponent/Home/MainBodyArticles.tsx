@@ -5,11 +5,11 @@ import { ArticleLoading } from "~/component/loading";
 import { ManageData } from "~/component/miniComponent";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue, type TrendingArticleTypes } from "~/utils/context";
+import { C, type TrendingArticleTypes } from "~/utils/context";
 
 const MainBodyArticles = () => {
   const tab = useRouter().query.tab as string | undefined | TrendingArticleTypes;
-  const { filter } = useContext(C) as ContextValue;
+  const { filter } = useContext(C)!;
 
   const { isFetching, data, error } = api.posts.getAll.useQuery({
     type: (tab?.toString().toUpperCase() ?? 'PERSONALIZED') as "LATEST" | "PERSONALIZED" | "FOLLOWING",

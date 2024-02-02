@@ -122,7 +122,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
             className="btn-icon-large flex"
             onClick={() => {
               void navigator.clipboard.writeText(
-                `${process.env.NEXT_PUBLIC_VERCEL_URL as string}/tag/${tagDetails.slug
+                `${process.env.NEXT_PUBLIC_VERCEL_URL}/tag/${tagDetails.slug
                 }`
               );
               toast.success("Copied to clipboard!");

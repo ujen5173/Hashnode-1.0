@@ -42,19 +42,20 @@ const General = () => {
   useEffect(() => {
     if (user?.user.handle) {
       const { appearance, ...rest } = user?.user.handle;
+
       setData({
         ...rest,
         social: {
-          twitter: rest.social?.twitter || "",
-          mastodon: rest.social?.mastodon || "",
-          instagram: rest.social?.instagram || "",
-          github: rest.social?.github || "",
-          website: rest.social?.website || "",
-          linkedin: rest.social?.linkedin || "",
-          youtube: rest.social?.youtube || "",
-          dailydev: rest.social?.dailydev || "",
+          twitter: rest.social?.twitter ?? "",
+          mastodon: rest.social?.mastodon ?? "",
+          instagram: rest.social?.instagram ?? "",
+          github: rest.social?.github ?? "",
+          website: rest.social?.website ?? "",
+          linkedin: rest.social?.linkedin ?? "",
+          youtube: rest.social?.youtube ?? "",
+          dailydev: rest.social?.dailydev ?? "",
         },
-        about: rest.about || "",
+        about: rest.about ?? "",
       });
     }
   }, [user]);

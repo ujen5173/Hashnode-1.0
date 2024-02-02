@@ -27,7 +27,7 @@ const FollowCard: FC<{
       <div className="flex flex-1 gap-2">
         <Link href={`/u/@${user.username}`}>
           <Image
-            src={user.image as string}
+            src={user.image ?? "/default.avif"}
             width={60}
             height={60}
             className="h-10 w-10 rounded-full object-cover"
@@ -58,7 +58,7 @@ const FollowCard: FC<{
             isFollowing ? (
               <Check className="h-5 w-5 stroke-green" />
             ) : (
-              <Plus className="h-5 w-5 stroke-secondary stroke-none" />
+              <Plus className="h-5 w-5 stroke-none" />
             )
           }
         </button>

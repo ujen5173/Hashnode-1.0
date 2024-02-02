@@ -108,7 +108,7 @@ const Dashboard = () => {
 
                 <h1 className="text-base font-semibold text-gray-700 dark:text-text-secondary md:text-lg md:font-bold">
                   {session?.user.handle?.name === session?.user.name
-                    ? `${session?.user.handle?.name as string}' Blog`
+                    ? `${session?.user.handle?.name}' Blog`
                     : session?.user.handle?.name}
                 </h1>
               </div>
@@ -119,7 +119,7 @@ const Dashboard = () => {
             </div>
 
             <div className="flex items-center justify-between gap-4">
-              <Link href={`/dev/@${session?.user?.handle?.handle as string}`}>
+              <Link href={`/dev/@${session?.user?.handle?.handle}`}>
                 <div className="flex items-center gap-2 rounded-md px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
                   <ExternalLink className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
 
@@ -135,7 +135,7 @@ const Dashboard = () => {
 
           {/* main dashboard navigations */}
           <main className="flex flex-col gap-4 md:flex-row">
-            <Navigation paths={paths} userId={session?.user.id as string} />
+            <Navigation paths={paths} userId={session?.user.id} />
             {/* dashboard component */}
             <section className="relative min-h-[40rem] w-full flex-1 rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary md:px-6 md:py-8 lg:p-8">
               {dashboardName}
@@ -242,8 +242,7 @@ const Roadmap = () => {
             if (data?.articles) {
               return;
             } else {
-              const appearanceLocation = `/${user?.user.id as string
-                }/dashboard/appearance`;
+              const appearanceLocation = `/${user?.user.id}/dashboard/appearance`;
 
               void router.push(appearanceLocation);
             }
@@ -258,7 +257,7 @@ const Roadmap = () => {
             <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
 
           ) : (
-            <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary dark:stroke-text-primary md:h-7 md:w-7" />
+            <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary md:h-7 md:w-7" />
           )}
           <div className="flex-1">
             <h1 className="mb-2 text-xl  font-semibold text-secondary">

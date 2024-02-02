@@ -24,7 +24,7 @@ import { v4 as uuid } from "uuid";
 import { type BlogSocial, type CustomTabs } from "~/pages/dev/[username]";
 import { Dailydev, Mastodon } from "~/svgs";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import { ArticleHamburgerMenu } from "../aside";
 import {
   ArticleProfileDropdown,
@@ -51,7 +51,7 @@ interface Props {
 }
 
 const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
-  const { handleTheme, setSearchOpen } = useContext(C) as ContextValue;
+  const { handleTheme, setSearchOpen } = useContext(C)!;
   const { mutate: followToggle } = api.users.followUser.useMutation();
 
   const [following, setFollowing] = useState(false);
@@ -100,7 +100,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
               </button>
 
               <ArticleHamburgerMenu
-                user={user?.user || null}
+                user={user?.user ?? null}
                 menu={menu}
                 setMenu={setMenu}
               />
@@ -118,7 +118,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
               </Link>
 
               <ArticleHamburgerMenu
-                user={user?.user || null}
+                user={user?.user ?? null}
                 menu={menu}
                 setMenu={setMenu}
               />
@@ -176,8 +176,8 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
             >
               <div ref={setControl}>
                 <Image
-                  src={user?.user.image || "/default_user.avif"}
-                  alt={user?.user.name || "user"}
+                  src={user?.user.image ?? "/default_user.avif"}
+                  alt={user?.user.name ?? "user"}
                   width={100}
                   height={100}
                   className="h-10 w-10 cursor-pointer select-none overflow-hidden rounded-full"
@@ -267,13 +267,13 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                         target="_blank"
                         key={uuid()}
                         title={e[0]}
-                        href={e[1] as string}
+                        href={e[1] || "#"}
                       >
                         <button className="btn-icon-large flex">
                           {social[e[0] as keyof typeof social]}
                         </button>
                       </a>
-                    );
+                    )
                   })}
             </div>
           </div>

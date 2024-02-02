@@ -7,11 +7,11 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import { Notification } from "../miniComponent";
 
 const RightArea: FC = () => {
-  const { handleTheme } = useContext(C) as ContextValue;
+  const { handleTheme } = useContext(C)!;
   const { data: user } = useSession();
   const [opened, setOpened] = useState(false);
   const router = useRouter();

@@ -43,7 +43,7 @@ const Setup = () => {
         });
 
         if (data) {
-          router.push(redirectionLink || "/");
+          router.push(redirectionLink ?? "/");
         } else {
           toast.error("Something went wrong!");
         }
@@ -123,9 +123,8 @@ const Setup = () => {
 
             <button
               onClick={() => void handleSubdomain()}
-              className={`${
-                isLoading ? "cursor-not-allowed opacity-40" : ""
-              } btn-filled`}
+              className={`${isLoading ? "cursor-not-allowed opacity-40" : ""
+                } btn-filled`}
               disabled={isLoading}
             >
               <div className="px-4">

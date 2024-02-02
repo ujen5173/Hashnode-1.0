@@ -41,7 +41,7 @@ const ExploreSEO: React.FC = () => {
     !slug || !slug[0] || !seoData[slug[0]]
       ? "Explore Popular Tech Blogs and Topics - Hashnode Clone"
       : seoData[slug[0]]?.title ||
-        "Explore Popular Tech Blogs and Topics - Hashnode Clone";
+      "Explore Popular Tech Blogs and Topics - Hashnode Clone";
 
   return (
     <Head>
@@ -67,7 +67,7 @@ const ExploreSEO: React.FC = () => {
       <meta property="og:type" content="website" />
       <meta
         property="og:url"
-        content={process.env.NEXT_PUBLIC_VERCEL_URL as string}
+        content={process.env.NEXT_PUBLIC_VERCEL_URL}
       />
 
       {/* Twitter card tags for Twitter banner */}
@@ -85,7 +85,7 @@ const ExploreSEO: React.FC = () => {
       {/* Other necessary tags */}
       <link
         rel="canonical"
-        href={process.env.NEXT_PUBLIC_VERCEL_URL as string}
+        href={process.env.NEXT_PUBLIC_VERCEL_URL}
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 

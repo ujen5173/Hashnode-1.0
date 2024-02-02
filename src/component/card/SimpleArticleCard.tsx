@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
 
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import { formatDate } from "~/utils/miniFunctions";
 
 export interface CardProps {
@@ -25,7 +25,7 @@ export interface CardProps {
 }
 
 const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
-  const { theme } = useContext(C) as ContextValue;
+  const { theme } = useContext(C)!;
 
   return (
     <div

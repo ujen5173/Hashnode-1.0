@@ -18,7 +18,7 @@ const Articles = () => {
 
   const { data, isLoading } = api.posts.getAuthorArticles.useQuery(
     {
-      id: user?.user.id as string,
+      id: user?.user.id ?? "",
       type,
     },
     {
@@ -34,8 +34,7 @@ const Articles = () => {
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           {isLoading
             ? "Fetching your articles..."
-            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${data?.posts?.length as number
-            })`}
+            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${data?.posts?.length})`}
         </h1>
 
         <div className="hidden md:flex items-center gap-2">

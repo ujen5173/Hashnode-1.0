@@ -78,45 +78,45 @@ export const notificationNavigation = (notificationType: Type) => {
   return [
     {
       id: 123,
-      name: "all",
+      name: "all" as Type,
       label: "All Notifications",
       icon: null,
     },
     {
       id: 345,
-      name: "comment",
+      name: "comment" as Type,
       label: "Comments",
-      icon: (name: string) => (
+      icon: (name: Type) => (
         <MessageCircle
           className={`h-4 w-4 fill-none ${notificationType === name
-              ? "stroke-secondary"
-              : "stroke-gray-700 dark:stroke-text-secondary"
+            ? "stroke-secondary"
+            : "stroke-gray-700 dark:stroke-text-secondary"
             }`}
         />
       ),
     },
     {
       id: 567,
-      name: "like",
+      name: "like" as Type,
       label: "Likes",
-      icon: (name: string) => (
+      icon: (name: Type) => (
         <Heart
           className={`h-4 w-4 fill-none ${notificationType === name
-              ? "stroke-secondary"
-              : "stroke-gray-700 dark:stroke-text-secondary"
+            ? "stroke-secondary"
+            : "stroke-gray-700 dark:stroke-text-secondary"
             }`}
         />
       ),
     },
     {
       id: 789,
-      name: "article",
+      name: "article" as Type,
       label: "Articles",
-      icon: (name: string) => (
+      icon: (name: Type) => (
         <Newspaper
           className={`h-4 w-4 fill-none ${notificationType === name
-              ? "stroke-secondary"
-              : "stroke-gray-700 dark:stroke-text-secondary"
+            ? "stroke-secondary"
+            : "stroke-gray-700 dark:stroke-text-secondary"
             }`}
         />
       ),

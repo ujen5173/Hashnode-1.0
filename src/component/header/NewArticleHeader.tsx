@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useContext, type FC } from "react";
 import { LogonoText } from "~/svgs";
 
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 
 interface Props {
   publishing: boolean;
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const NewArticleHeader: FC<Props> = ({ setPublishModal, publishing }) => {
-  const { handleTheme } = useContext(C) as ContextValue;
+  const { handleTheme } = useContext(C)!;
   const { data: user } = useSession();
 
   return (
@@ -31,7 +31,7 @@ const NewArticleHeader: FC<Props> = ({ setPublishModal, publishing }) => {
 
           <div>
             <Link
-              href={`/u/@${user?.user.username as string}`}
+              href={`/u/@${user?.user.username}`}
               className="flex items-center gap-2"
             >
               <LogonoText className="h-7 fill-secondary" />

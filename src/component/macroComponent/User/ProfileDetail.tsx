@@ -20,8 +20,7 @@ const imageDetail: FC<{
   return (
     <div className="my-6 flex w-full flex-wrap items-center justify-center gap-4 rounded-md border border-border-light px-6 py-4 dark:border-border lg:py-6">
       <div className="flex items-center gap-1 overflow-hidden">
-        {userDetails &&
-          userDetails.social &&
+        {userDetails?.social &&
           Object.entries(userDetails.social).map((data, index) => {
             const [key, value] = data as [
               keyof typeof userDetails.social,

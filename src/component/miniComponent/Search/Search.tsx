@@ -2,10 +2,10 @@ import { Search, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 
 const SearchArea: FC = () => {
-  const { setSearchOpen } = useContext(C) as ContextValue;
+  const { setSearchOpen } = useContext(C)!;
 
   return (
     <>

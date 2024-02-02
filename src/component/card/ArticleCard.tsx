@@ -12,11 +12,11 @@ import Link from "next/link";
 import { useContext, type FC } from "react";
 import removeMd from "remove-markdown";
 import { ArticleCard } from "~/types";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import { formatDate, limitTags, limitText } from "~/utils/miniFunctions";
 
 const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
-  const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
+  const { bookmarks, updateBookmark } = useContext(C)!;
 
   return (
     <div className="w-full p-4">

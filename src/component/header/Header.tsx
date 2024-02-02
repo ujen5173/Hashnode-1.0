@@ -33,8 +33,8 @@ const Header: React.FC<{ search?: boolean }> = ({ search = true }) => {
           <div className="relative rounded-full">
             <div ref={setControl}>
               <Image
-                src={user?.user.image || "/default_user.avif"}
-                alt={user?.user.name || "user"}
+                src={user?.user.image ?? "/default_user.avif"}
+                alt={user?.user.name ?? "user"}
                 width={180}
                 height={180}
                 className="h-7 w-7 cursor-pointer select-none overflow-hidden rounded-full md:h-8 md:w-8 lg:h-9 lg:w-9"

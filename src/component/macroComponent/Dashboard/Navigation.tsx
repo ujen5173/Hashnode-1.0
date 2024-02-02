@@ -77,7 +77,7 @@ const NavigationList: FC<{
               : ""
               }`}
           >
-            <Link href={`/${userId as string}${dashboard.link}`}>
+            <Link href={`/${userId}${dashboard.link}`}>
               <div
                 className={`flex w-full cursor-pointer items-center gap-2 px-4 py-3 md:px-6 md:py-4 ${index === 2 ||
                   index === 5 ||

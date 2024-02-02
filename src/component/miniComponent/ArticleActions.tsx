@@ -9,7 +9,7 @@ import { Bookmark, BookmarkMinus, Heart, MessageCircle, MoreVertical, Share2 } f
 import { useRouter } from "next/router";
 import type { Article } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C } from "~/utils/context";
 import ShareOptions from "./ShareOptions";
 
 interface Props {
@@ -41,7 +41,7 @@ const ArticleActions: FC<Props> = ({
     optionsDropdown,
   ]);
 
-  const { bookmarks, updateBookmark } = useContext(C) as ContextValue;
+  const { bookmarks, updateBookmark } = useContext(C)!;
   const { data: user } = useSession();
   const { mutate: LikeArticle } = api.likes.likeArticle.useMutation();
   const [like, setLike] = useState({

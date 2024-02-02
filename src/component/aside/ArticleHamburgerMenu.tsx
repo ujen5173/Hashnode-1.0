@@ -27,8 +27,8 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
           <header className="flex items-center justify-between border-b border-border border-border-light bg-light-bg p-6 shadow-md dark:border-border dark:bg-primary">
             <Link className="flex items-center gap-2" href="/">
               <Image
-                src={user?.image || "/default_user.avif"}
-                alt={user?.name || "User"}
+                src={user?.image ?? "/default_user.avif"}
+                alt={user?.name ?? "User"}
                 className="h-10 w-10 rounded-full object-cover"
                 width={180}
                 height={180}
@@ -59,7 +59,7 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
               <ul className="mb-4 border-b border-border-light px-4 pb-4 dark:border-border">
                 {["Home", "Badges"].map((item, index) => (
                   <li key={index}>
-                    <Link href={`/u/@${user?.username as string}`}>
+                    <Link href={`/u/@${user?.username}`}>
                       <div className="rounded-md px-6 py-3 text-base font-medium tracking-wide text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
                         {item}
                       </div>

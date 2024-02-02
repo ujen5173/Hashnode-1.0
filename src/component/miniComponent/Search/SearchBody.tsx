@@ -281,29 +281,29 @@ const SearchBody = React.forwardRef<
                       return type === "ARTICLES" ? (
                         <div
                           onClick={() => setOpened(false)}
-                          key={rest.id as string}
+                          key={rest.id}
                           className="border-b border-border-light dark:border-border last:border-none"
                         >
                           <SearchArticle data={rest as ArticleSeach} />
                         </div>
                       ) : type === "TAGS" ? (
                         <div
-                          key={rest.id as string}
+                          key={rest.id}
                           className="border-b border-border-light dark:border-border last:border-none"
                         >
                           <TagsSearchCard
-                            key={rest.id as string}
+                            key={rest.id}
                             tag={rest as TagSearch}
                             setOpened={setOpened}
                           />
                         </div>
                       ) : type === "USERS" ? (
                         <div
-                          key={rest.id as string}
+                          key={rest.id}
                           className="border-b border-border-light dark:border-border last:border-none"
                         >
                           <UserSearchCard
-                            key={rest.id as string}
+                            key={rest.id}
                             user={rest as UserSearch}
                             setOpened={setOpened}
                           />

@@ -28,7 +28,7 @@ const Editor: FC<{
         Placeholder.configure({
           placeholder: ({ node }) => {
             if (node.type.name === "heading") {
-              return `Heading ${node.attrs.level as string}`;
+              return `Heading ${node.attrs.level}`;
             }
             return "Press '/' for commands";
           },

@@ -41,7 +41,7 @@ const EditProfile: NextPage<{
                   "email-notification": <EmailNotification />,
                   "manage-blogs": <ManageBlogs />,
                   pro: <Subscription />
-                }[(tab ? tab[0] : "default") as string]
+                }[(tab ? tab[0]! : "default")]
               }
             </main>
           </div>
