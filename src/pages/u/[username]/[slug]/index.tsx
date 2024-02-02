@@ -2,6 +2,7 @@ import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import React, { createContext } from "react";
 import { ArticleBody, ArticleHeader, Footer } from "~/component";
+import MetaTags from "~/component/MetaTags";
 import { authOptions } from "~/server/auth";
 import { generateSSGHelper } from "~/server/ssgHelper";
 import { type Article } from "~/types";
@@ -27,6 +28,10 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
 
   return (
     <>
+      <MetaTags
+        title={article.title}
+        description={article.subtitle ?? article.title}
+      />
       <FollowContext.Provider value={{ following, setFollowing }}>
         <ArticleHeader user={article.user} />
         <ArticleBody article={article} />
@@ -60,8 +65,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           : null,
         article: data
           ? (JSON.parse(JSON.stringify(data)) as Article & {
-            isFollowing: boolean;
-          })
+              isFollowing: boolean;
+            })
           : null,
       },
     };

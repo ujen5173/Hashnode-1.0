@@ -1,8 +1,13 @@
 import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
-import Head from "next/head";
-import { FollowArea, FollowHeader, FollowProfileArea, Header } from "~/component";
+import {
+  FollowArea,
+  FollowHeader,
+  FollowProfileArea,
+  Header,
+} from "~/component";
+import MetaTags from "~/component/MetaTags";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 
@@ -21,12 +26,13 @@ const Followers: NextPage<{
 }> = ({ user }) => {
   return (
     <>
-      <Head>
-        <title>{user.name}&apos;s Followers | Hashnode Clone</title>
-      </Head>
+      <MetaTags
+        title={user.name + " (@ " + user.username + ") Followers"}
+        description="Followers"
+      />
       <Header />
       <main className="min-h-[100dvh] w-full bg-light-bg dark:bg-black">
-        <div className="mx-auto flex flex-col md:flex-row max-w-[1550px] gap-4 py-8 sm:px-4">
+        <div className="mx-auto flex max-w-[1550px] flex-col gap-4 py-8 sm:px-4 md:flex-row">
           <FollowProfileArea user={user} />
 
           <div className="flex-1 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
@@ -73,8 +79,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       followersCount: true,
       followingCount: true,
       createdAt: true,
-    }
-  })
+    },
+  });
 
   if (!user) {
     return {
@@ -95,14 +101,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         : null,
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-          name: string;
-          username: string;
-          image: string;
-          id: string;
-          followersCount: number;
-          createdAt: Date;
-          followingCount: number;
-        })
+            name: string;
+            username: string;
+            image: string;
+            id: string;
+            followersCount: number;
+            createdAt: Date;
+            followingCount: number;
+          })
         : null,
     },
   };

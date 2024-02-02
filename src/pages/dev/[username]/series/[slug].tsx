@@ -15,6 +15,7 @@ import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
 
 import { Pencil } from "lucide-react";
+import MetaTags from "~/component/MetaTags";
 import { api } from "~/utils/api";
 import { AuthorBlogNavigation, type BlogSocial, type CustomTabs } from "..";
 
@@ -38,6 +39,11 @@ const SeiesPage: NextPage<{
 }> = ({ user }) => {
   return (
     <>
+      <MetaTags
+        title={`${user.name} (@${user.username}) | Series`}
+        description={`All series by ${user.name} (@${user.username}) on Hashnode`}
+      />
+
       <AuthorBlogHeader user={user} />
       {/* Home, Badge, Newsletter */}
       <AuthorBlogNavigation tabs={user.handle.customTabs} />
@@ -54,49 +60,56 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
   const handleDomain = context.query.username as string;
 
-  const user = await db.query.handles.findFirst({
-    where: eq(handles.handle, handleDomain.slice(1, handleDomain.length)),
-    columns: {
-      about: false,
-      handle: false,
-      id: false,
-      social: false,
-      appearance: false,
-      name: false,
-      userId: false,
-    },
-    with: {
-      user: {
-        columns: {
-          id: true,
-          name: true,
-          username: true,
-          image: true,
-          bio: true,
-        },
-        with: {
-          handle: {
-            columns: {
-              id: true,
-              handle: true,
-              name: true,
-              about: true,
-              social: true,
-            },
-            with: {
-              customTabs: true,
-            }
+  const user = await db.query.handles
+    .findFirst({
+      where: eq(handles.handle, handleDomain.slice(1, handleDomain.length)),
+      columns: {
+        about: false,
+        handle: false,
+        id: false,
+        social: false,
+        appearance: false,
+        name: false,
+        userId: false,
+      },
+      with: {
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+            bio: true,
           },
-          followers: {
-            columns: {
-              followingId: true,
-              userId: false,
-            }
-          }
+          with: {
+            handle: {
+              columns: {
+                id: true,
+                handle: true,
+                name: true,
+                about: true,
+                social: true,
+              },
+              with: {
+                customTabs: true,
+              },
+            },
+            followers: {
+              columns: {
+                followingId: true,
+                userId: false,
+              },
+            },
+          },
         },
       },
-    },
-  }).then(res => ({ ...res?.user, followers: res?.user?.followers?.map(follower => ({ id: follower.followingId })) }));
+    })
+    .then((res) => ({
+      ...res?.user,
+      followers: res?.user?.followers?.map((follower) => ({
+        id: follower.followingId,
+      })),
+    }));
 
   if (!user) {
     return {
@@ -111,16 +124,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-          username: string;
-          image: string;
-          handle: {
-            handle: string;
-            name: string;
-            social: BlogSocial;
-            customTabs: CustomTabs[];
-          };
-          followers: { id: string }[];
-        })
+            username: string;
+            image: string;
+            handle: {
+              handle: string;
+              name: string;
+              social: BlogSocial;
+              customTabs: CustomTabs[];
+            };
+            followers: { id: string }[];
+          })
         : null,
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)
@@ -140,7 +153,7 @@ const SeriesContainer = () => {
       enabled: !!slug,
       refetchOnWindowFocus: false,
       retry: 0,
-    }
+    },
   );
 
   useEffect(() => {
@@ -181,7 +194,9 @@ const SeriesContainer = () => {
           )}
         </div>
         <div className="hr-line-between-text mt-10 flex items-center justify-center">
-          <span className="text-gray-700 dark:text-text-secondary">Articles in this series</span>
+          <span className="text-gray-700 dark:text-text-secondary">
+            Articles in this series
+          </span>
         </div>
 
         <div className="flex flex-wrap gap-4 py-6">

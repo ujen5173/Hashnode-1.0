@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { Header, UserProfileBody } from "~/component";
+import MetaTags from "~/component/MetaTags";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 import { follow, users } from "~/server/db/schema";
@@ -12,6 +13,11 @@ const UserBlog: NextPage<{
 }> = ({ user }) => {
   return (
     <>
+      <MetaTags
+        title={`
+          ${user.name} (@${user.username})`}
+        description={user.tagline}
+      />
       <Header />
       <UserProfileBody user={user} />
     </>
@@ -38,26 +44,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             about: true,
           },
         },
-        ...(session?.user.id && (
-          {
-            followers: {
-              columns: {
-                followingId: false,
-                userId: false,
-              },
-              where: eq(follow.followingId, session?.user.id),
-              with: {
-                following: {
-                  columns: {
-                    id: true,
-                  },
-                }
-              }
+        ...(session?.user.id && {
+          followers: {
+            columns: {
+              followingId: false,
+              userId: false,
             },
-          }
-        ))
+            where: eq(follow.followingId, session?.user.id),
+            with: {
+              following: {
+                columns: {
+                  id: true,
+                },
+              },
+            },
+          },
+        }),
       },
-    })
+    });
   }
 
   if (user === null) {
@@ -81,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           ...user,
           isFollowing,
           social: JSON.parse(JSON.stringify(user?.social)) as SocialHandles,
-        })
+        }),
       ) as DetailedUser,
     },
   };

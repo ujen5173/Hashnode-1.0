@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
+import MetaTags from "~/component/MetaTags";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
@@ -54,8 +55,8 @@ const AuthorBlogs: NextPage<{
   const { data: session } = useSession();
   const [appearance, setAppearance] = useState<
     | {
-      layout: "MAGAZINE" | "STACKED" | "GRID";
-    }
+        layout: "MAGAZINE" | "STACKED" | "GRID";
+      }
     | undefined
   >(undefined);
 
@@ -72,16 +73,16 @@ const AuthorBlogs: NextPage<{
       {
         handleDomain: router.query.username
           ? (router.query?.username.slice(
-            1,
-            router.query?.username.length
-          ) as string) ?? ""
+              1,
+              router.query?.username.length,
+            ) as string) ?? ""
           : "",
       },
       {
         enabled: !!router.query.username,
         refetchOnWindowFocus: false,
         retry: 0,
-      }
+      },
     );
 
   useEffect(() => {
@@ -105,6 +106,11 @@ const AuthorBlogs: NextPage<{
 
   return (
     <>
+      <MetaTags
+        title={`${user.name}'s Blog | Hashnode`}
+        description={`${user.name}'s Blog | Hashnode`}
+      />
+
       <AuthorBlogHeader user={user} />
       {/* Home, Badge, Newsletter */}
       <AuthorBlogNavigation tabs={user.handle.customTabs} />
@@ -255,16 +261,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-          username: string;
-          image: string;
-          handle: {
-            handle: string;
-            name: string;
-            social: BlogSocial;
-            customTabs: CustomTabs[];
-          };
-          followers: { id: string }[];
-        })
+            username: string;
+            image: string;
+            handle: {
+              handle: string;
+              name: string;
+              social: BlogSocial;
+              customTabs: CustomTabs[];
+            };
+            followers: { id: string }[];
+          })
         : null,
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)

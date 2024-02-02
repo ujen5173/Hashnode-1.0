@@ -22,6 +22,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { v4 as uuid } from "uuid";
+import { env } from "~/env.mjs";
 import { Dailydev, Discord, LogonoText, Mastodon } from "~/svgs";
 
 export const slugSetting = {
@@ -67,6 +68,12 @@ export const asideItems = [
   },
 ];
 
+const environmentUrl = env.NEXT_PUBLIC_VERCEL_URL;
+
+export const baseUrl = environmentUrl
+  ? environmentUrl
+  : `http://localhost:3000`;
+
 enum Type {
   all = "all",
   articles = "article",
@@ -88,10 +95,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Comments",
       icon: (name: Type) => (
         <MessageCircle
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -101,10 +109,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Likes",
       icon: (name: Type) => (
         <Heart
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -114,10 +123,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Articles",
       icon: (name: Type) => (
         <Newspaper
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -201,8 +211,9 @@ export const dashboardNavigations = [
     name: "General",
     icon: (state: boolean) => (
       <Settings
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/general",
@@ -212,8 +223,9 @@ export const dashboardNavigations = [
     name: "Appearance",
     icon: (state: boolean) => (
       <Palette
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/appearance",
@@ -223,8 +235,9 @@ export const dashboardNavigations = [
     name: "Navbar",
     icon: (state: boolean) => (
       <Table2
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/navbar",
@@ -234,8 +247,9 @@ export const dashboardNavigations = [
     name: "Articles",
     icon: (state: boolean) => (
       <Newspaper
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/articles",
@@ -245,8 +259,9 @@ export const dashboardNavigations = [
     name: "Series",
     icon: (state: boolean) => (
       <Book
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/series",
@@ -425,7 +440,7 @@ export const selectArticleCard = {
 } as const;
 
 export function displayUniqueObjects(
-  objects: Array<{ id: string; image: string | null }>
+  objects: Array<{ id: string; image: string | null }>,
 ) {
   // Create a set to store the unique IDs.
   const uniqueIds = new Set();
@@ -486,7 +501,7 @@ export const profileDropdownList = [
     danger: false,
     onClick: (
       setOpened: React.Dispatch<React.SetStateAction<boolean>>,
-      setSearchOpen: React.Dispatch<React.SetStateAction<boolean>>
+      setSearchOpen: React.Dispatch<React.SetStateAction<boolean>>,
     ) => {
       setOpened(false);
       setSearchOpen(true);

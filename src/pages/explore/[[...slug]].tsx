@@ -1,11 +1,17 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { ExploreMainBody, Header } from "~/component";
+import MetaTags from "~/component/MetaTags";
 import { authOptions } from "~/server/auth";
 
 const ExplorePage: NextPage = () => {
   return (
     <>
+      <MetaTags
+        title={`Explore Popular Tech Blogs and Topics`}
+        description="Explore the most popular tech blogs from the Hashnode community. A constantly updating list of the best minds in tech."
+      />
+
       <Header />
       <ExploreMainBody />
     </>

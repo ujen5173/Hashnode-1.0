@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 import { Input } from "~/component";
+import MetaTags from "~/component/MetaTags";
 import { authOptions } from "~/server/auth";
 import { Logo } from "~/svgs";
 import { api } from "~/utils/api";
@@ -55,6 +56,10 @@ const Setup = () => {
 
   return (
     <>
+      <MetaTags
+        title={`Choose a name for your blog`}
+        description="Choose a name for your blog and start your journey with Hashnode Clone."
+      />
       <div className="flex items-center justify-center border-b border-border-light bg-white p-4 dark:border-border dark:bg-primary">
         <Link href={"/"}>
           <Logo className="h-6 fill-secondary" />
@@ -123,8 +128,9 @@ const Setup = () => {
 
             <button
               onClick={() => void handleSubdomain()}
-              className={`${isLoading ? "cursor-not-allowed opacity-40" : ""
-                } btn-filled`}
+              className={`${
+                isLoading ? "cursor-not-allowed opacity-40" : ""
+              } btn-filled`}
               disabled={isLoading}
             >
               <div className="px-4">

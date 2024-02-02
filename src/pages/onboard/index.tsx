@@ -1,11 +1,17 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import MetaTags from "~/component/MetaTags";
 import { Google, Logo } from "~/svgs";
 
 const Onboard = () => {
   return (
     <>
+      <MetaTags
+        title={`Sign in to Hashnode Clone`}
+        description="Be a part of the Hashnode community. Sign in to Hashnode Clone to start your journey."
+      />
+
       <header className="flex items-center justify-center border-b border-border-light bg-white p-4 dark:border-border dark:bg-primary">
         <Link href="/">
           <Logo className="h-9 fill-secondary" />
@@ -26,12 +32,11 @@ const Onboard = () => {
                     callbackUrl: process.env.NEXT_PUBLIC_VERCEL_URL,
                   })
                 }
-                className="btn-oauth w-full lg:w-7/12 mx-auto"
+                className="btn-oauth mx-auto w-full lg:w-7/12"
               >
                 <Google className="h-5 w-5 fill-gray-700 dark:fill-white" />
                 <span>Continue with Google</span>
               </button>
-
             </div>
           </div>
           <div className="hidden w-full md:block md:w-7/12 xl:w-full">
@@ -62,7 +67,7 @@ const Onboard = () => {
             </div>
           </div>
         </div>
-      </main >
+      </main>
     </>
   );
 };

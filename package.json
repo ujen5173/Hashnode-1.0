@@ -51,6 +51,7 @@
     "@trpc/server": "^10.18.0",
     "@uploadthing/react": "^6.2.2",
     "@vercel/analytics": "^1.1.1",
+    "@vercel/speed-insights": "^1.0.9",
     "dotenv": "^16.4.0",
     "drizzle-orm": "^0.29.3",
     "drizzle-zod": "^0.5.1",

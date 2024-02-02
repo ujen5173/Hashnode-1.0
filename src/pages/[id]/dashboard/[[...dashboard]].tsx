@@ -1,4 +1,12 @@
-import { CheckCircle2, ChevronDownCircle, Circle, ExternalLink, Globe, Palette, Pencil } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronDownCircle,
+  Circle,
+  ExternalLink,
+  Globe,
+  Palette,
+  Pencil,
+} from "lucide-react";
 import { type GetServerSideProps } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -14,8 +22,9 @@ import {
   Header,
   Navbar,
   Pages,
-  Series
+  Series,
 } from "~/component";
+import MetaTags from "~/component/MetaTags";
 import { Navigation } from "~/component/macroComponent/Dashboard";
 import { authOptions } from "~/server/auth";
 import { LogonoText } from "~/svgs";
@@ -48,55 +57,63 @@ const upCommingComponents = [
   "pages",
   "github",
   "advanced",
-]
+];
 
 const Dashboard = () => {
   const paths = useRouter().query;
   const { data: session } = useSession();
 
-
   const [dashboardName, setDashboardName] = useState<React.ReactNode>(
-    componentMap.general
+    componentMap.general,
   );
 
   useEffect(() => {
     // set dashboard component based on the path. if path is incorrect, set 404 component else set respective component and if path is undefined, set general component
-    setDashboardName(upCommingComponents.includes(
-      (paths?.dashboard as string[])?.join("/") ?? "general"
-    ) ? (
-      <div className="flex flex-col items-center justify-center py-16">
-        <h1 className="text-3xl mb-2 font-semibold text-gray-700 dark:text-text-secondary">
-          {`🚧 ${(
-            paths?.dashboard as string[]
-          )?.join("/").charAt(0).toUpperCase() + (
-            paths?.dashboard as string[]
-          )?.join("/")?.slice(1)
+    setDashboardName(
+      upCommingComponents.includes(
+        (paths?.dashboard as string[])?.join("/") ?? "general",
+      ) ? (
+        <div className="flex flex-col items-center justify-center py-16">
+          <h1 className="mb-2 text-3xl font-semibold text-gray-700 dark:text-text-secondary">
+            {`🚧 ${
+              (paths?.dashboard as string[])
+                ?.join("/")
+                .charAt(0)
+                .toUpperCase() +
+              (paths?.dashboard as string[])?.join("/")?.slice(1)
             } is under construction`}
-        </h1>
+          </h1>
 
-        <p className="text-sm text-gray-500 dark:text-text-primary">
-          We are working on it. Please check back later.
-        </p>
-      </div>
-    ) : componentMap[
-    Object.keys(componentMap).includes(
-      (paths?.dashboard as string[])?.join("/") ?? "general"
-    )
-      ? ((paths?.dashboard as string[])?.join(
-        "/"
-      ) as keyof typeof componentMap) ?? "general"
-      : "404"
-    ]
+          <p className="text-sm text-gray-500 dark:text-text-primary">
+            We are working on it. Please check back later.
+          </p>
+        </div>
+      ) : (
+        componentMap[
+          Object.keys(componentMap).includes(
+            (paths?.dashboard as string[])?.join("/") ?? "general",
+          )
+            ? ((paths?.dashboard as string[])?.join(
+                "/",
+              ) as keyof typeof componentMap) ?? "general"
+            : "404"
+        ]
+      ),
     );
   }, [paths.dashboard]);
 
   return (
     <>
+          <MetaTags title={`${
+            session?.user.handle?.name === session?.user.name
+              ? `${session?.user.handle?.name}'s Blog`
+              : session?.user.handle?.name
+          } Dashboard`} />
 
       <Header search={false} />
 
       <div className="bg-light-bg dark:bg-black">
-        <div className="mx-auto max-w-[1550px] gap-4 pt-8 pb-12 sm:px-4">
+        <div className="mx-auto max-w-[1550px] gap-4 pb-12 pt-8 sm:px-4">
           <header className="mb-6 flex w-full flex-col items-center justify-between rounded-md border border-border-light bg-white px-6 py-8 dark:border-border dark:bg-primary sm:flex-row">
             <div className="mb-4 flex w-full max-w-[20rem] cursor-pointer items-center justify-between rounded-full border border-border-light bg-light-bg px-4 py-2 hover:bg-border-light dark:border-border dark:bg-primary-light dark:hover:bg-border sm:mb-0">
               <div className="flex items-center gap-2">
@@ -190,103 +207,105 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const Roadmap = () => {
   const router = useRouter();
   const { data: user } = useSession();
-  const { data } = api.users.getUserDashboardRoadmapDetails.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-    retry: 0
-  });
-
+  const { data } = api.users.getUserDashboardRoadmapDetails.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+      retry: 0,
+    },
+  );
 
   return (
-    <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
-      <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
-        Welcome to your new blog! What&apos;s next?
-      </h1>
+      <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
+        <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
+          Welcome to your new blog! What&apos;s next?
+        </h1>
 
-      <div className="flex flex-wrap gap-4">
-        <div
-          onClick={() => {
-            if (data?.articles) {
-              return;
-            } else {
-              void router.push("/article/new");
-            }
-          }}
-          className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
-        >
-          <div className="absolute right-3 top-3 md:right-4 md:top-4">
-            <Pencil className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+        <div className="flex flex-wrap gap-4">
+          <div
+            onClick={() => {
+              if (data?.articles) {
+                return;
+              } else {
+                void router.push("/article/new");
+              }
+            }}
+            className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
+          >
+            <div className="absolute right-3 top-3 md:right-4 md:top-4">
+              <Pencil className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
+            </div>
+
+            {data?.articles ? (
+              <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
+            ) : (
+              <Circle className="dark:stroke-text-primarymd:h-7 h-5 w-5 stroke-gray-500 md:w-7" />
+            )}
+
+            <div className="flex-1">
+              <h1 className="mb-2  text-xl font-semibold text-secondary">
+                Write your first article
+              </h1>
+
+              <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+                Share your thoughts, and connect with the community by writing
+                your first article.
+              </p>
+            </div>
           </div>
 
-          {data?.articles ? (
+          <div
+            onClick={() => {
+              if (data?.articles) {
+                return;
+              } else {
+                const appearanceLocation = `/${user?.user.id}/dashboard/appearance`;
+
+                void router.push(appearanceLocation);
+              }
+            }}
+            className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
+          >
+            <div className="absolute right-3 top-3 md:right-4 md:top-4">
+              <Palette className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
+            </div>
+
+            {data?.handle?.appearance ? (
+              <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
+            ) : (
+              <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary md:h-7 md:w-7" />
+            )}
+            <div className="flex-1">
+              <h1 className="mb-2 text-xl  font-semibold text-secondary">
+                Customizing the appearance
+              </h1>
+
+              <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+                Personalize the design of your blog and showcase your
+                personality.
+              </p>
+            </div>
+          </div>
+
+          <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+            <div className="absolute right-3 top-3 md:right-4 md:top-4">
+              <Globe className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
+            </div>
+
             <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
-          ) : (
-            <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primarymd:h-7 md:w-7" />
-          )}
 
-          <div className="flex-1">
-            <h1 className="mb-2  text-xl font-semibold text-secondary">
-              Write your first article
-            </h1>
+            <div className="flex-1">
+              <h1 className="mb-2 text-xl  font-semibold text-secondary">
+                Map a custom domain
+              </h1>
 
-            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-              Share your thoughts, and connect with the community by writing
-              your first article.
-            </p>
+              <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+                Change your hashnode.dev blog URL to a custom domain of your
+                choice for free!
+              </p>
+            </div>
           </div>
         </div>
-
-        <div
-          onClick={() => {
-            if (data?.articles) {
-              return;
-            } else {
-              const appearanceLocation = `/${user?.user.id}/dashboard/appearance`;
-
-              void router.push(appearanceLocation);
-            }
-          }}
-          className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
-        >
-          <div className="absolute right-3 top-3 md:right-4 md:top-4">
-            <Palette className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
-          </div>
-
-          {data?.handle?.appearance ? (
-            <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
-
-          ) : (
-            <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary md:h-7 md:w-7" />
-          )}
-          <div className="flex-1">
-            <h1 className="mb-2 text-xl  font-semibold text-secondary">
-              Customizing the appearance
-            </h1>
-
-            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-              Personalize the design of your blog and showcase your personality.
-            </p>
-          </div>
-        </div>
-
-        <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-          <div className="absolute right-3 top-3 md:right-4 md:top-4">
-            <Globe className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
-          </div>
-
-          <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
-
-          <div className="flex-1">
-            <h1 className="mb-2 text-xl  font-semibold text-secondary">
-              Map a custom domain
-            </h1>
-
-            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-              Change your hashnode.dev blog URL to a custom domain of your
-              choice for free!
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
   );
 };

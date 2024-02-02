@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import type { GetServerSideProps, NextPage } from "next";
 import { getServerSession, type Session } from "next-auth";
 import { Aside, Header, MainTagBody, RightAsideMain } from "~/component";
+import MetaTags from "~/component/MetaTags";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 
@@ -11,7 +12,12 @@ import type { DetailedTag } from "~/types";
 const SingleTag: NextPage<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   return (
     <>
-
+      <MetaTags
+        title={`
+          ${tagDetails.name} - ${tagDetails.description}
+        `}
+        description={tagDetails.description}
+      />
       <Header />
 
       <main className="min-h-[100dvh] w-full bg-light-bg dark:bg-black">
@@ -43,33 +49,37 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const tagDetails = await db.query.tags.findFirst({
-    where: eq(tags.slug, params),
-    with: {
-      followers: {
-        ...(session?.user.id && {
-          where: eq(tagsToUsers.userId, session.user.id)
-        }),
-        columns: {
-          userId: true
+  const tagDetails = await db.query.tags
+    .findFirst({
+      where: eq(tags.slug, params),
+      with: {
+        followers: {
+          ...(session?.user.id && {
+            where: eq(tagsToUsers.userId, session.user.id),
+          }),
+          columns: {
+            userId: true,
+          },
         },
       },
-    }
-  }).then((res) => {
-    if (!res) return;
-    const { followers, ...rest } = res;
-    return {
-      ...rest,
-      isFollowing: followers ? !!followers.length : false
-    }
-  });
+    })
+    .then((res) => {
+      if (!res) return;
+      const { followers, ...rest } = res;
+      return {
+        ...rest,
+        isFollowing: followers ? !!followers.length : false,
+      };
+    });
 
   return {
     props: {
       session: session
         ? (JSON.parse(JSON.stringify(session)) as Session)
         : null,
-      tagDetails: tagDetails ? JSON.parse(JSON.stringify(tagDetails)) as DetailedTag : null,
+      tagDetails: tagDetails
+        ? (JSON.parse(JSON.stringify(tagDetails)) as DetailedTag)
+        : null,
     },
   };
 };

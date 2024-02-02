@@ -12,12 +12,14 @@ import Context from "~/utils/context";
 
 import { MantineProvider } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { SearchBody } from "~/component";
 import Feedback, { FeedbackForm } from "~/component/Feedback";
 import Popup from "~/component/popup";
 import useKeyPress from "~/hooks/useKeyPress";
+
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -38,7 +40,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   useEffect(() => {
     const popup = JSON.parse(
-      localStorage.getItem("remove_popup") ?? "false"
+      localStorage.getItem("remove_popup") ?? "false",
     ) as boolean;
 
     if (!popup) {
@@ -67,7 +69,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   useKeyPress(handleKeyPress);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (searchOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -111,12 +113,18 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
             <Component {...pageProps} />
 
-            {searchOpen && <SearchBody ref={ref as React.MutableRefObject<HTMLDivElement>} setOpened={setSearchOpen} />}
+            {searchOpen && (
+              <SearchBody
+                ref={ref as React.MutableRefObject<HTMLDivElement>}
+                setOpened={setSearchOpen}
+              />
+            )}
           </Context>
         </MantineProvider>
       </SessionProvider>
 
       <Analytics />
+      <SpeedInsights />
 
       {/* Feedback popup */}
       {feedback && (

@@ -38,7 +38,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_VERCEL_URL: z.string().min(1),
+    NEXT_PUBLIC_VERCEL_URL: z.string().min(1).default("http://localhost:3000"),
     NEXT_PUBLIC_GENERATIVE_AI_KEY: z.string().min(1),
   },
 
