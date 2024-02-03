@@ -14,7 +14,7 @@ const NotificationCard: FC<{ notification: Notification }> = ({
     >
       <div className="relative">
         <Image
-          src={notification?.from.image ?? "/default_user.avif"}
+          src={notification?.from.image ?? "/static/default_user.avif"}
           alt={notification?.from.name || ""}
           width={70}
           height={70}
@@ -47,10 +47,7 @@ const NotificationCard: FC<{ notification: Notification }> = ({
           </div>
         )}
 
-        <Link
-          href={`/u/@${notification.articleAuthor!}/${notification.slug!
-            }`}
-        >
+        <Link href={`/u/@${notification.articleAuthor!}/${notification.slug!}`}>
           <h1 className="max-height-one mb-1 text-lg font-semibold text-secondary">
             {notification.title}
           </h1>

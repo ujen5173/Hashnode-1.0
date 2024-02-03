@@ -33,11 +33,13 @@ interface Props {
     parentId?: string | null;
     type: "INITIAL" | "ALL";
   };
-  setCommentState: React.Dispatch<React.SetStateAction<{
-    articleId: string;
-    parentId?: string | null;
-    type: "INITIAL" | "ALL";
-  }>>;
+  setCommentState: React.Dispatch<
+    React.SetStateAction<{
+      articleId: string;
+      parentId?: string | null;
+      type: "INITIAL" | "ALL";
+    }>
+  >;
   isLoading: boolean;
 }
 
@@ -52,12 +54,12 @@ export const CommentCard: FC<Props> = ({
   replyComment,
   commentState,
   setCommentState,
-  isLoading
+  isLoading,
 }) => {
   const { data: user } = useSession();
   const { mutate: likeComment } = api.comments.likeComment.useMutation();
   const [showReply, setShowReply] = useState(false);
-  const [replyText, setReplyText] = useState("")
+  const [replyText, setReplyText] = useState("");
 
   const [like, setLike] = useState({
     hasLiked: false,
@@ -104,8 +106,8 @@ export const CommentCard: FC<Props> = ({
   const handleReply = (id: string | null) => {
     if (!id) return;
     !publishing && void commentFunc("REPLY", replyText);
-    setReplyingUserDetails(null)
-    setReplyText("")
+    setReplyingUserDetails(null);
+    setReplyText("");
   };
 
   const cancelReply = () => {
@@ -122,7 +124,7 @@ export const CommentCard: FC<Props> = ({
       <div className="my-2 flex gap-2">
         <Link href={`/u/@${comment?.user.username}`}>
           <Image
-            src={comment?.user.image ?? "/default_user.avif"}
+            src={comment?.user.image ?? "/static/default_user.avif"}
             alt={comment?.user.name}
             width={40}
             height={40}
@@ -138,17 +140,21 @@ export const CommentCard: FC<Props> = ({
                   {comment?.user?.name}
                 </h3>
               </Link>
-              {
-                comment?.user.stripeSubscriptionStatus === "active" && (
-                  <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
+              {comment?.user.stripeSubscriptionStatus === "active" && (
+                <Tooltip
+                  label="Hashnode Clone Pro User"
+                  position="bottom"
+                  style={{
                     fontSize: "0.8rem",
                     fontWeight: "400",
-                    letterSpacing: "0.5px"
-                  }}>
-                    <span className="px-2 py-[1px] tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-semibold text-xs text-gray-700 dark:text-text-secondary">PRO</span>
-                  </Tooltip>
-                )
-              }
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  <span className="rounded-md border border-border-light bg-light-bg px-2 py-[1px] text-xs font-semibold tracking-wider text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary">
+                    PRO
+                  </span>
+                </Tooltip>
+              )}
             </div>
 
             <p className="text-xs text-gray-500 dark:text-text-primary">
@@ -190,32 +196,30 @@ export const CommentCard: FC<Props> = ({
       </div>
 
       {showReply && (
-
         <div>
-          {
-            isLoading && commentState.type === 'ALL' && commentState.parentId === comment.id ? (
-              Array(2).fill("").map((_, i) => (
-                <CommentLoading key={i} />
-              ))
-            ) : comment.replies?.map((reply) =>
-              <div className={`relative px-4 pt-6`}
-                key={reply.id}
-              >
-                <CommentCard
-                  commentFunc={commentFunc}
-                  comment={reply}
-                  type="REPLY"
-                  setReplyingUserDetails={setReplyingUserDetails}
-                  replyingUserDetails={replyingUserDetails}
-                  replyComment={replyComment}
-                  publishing={publishing}
-                  authorUsername={authorUsername}
-                  isLoading={isLoading}
-                  commentState={commentState}
-                  setCommentState={setCommentState}
-                />
-              </div>
-            )}
+          {isLoading &&
+          commentState.type === "ALL" &&
+          commentState.parentId === comment.id
+            ? Array(2)
+                .fill("")
+                .map((_, i) => <CommentLoading key={i} />)
+            : comment.replies?.map((reply) => (
+                <div className={`relative px-4 pt-6`} key={reply.id}>
+                  <CommentCard
+                    commentFunc={commentFunc}
+                    comment={reply}
+                    type="REPLY"
+                    setReplyingUserDetails={setReplyingUserDetails}
+                    replyingUserDetails={replyingUserDetails}
+                    replyComment={replyComment}
+                    publishing={publishing}
+                    authorUsername={authorUsername}
+                    isLoading={isLoading}
+                    commentState={commentState}
+                    setCommentState={setCommentState}
+                  />
+                </div>
+              ))}
         </div>
       )}
     </div>

@@ -79,7 +79,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
   useEffect(() => {
     if (author && user) {
       setFollowing(
-        author.followers.find((e) => e.id === user?.user.id) ? true : false
+        author.followers.find((e) => e.id === user?.user.id) ? true : false,
       );
     }
   }, [user, author]);
@@ -176,7 +176,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
             >
               <div ref={setControl}>
                 <Image
-                  src={user?.user.image ?? "/default_user.avif"}
+                  src={user?.user.image ?? "/static/default_user.avif"}
                   alt={user?.user.name ?? "user"}
                   width={100}
                   height={100}
@@ -273,7 +273,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                           {social[e[0] as keyof typeof social]}
                         </button>
                       </a>
-                    )
+                    );
                   })}
             </div>
           </div>

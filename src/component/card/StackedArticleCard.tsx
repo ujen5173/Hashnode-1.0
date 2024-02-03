@@ -42,10 +42,11 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
 
             <Link href={`/u/@${article.user.username}/${article.slug}`}>
               <p
-                className={`${article.cover_image
-                  ? "max-height-four"
-                  : "max-height-three mb-0 w-full md:mb-3"
-                  } break-words text-base text-gray-500 dark:text-text-primary`}
+                className={`${
+                  article.cover_image
+                    ? "max-height-four"
+                    : "max-height-three mb-0 w-full md:mb-3"
+                } break-words text-base text-gray-500 dark:text-text-primary`}
               >
                 {removeMd(article.subContent ?? "")}
               </p>
@@ -63,7 +64,7 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
                     ? article.cover_image
                     : theme === "light"
                       ? "/imagePlaceholder-light.avif"
-                      : "/imagePlaceholder-dark.avif"
+                      : "/static/imagePlaceholder-dark.avif"
                 }
                 alt={`${article.title} image not found!`}
                 width={500}

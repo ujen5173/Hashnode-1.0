@@ -3,14 +3,14 @@ import Link from "next/link";
 import React from "react";
 
 const NotAuthenticatedimageDropdown = React.forwardRef<HTMLDivElement>(
-  ({ }, ref) => {
+  ({}, ref) => {
     return (
       <div
         ref={ref}
         className="absolute right-0 top-full z-20 mt-1 w-64 rounded-lg border border-border-light bg-gray-50 p-4 text-left shadow-md dark:border-border dark:bg-primary"
       >
         <Image
-          src={"/default_user.avif"}
+          src={"/static/default_user.avif"}
           alt={"Guest User"}
           width={100}
           height={100}
@@ -37,7 +37,7 @@ const NotAuthenticatedimageDropdown = React.forwardRef<HTMLDivElement>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 NotAuthenticatedimageDropdown.displayName = "NotAuthenticatedimageDropdown";

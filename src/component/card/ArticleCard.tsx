@@ -24,7 +24,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
         <Link href={`/u/@${card.user.username}`}>
           <div>
             <Image
-              src={card.user.image ?? "/default_user.avif"}
+              src={card.user.image ?? "/static/default_user.avif"}
               width={60}
               height={60}
               alt="User image"
@@ -97,10 +97,11 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
 
             <Link href={`/u/@${card.user.username}/${card.slug}`}>
               <p
-                className={`${card.cover_image
-                  ? "max-height-four"
-                  : "max-height-three mb-0 w-full md:mb-3"
-                  } break-words text-sm text-gray-500 dark:text-text-primary`}
+                className={`${
+                  card.cover_image
+                    ? "max-height-four"
+                    : "max-height-three mb-0 w-full md:mb-3"
+                } break-words text-sm text-gray-500 dark:text-text-primary`}
               >
                 {removeMd(card.subContent ?? "")}
               </p>
@@ -131,10 +132,11 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               aria-label="icon"
               onClick={() => updateBookmark(card.id)}
               role="button"
-              className={`${bookmarks.find((bookmark) => bookmark.id === card.id)
-                ? "bg-secondary bg-opacity-20"
-                : ""
-                } btn-icon-large flex w-max items-center justify-center`}
+              className={`${
+                bookmarks.find((bookmark) => bookmark.id === card.id)
+                  ? "bg-secondary bg-opacity-20"
+                  : ""
+              } btn-icon-large flex w-max items-center justify-center`}
             >
               {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
                 <BookmarkCheck className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />
@@ -228,7 +230,7 @@ const ArticleCardFooter: FC<{ card: ArticleCard }> = ({ card }) => {
                   key={user.id}
                 >
                   <Image
-                    src={user.image ?? "/default_user.avif"}
+                    src={user.image ?? "/static/default_user.avif"}
                     alt="user"
                     width={20}
                     height={20}

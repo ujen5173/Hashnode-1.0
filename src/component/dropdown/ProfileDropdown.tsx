@@ -31,7 +31,7 @@ const imageDropdown = React.forwardRef<
       <Link href={`/u/@${user?.user.username} `}>
         <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
           <Image
-            src={user?.user.image ?? "/default_user.avif"}
+            src={user?.user.image ?? "/static/default_user.avif"}
             alt={user?.user.name ?? "user"}
             width={100}
             height={100}
@@ -89,8 +89,9 @@ const imageDropdown = React.forwardRef<
             />
           ) : (
             <div
-              className={`${item.hiddenItem ? "block lg:hidden" : ""
-                } cursor-pointer`}
+              className={`${
+                item.hiddenItem ? "block lg:hidden" : ""
+              } cursor-pointer`}
               onClick={() => {
                 if (item.danger) {
                   void logout();
@@ -107,8 +108,9 @@ const imageDropdown = React.forwardRef<
               <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-200 dark:text-text-secondary dark:hover:bg-primary-light">
                 <span>{item.icon}</span>
                 <span
-                  className={`${item.danger ? "text-red" : ""
-                    } text-sm font-medium`}
+                  className={`${
+                    item.danger ? "text-red" : ""
+                  } text-sm font-medium`}
                 >
                   {item.name}
                 </span>

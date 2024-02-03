@@ -16,18 +16,20 @@ const ArticleHamburgerMenu: FC<Props> = ({ user, menu, setMenu }) => {
     <>
       <div
         onClick={() => setMenu(false)}
-        className={`fixed inset-0 z-20 bg-gray-400 bg-opacity-40 ${menu ? "block" : "hidden"
-          }`}
+        className={`fixed inset-0 z-20 bg-gray-400 bg-opacity-40 ${
+          menu ? "block" : "hidden"
+        }`}
       />
       <section
-        className={`hamburger_menu ${menu ? "active" : "inactive"
-          } fixed left-0 top-0 z-50 h-screen w-full max-w-[18rem] overflow-auto md:max-w-[20rem]`}
+        className={`hamburger_menu ${
+          menu ? "active" : "inactive"
+        } fixed left-0 top-0 z-50 h-screen w-full max-w-[18rem] overflow-auto md:max-w-[20rem]`}
       >
         <div className="flex min-h-[100dvh] w-full flex-col">
           <header className="flex items-center justify-between border-b border-border border-border-light bg-light-bg p-6 shadow-md dark:border-border dark:bg-primary">
             <Link className="flex items-center gap-2" href="/">
               <Image
-                src={user?.image ?? "/default_user.avif"}
+                src={user?.image ?? "/static/default_user.avif"}
                 alt={user?.name ?? "User"}
                 className="h-10 w-10 rounded-full object-cover"
                 width={180}

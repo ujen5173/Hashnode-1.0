@@ -1,13 +1,16 @@
 import { useRouter } from "next/router";
 import React, {
   createContext,
-  useLayoutEffect,
+  useEffect,
   useState,
   type ChangeEvent,
   type Dispatch,
-  type SetStateAction
+  type SetStateAction,
 } from "react";
-import useFilter, { DEFAULT_FILTER_DATA, type FilterTimeOption } from "~/hooks/useFilter";
+import useFilter, {
+  DEFAULT_FILTER_DATA,
+  type FilterTimeOption,
+} from "~/hooks/useFilter";
 import { type ArticleCard, type FilterData } from "~/types";
 
 export enum NotificationTypesEnum {
@@ -69,29 +72,30 @@ export interface ContextValue extends Options {
   handleTheme: () => void;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setState: Dispatch<SetStateAction<unknown>>
+    setState: Dispatch<SetStateAction<unknown>>,
   ) => void;
   theme: "light" | "dark";
   bookmarks: { id: string }[];
   updateBookmark: (id: string) => void;
   filter: FilterData;
-  setFilter: React.Dispatch<React.SetStateAction<FilterData>>
+  setFilter: React.Dispatch<React.SetStateAction<FilterData>>;
   filterActions: {
     applyFilter: () => void;
     clearFilter: () => void;
-  }
-  timeFilter: FilterTimeOption
-  setTimeFilter: React.Dispatch<React.SetStateAction<FilterTimeOption>>
+  };
+  timeFilter: FilterTimeOption;
+  setTimeFilter: React.Dispatch<React.SetStateAction<FilterTimeOption>>;
 }
 
 export const C = createContext<ContextValue | undefined>(undefined);
 
 const Context = ({ children, options }: Props) => {
-  const { timeFilter, setTimeFilter, filter, setFilter, filterActions } = useFilter();
+  const { timeFilter, setTimeFilter, filter, setFilter, filterActions } =
+    useFilter();
 
   const routerPath = useRouter().asPath;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     // setting filter data to default every time the router changes to avoid unexpected behavior
     setFilter(DEFAULT_FILTER_DATA);
   }, [routerPath]);
@@ -99,7 +103,7 @@ const Context = ({ children, options }: Props) => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [bookmarks, setBookmarks] = useState<{ id: string }[]>([]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const savedBookmarks = localStorage.getItem("bookmarks");
     const newBookmarks = savedBookmarks
       ? (JSON.parse(savedBookmarks) as { id: string }[])
@@ -122,7 +126,7 @@ const Context = ({ children, options }: Props) => {
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setState: Dispatch<SetStateAction<Record<string, string>>> // Specify the type of state properties
+    setState: Dispatch<SetStateAction<Record<string, string>>>, // Specify the type of state properties
   ) => {
     const { value, name } = e.target;
     setState((prev) => ({ ...prev, [name]: value })); // Remove the unnecessary type annotation
@@ -134,7 +138,7 @@ const Context = ({ children, options }: Props) => {
     localStorage.setItem("theme", newTheme);
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const body = document.querySelector("body");
 
     // theme init
@@ -145,13 +149,12 @@ const Context = ({ children, options }: Props) => {
     body?.classList.remove(newTheme === "light" ? "dark" : "light");
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const body = document.querySelector("body");
 
     body?.classList.add(theme);
     body?.classList.remove(theme === "light" ? "dark" : "light");
   }, [theme]);
-
 
   return (
     <C.Provider

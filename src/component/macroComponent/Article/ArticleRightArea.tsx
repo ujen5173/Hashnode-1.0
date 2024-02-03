@@ -173,7 +173,7 @@ const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
       >
         <div ref={setControl}>
           <Image
-            src={user?.user.image ?? "/default_user.avif"}
+            src={user?.user.image ?? "/static/default_user.avif"}
             alt={user?.user.name ?? "Guest User"}
             width={100}
             height={100}

@@ -27,8 +27,8 @@ const NoArticlesUploadedError: FC<Props> = ({ user, author }) => {
         <Image
           src={
             theme === "light"
-              ? "/noArticlesUploaded-light.avif"
-              : "/noArticlesUploaded-dark.avif"
+              ? "/static/noArticlesUploaded-light.avif"
+              : "/static/noArticlesUploaded-dark.avif"
           }
           alt="No Articles Uploaded By the Author"
           width={800}

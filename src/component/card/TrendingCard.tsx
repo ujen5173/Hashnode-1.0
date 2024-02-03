@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
 
-
 interface Props {
   article: {
     id: string;
@@ -28,7 +27,7 @@ const TrendingCard: FC<Props> = ({ article }) => {
         className="block"
       >
         <Image
-          src={article.user.image ?? "/default_user.avif"}
+          src={article.user.image ?? "/static/default_user.avif"}
           alt="User image"
           width={180}
           height={180}
