@@ -9,6 +9,7 @@ const feedbackRouter = createTRPCRouter({
       z.object({
         rating: z.enum(["0", "1", "2", "3", "4"]),
         feedback: z.string(),
+        timeTook: z.string(),
         name: z.string().optional(),
       }),
     )
@@ -18,30 +19,40 @@ const feedbackRouter = createTRPCRouter({
         to: env.TO,
         subject: "Hashnode Clone Feedback",
         html: `
-        <div>
-          <h1 style="font-weight: bold; font-size: 24px;">Hashnode Clone Feedback</h1>
-          <br />
-          <strong style="font-weight: bold; font-size: 18px;">Name: ${
-            input.name ?? "Anonymous"
-          }</strong>
-          <strong style="font-weight: bold; margin-bottom:8px; font-size: 18px;">Experience: ${(() => {
-            switch (input.rating) {
-              case "0":
-                return "Amazed 😲";
-              case "1":
-                return "Nice 👍";
-              case "2":
-                return "Average 😐";
-              case "3":
-                return "Disapointed 😔";
-              case "4":
-                return "Bad 😡";
-            }
-          })()}</strong>
-          <br />
-          <strong style="font-weight: bold; font-size: 18px;">Feedback: ${
-            input.feedback
-          }</strong>
+        <div className="feedback-container-style">
+          <div className="feedback-container-body">
+            <div className="feedback-image-style">
+              <img src="/static/hashnode-logo-full.png alt="Hashnode Clone Logo" />
+            </div>
+
+            <h1 className="feedback-title">Hashnode Clone Feedback</h1>
+
+            <div className="feedback-content">
+              <div className="feedback-card">Name / Email Address: ${input.name ?? "NaN"}</div>
+              <div className="feedback-card">
+                <span>Rating:</span>
+               ${(() => {
+                 switch (input.rating) {
+                   case "0":
+                     return `<img src="/emojies/Astonished%20Face.png" alt="" />`;
+                   case "1":
+                     return `<img src="/emojies/Slightly%20Smiling%20Face.png" alt="" />`;
+                   case "2":
+                     return `<img src="/emojies/Pink%20Heart.png" alt="" />`;
+                   case "3":
+                     return `<img src="/emojies/Disappointed%20Face.png" alt="" />`;
+                   case "4":
+                     return `<img src="/emojies/Face%20Vomiting.png" alt="" />`;
+                   default:
+                     return `<img src="/emojies/Pink%20Heart.png" alt="" />`;
+                 }
+               })()}
+              </div>
+              <div className="feedback-card">
+                Feedback: ${input.feedback}
+              </div>
+            </div>
+          </div>
         </div>
       `,
       });

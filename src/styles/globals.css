@@ -4,6 +4,62 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.feedback-container-style {
+  height: 100vh;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  z-index: 70;
+  position: fixed;
+  inset: 0;
+  background: #fff;
+}
+
+.feedback-container-body {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.feedback-image-style img {
+  height: 35px;
+}
+
+.feedback-image-style {
+  margin: 15px 0;
+}
+
+.feedback-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+
+.feedback-content {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  letter-spacing: -0.02em;
+}
+
+.feedback-card img {
+  width: 50px;
+  height: 50px;
+}
+
+.feedback-card {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  font-size: 20px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  padding: 1rem;
+}
+
 *,
 *::before,
 *::after {

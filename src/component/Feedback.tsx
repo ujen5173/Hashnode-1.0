@@ -50,6 +50,7 @@ export const FeedbackForm = ({
   const { mutateAsync, isLoading } = api.feedback.send.useMutation();
   const [send, setSend] = useState(false);
   const [name, setName] = useState("");
+  const [timeTook, setTimeTook] = useState("");
   const [feedback, setFeedback] = useState("");
   const [rating, setRating] = useState<"0" | "1" | "2" | "3" | "4">("2");
 
@@ -58,6 +59,7 @@ export const FeedbackForm = ({
     await mutateAsync({
       name,
       feedback,
+      timeTook,
       rating: rating,
     });
 
@@ -70,9 +72,9 @@ export const FeedbackForm = ({
 
   const emojies = {
     "0": "Astonished%20Face.png",
-    "1": "Disappointed%20Face.png",
-    "2": "Pink%20Heart.png",
     "3": "Slightly%20Smiling%20Face.png",
+    "2": "Pink%20Heart.png",
+    "1": "Disappointed%20Face.png",
     "4": "Face%20Vomiting.png",
   } as const;
 
@@ -112,6 +114,18 @@ export const FeedbackForm = ({
           />
         </div>
 
+        <div className="mb-4">
+          <label className="mb-2 block text-slate-800 dark:text-slate-200">
+            How is Data fetching experience: (Optional)
+          </label>
+          <input
+            value={timeTook}
+            onChange={(e) => setTimeTook(e.target.value)}
+            className="input-filled mb-4"
+            placeholder="Time took to load the data? (1sec, 2sec, 3sec)"
+          />
+        </div>
+
         <div className="flex flex-col gap-4">
           <label className="text-slate-800 dark:text-slate-200">
             How would you rate your experience?
@@ -122,10 +136,11 @@ export const FeedbackForm = ({
               return (
                 <div
                   key={key}
-                  className={`cursor-pointer rounded-xl p-2 ${rating.toString() === key
+                  className={`cursor-pointer rounded-xl p-2 ${
+                    rating.toString() === key
                       ? "bg-blue-600"
                       : "bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800"
-                    }`}
+                  }`}
                   onClick={() => setRating(key as "0" | "1" | "2" | "3" | "4")}
                 >
                   <Image
@@ -146,8 +161,9 @@ export const FeedbackForm = ({
           />
           <div className="flex justify-end gap-4">
             <button
-              className={`${send ? "bg-green" : "bg-blue-600"
-                } rounded-lg px-4 py-2 font-bold text-white transition`}
+              className={`${
+                send ? "bg-green" : "bg-blue-600"
+              } rounded-lg px-4 py-2 font-bold text-white transition`}
               onClick={() => void sendFeedback()}
             >
               {isLoading
