@@ -19,36 +19,36 @@ const feedbackRouter = createTRPCRouter({
         to: env.TO,
         subject: "Hashnode Clone Feedback",
         html: `
-        <div className="feedback-container-style">
-          <div className="feedback-container-body">
-            <div className="feedback-image-style">
-              <img src="/static/hashnode-logo-full.png alt="Hashnode Clone Logo" />
+        <div class="feedback-container-style">
+          <div class="feedback-container-body">
+            <div class="feedback-image-style">
+              <img src={"~/public/hashnode-logo-full.png"} alt="Hashnode Clone Logo" />
             </div>
 
-            <h1 className="feedback-title">Hashnode Clone Feedback</h1>
+            <h1 class="feedback-title">Hashnode Clone Feedback</h1>
 
-            <div className="feedback-content">
-              <div className="feedback-card">Name / Email Address: ${input.name ?? "NaN"}</div>
-              <div className="feedback-card">
+            <div class="feedback-content">
+              <div class="feedback-card">Name / Email Address: ${input.name ?? "NaN"}</div>
+              <div class="feedback-card">
                 <span>Rating:</span>
                ${(() => {
                  switch (input.rating) {
                    case "0":
-                     return `<img src="/emojies/Astonished%20Face.png" alt="" />`;
+                     return `<img src="~/public/emojies/Astonished%20Face.png" alt="" />`;
                    case "1":
-                     return `<img src="/emojies/Slightly%20Smiling%20Face.png" alt="" />`;
+                     return `<img src="~/public/emojies/Slightly%20Smiling%20Face.png" alt="" />`;
                    case "2":
-                     return `<img src="/emojies/Pink%20Heart.png" alt="" />`;
+                     return `<img src="~/public/emojies/Pink%20Heart.png" alt="" />`;
                    case "3":
-                     return `<img src="/emojies/Disappointed%20Face.png" alt="" />`;
+                     return `<img src="~/public/emojies/Disappointed%20Face.png" alt="" />`;
                    case "4":
-                     return `<img src="/emojies/Face%20Vomiting.png" alt="" />`;
+                     return `<img src="~/public/emojies/Face%20Vomiting.png" alt="" />`;
                    default:
-                     return `<img src="/emojies/Pink%20Heart.png" alt="" />`;
+                     return `<img src="~/public/emojies/Pink%20Heart.png" alt="" />`;
                  }
                })()}
               </div>
-              <div className="feedback-card">
+              <div class="feedback-card">
                 Feedback: ${input.feedback}
               </div>
             </div>
