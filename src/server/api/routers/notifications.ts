@@ -10,10 +10,11 @@ export const notificationRouter = createTRPCRouter({
       SELECT COUNT(*) FROM notifications
       WHERE notifications.user_id = ${ctx.session.user.id}
       AND notifications.is_read = false
-      `
+      `,
     );
+    console.log({ row: result.rows });
 
-    return (result[0] as { count: string }) ?? { count: "0" };
+    return (result.rows[0] as { count: string }) ?? { count: "0" };
   }),
 
   get: protectedProcedure
@@ -23,7 +24,7 @@ export const notificationRouter = createTRPCRouter({
         skip: z.number().optional(),
         cursor: z.string().nullable().optional(),
         type: z.enum(["ALL", "COMMENT", "LIKE", "ARTICLE", "FOLLOW"]),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { cursor, skip, limit } = input;
@@ -31,7 +32,7 @@ export const notificationRouter = createTRPCRouter({
       const result = await ctx.db.query.notifications.findMany({
         where: and(
           eq(notifications.userId, ctx.session.user.id),
-          input.type === "ALL" ? undefined : eq(notifications.type, input.type)
+          input.type === "ALL" ? undefined : eq(notifications.type, input.type),
         ),
         limit: limit,
         offset: skip,
@@ -74,8 +75,8 @@ export const notificationRouter = createTRPCRouter({
       .where(
         and(
           eq(notifications.userId, ctx.session.user.id),
-          eq(notifications.isRead, false)
-        )
+          eq(notifications.isRead, false),
+        ),
       );
 
     return true;

@@ -172,10 +172,8 @@ export const authOptions: NextAuthOptions = {
         const generateUniqueUsername = (desiredUsername: string): string => {
           let username = desiredUsername;
           let suffix = 1;
-          console.log({ isUsernameExists: isUsernameExists(username) });
           while (isUsernameExists(username)) {
             username = `${desiredUsername}${generateRandomNumber()}${suffix}`;
-            console.log({ username: username });
             suffix++;
           }
           return username;

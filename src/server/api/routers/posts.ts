@@ -12,7 +12,7 @@ import {
   lte,
   or,
 } from "drizzle-orm";
-import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type { Session } from "next-auth";
 import readingTime from "reading-time";
 import slugify from "slugify";
@@ -292,7 +292,7 @@ function displayUniqueObjects(
 const getArticlesWithUserFollowingimages = async (
   ctx: {
     session: Session | null;
-    db: PostgresJsDatabase<typeof schemaFile>;
+    db: NeonHttpDatabase<typeof schemaFile>;
   },
   articles: ArticleCardWithComments[],
 ) => {

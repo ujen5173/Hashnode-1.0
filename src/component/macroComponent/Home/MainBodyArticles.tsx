@@ -29,7 +29,6 @@ const MainBodyArticles = () => {
   );
 
   const [articles, setArticles] = useState<ArticleCard[]>([]);
-  console.log({ articles });
 
   useEffect(() => {
     if (data) {

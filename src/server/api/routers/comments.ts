@@ -429,14 +429,14 @@ export const commentsRouter = createTRPCRouter({
         }
 
         const count = await ctx.db.execute(sql`
-        SELECT COUNT(*) FROM ${comments} WHERE ${comments.articleId} = ${input.articleId}
+          SELECT COUNT(*) FROM ${comments} WHERE ${comments.articleId} = ${input.articleId}
         `);
 
         // Organize the comments
         const nestedComments = organizeComments(commentsofarticle);
         const result = {
           comments: nestedComments,
-          count: (count[0] as { count: number })?.count ?? 0,
+          count: (count.rows[0] as { count: number })?.count ?? 0,
         };
         return result;
       }

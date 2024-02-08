@@ -63,24 +63,21 @@ const NewArticleModal: FC<Props> = ({
       enabled: !!(requestedTags.length > 0),
       refetchOnWindowFocus: false,
       retry: 0,
-    }
+    },
   );
 
   useEffect(() => {
     if (router?.query?.params?.includes("edit")) return;
     //? Getting tag from server if it is in the url or localstorage saved tags.
     const tagsFromUrl = new URLSearchParams(window.location.search).get("tag");
-    console.log({ tagsFromUrl })
+
     if (tagsFromUrl) setRequestedTags(tagsFromUrl.split(" "));
 
     const article = localStorage.getItem("content");
 
     if (article && !router?.query?.params?.includes("edit")) {
       const parsedArticle = JSON.parse(article) as ArticleCard;
-      if (
-        parsedArticle.tags &&
-        parsedArticle.tags.length > 0
-      ) {
+      if (parsedArticle.tags && parsedArticle.tags.length > 0) {
         setRequestedTags(parsedArticle.tags.map((e) => e.slug));
       }
     }
@@ -133,7 +130,7 @@ const NewArticleModal: FC<Props> = ({
       return;
     }
     const contentResponse = formattedContent(
-      JSON.parse(JSON.stringify(content)) as DefaultEditorContent
+      JSON.parse(JSON.stringify(content)) as DefaultEditorContent,
     );
 
     if (!title || !contentResponse) {
@@ -175,8 +172,9 @@ const NewArticleModal: FC<Props> = ({
 
   return (
     <section
-      className={`${!publishModal ? "translate-x-full" : "translate-x-0"
-        } transition-ease scroll-area fixed right-0 top-0 z-50 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
+      className={`${
+        !publishModal ? "translate-x-full" : "translate-x-0"
+      } transition-ease scroll-area fixed right-0 top-0 z-50 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
     >
       <div className="h-max">
         <header className="sticky left-0 top-0 z-30 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
@@ -225,7 +223,7 @@ const NewArticleModal: FC<Props> = ({
               </label>
 
               <div className="relative flex items-stretch gap-2 rounded-md border border-border-light dark:border-border md:px-4 ">
-                <div className="max-w-32 hidden w-max select-none items-center border-r border-border-light pr-3 dark:border-border md:flex">
+                <div className="hidden w-max max-w-32 select-none items-center border-r border-border-light pr-3 dark:border-border md:flex">
                   <span className="line-clamp-1 text-gray-500 dark:text-text-primary">
                     /@{user?.user.username}/
                   </span>
