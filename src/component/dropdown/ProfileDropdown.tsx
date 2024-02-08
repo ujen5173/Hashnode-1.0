@@ -67,7 +67,7 @@ const imageDropdown = React.forwardRef<
       ) : (
         <Link href={`/onboard/blog/setup?redirect=/`}>
           <div className="flex w-full cursor-pointer gap-2 px-4 py-2 hover:bg-light-bg dark:hover:bg-primary-light">
-            <Newspaper className="h-7 w-7 fill-secondary" />
+            <Newspaper className="h-7 w-7 stroke-secondary" />
             <div>
               <h1 className="mb-1 text-sm font-semibold text-secondary">
                 Start a personal blog

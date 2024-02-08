@@ -21,7 +21,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
   return (
     <div className="w-full p-4">
       <header className="mb-4 flex gap-2">
-        <Link href={`/u/@`}>
+        <Link href={`/u/@${card.user?.username}`}>
           <div>
             <Image
               src={card.user?.image ?? "/static/default_user.avif"}

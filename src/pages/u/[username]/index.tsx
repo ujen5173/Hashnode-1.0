@@ -64,12 +64,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
   }
 
-  if (user === null) {
+  if (!user) {
     return {
-      redirect: {
-        destination: "/404",
-        permanent: false,
-      },
+      notFound: true,
     };
   }
 

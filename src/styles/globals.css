@@ -104,7 +104,7 @@
 }
 
 .anouncement {
-  background-image: url("/anouncement-bg-light.png");
+  background-image: url("/static/anouncement-bg-light.png");
   background-size: cover;
   -webkit-background-position: center;
   background-position: center;
@@ -112,7 +112,7 @@
 }
 
 body.dark .anouncement {
-  background-image: url("/anouncement-bg.png");
+  background-image: url("/static/anouncement-bg.png");
   background-size: cover;
   -webkit-background-position: center;
   background-position: center;

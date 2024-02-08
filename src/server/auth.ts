@@ -1,5 +1,5 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { eq, ilike } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { pgTable, type PgTableFn } from "drizzle-orm/pg-core";
 import { type GetServerSidePropsContext } from "next";
 import {
@@ -150,7 +150,13 @@ export const authOptions: NextAuthOptions = {
 
       async profile(profile: GoogleProfile): Promise<User> {
         const usernameOccurance = await db.query.users.findMany({
-          where: ilike(users.name, `%${slugify(profile.name, slugSetting)}%`),
+          where: eq(
+            users.username,
+            slugify(profile.name, {
+              ...slugSetting,
+              replacement: "_",
+            }),
+          ),
           columns: {
             username: true,
           },
@@ -166,8 +172,10 @@ export const authOptions: NextAuthOptions = {
         const generateUniqueUsername = (desiredUsername: string): string => {
           let username = desiredUsername;
           let suffix = 1;
+          console.log({ isUsernameExists: isUsernameExists(username) });
           while (isUsernameExists(username)) {
             username = `${desiredUsername}${generateRandomNumber()}${suffix}`;
+            console.log({ username: username });
             suffix++;
           }
           return username;
