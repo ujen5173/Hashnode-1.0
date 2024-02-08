@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import type { GetServerSideProps, NextPage } from "next";
-import { getServerSession, type Session } from "next-auth";
+import { getServerSession } from "next-auth";
 import { useState } from "react";
 import { NewArticleBody, NewArticleHeader } from "~/component";
 import MetaTags from "~/component/MetaTags";
@@ -113,9 +113,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      session: session
-        ? (JSON.parse(JSON.stringify(session)) as Session)
-        : null,
       article: article
         ? (JSON.parse(JSON.stringify(article)) as ArticleForEdit)
         : null,

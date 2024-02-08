@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { articleimageDropdownList } from "~/utils/constants";
 
-const ArticleimageDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
+const ArticleimageDropdown = React.forwardRef<HTMLDivElement>(({}, ref) => {
   const { data: user } = useSession();
   const router = useRouter();
 
@@ -21,7 +21,7 @@ const ArticleimageDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
       <Link href={`/u/@${user?.user.username} `}>
         <div className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
           <Image
-            src={user?.user.image ?? "/default.avif"}
+            src={user?.user.image ?? "/static/default.avif"}
             alt={user?.user.name ?? "user"}
             width={100}
             height={100}
@@ -57,16 +57,17 @@ const ArticleimageDropdown = React.forwardRef<HTMLDivElement>(({ }, ref) => {
             <div className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-200 dark:hover:bg-primary-light">
               {item.icon}
               <span
-                className={`${item.danger
-                  ? "text-red"
-                  : "text-gray-700 dark:text-text-secondary"
-                  } text-sm font-normal`}
+                className={`${
+                  item.danger
+                    ? "text-red"
+                    : "text-gray-700 dark:text-text-secondary"
+                } text-sm font-normal`}
               >
                 {item.name}
               </span>
             </div>
           </div>
-        )
+        ),
       )}
     </div>
   );

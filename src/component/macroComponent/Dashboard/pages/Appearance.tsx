@@ -39,7 +39,7 @@ const Appearance = () => {
         <div className="mb-8 flex items-center gap-12">
           <AppearenceRadioButton
             label="Magazine Layout"
-            imagePath="/layout_magazine.png"
+            imagePath="/static/layout_magazine.png"
             defaultChecked={
               user?.user.handle?.appearance?.layout === "MAGAZINE" || false
             }
@@ -47,7 +47,7 @@ const Appearance = () => {
           />
           <AppearenceRadioButton
             label="Stacked Layout"
-            imagePath="/layout_stacked.png"
+            imagePath="/static/layout_stacked.png"
             defaultChecked={
               user?.user.handle?.appearance?.layout === "STACKED" || false
             }
@@ -55,7 +55,7 @@ const Appearance = () => {
           />
           <AppearenceRadioButton
             label="Grid Layout"
-            imagePath="/layout_grid.png"
+            imagePath="/static/layout_grid.png"
             defaultChecked={
               user?.user.handle?.appearance?.layout === "GRID" || false
             }
@@ -65,8 +65,9 @@ const Appearance = () => {
 
         <button
           disabled={isLoading}
-          className={`btn-outline ${isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
+          className={`btn-outline ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
           onClick={() => void handleUpdate()}
         >
           {isLoading ? "Updating..." : "Update"}{" "}

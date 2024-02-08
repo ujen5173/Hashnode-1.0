@@ -1,32 +1,39 @@
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
+import { ArticleLoading, ManageData } from "~/component";
 import { MainBodyHeader } from "~/component/header";
-import { ArticleLoading } from "~/component/loading";
-import { ManageData } from "~/component/miniComponent";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type TrendingArticleTypes } from "~/utils/context";
 
 const MainBodyArticles = () => {
-  const tab = useRouter().query.tab as string | undefined | TrendingArticleTypes;
+  const tab = useRouter().query.tab as
+    | string
+    | undefined
+    | TrendingArticleTypes;
   const { filter } = useContext(C)!;
 
-  const { isFetching, data, error } = api.posts.getAll.useQuery({
-    type: (tab?.toString().toUpperCase() ?? 'PERSONALIZED') as "LATEST" | "PERSONALIZED" | "FOLLOWING",
-    filter: filter.data
-  },
+  const { isFetching, data, error } = api.posts.getAll.useQuery(
+    {
+      type: (tab?.toString().toUpperCase() ?? "PERSONALIZED") as
+        | "LATEST"
+        | "PERSONALIZED"
+        | "FOLLOWING",
+      filter: filter.data,
+    },
     {
       enabled: filter.data.shouldApply,
       retry: 0,
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   const [articles, setArticles] = useState<ArticleCard[]>([]);
+  console.log({ articles });
 
   useEffect(() => {
     if (data) {
-      setArticles(data?.posts)
+      setArticles(data?.posts);
     }
   }, [data]);
 
@@ -34,12 +41,10 @@ const MainBodyArticles = () => {
     <section className="container-main my-4 min-h-[100dvh] w-full overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
       <MainBodyHeader />
 
-      {
-        isFetching ? (
-          Array.from({ length: 7 }).map((_, i) => (
-            <ArticleLoading key={i} />
-          ))
-        ) : <ManageData
+      {isFetching ? (
+        Array.from({ length: 7 }).map((_, i) => <ArticleLoading key={i} />)
+      ) : (
+        <ManageData
           loading={<ArticleLoading />}
           type="ARTICLE"
           error={error?.message ?? null}
@@ -48,10 +53,9 @@ const MainBodyArticles = () => {
             data: articles,
           }}
         />
-      }
-
+      )}
     </section>
   );
 };
 
-export default MainBodyArticles; 
+export default MainBodyArticles;

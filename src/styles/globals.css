@@ -4,10 +4,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+*,
+*::before,
+*::after {
+  font-family: "Inter", "Poppins" !important;
+  scroll-behavior: smooth;
+}
+
 .feedback-container-style {
   height: 100vh;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   z-index: 70;
   position: fixed;
@@ -17,7 +24,7 @@
 
 .feedback-container-body {
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
   max-width: 1200px;
@@ -58,13 +65,6 @@
   line-height: 1.5;
   letter-spacing: -0.02em;
   padding: 1rem;
-}
-
-*,
-*::before,
-*::after {
-  font-family: "Inter", "Poppins" !important;
-  scroll-behavior: smooth;
 }
 
 .max-height-one {

@@ -25,7 +25,7 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
   const { data: user } = useSession();
 
   const [isFollowing, setIsFollowing] = useState<boolean>(
-    searchedUser.isFollowing
+    searchedUser.isFollowing,
   );
 
   const { mutate: followToggle } = api.users.followUser.useMutation();
@@ -59,7 +59,7 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
           <Image
             width={50}
             height={50}
-            src={searchedUser.image ?? "/default.avif"}
+            src={searchedUser.image ?? "/static/default.avif"}
             alt={searchedUser.name}
             className="h-9 w-9 rounded-full md:h-12 md:w-12"
           />
@@ -69,17 +69,21 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
               <h3 className="text-base font-semibold text-gray-700 dark:text-text-secondary md:text-lg">
                 {searchedUser.name}
               </h3>
-              {
-                searchedUser.stripeSubscriptionStatus === "active" && (
-                  <Tooltip label="Hashnode Clone Pro User" position="bottom" style={{
+              {searchedUser.stripeSubscriptionStatus === "active" && (
+                <Tooltip
+                  label="Hashnode Clone Pro User"
+                  position="bottom"
+                  style={{
                     fontSize: "0.8rem",
                     fontWeight: "400",
-                    letterSpacing: "0.5px"
-                  }}>
-                    <span className="px-2 py-1 tracking-wider rounded-md bg-light-bg dark:bg-primary-light border border-border-light dark:border-border font-semibold text-xs text-gray-700 dark:text-text-secondary">PRO</span>
-                  </Tooltip>
-                )
-              }
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  <span className="rounded-md border border-border-light bg-light-bg px-2 py-1 text-xs font-semibold tracking-wider text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-secondary">
+                    PRO
+                  </span>
+                </Tooltip>
+              )}
             </div>
 
             <p className="text-sm text-gray-500 dark:text-text-primary">
@@ -89,27 +93,24 @@ const UserSearchCard: FC<Props> = ({ user: searchedUser, setOpened }) => {
         </div>
       </Link>
 
-      {
-        !searchedUser.isAuthor && (
-
-          <button
-            onClick={() => void followUser()}
-            className="btn-outline flex items-center justify-center gap-2 text-secondary md:w-max"
-          >
-            {isFollowing ? (
-              <>
-                <Check className="h-5 w-5 stroke-secondary" />
-                <span className="text-sm md:text-base">Following</span>
-              </>
-            ) : (
-              <>
-                <Plus className="h-5 w-5 stroke-secondary" />
-                <span className="text-sm md:text-base">Follow User</span>
-              </>
-            )}
-          </button>
-        )
-      }
+      {!searchedUser.isAuthor && (
+        <button
+          onClick={() => void followUser()}
+          className="btn-outline flex items-center justify-center gap-2 text-secondary md:w-max"
+        >
+          {isFollowing ? (
+            <>
+              <Check className="h-5 w-5 stroke-secondary" />
+              <span className="text-sm md:text-base">Following</span>
+            </>
+          ) : (
+            <>
+              <Plus className="h-5 w-5 stroke-secondary" />
+              <span className="text-sm md:text-base">Follow User</span>
+            </>
+          )}
+        </button>
+      )}
     </div>
   );
 };

@@ -99,7 +99,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
                 href={`/u/@${article?.user.username}`}
               >
                 <Image
-                  src={article?.user.image ?? "/default.avif"}
+                  src={article?.user.image ?? "/static/default.avif"}
                   alt={article?.user.name}
                   width={70}
                   height={70}
@@ -181,7 +181,7 @@ const SeriesSection: FC<{
     {
       refetchOnWindowFocus: false,
       retry: 0,
-    }
+    },
   );
 
   return (
@@ -204,8 +204,7 @@ const SeriesSection: FC<{
             data && (
               <span className="text-lg font-bold text-secondary hover:underline">
                 <Link
-                  href={`/dev/@${user?.user?.handle?.handle}/series/${data.slug
-                    }`}
+                  href={`/dev/@${user?.user?.handle?.handle}/series/${data.slug}`}
                 >
                   {data.title}
                 </Link>
@@ -215,59 +214,57 @@ const SeriesSection: FC<{
         </header>
 
         <main className="">
-          {
-            data?.articles.map((article, index) => (
+          {data?.articles.map((article, index) => (
+            <div
+              className="flex flex-col gap-4 border-b border-border-light p-4 last:border-none dark:border-border md:flex-row md:items-center"
+              key={article.id}
+            >
               <div
-                className="flex flex-col gap-4 border-b border-border-light p-4 last:border-none dark:border-border md:flex-row md:items-center"
-                key={article.id}
-              >
-                <div
-                  className={`flex  h-10 w-10 items-center justify-center rounded-full ${article.slug === slug
+                className={`flex  h-10 w-10 items-center justify-center rounded-full ${
+                  article.slug === slug
                     ? "bg-secondary text-white"
                     : "bg-slate-200 text-primary"
-                    }`}
-                >
-                  <h1 className="text-lg font-black">{index + 1}</h1>
-                </div>
-
-                <div className="flex flex-1 flex-col items-center gap-2 md:flex-row md:gap-8">
-                  <div className="flex flex-1 items-center gap-4">
-                    <Link
-                      target="_blank"
-                      href={`/u/${username}/${article.slug}`}
-                    >
-                      <h1 className="max-height-two mb-1 text-xl font-bold text-gray-700 dark:text-text-secondary">
-                        {article.title}
-                      </h1>
-
-                      <p
-                        className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${article?.cover_image ? "" : "w-[95%]"
-                          }`}
-                      >
-                        {removeMd(article.subContent ?? "")}
-                      </p>
-                    </Link>
-                  </div>
-
-                  {article?.cover_image && (
-                    <Link
-                      target="_blank"
-                      className="w-full md:w-1/4"
-                      href={`/u/${username}/${article.slug}`}
-                    >
-                      <Image
-                        src={article.cover_image}
-                        alt={article.title}
-                        width={1200}
-                        height={800}
-                        draggable={false}
-                        className="w-full overflow-hidden rounded-md border border-border-light object-cover dark:border-border"
-                      />
-                    </Link>
-                  )}
-                </div>
+                }`}
+              >
+                <h1 className="text-lg font-black">{index + 1}</h1>
               </div>
-            ))}
+
+              <div className="flex flex-1 flex-col items-center gap-2 md:flex-row md:gap-8">
+                <div className="flex flex-1 items-center gap-4">
+                  <Link target="_blank" href={`/u/${username}/${article.slug}`}>
+                    <h1 className="max-height-two mb-1 text-xl font-bold text-gray-700 dark:text-text-secondary">
+                      {article.title}
+                    </h1>
+
+                    <p
+                      className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${
+                        article?.cover_image ? "" : "w-[95%]"
+                      }`}
+                    >
+                      {removeMd(article.subContent ?? "")}
+                    </p>
+                  </Link>
+                </div>
+
+                {article?.cover_image && (
+                  <Link
+                    target="_blank"
+                    className="w-full md:w-1/4"
+                    href={`/u/${username}/${article.slug}`}
+                  >
+                    <Image
+                      src={article.cover_image}
+                      alt={article.title}
+                      width={1200}
+                      height={800}
+                      draggable={false}
+                      className="w-full overflow-hidden rounded-md border border-border-light object-cover dark:border-border"
+                    />
+                  </Link>
+                )}
+              </div>
+            </div>
+          ))}
         </main>
       </div>
     </div>

@@ -58,7 +58,7 @@ export const CommentCard: FC<Props> = ({
 }) => {
   const { data: user } = useSession();
   const { mutate: likeComment } = api.comments.likeComment.useMutation();
-  const [showReply, setShowReply] = useState(false);
+  const [showReply, setShowReply] = useState(type === "COMMENT" ? true : false);
   const [replyText, setReplyText] = useState("");
 
   const [like, setLike] = useState({

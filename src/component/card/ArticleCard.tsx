@@ -21,10 +21,10 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
   return (
     <div className="w-full p-4">
       <header className="mb-4 flex gap-2">
-        <Link href={`/u/@${card.user.username}`}>
+        <Link href={`/u/@`}>
           <div>
             <Image
-              src={card.user.image ?? "/static/default_user.avif"}
+              src={card.user?.image ?? "/static/default_user.avif"}
               width={60}
               height={60}
               alt="User image"
@@ -35,13 +35,13 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
 
         <div className="flex-1">
           <div className="itmes-center flex gap-2">
-            <Link href={`/u/@${card.user.username}`}>
+            <Link href={`/u/@${card.user?.username}`}>
               <h1 className="text-sm font-semibold text-gray-900 dark:text-text-secondary">
-                {card.user.name}
+                {card.user?.name}
               </h1>
             </Link>
 
-            {card.user.stripeSubscriptionStatus === "active" && (
+            {card.user?.stripeSubscriptionStatus === "active" && (
               <Tooltip
                 label="Hashnode Clone Pro User"
                 position="bottom"
@@ -58,13 +58,13 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
             )}
           </div>
 
-          {card.user.handle && (
+          {card.user?.handle && (
             <p className="flex gap-1 text-sm font-normal text-gray-500 dark:text-text-primary">
               <Link
                 className="hidden xs:block"
-                href={`/dev/@${card.user.handle.handle}`}
+                href={`/dev/@${card.user?.handle?.handle}`}
               >
-                <span>@{card.user.handle.handle}</span>
+                <span>@{card.user?.handle?.handle}</span>
               </Link>
 
               <span className="hidden text-gray-900 dark:text-text-primary xs:block">
@@ -80,13 +80,13 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
       <main className="">
         <div className="flex flex-col justify-between gap-4 md:flex-row">
           <div className="flex-[2]">
-            <Link href={`/u/@${card.user.username}/${card.slug}`}>
+            <Link href={`/u/@${card.user?.username}/${card.slug}`}>
               <h1 className="max-height-three mb-2 text-xl font-semibold text-gray-700 dark:text-text-secondary">
                 {card.title}
               </h1>
             </Link>
 
-            <Link href={`/u/@${card.user.username}/${card.slug}`}>
+            <Link href={`/u/@${card.user?.username}/${card.slug}`}>
               <div className="mb-4 flex items-center gap-2">
                 <BookOpen className="h-4 w-4 stroke-secondary" />
                 <p className="text-sm font-medium text-gray-700 dark:text-text-primary">
@@ -95,7 +95,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               </div>
             </Link>
 
-            <Link href={`/u/@${card.user.username}/${card.slug}`}>
+            <Link href={`/u/@${card.user?.username}/${card.slug}`}>
               <p
                 className={`${
                   card.cover_image
@@ -111,11 +111,13 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
           {card.cover_image && (
             <Link
               className="flex-1"
-              href={`/@${card.user.username}/${card.slug}`}
+              href={`/@${card.user?.username}/${card.slug}`}
             >
               <div>
                 <Image
-                  src={card.cover_image || "/imagePlaceholder-removebg.png"}
+                  src={
+                    card.cover_image ?? "/static/imagePlaceholder-removebg.png"
+                  }
                   alt={`${card.title} image not found!`}
                   width={500}
                   height={300}

@@ -1,9 +1,7 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { getServerSession, type Session } from "next-auth";
 import React, { createContext } from "react";
 import { ArticleBody, ArticleHeader, Footer } from "~/component";
 import MetaTags from "~/component/MetaTags";
-import { authOptions } from "~/server/auth";
 import { generateSSGHelper } from "~/server/ssgHelper";
 import { type Article } from "~/types";
 
@@ -44,8 +42,6 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
 export default SingleArticle;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
   const ssg = await generateSSGHelper({ req: context.req, res: context.res });
 
   const params = context.params as {
@@ -60,9 +56,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     return {
       props: {
-        session: session
-          ? (JSON.parse(JSON.stringify(session)) as Session)
-          : null,
         article: data
           ? (JSON.parse(JSON.stringify(data)) as Article & {
               isFollowing: boolean;

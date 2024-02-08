@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
-import { getServerSession, type Session } from "next-auth";
 import {
   FollowArea,
   FollowHeader,
@@ -8,7 +7,6 @@ import {
   Header,
 } from "~/component";
 import MetaTags from "~/component/MetaTags";
-import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 
 import { users } from "~/server/db/schema";
@@ -54,7 +52,6 @@ const Followers: NextPage<{
 export default Followers;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
   const username = context.query?.username as string | undefined;
 
   if (!username) {
@@ -84,21 +81,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (!user) {
     return {
-      props: {
-        session: null,
-      },
-      redirect: {
-        destination: "/",
-        permanent: true,
-      },
+      notFound: true,
     };
   }
 
   return {
     props: {
-      session: session
-        ? (JSON.parse(JSON.stringify(session)) as Session)
-        : null,
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
             name: string;

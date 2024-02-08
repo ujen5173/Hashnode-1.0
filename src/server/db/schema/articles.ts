@@ -48,7 +48,7 @@ export const articles = pgTable(
   (articles) => ({
     userIdIdx: index("userId_idx").on(articles.id),
     slugIdx: index("slug_idx").on(articles.slug),
-  })
+  }),
 );
 
 export const newArticleSchema = createInsertSchema(articles).pick({

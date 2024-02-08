@@ -24,8 +24,8 @@ export const notifications = pgTable(
     updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
   },
   (notifications) => ({
-    userIdIdx: index("userId_idx").on(notifications.id),
-  })
+    userIdIdx: index("notificationuserId_idx").on(notifications.id),
+  }),
 );
 
 export const notificationsRelations = relations(notifications, ({ one }) => ({

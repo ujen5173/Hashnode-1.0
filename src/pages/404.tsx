@@ -11,7 +11,7 @@ const PageNotFound = () => {
         <div className="container mx-auto flex min-h-[100dvh] flex-col items-center justify-center border-x border-border-light bg-white px-8 py-16 dark:border-border dark:bg-slate-900">
           <Image
             className="mb-8 max-h-[30rem] w-auto select-none object-cover"
-            src={"/pageNotFound.png"}
+            src={"/static/pageNotFound.png"}
             alt="404"
             width={500}
             draggable={false}

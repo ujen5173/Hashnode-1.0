@@ -1,8 +1,6 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { getServerSession, type Session } from "next-auth";
 import { ExploreMainBody, Header } from "~/component";
 import MetaTags from "~/component/MetaTags";
-import { authOptions } from "~/server/auth";
 
 const ExplorePage: NextPage = () => {
   return (
@@ -21,10 +19,12 @@ const ExplorePage: NextPage = () => {
 export default ExplorePage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
+  const hasSession = context.req.headers.cookie?.includes(
+    "next-auth.session-token",
+  );
 
   if (
-    !session?.user &&
+    hasSession &&
     (context.req.url === "/explore/tags-following" ||
       context.req.url === "/explore/articles-following")
   ) {
@@ -32,10 +32,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   return {
-    props: {
-      session: session
-        ? (JSON.parse(JSON.stringify(session)) as Session)
-        : null,
-    },
+    props: {},
   };
 };

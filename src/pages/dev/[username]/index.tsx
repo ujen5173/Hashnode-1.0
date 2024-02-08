@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
-import { getServerSession, type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -8,7 +7,6 @@ import { useEffect, useMemo, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
 import MetaTags from "~/component/MetaTags";
-import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
 import { api } from "~/utils/api";
@@ -197,7 +195,6 @@ const AuthorBlogs: NextPage<{
 export default AuthorBlogs;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
   const handleDomain = context.query.username as string;
 
   const user = await db.query.handles
@@ -271,9 +268,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             };
             followers: { id: string }[];
           })
-        : null,
-      session: session
-        ? (JSON.parse(JSON.stringify(session)) as Session)
         : null,
     },
   };

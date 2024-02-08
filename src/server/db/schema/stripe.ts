@@ -39,6 +39,6 @@ export const stripeEvents = pgTable(
     livemode: boolean("livemode").notNull(),
   },
   (stripeEvents) => ({
-    userIdIdx: index("userId_idx").on(stripeEvents.id),
-  })
+    userIdIdx: index("stripeEventsuserId_idx").on(stripeEvents.id),
+  }),
 );

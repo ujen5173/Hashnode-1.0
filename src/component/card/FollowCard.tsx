@@ -2,8 +2,7 @@ import { Tooltip } from "@mantine/core";
 import { Check, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type FC, } from "react";
-
+import { useEffect, useState, type FC } from "react";
 
 const FollowCard: FC<{
   user: {
@@ -27,7 +26,7 @@ const FollowCard: FC<{
       <div className="flex flex-1 gap-2">
         <Link href={`/u/@${user.username}`}>
           <Image
-            src={user.image ?? "/default.avif"}
+            src={user.image ?? "/static/default.avif"}
             width={60}
             height={60}
             className="h-10 w-10 rounded-full object-cover"
@@ -48,19 +47,19 @@ const FollowCard: FC<{
       </div>
 
       <Tooltip label={isFollowing ? "UnFollow" : "Follow"} position="bottom">
-        <button onClick={() => {
-          followUser(user.id);
-          setIsFollowing(prev => !prev)
-        }}
+        <button
+          onClick={() => {
+            followUser(user.id);
+            setIsFollowing((prev) => !prev);
+          }}
           arial-label="Follow/Unfollow Button"
-          className="rounded-full border border-border-light bg-white p-2 hover:bg-border-light dark:border-border dark:bg-primary dark:hover:bg-border">
-          {
-            isFollowing ? (
-              <Check className="h-5 w-5 stroke-green" />
-            ) : (
-              <Plus className="h-5 w-5 stroke-none" />
-            )
-          }
+          className="rounded-full border border-border-light bg-white p-2 hover:bg-border-light dark:border-border dark:bg-primary dark:hover:bg-border"
+        >
+          {isFollowing ? (
+            <Check className="h-5 w-5 stroke-green" />
+          ) : (
+            <Plus className="h-5 w-5 stroke-slate-600 dark:stroke-slate-300" />
+          )}
         </button>
       </Tooltip>
     </div>

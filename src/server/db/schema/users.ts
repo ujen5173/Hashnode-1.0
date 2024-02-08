@@ -50,7 +50,7 @@ export const users = pgTable("user", {
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   stripeSubscriptionStatus: stripeSubscriptionEnum(
-    "stripe_subscription_status"
+    "stripe_subscription_status",
   ),
 
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
@@ -99,8 +99,8 @@ export const accounts = pgTable(
   },
   (account) => ({
     // pk: primaryKey(account.provider, account.providerAccountId),
-    userIdIdx: index("userId_idx").on(account.userId),
-  })
+    userIdIdx: index("accountuserId_idx").on(account.userId),
+  }),
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -115,8 +115,8 @@ export const sessions = pgTable(
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (session) => ({
-    userIdIdx: index("userId_idx").on(session.userId),
-  })
+    userIdIdx: index("sessionuserId_idx").on(session.userId),
+  }),
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -132,5 +132,5 @@ export const verificationTokens = pgTable(
   },
   (vt) => ({
     pk: primaryKey(vt.identifier, vt.token),
-  })
+  }),
 );

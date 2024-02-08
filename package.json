@@ -8,10 +8,10 @@
     "dev-prod": "env-cmd -f .env.production next dev",
     "lint": "next lint",
     "start": "next start",
-    "db:stdio": "env-cmd -f .env drizzle-kit studio --port 4000 --verbose",
+    "db:stdio": "dotenv drizzle-kit studio --port 5000 --verbose",
     "db:dev": "yarn db:generate && yarn db:push && yarn db:stdio",
-    "db:generate": "env-cmd -f .env drizzle-kit generate:pg",
-    "db:push": "env-cmd -f .env drizzle-kit push:pg"
+    "db:generate": "dotenv drizzle-kit generate:pg",
+    "db:push": "dotenv drizzle-kit push:pg"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.5.0",
@@ -20,6 +20,7 @@
     "@mantine/core": "^7.5.1",
     "@mantine/hooks": "^7.5.1",
     "@mantine/next": "^6.0.11",
+    "@neondatabase/serverless": "^0.7.2",
     "@t3-oss/env-nextjs": "^0.8.0",
     "@tanstack/react-query": "^4.35.3",
     "@tiptap/core": "^2.0.4",
@@ -53,6 +54,7 @@
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.9",
     "dotenv": "^16.4.0",
+    "dotenv-cli": "^7.3.0",
     "drizzle-orm": "^0.29.3",
     "drizzle-zod": "^0.5.1",
     "env-cmd": "^10.1.0",

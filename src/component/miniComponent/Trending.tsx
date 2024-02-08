@@ -13,10 +13,8 @@ const Trending = () => {
     {
       retry: 0,
       refetchOnWindowFocus: false,
-    }
+    },
   );
-
-  console.log({ articlesData })
 
   return (
     <div className="mb-4 rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
@@ -40,7 +38,9 @@ const Trending = () => {
         <ManageData
           loading={<BookmarkLoading />}
           type="MINI_ARTICLES"
-          error={articlesData?.posts?.length === 0 ? "No Trending Articles" : null}
+          error={
+            articlesData?.posts?.length === 0 ? "No Trending Articles" : null
+          }
           articleData={{ isLoading, data: articlesData?.posts }}
         />
       </div>

@@ -27,9 +27,9 @@ export const tags = pgTable(
     updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
   },
   (tags) => ({
-    nameIdx: index("name_idx").on(tags.name),
-    slugIdx: index("slug_idx").on(tags.slug),
-  })
+    nameIdx: index("tagsname_idx").on(tags.name),
+    slugIdx: index("tagsslug_idx").on(tags.slug),
+  }),
 );
 
 export const tagsRelations = relations(tags, ({ many }) => ({
@@ -49,7 +49,7 @@ export const tagsToUsers = pgTable(
   },
   (tagsToUsers) => ({
     pk: primaryKey(tagsToUsers.tagId, tagsToUsers.userId),
-  })
+  }),
 );
 
 export const tagsToUsersRelations = relations(tagsToUsers, ({ one }) => ({
@@ -75,7 +75,7 @@ export const tagsToArticles = pgTable(
   },
   (tagsToArticles) => ({
     pk: primaryKey(tagsToArticles.tagId, tagsToArticles.articleId),
-  })
+  }),
 );
 
 export const tagsToArticlesRelations = relations(tagsToArticles, ({ one }) => ({

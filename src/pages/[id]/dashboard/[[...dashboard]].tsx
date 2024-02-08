@@ -8,7 +8,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { type GetServerSideProps } from "next";
-import { getServerSession, type Session } from "next-auth";
+import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -104,11 +104,13 @@ const Dashboard = () => {
 
   return (
     <>
-          <MetaTags title={`${
-            session?.user.handle?.name === session?.user.name
-              ? `${session?.user.handle?.name}'s Blog`
-              : session?.user.handle?.name
-          } Dashboard`} />
+      <MetaTags
+        title={`${
+          session?.user.handle?.name === session?.user.name
+            ? `${session?.user.handle?.name}'s Blog`
+            : session?.user.handle?.name
+        } Dashboard`}
+      />
 
       <Header search={false} />
 
@@ -169,7 +171,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (!session) {
     return {
-      props: { session: null },
+      props: {},
       redirect: {
         destination: "/login",
         permanent: true,
@@ -179,7 +181,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (session.user.id !== context.params?.id) {
     return {
-      props: { session: null },
+      props: {},
       redirect: {
         destination: `/`,
         permanent: true,
@@ -189,7 +191,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (session.user.handle === null) {
     return {
-      props: { session: null },
+      props: {},
       redirect: {
         destination: "/onboard/blog/setup",
         parmanent: true,
@@ -198,9 +200,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   return {
-    props: {
-      session: JSON.parse(JSON.stringify(session)) as Session,
-    },
+    props: {},
   };
 };
 
@@ -216,96 +216,95 @@ const Roadmap = () => {
   );
 
   return (
-      <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
-        <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
-          Welcome to your new blog! What&apos;s next?
-        </h1>
+    <section className="mb-6 w-full rounded-md border border-border-light bg-white p-4 dark:border-border dark:bg-primary">
+      <h1 className="mb-4 text-base font-semibold text-gray-700 dark:text-text-secondary">
+        Welcome to your new blog! What&apos;s next?
+      </h1>
 
-        <div className="flex flex-wrap gap-4">
-          <div
-            onClick={() => {
-              if (data?.articles) {
-                return;
-              } else {
-                void router.push("/article/new");
-              }
-            }}
-            className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
-          >
-            <div className="absolute right-3 top-3 md:right-4 md:top-4">
-              <Pencil className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
-            </div>
-
-            {data?.articles ? (
-              <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
-            ) : (
-              <Circle className="dark:stroke-text-primarymd:h-7 h-5 w-5 stroke-gray-500 md:w-7" />
-            )}
-
-            <div className="flex-1">
-              <h1 className="mb-2  text-xl font-semibold text-secondary">
-                Write your first article
-              </h1>
-
-              <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-                Share your thoughts, and connect with the community by writing
-                your first article.
-              </p>
-            </div>
+      <div className="flex flex-wrap gap-4">
+        <div
+          onClick={() => {
+            if (data?.articles) {
+              return;
+            } else {
+              void router.push("/article/new");
+            }
+          }}
+          className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
+        >
+          <div className="absolute right-3 top-3 md:right-4 md:top-4">
+            <Pencil className="h-5 w-5 fill-none stroke-gray-500 dark:stroke-text-primary" />
           </div>
 
-          <div
-            onClick={() => {
-              if (data?.articles) {
-                return;
-              } else {
-                const appearanceLocation = `/${user?.user.id}/dashboard/appearance`;
-
-                void router.push(appearanceLocation);
-              }
-            }}
-            className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
-          >
-            <div className="absolute right-3 top-3 md:right-4 md:top-4">
-              <Palette className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
-            </div>
-
-            {data?.handle?.appearance ? (
-              <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
-            ) : (
-              <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary md:h-7 md:w-7" />
-            )}
-            <div className="flex-1">
-              <h1 className="mb-2 text-xl  font-semibold text-secondary">
-                Customizing the appearance
-              </h1>
-
-              <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-                Personalize the design of your blog and showcase your
-                personality.
-              </p>
-            </div>
-          </div>
-
-          <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
-            <div className="absolute right-3 top-3 md:right-4 md:top-4">
-              <Globe className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
-            </div>
-
+          {data?.articles ? (
             <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
+          ) : (
+            <Circle className="dark:stroke-text-primarymd:h-7 h-5 w-5 stroke-gray-500 md:w-7" />
+          )}
 
-            <div className="flex-1">
-              <h1 className="mb-2 text-xl  font-semibold text-secondary">
-                Map a custom domain
-              </h1>
+          <div className="flex-1">
+            <h1 className="mb-2  text-xl font-semibold text-secondary">
+              Write your first article
+            </h1>
 
-              <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
-                Change your hashnode.dev blog URL to a custom domain of your
-                choice for free!
-              </p>
-            </div>
+            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+              Share your thoughts, and connect with the community by writing
+              your first article.
+            </p>
           </div>
         </div>
-      </section>
+
+        <div
+          onClick={() => {
+            if (data?.articles) {
+              return;
+            } else {
+              const appearanceLocation = `/${user?.user.id}/dashboard/appearance`;
+
+              void router.push(appearanceLocation);
+            }
+          }}
+          className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]"
+        >
+          <div className="absolute right-3 top-3 md:right-4 md:top-4">
+            <Palette className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
+          </div>
+
+          {data?.handle?.appearance ? (
+            <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
+          ) : (
+            <Circle className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary md:h-7 md:w-7" />
+          )}
+          <div className="flex-1">
+            <h1 className="mb-2 text-xl  font-semibold text-secondary">
+              Customizing the appearance
+            </h1>
+
+            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+              Personalize the design of your blog and showcase your personality.
+            </p>
+          </div>
+        </div>
+
+        <div className="relative flex w-full cursor-pointer items-center gap-4 rounded-md border border-border-light px-4 py-8 hover:bg-light-bg dark:border-border dark:hover:bg-primary-light md:w-[calc(100%/2-1rem)] lg:w-[calc(100%/3-1rem)]">
+          <div className="absolute right-3 top-3 md:right-4 md:top-4">
+            <Globe className="h-5 w-5 stroke-gray-500 dark:stroke-text-primary" />
+          </div>
+
+          <CheckCircle2 className="h-5 w-5 fill-green stroke-white dark:stroke-primary md:h-7 md:w-7" />
+
+          <div className="flex-1">
+            <h1 className="mb-2 text-xl  font-semibold text-secondary">
+              Map a custom domain
+            </h1>
+
+            <p className="text-sm text-gray-500 dark:text-text-primary md:text-base">
+              Change your hashnode.dev blog URL to a custom domain of your
+              choice for free!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };

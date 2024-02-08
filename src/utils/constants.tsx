@@ -55,7 +55,7 @@ export const asideItems = [
     icon: (
       <Laptop2 className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
     ),
-    href: "/hackathons",
+    href: "#",
     type: "link",
   },
   {
@@ -63,7 +63,7 @@ export const asideItems = [
     icon: (
       <Users className="h-4 w-4 stroke-gray-700 dark:stroke-text-secondary" />
     ),
-    href: "/team-blogs",
+    href: "#",
     type: "link",
   },
 ];

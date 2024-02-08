@@ -63,7 +63,7 @@ const StackedArticleCard: FC<CardProps> = ({ article }) => {
                   article.cover_image
                     ? article.cover_image
                     : theme === "light"
-                      ? "/imagePlaceholder-light.avif"
+                      ? "/static/imagePlaceholder-light.avif"
                       : "/static/imagePlaceholder-dark.avif"
                 }
                 alt={`${article.title} image not found!`}

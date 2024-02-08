@@ -21,9 +21,9 @@ export const series = pgTable(
     updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
   },
   (series) => ({
-    userIdIdx: index("userId_idx").on(series.id),
+    userIdIdx: index("seriesuserId_idx").on(series.id),
     seriesSlugIdx: index("seriesSlug_idx").on(series.slug),
-  })
+  }),
 );
 
 export const seriesRelations = relations(series, ({ one, many }) => ({

@@ -15,7 +15,6 @@ const LeftArea = () => {
         className="btn-icon flex h-10 w-10 lg:hidden"
         onClick={() => setMenu((prev) => !prev)}
       >
-        <span aria-hidden="true">Home</span>
         <Menu className="h-5 w-5 stroke-black dark:stroke-white" />
       </button>
 

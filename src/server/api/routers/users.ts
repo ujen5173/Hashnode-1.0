@@ -64,10 +64,7 @@ export const usersRouter = createTRPCRouter({
 
       const isFollowing = me?.following.length > 0;
 
-      if (
-        isFollowing &&
-        (me.following[0]?.user?.id ?? otherUser.followers[0]?.user?.id)
-      ) {
+      if (isFollowing) {
         // unfollow the user
         await ctx.db
           .delete(follow)
@@ -82,22 +79,23 @@ export const usersRouter = createTRPCRouter({
         await ctx.db
           .update(users)
           .set({
-            followingCount:
-              +(otherUser.followers[0]?.user?.followersCount ?? 1) - 1,
+            followingCount: me.followingCount > 1 ? me.followingCount - 1 : 0,
           })
           .where(eq(users.id, ctx.session?.user.id));
 
+        // update the followers count for the other user
         await ctx.db
           .update(users)
           .set({
-            followersCount: +(me.following[0]?.user?.followingCount ?? 1) - 1,
+            followersCount:
+              otherUser.followersCount > 1 ? otherUser.followersCount - 1 : 0,
           })
           .where(eq(users.id, input.userId));
 
         return {
-          success: false,
+          success: true,
           message: "User unfollowed successfully",
-          status: 400,
+          status: 200,
         };
       } else {
         // follow the user
@@ -110,21 +108,22 @@ export const usersRouter = createTRPCRouter({
         await ctx.db
           .update(users)
           .set({
-            followingCount:
-              +(otherUser.followers[0]?.user?.followersCount ?? 0) + 1,
+            followingCount: me.followingCount + 1,
           })
           .where(eq(users.id, ctx.session?.user.id));
 
+        // update the followers count for the other user
         await ctx.db
           .update(users)
           .set({
-            followersCount: +(me.following[0]?.user?.followingCount ?? 0) + 1,
+            followersCount: otherUser.followersCount + 1,
           })
           .where(eq(users.id, input.userId));
+
         return {
-          success: false,
+          success: true,
           message: "User followed successfully",
-          status: 400,
+          status: 200,
         };
       }
     }),

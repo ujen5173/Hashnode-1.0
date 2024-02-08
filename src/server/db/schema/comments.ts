@@ -30,9 +30,9 @@ export const comments = pgTable(
     updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
   },
   (comments) => ({
-    userIdIdx: index("userId_idx").on(comments.id),
+    userIdIdx: index("commentsuserId_idx").on(comments.id),
     articleIdIdx: index("articleId_idx").on(comments.id),
-  })
+  }),
 );
 
 export type Comments = typeof comments.$inferSelect;

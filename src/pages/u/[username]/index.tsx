@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
-import { getServerSession, type Session } from "next-auth";
+import { getServerSession } from "next-auth";
 import { Header, UserProfileBody } from "~/component";
 import MetaTags from "~/component/MetaTags";
 import { authOptions } from "~/server/auth";
@@ -77,9 +77,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      session: session
-        ? (JSON.parse(JSON.stringify(session)) as Session)
-        : null,
       user: JSON.parse(
         JSON.stringify({
           ...user,

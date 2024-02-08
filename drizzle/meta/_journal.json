@@ -141,6 +141,13 @@
       "when": 1706867008429,
       "tag": "0019_unknown_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1707234135056,
+      "tag": "0020_pink_weapon_omega",
+      "breakpoints": true
     }
   ]
 }

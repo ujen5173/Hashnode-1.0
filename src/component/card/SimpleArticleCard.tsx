@@ -50,7 +50,7 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
               article.cover_image
                 ? article.cover_image
                 : theme === "light"
-                  ? "/imagePlaceholder-light.avif"
+                  ? "/static/imagePlaceholder-light.avif"
                   : "/static/imagePlaceholder-dark.avif"
             }
             alt={`${article.title} image not found!`}
