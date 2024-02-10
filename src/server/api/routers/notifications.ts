@@ -12,7 +12,6 @@ export const notificationRouter = createTRPCRouter({
       AND notifications.is_read = false
       `,
     );
-    console.log({ row: result.rows });
 
     return (result.rows[0] as { count: string }) ?? { count: "0" };
   }),

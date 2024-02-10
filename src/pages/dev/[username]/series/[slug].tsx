@@ -1,16 +1,13 @@
 import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
-import { getServerSession, type Session } from "next-auth";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import {
   AuthorBlogHeader,
   Footer,
   SimpleArticleCard,
-  SimpleArticleCardLoading,
+  SimpleArticleCardLoading
 } from "~/component";
-import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
 
@@ -57,7 +54,6 @@ const SeiesPage: NextPage<{
 export default SeiesPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
   const handleDomain = context.query.username as string;
 
   const user = await db.query.handles
@@ -124,19 +120,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-            username: string;
-            image: string;
-            handle: {
-              handle: string;
-              name: string;
-              social: BlogSocial;
-              customTabs: CustomTabs[];
-            };
-            followers: { id: string }[];
-          })
-        : null,
-      session: session
-        ? (JSON.parse(JSON.stringify(session)) as Session)
+          username: string;
+          image: string;
+          handle: {
+            handle: string;
+            name: string;
+            social: BlogSocial;
+            customTabs: CustomTabs[];
+          };
+          followers: { id: string }[];
+        })
         : null,
     },
   };
@@ -145,7 +138,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const SeriesContainer = () => {
   const router = useRouter();
   const slug = router.query.slug;
-  const { data, isLoading, error } = api.series.getSeriesOfArticle.useQuery(
+
+  const { data, isLoading } = api.series.getSeriesArticles.useQuery(
     {
       slug: slug as string,
     },
@@ -156,18 +150,12 @@ const SeriesContainer = () => {
     },
   );
 
-  useEffect(() => {
-    if (error && error.data?.code === "NOT_FOUND") {
-      void router.push("/404");
-    }
-  }, [error]);
-
   return (
     <div className="w-full bg-white dark:bg-primary">
       <div className="mx-auto max-w-[1000px] px-4 py-8">
         <div className="flex gap-4">
           <div>
-            <h1 className="text-sm font-medium uppercase text-gray-500 dark:text-text-primary">
+            <h1 className="text-base font-medium uppercase text-blue-600">
               Series
             </h1>
             <h1 className="mb-2 text-4xl font-bold text-gray-700 dark:text-text-secondary">
@@ -184,7 +172,7 @@ const SeriesContainer = () => {
           {data?.cover_image && (
             <div>
               <Image
-                src={data?.cover_image}
+                src={data.cover_image}
                 width={1200}
                 height={800}
                 className="w-2/6 object-cover"
@@ -209,7 +197,10 @@ const SeriesContainer = () => {
             </>
           ) : (
             data?.articles.map((article) => (
-              <SimpleArticleCard article={article} key={article.id} />
+              <SimpleArticleCard
+                key={article.id}
+                article={article}
+              />
             ))
           )}
         </div>

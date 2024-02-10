@@ -12,17 +12,41 @@ import {
 } from "~/component/dropdown";
 import { Notification } from "~/component/miniComponent";
 import { FollowContext } from "~/pages/u/[username]/[slug]";
-import { type UserSimple } from "~/types";
 import { api } from "~/utils/api";
 import { C } from "~/utils/context";
 
-const ArticleRightArea: FC<{ user: UserSimple }> = ({ user: author }) => {
+type UserType = {
+  username: string;
+  name: string;
+  id: string;
+
+  image: string | null;
+  followers: { userId: string }[];
+};
+const ArticleRightArea: FC<{ user: UserType }> = ({ user: author }) => {
   const { handleTheme, setSearchOpen } = useContext(C)!;
   const { following, setFollowing } = useContext(FollowContext) as {
     following: boolean;
     setFollowing: React.Dispatch<React.SetStateAction<boolean>>;
   };
+
+  const { data: follow } = api.users.followState.useQuery(
+    {
+      username: author.username,
+    },
+    {
+      enabled: !!author.username,
+      refetchOnWindowFocus: false,
+    },
+  );
+
   const { data: user } = useSession();
+  useEffect(() => {
+    if (follow !== undefined) {
+      setFollowing(follow.following);
+    }
+  }, [follow]);
+
   const [count, setCount] = useState(0);
 
   const [opened, setOpened] = useState(false); // notification dropdown state

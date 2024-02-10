@@ -63,6 +63,57 @@ export const seriesRouter = createTRPCRouter({
       }
     }),
 
+  getSeriesArticles: publicProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const seriesResult = await ctx.db.query.series.findFirst({
+          where: eq(series.slug, input.slug),
+          with: {
+            articles: {
+              with: {
+                user: {
+                  columns: {
+                    username: true,
+                  },
+                },
+              },
+              columns: {
+                id: true,
+                createdAt: true,
+                read_time: true,
+                title: true,
+                slug: true,
+                subContent: true,
+                cover_image: true,
+              },
+            },
+          },
+        });
+
+        if (!seriesResult) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Series not found!",
+          });
+        }
+
+        return seriesResult;
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
+    }),
+
   getSeriesOfArticle: publicProcedure
     .input(
       z.object({
@@ -71,29 +122,28 @@ export const seriesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const result = await ctx.db.query.series.findFirst({
+        const seriesResult = await ctx.db.query.articles.findFirst({
           where: eq(series.slug, input.slug),
           columns: {
-            title: true,
-            slug: true,
-            description: true,
-            cover_image: true,
+            seriesId: true,
           },
           with: {
-            articles: {
+            series: {
               columns: {
                 id: true,
                 title: true,
-                slug: true,
-                subContent: true,
+                description: true,
                 cover_image: true,
-                read_time: true,
-                createdAt: true,
+                slug: true,
               },
               with: {
-                user: {
+                articles: {
                   columns: {
-                    username: true,
+                    id: true,
+                    title: true,
+                    slug: true,
+                    subContent: true,
+                    cover_image: true,
                   },
                 },
               },
@@ -101,14 +151,14 @@ export const seriesRouter = createTRPCRouter({
           },
         });
 
-        if (!result) {
+        if (!seriesResult) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Series not found!",
           });
         }
 
-        return result;
+        return seriesResult.series;
       } catch (err) {
         if (err instanceof TRPCError) {
           throw err;

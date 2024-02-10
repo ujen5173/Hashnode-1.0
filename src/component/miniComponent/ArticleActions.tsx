@@ -7,14 +7,30 @@ import { toast } from "react-toastify";
 
 import { Bookmark, BookmarkMinus, Heart, MessageCircle, MoreVertical, Share2 } from "lucide-react";
 import { useRouter } from "next/router";
-import type { Article } from "~/types";
 import { api } from "~/utils/api";
 import { C } from "~/utils/context";
 import ShareOptions from "./ShareOptions";
 
 interface Props {
-  article: Article;
-  setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
+  article: {
+    id: string,
+    title: string,
+    subtitle: string | null,
+    slug: string,
+    cover_image: string,
+    disabledComments: boolean,
+    readCount: number,
+    likesCount: number,
+    commentsCount: number,
+    createdAt: string,
+    content: string,
+    read_time: number
+    user: {
+      username: string,
+      image: string,
+      name: string,
+    },
+  }; setCommentsModal: React.Dispatch<React.SetStateAction<boolean>>;
   commentsCount: number;
 }
 
@@ -49,23 +65,24 @@ const ArticleActions: FC<Props> = ({
     likesCount: article.likesCount,
   });
 
-  useEffect(() => {
-    if (!user?.user.id) {
-      return setLike({
-        hasLiked: false,
-        likesCount: article.likesCount,
-      });
+  const { data } = api.likes.likeState.useQuery(
+    {
+      articleId: article.id,
+    },
+    {
+      enabled: !!article.id,
+      refetchOnWindowFocus: false,
     }
+  );
 
-    const hasLiked = article.likes.find((like) => like.userId === user?.user.id)
-      ? true
-      : false;
-
-    setLike({
-      hasLiked,
-      likesCount: article.likesCount,
-    });
-  }, [user?.user.id]);
+  useEffect(() => {
+    if (data) {
+      setLike(prev => ({
+        ...prev,
+        hasLiked: data.liked,
+      }));
+    }
+  }, [data]);
 
   const likeFunction = () => {
     if (!user?.user.id) {

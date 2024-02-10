@@ -2,11 +2,16 @@ import { ChevronLeft, Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type FC } from "react";
-import { ArticleHamburgerMenu } from "~/component/aside";
 
-import { type UserSimple } from "~/types";
-
-const ArticleLeftArea: FC<{ user: UserSimple }> = ({ user }) => {
+type UserType = {
+  username: string;
+  name: string;
+  image: string | null;
+  followers: { userId: string }[];
+};
+const ArticleLeftArea: FC<{ user: UserType; }> = ({
+  user,
+}) => {
   const [menu, setMenu] = useState<boolean>(false);
 
   return (
@@ -30,7 +35,8 @@ const ArticleLeftArea: FC<{ user: UserSimple }> = ({ user }) => {
         <Menu className="h-5 w-5 stroke-gray-700 dark:stroke-text-secondary" />
       </button>
 
-      <ArticleHamburgerMenu user={user} menu={menu} setMenu={setMenu} />
+      {/* <ArticleHamburgerMenu user={user} menu={menu} setMenu={setMenu} /> */}
+
 
       <Link
         aria-label="Visit image"

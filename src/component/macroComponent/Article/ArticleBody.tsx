@@ -6,18 +6,55 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { Balancer } from "react-wrap-balancer";
-import removeMd from "remove-markdown";
-import { StackedArticleLoading } from "~/component/loading";
-import { ArticleActions } from "~/component/miniComponent";
+import RemoveMarkdown from "remove-markdown";
+import { ArticleActions, StackedArticleLoading } from "~/component";
 import CommentsModal from "~/component/popup/CommentsModal";
 import { FollowContext } from "~/pages/u/[username]/[slug]";
-import type { Article, Tag, User } from "~/types";
 import { api } from "~/utils/api";
 import { formatDate } from "~/utils/miniFunctions";
 
-const ArticleBody: FC<{ article: Article }> = ({ article }) => {
+type UserType = {
+  name: string;
+  username: string;
+  bio: string | null;
+  id: string;
+  image: string;
+};
+
+type Tag = {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+const ArticleBody: FC<{
+  article: {
+    id: string,
+    title: string,
+    subtitle: string | null,
+    slug: string,
+    cover_image: string,
+    disabledComments: boolean,
+    readCount: number,
+    seriesId: string | null,
+    likesCount: number,
+    commentsCount: number,
+    createdAt: string,
+    content: string,
+    read_time: number
+    user: {
+      username: string,
+      image: string,
+      bio: string | null,
+      name: string,
+    },
+  };
+  user: UserType;
+  tagsData: Tag[] | undefined;
+  tagsLoading: boolean
+}> = ({ article, user, tagsData, tagsLoading }) => {
   const [commentsModal, setCommentsModal] = useState(false);
-  const [commentsCount, setCommentsCount] = useState(article.commentsCount);
+  const [commentsCount] = useState(article.commentsCount);
   const { mutate } = api.posts.read.useMutation();
 
   useEffect(() => {
@@ -47,8 +84,8 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
       parentContainer.appendChild(codeBlock);
       const copyButton = document.createElement("button");
       const copyButtonElements = `
-        <span class="text-xs sm:text-sm text-[#e2e8f0!important]">Copy</span>
-          <svg class="w-4 h-4 fill-[#e2e8f0]" viewBox="0 0 384 512"><path d="M336 64h-88.6c.4-2.6.6-5.3.6-8 0-30.9-25.1-56-56-56s-56 25.1-56 56c0 2.7.2 5.4.6 8H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM192 32c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm160 432c0 8.8-7.2 16-16 16H48c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h48v20c0 6.6 5.4 12 12 12h168c6.6 0 12-5.4 12-12V96h48c8.8 0 16 7.2 16 16z"></path></svg>
+        <span class="text-xs sm:text-sm font-semibold text-[#0f172a!important] dark:text-[#e2e8f0!important]">Copy</span>
+          <svg class="w-4 h-4 fill-[#0f172a!important] dark:fill-[#e2e8f0!important]" viewBox="0 0 384 512"><path d="M336 64h-88.6c.4-2.6.6-5.3.6-8 0-30.9-25.1-56-56-56s-56 25.1-56 56c0 2.7.2 5.4.6 8H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM192 32c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm160 432c0 8.8-7.2 16-16 16H48c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h48v20c0 6.6 5.4 12 12 12h168c6.6 0 12-5.4 12-12V96h48c8.8 0 16 7.2 16 16z"></path></svg>
         `;
       copyButton.className =
         "absolute top-2 right-2 flex items-center justify-center gap-1";
@@ -93,14 +130,15 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             )}
 
             <div className="mx-auto mb-6 flex w-full flex-col items-center justify-center gap-2 md:mb-10 md:w-fit lg:flex-row">
+
               <Link
                 aria-label="Visit profile"
                 className="mb-10 flex items-center gap-2 lg:mb-0"
-                href={`/u/@${article?.user.username}`}
+                href={`/u/@${user.username}`}
               >
                 <Image
-                  src={article?.user.image ?? "/static/default.avif"}
-                  alt={article?.user.name}
+                  src={user.image ?? "/static/default.avif"}
+                  alt={user.name}
                   width={70}
                   height={70}
                   draggable={false}
@@ -108,7 +146,7 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
                 />
 
                 <h1 className="text-xl font-semibold text-gray-700 dark:text-text-secondary">
-                  {article?.user.name}
+                  {user.name}
                 </h1>
               </Link>
 
@@ -143,9 +181,22 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             commentsCount={commentsCount}
           />
 
-          <ArticleTags tags={article.tags} />
+          {
+            tagsLoading ? (
+              <div className="mx-auto my-10 flex w-11/12 flex-wrap items-center justify-center gap-2 lg:w-8/12">
+                {[1, 2, 3, 4].map((_, index) => (
+                  <div key={index} className="loading h-4 w-16 rounded-md bg-border-light dark:bg-border"></div>
+                ))}
+              </div>
+            ) : (
 
-          {article.user && <ArticleAuthor author={article.user as User} />}
+              <ArticleTags tags={
+                tagsData!
+              } />
+            )
+          }
+
+          {article.user && <ArticleAuthor author={user} />}
 
           {commentsModal && (
             <CommentsModal
@@ -156,8 +207,8 @@ const ArticleBody: FC<{ article: Article }> = ({ article }) => {
             />
           )}
 
-          {article.series && (
-            <SeriesSection series={article.series} slug={article.slug} />
+          {article.seriesId && (
+            <SeriesSection slug={article.slug} />
           )}
         </section>
       </div>
@@ -169,14 +220,13 @@ export default ArticleBody;
 
 const SeriesSection: FC<{
   slug: string;
-  series: { title: string; slug: string };
-}> = ({ series, slug }) => {
+}> = ({ slug }) => {
   const { data: user } = useSession();
   const username = useRouter().query.username as string;
 
   const { data, isLoading } = api.series.getSeriesOfArticle.useQuery(
     {
-      slug: series.slug,
+      slug,
     },
     {
       refetchOnWindowFocus: false,
@@ -220,11 +270,10 @@ const SeriesSection: FC<{
               key={article.id}
             >
               <div
-                className={`flex  h-10 w-10 items-center justify-center rounded-full ${
-                  article.slug === slug
-                    ? "bg-secondary text-white"
-                    : "bg-slate-200 text-primary"
-                }`}
+                className={`flex  h-10 w-10 items-center justify-center rounded-full ${article.slug === slug
+                  ? "bg-secondary text-white"
+                  : "bg-slate-200 text-primary"
+                  }`}
               >
                 <h1 className="text-lg font-black">{index + 1}</h1>
               </div>
@@ -237,11 +286,10 @@ const SeriesSection: FC<{
                     </h1>
 
                     <p
-                      className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${
-                        article?.cover_image ? "" : "w-[95%]"
-                      }`}
+                      className={`max-height-two mb-2 text-base text-gray-500 dark:text-text-primary ${article?.cover_image ? "" : "w-[95%]"
+                        }`}
                     >
-                      {removeMd(article.subContent ?? "")}
+                      {RemoveMarkdown(article.subContent ?? "")}
                     </p>
                   </Link>
                 </div>
@@ -285,8 +333,15 @@ const ArticleTags = ({ tags }: { tags: Tag[] }) => {
   );
 };
 
-export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
-  // const { following, followUser } = useContext(C)!;
+export const ArticleAuthor: FC<{
+  author: {
+    name: string;
+    username: string;
+    image: string;
+    id: string;
+    bio: string | null;
+  }
+}> = ({ author }) => {
   const { data: user } = useSession();
 
   const { following, setFollowing } = useContext(FollowContext) as {
@@ -362,23 +417,8 @@ export const ArticleAuthor: FC<{ author: User }> = ({ author }) => {
                 </button>
               )}
             </div>
-
-            {author?.handle?.about && (
-              <div className="mt-2 hidden sm:mt-4 sm:block">
-                <p className="text-base text-gray-600 dark:text-text-primary">
-                  {author.handle.about}
-                </p>
-              </div>
-            )}
           </div>
         </div>
-        {author?.handle?.about && (
-          <div className="mt-4 block sm:mt-4 sm:hidden">
-            <p className="text-base text-gray-600 dark:text-text-primary">
-              {author.handle.about}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

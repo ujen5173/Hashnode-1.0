@@ -128,6 +128,36 @@ export const usersRouter = createTRPCRouter({
       }
     }),
 
+    followState: protectedProcedure
+    .input(
+      z.object({
+        username: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(users.username, input.username),
+        columns: {
+          id: true,
+        },
+        with: {
+          followers: {
+            where: eq(follow.followingId, ctx.session?.user.id),
+          },
+        },
+      });
+
+      if (!user) {
+        return {
+          following: false,
+        };
+      }
+
+      return {
+        following: user?.followers.length > 0,
+      };
+    }),
+
   sessionUser: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user?.id;
     const user = await ctx.db.query.users.findFirst({

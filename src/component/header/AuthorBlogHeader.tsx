@@ -51,6 +51,10 @@ interface Props {
 }
 
 const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
+  console.log({
+    social: author.handle.social,
+  })
+
   const { handleTheme, setSearchOpen } = useContext(C)!;
   const { mutate: followToggle } = api.users.followUser.useMutation();
 
@@ -267,7 +271,7 @@ const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
                         target="_blank"
                         key={uuid()}
                         title={e[0]}
-                        href={e[1] as string}
+                        href={(e[1] as string).startsWith("http") ? e[1] as string : `http://${e[1]}`}
                       >
                         <button className="btn-icon-large flex">
                           {social[e[0] as keyof typeof social]}

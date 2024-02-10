@@ -68,7 +68,7 @@ const Series = () => {
         ) : (
           <div className="flex flex-col items-center justify-center gap-4 py-16">
             <Image
-              src="/NoDataUploaded.png"
+              src="/static/NoDataUploaded.png"
               alt="Empty"
               width={1230}
               height={800}

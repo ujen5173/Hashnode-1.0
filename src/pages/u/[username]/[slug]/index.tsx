@@ -1,17 +1,35 @@
 import { and, eq } from "drizzle-orm";
 import type { GetServerSideProps, NextPage } from "next";
-import { getServerSession } from "next-auth";
 import React, { createContext } from "react";
 import { ArticleBody, ArticleHeader, Footer } from "~/component";
 import MetaTags from "~/component/MetaTags";
-import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
-import { articles, follow } from "~/server/db/schema";
+import { articles } from "~/server/db/schema";
 import { type Article } from "~/types";
+import { api } from "~/utils/api";
 
 interface Props {
-  article: Article & {
-    isFollowing: boolean;
+  article: {
+    id: string,
+    title: string,
+    subtitle: string | null,
+    slug: string,
+    cover_image: string,
+    disabledComments: boolean,
+    readCount: number,
+    likesCount: number,
+    commentsCount: number,
+    createdAt: string,
+    content: string,
+    seriesId: string | null,
+    read_time: number
+    user: {
+      username: string,
+      bio: string | null,
+      id: string;
+      image: string,
+      name: string,
+    },
   };
 }
 
@@ -26,7 +44,17 @@ export const FollowContext = createContext<{
 });
 
 const SingleArticle: NextPage<Props> = ({ article }) => {
-  const [following, setFollowing] = React.useState(article.isFollowing);
+  const [following, setFollowing] = React.useState(false);
+
+  const { data: tagsData, isLoading: isTagsLoading } = api.tags.getMultiple.useQuery(
+    {
+      article: article.id,
+    },
+    {
+      enabled: !!article.id,
+      refetchOnWindowFocus: false,
+    },
+  );
 
   return (
     <>
@@ -35,8 +63,19 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
         description={article.subtitle ?? article.title}
       />
       <FollowContext.Provider value={{ following, setFollowing }}>
-        <ArticleHeader user={article.user} />
-        <ArticleBody article={article} />
+        <ArticleHeader
+          user={
+            article.user
+          }
+        />
+        <ArticleBody
+          article={article}
+          user={
+            article.user
+          }
+          tagsData={tagsData}
+          tagsLoading={isTagsLoading}
+        />
       </FollowContext.Provider>
       <Footer />
     </>
@@ -46,55 +85,41 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
 export default SingleArticle;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
   const params = context.params as {
     username: string;
     slug: string;
   };
+
   try {
-    const article = await db.query.articles
-      .findFirst({
-        with: {
-          user: {
-            with: {
-              followers: {
-                where: eq(follow.followingId, session?.user?.id ?? ""),
-                columns: {
-                  userId: true,
-                },
-              },
-            },
-          },
-          series: {
-            columns: {
-              title: true,
-              slug: true,
-            },
-          },
-          tags: {
-            with: {
-              tag: {
-                columns: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                },
-              },
-            },
-          },
-          likes: {
-            columns: {
-              userId: true,
-            },
+    const article = await db.query.articles.findFirst({
+      columns: {
+        id: true,
+        title: true,
+        subtitle: true,
+        slug: true,
+        cover_image: true,
+        disabledComments: true,
+        readCount: true,
+        likesCount: true,
+        commentsCount: true,
+        createdAt: true,
+        content: true,
+        seriesId: true,
+        read_time: true,
+      },
+      with: {
+        user: {
+          columns: {
+            username: true,
+            bio: true,
+            id: true,
+            image: true,
+            name: true,
           },
         },
-        where: and(
-          eq(articles.isDeleted, false),
-          eq(articles.slug, params.slug),
-        ),
-      })
-      .then((res) => ({ ...res, tags: res?.tags.map((e) => e.tag) }));
+      },
+      where: and(eq(articles.isDeleted, false), eq(articles.slug, params.slug)),
+    });
 
     if (!article) {
       return {

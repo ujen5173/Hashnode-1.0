@@ -29,15 +29,14 @@ const SimpleArticleCard: FC<CardProps> = ({ type, article, perRow = 2 }) => {
 
   return (
     <div
-      className={`${
-        type === "main"
+      className={`${type === "main"
           ? "main-block"
           : type === "group"
             ? "w-full"
             : perRow === 2
               ? "w-full md:w-[calc(100%/2-0.5rem)]"
               : "w-full md:w-[calc(100%/2-0.5rem)] lg:w-[calc(100%/3-0.67rem)]"
-      }`}
+        }`}
       key={article.id}
     >
       <Link

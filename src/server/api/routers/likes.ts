@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { articles, likesToArticles, notifications } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -102,5 +102,26 @@ export const likesRouter = createTRPCRouter({
           message: "Something went wrong, try again later",
         });
       }
+    }),
+
+  likeState: protectedProcedure
+    .input(
+      z.object({
+        articleId: z.string().trim(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { articleId } = input;
+
+      const like = await ctx.db.query.likesToArticles.findFirst({
+        where: and(
+          eq(likesToArticles.articleId, articleId),
+          eq(likesToArticles.userId, ctx.session.user.id),
+        ),
+      });
+
+      return {
+        liked: !!like,
+      };
     }),
 });

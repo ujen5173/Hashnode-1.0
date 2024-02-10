@@ -3,7 +3,7 @@ import { and, desc, eq, gt, ilike, inArray, or } from "drizzle-orm";
 import slugify from "slugify";
 import { z } from "zod";
 import { FILTER_TIME_OPTIONS } from "~/hooks/useFilter";
-import { tags, tagsToUsers, users } from "~/server/db/schema";
+import { tags, tagsToArticles, tagsToUsers, users } from "~/server/db/schema";
 import { slugSetting } from "~/utils/constants";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { publicProcedure } from "./../trpc";
@@ -22,6 +22,42 @@ export const tagsRouter = createTRPCRouter({
       });
     }
   }),
+
+  getMultiple: publicProcedure
+    .input(
+      z.object({
+        article: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.query.tagsToArticles
+          .findMany({
+            where: eq(tagsToArticles.articleId, input.article),
+            columns: {
+              articleId: false,
+              tagId: false,
+            },
+            with: {
+              tag: {
+                columns: {
+                  id: true,
+                  slug: true,
+                  name: true,
+                },
+              },
+            },
+          })
+          .then((res) => {
+            return res.map((e) => e.tag);
+          });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong, try again later",
+        });
+      }
+    }),
 
   getSingle: publicProcedure
     .input(z.object({ slug: z.array(z.string().trim()) }))
@@ -45,7 +81,7 @@ export const tagsRouter = createTRPCRouter({
     .input(
       z.object({
         query: z.string().trim(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -53,7 +89,7 @@ export const tagsRouter = createTRPCRouter({
           where: or(
             ilike(tags.name, `%${input.query}%`),
             ilike(tags.slug, `%${input.query}%`),
-            ilike(tags.description, `%${input.query}%`)
+            ilike(tags.description, `%${input.query}%`),
           ),
           columns: { name: true, slug: true, articlesCount: true, logo: true },
 
@@ -83,7 +119,7 @@ export const tagsRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string().trim(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -118,8 +154,8 @@ export const tagsRouter = createTRPCRouter({
             .where(
               and(
                 eq(tagsToUsers.tagId, tag.id),
-                eq(tagsToUsers.userId, ctx.session.user.id)
-              )
+                eq(tagsToUsers.userId, ctx.session.user.id),
+              ),
             );
         } else {
           await ctx.db.insert(tagsToUsers).values({
@@ -163,7 +199,7 @@ export const tagsRouter = createTRPCRouter({
         .default({
           variant: "ANY",
           limit: 6,
-        })
+        }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -209,7 +245,7 @@ export const tagsRouter = createTRPCRouter({
                     : tag.articles.filter(
                         (article) =>
                           article.article.createdAt >= startDate &&
-                          article.article.createdAt <= endDate
+                          article.article.createdAt <= endDate,
                       ),
               };
             });
@@ -246,7 +282,7 @@ export const tagsRouter = createTRPCRouter({
           .enum(["ANY", "WEEK", "MONTH", "YEAR"] as const)
           .default("ANY" as const),
         limit: z.number().default(6),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
@@ -322,7 +358,7 @@ export const tagsRouter = createTRPCRouter({
                 : tag.articles.filter(
                     (article) =>
                       article.article.createdAt >= startDate &&
-                      article.article.createdAt <= endDate
+                      article.article.createdAt <= endDate,
                   ).length,
           };
         });
@@ -344,7 +380,7 @@ export const tagsRouter = createTRPCRouter({
         name: z.string().trim(),
         logo: z.string().trim().optional().nullable(),
         description: z.string().trim().optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
