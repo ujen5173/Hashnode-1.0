@@ -1,8 +1,9 @@
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Header, ManageData, NotificationLoading } from "~/component";
 import MetaTags from "~/component/MetaTags";
+import useOnScreen from "~/hooks/useOnScreen";
 import useWindowSize from "~/hooks/useWindow";
 import { api } from "~/utils/api";
 import { notificationNavigation } from "~/utils/constants";
@@ -27,7 +28,7 @@ const Notifications = () => {
   }, [session]);
 
   const [notificationType, setNotificationType] = useState<Type>(Type.all);
-  const { data, isLoading, isError } = api.notifications.get.useQuery(
+  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } = api.notifications.get.useInfiniteQuery(
     {
       limit: 6,
       type: notificationType.toLocaleUpperCase() as NotificationTypesEnum,
@@ -35,6 +36,7 @@ const Notifications = () => {
     {
       refetchOnWindowFocus: false,
       retry: 0,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
 
@@ -43,6 +45,22 @@ const Notifications = () => {
       toast.error("Error Fetching Notifications");
     }
   }, [isError]);
+
+
+  const notifications = useMemo(
+    () => data?.pages.flatMap((page) => page.notifications),
+    [data]
+  );
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reachedBottom]);
 
   return (
     <>
@@ -54,9 +72,8 @@ const Notifications = () => {
         <div className="mx-auto max-w-[800px] rounded-lg border border-border-light bg-white px-4 dark:border-border dark:bg-primary">
           <div className="mb-4 flex items-center justify-between gap-2 border-b border-border-light p-4 dark:border-border">
             <h1
-              className={`text-xl font-semibold text-gray-800 dark:text-white ${
-                width >= 500 ? "mx-0" : "mx-auto"
-              }`}
+              className={`text-xl font-semibold text-gray-800 dark:text-white ${width >= 500 ? "mx-0" : "mx-auto"
+                }`}
             >
               Notifications
             </h1>
@@ -68,11 +85,10 @@ const Notifications = () => {
                 <button
                   key={type.id}
                   onClick={() => setNotificationType(type.name as Type)}
-                  className={`${
-                    notificationType === type.name
+                  className={`${notificationType === type.name
                       ? "btn-tab-active"
                       : "btn-tab-secondary"
-                  }`}
+                    }`}
                 >
                   {type.icon ? type.icon(type.name) : null}
                   {type.label}
@@ -88,7 +104,7 @@ const Notifications = () => {
               }
               type="NOTIFICATION"
               notificationData={{
-                data: data?.notifications,
+                data: notifications,
                 isLoading,
                 type: notificationType as unknown as NotificationTypesEnum,
               }}
@@ -103,6 +119,17 @@ const Notifications = () => {
                 <NotificationLoading />
               </>
             )}
+            {
+              isFetchingNextPage && (
+                <>
+                  <NotificationLoading />
+                  <NotificationLoading />
+                  <NotificationLoading />
+                  <NotificationLoading />
+                </>
+              )
+            }
+            <div ref={bottomRef} />
           </section>
         </div>
       </div>

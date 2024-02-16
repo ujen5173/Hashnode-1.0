@@ -14,7 +14,7 @@ export const follow = pgTable(
   },
   (table) => ({
     pk: primaryKey(table.userId, table.followingId),
-  })
+  }),
 );
 
 export const followRelations = relations(follow, ({ one }) => ({

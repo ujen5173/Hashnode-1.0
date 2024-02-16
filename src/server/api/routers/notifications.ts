@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, sql } from "drizzle-orm";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { notifications } from "~/server/db/schema";
@@ -21,7 +21,7 @@ export const notificationRouter = createTRPCRouter({
       z.object({
         limit: z.number().optional().default(6),
         skip: z.number().optional(),
-        cursor: z.string().nullable().optional(),
+        cursor: z.string().nullable().optional().default(null),
         type: z.enum(["ALL", "COMMENT", "LIKE", "ARTICLE", "FOLLOW"]),
       }),
     )
@@ -32,10 +32,11 @@ export const notificationRouter = createTRPCRouter({
         where: and(
           eq(notifications.userId, ctx.session.user.id),
           input.type === "ALL" ? undefined : eq(notifications.type, input.type),
+          ...(cursor !== null ? [gte(notifications.id, cursor)] : []),
         ),
-        limit: limit,
+        limit: limit + 1,
         offset: skip,
-        orderBy: [desc(notifications.createdAt)],
+        orderBy: [asc(notifications.id), desc(notifications.createdAt)],
         columns: {
           id: true,
           body: true,

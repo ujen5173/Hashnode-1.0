@@ -7,15 +7,16 @@ export const readersToArticles = pgTable(
   "readers_to_articles",
   {
     userId: text("user_id")
-      .notNull()
-      .references(() => users.id),
+      .references(() => users.id)
+      .notNull(),
+
     articleId: text("article_id")
       .notNull()
       .references(() => articles.id),
   },
   (t) => ({
     pk: primaryKey(t.userId, t.articleId),
-  })
+  }),
 );
 
 export const readersToArticlesRelations = relations(
@@ -29,5 +30,5 @@ export const readersToArticlesRelations = relations(
       fields: [readersToArticles.userId],
       references: [users.id],
     }),
-  })
+  }),
 );

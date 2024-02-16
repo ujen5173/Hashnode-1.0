@@ -3,11 +3,12 @@ import { Clock, Filter, Flame } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState, type FC } from "react";
+import { useContext, useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { ArticleLoading } from "~/component/loading";
 import { ManageData } from "~/component/miniComponent";
-import type { ArticleCard, DetailedTag } from "~/types";
+import useOnScreen from "~/hooks/useOnScreen";
+import type { DetailedTag } from "~/types";
 import { api } from "~/utils/api";
 import { C } from "~/utils/context";
 import { TagPageHeader } from "../../header";
@@ -30,7 +31,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
 
   const { mutate: followToggle } = api.tags.followTag.useMutation();
   const { data: user } = useSession();
-  const { data, isFetching, error } = api.posts.getArticlesUsingTag.useQuery(
+  const { data: articlesData, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getArticlesUsingTag.useInfiniteQuery(
     {
       name: tagDetails.name,
       type: (tab ?? "hot") as "hot" | "new",
@@ -43,9 +44,23 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     {
       enabled: !!filter.data.shouldApply,
       refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
       retry: 0,
     }
   );
+
+  const articles = useMemo(() => articlesData?.pages.flatMap((page) => page.posts), [articlesData])
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const reachedBottom = useOnScreen(bottomRef);
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+  }, [reachedBottom]);
+
 
   useEffect(() => {
     if (tagDetails && user && following.updated === false) {
@@ -64,14 +79,6 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
       }
     }
   }, [tagDetails, following.updated, user]);
-
-  const [articles, setArticles] = useState<ArticleCard[]>([]);
-
-  useEffect(() => {
-    if (data) {
-      setArticles(data?.posts)
-    }
-  }, [data]);
 
   const followTag = (name: string): void => {
     try {
@@ -185,20 +192,26 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
         )}
 
         {
-          isFetching ? (
-            Array.from({ length: 7 }).map((_, i) => (
-              <ArticleLoading key={i} />
-            ))
-          ) : <ManageData
+          <ManageData
             loading={<ArticleLoading />}
             type="ARTICLE"
-            error={error?.message ?? null}
             articleData={{
-              isLoading: isFetching,
+              isLoading: isLoading,
               data: articles,
             }}
           />
         }
+        {
+          isFetchingNextPage && (
+            <>
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+            </>
+          )
+        }
+        <div ref={bottomRef} />
       </main>
     </section>
   );

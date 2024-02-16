@@ -3,12 +3,14 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
 import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
 import MetaTags from "~/component/MetaTags";
+import useOnScreen from "~/hooks/useOnScreen";
 import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
+import { type DataType } from "~/types";
 import { api } from "~/utils/api";
 
 export interface BlogSocial {
@@ -53,8 +55,8 @@ const AuthorBlogs: NextPage<{
   const { data: session } = useSession();
   const [appearance, setAppearance] = useState<
     | {
-        layout: "MAGAZINE" | "STACKED" | "GRID";
-      }
+      layout: "MAGAZINE" | "STACKED" | "GRID";
+    }
     | undefined
   >(undefined);
 
@@ -66,20 +68,20 @@ const AuthorBlogs: NextPage<{
 
   const router = useRouter();
 
-  const { data, isLoading, isError } =
-    api.posts.getAuthorArticlesByHandle.useQuery(
-      {
-        handleDomain: router.query.username
-          ? (router.query?.username.slice(
-              1,
-              router.query?.username.length,
-            ) as string) ?? ""
-          : "",
-      },
+  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    api.posts.getAuthorArticlesByHandle.useInfiniteQuery({
+      handleDomain: router.query.username
+        ? (router.query?.username.slice(
+          1,
+          router.query?.username.length,
+        ) as string) ?? ""
+        : "",
+    },
       {
         enabled: !!router.query.username,
         refetchOnWindowFocus: false,
         retry: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
       },
     );
 
@@ -89,18 +91,31 @@ const AuthorBlogs: NextPage<{
     }
   }, [isError]);
 
-  const articles = useMemo(() => {
-    const newData = data?.posts;
-    const transformedPosts = newData?.map(({ user, ...rest }) => {
-      const { articles, ...restUserData } = user;
-      return articles.map((e) => ({ ...e, user: restUserData }));
-    });
-    if (transformedPosts) {
-      return transformedPosts[0];
-    } else {
-      return [];
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+  const [articles, setArticles] = useState<{
+    data: DataType[];
+    isLoading: boolean;
+  }>({
+    data: [],
+    isLoading: true,
+  });
+
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
     }
-  }, [data]);
+  }, [reachedBottom]);
+
+  useEffect(() => {
+    if (data) {
+      setArticles({
+        data: data?.pages.flatMap((page) => page.posts),
+        isLoading: isLoading,
+      });
+    }
+  }, [data, isLoading]);
 
   return (
     <>
@@ -113,6 +128,7 @@ const AuthorBlogs: NextPage<{
       {/* Home, Badge, Newsletter */}
       <AuthorBlogNavigation tabs={user.handle.customTabs} />
       {/* Show the article according to the layout selected by the user from the dashboard. default is `MAGAZINE` layout. */}
+
       {
         {
           MAGAZINE: (
@@ -134,8 +150,9 @@ const AuthorBlogs: NextPage<{
                   };
                 };
               })()}
-              data={articles}
+              data={articles.data}
               isLoading={isLoading}
+              isFetchingNextPage={isFetchingNextPage}
             />
           ),
           STACKED: (
@@ -157,8 +174,9 @@ const AuthorBlogs: NextPage<{
                   };
                 };
               })()}
-              data={articles}
+              data={articles.data}
               isLoading={isLoading}
+              isFetchingNextPage={isFetchingNextPage}
             />
           ),
           GRID: (
@@ -180,13 +198,15 @@ const AuthorBlogs: NextPage<{
                   };
                 };
               })()}
-              data={articles}
+              data={articles.data}
               isLoading={isLoading}
+              isFetchingNextPage={isFetchingNextPage}
             />
           ),
         }[appearance?.layout ?? "MAGAZINE"]
       }
 
+      <div ref={bottomRef} />
       <Footer />
     </>
   );
@@ -258,16 +278,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-            username: string;
-            image: string;
-            handle: {
-              handle: string;
-              name: string;
-              social: BlogSocial;
-              customTabs: CustomTabs[];
-            };
-            followers: { id: string }[];
-          })
+          username: string;
+          image: string;
+          handle: {
+            handle: string;
+            name: string;
+            social: BlogSocial;
+            customTabs: CustomTabs[];
+          };
+          followers: { id: string }[];
+        })
         : null,
     },
   };

@@ -6,7 +6,7 @@ import { NoArticlesUploadedError } from "~/component/miniComponent";
 import { AuthorArea } from "~/pages/dev/[username]";
 import { type LayoutProps } from "./Stacked";
 
-const Grid: FC<LayoutProps> = (({ data, isLoading, author }) => {
+const Grid: FC<LayoutProps> = (({ data, isLoading, author, isFetchingNextPage }) => {
   const { data: user } = useSession();
 
   return (
@@ -35,8 +35,20 @@ const Grid: FC<LayoutProps> = (({ data, isLoading, author }) => {
                 </>
               )
             }
+            {
+              isFetchingNextPage && (
+                <>
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                  <SimpleArticleCardLoading number={3} />
+                </>
+              )
+            }
           </div>
+
         </div>
+
       ) : (
         <NoArticlesUploadedError user={user} author={author} />
       )}

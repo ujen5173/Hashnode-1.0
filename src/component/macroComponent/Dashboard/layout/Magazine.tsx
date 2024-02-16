@@ -6,7 +6,7 @@ import { NoArticlesUploadedError } from "~/component/miniComponent";
 import { AuthorArea } from "~/pages/dev/[username]";
 import { type LayoutProps } from "./Stacked";
 
-const Magazine: FC<LayoutProps> = (({ data, isLoading, author }) => {
+const Magazine: FC<LayoutProps> = (({ data, isLoading, author, isFetchingNextPage }) => {
   const { data: user } = useSession();
 
   return (
@@ -76,14 +76,25 @@ const Magazine: FC<LayoutProps> = (({ data, isLoading, author }) => {
                     </>
                   )
                 }
+                {
+                  isFetchingNextPage && (
+                    <>
+                      <SimpleArticleCardLoading />
+                      <SimpleArticleCardLoading />
+                      <SimpleArticleCardLoading />
+                      <SimpleArticleCardLoading />
+                    </>
+                  )
+                }
               </div>
             </div>
           </div>
         )
         : null}
 
-      <AuthorArea author={author} />
 
+
+      <AuthorArea author={author} />
       {data?.length === 0 && (
         <NoArticlesUploadedError user={user} author={author} />
       )}

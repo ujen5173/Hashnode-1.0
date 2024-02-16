@@ -98,7 +98,6 @@ export const accounts = pgTable(
     session_state: text("session_state"),
   },
   (account) => ({
-    // pk: primaryKey(account.provider, account.providerAccountId),
     userIdIdx: index("accountuserId_idx").on(account.userId),
   }),
 );

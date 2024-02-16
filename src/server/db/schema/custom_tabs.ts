@@ -19,7 +19,7 @@ export const customTabs = pgTable(
   },
   (customTabs) => ({
     handleIdIdx: index("handleId_idx").on(customTabs.id),
-  })
+  }),
 );
 
 export const customTabsRelations = relations(customTabs, ({ one }) => ({

@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ArticleLoading, ManageData } from "~/component";
 import { MainBodyHeader } from "~/component/header";
+import useOnScreen from "~/hooks/useOnScreen";
 import { type ArticleCard } from "~/types";
 import { api } from "~/utils/api";
 import { C, type TrendingArticleTypes } from "~/utils/context";
@@ -13,7 +14,14 @@ const MainBodyArticles = () => {
     | TrendingArticleTypes;
   const { filter } = useContext(C)!;
 
-  const { isFetching, data, error } = api.posts.getAll.useQuery(
+  const {
+    data,
+    isLoading,
+    refetch,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = api.posts.getAll.useInfiniteQuery(
     {
       type: (tab?.toString().toUpperCase() ?? "PERSONALIZED") as
         | "LATEST"
@@ -25,34 +33,74 @@ const MainBodyArticles = () => {
       enabled: filter.data.shouldApply,
       retry: 0,
       refetchOnWindowFocus: false,
+      keepPreviousData: true,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
 
-  const [articles, setArticles] = useState<ArticleCard[]>([]);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+
+  const [articles, setArticles] = useState<{
+    data: ArticleCard[];
+    isLoading: boolean;
+  }>({
+    data: [],
+    isLoading: true,
+  });
 
   useEffect(() => {
     if (data) {
-      setArticles(data?.posts);
+      setArticles({
+        data: data?.pages.flatMap((page) => page.posts),
+        isLoading: isLoading,
+      });
     }
-  }, [data]);
+  }, [data, isLoading]);
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+  }, [reachedBottom]);
+
+  useEffect(() => {
+    void (async () => {
+      const { data } = await refetch();
+      if (!data) return;
+      setArticles((prev) => ({
+        ...prev,
+        data: data?.pages.flatMap((page) => page.posts),
+      }));
+    })();
+  }, [tab]);
 
   return (
     <section className="container-main my-4 min-h-[100dvh] w-full overflow-hidden rounded-md border border-border-light bg-white dark:border-border dark:bg-primary">
       <MainBodyHeader />
 
-      {isFetching ? (
-        Array.from({ length: 7 }).map((_, i) => <ArticleLoading key={i} />)
-      ) : (
-        <ManageData
-          loading={<ArticleLoading />}
-          type="ARTICLE"
-          error={error?.message ?? null}
-          articleData={{
-            isLoading: isFetching,
-            data: articles,
-          }}
-        />
+      <ManageData
+        loading={<ArticleLoading />}
+        type="ARTICLE"
+        error={null}
+        articleData={articles}
+      />
+      {isFetchingNextPage && (
+        <>
+          <ArticleLoading />
+          <ArticleLoading />
+        </>
       )}
+      <div ref={bottomRef} />
+      {
+        !hasNextPage && !isFetchingNextPage && (
+          <div className="flex justify-center items-center py-6">
+            <h3 className="text-lg text-center text-text-light dark:text-text-dark">
+              👋 You have reached the end 👋
+            </h3>
+          </div>
+        )
+      }
     </section>
   );
 };

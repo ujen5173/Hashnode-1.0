@@ -3,8 +3,9 @@ import { TRPCClientError } from "@trpc/client";
 import { MoreVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState, type FC } from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
+import useOnScreen from "~/hooks/useOnScreen";
 
 import { api } from "~/utils/api";
 import { limitText } from "~/utils/miniFunctions";
@@ -16,17 +17,33 @@ const Articles = () => {
     "PUBLISHED"
   );
 
-  const { data, isLoading } = api.posts.getAuthorArticles.useQuery(
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getAuthorArticles.useInfiniteQuery(
     {
       id: user?.user.id ?? "",
+      limit: 10,
       type,
     },
     {
       enabled: !!user?.user,
       refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
       retry: 0
     }
   );
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+
+  const articles = useMemo(
+    () => data?.pages.flatMap((page) => page.posts),
+    [data]
+  );
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      void fetchNextPage();
+    }
+  }, [reachedBottom]);
 
   return (
     <section className="relative w-full">
@@ -34,7 +51,7 @@ const Articles = () => {
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-700 dark:text-text-secondary">
           {isLoading
             ? "Fetching your articles..."
-            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${data?.posts?.length})`}
+            : `${type.charAt(0).toUpperCase() + type.slice(1)} (${(articles ?? []).length})`}
         </h1>
 
         <div className="hidden md:flex items-center gap-2">
@@ -76,8 +93,8 @@ const Articles = () => {
             <ArticleLoading />
           </>
         ) : data ? (
-          data.posts.length > 0 ? (
-            data.posts.map((article) => (
+          (articles ?? []).length > 0 ? (
+            articles?.map((article) => (
               <ArticleCard type={type} key={article.id} data={article} />
             ))
           ) : (
@@ -106,6 +123,15 @@ const Articles = () => {
             </>
           )
         }
+        {
+          isFetchingNextPage && (
+            <>
+              <ArticleLoading />
+              <ArticleLoading />
+            </>
+          )
+        }
+        <div ref={bottomRef} />
       </main>
     </section>
   );

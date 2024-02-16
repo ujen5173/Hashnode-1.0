@@ -39,6 +39,10 @@ const MetaTags: React.FC<Props> = ({
       <meta name="title" content={formattedTitle} />
       <meta name="description" content={currentDescription} />
 
+      <meta name="keywords" content="hashnode, hashnode-clone, hashnode-t3, hashnode-nextjs" />
+      <meta name="googlebot" content="index, explore, search, max-video-preview:-1, max-image-preview:large, max-snippet:-1" />
+      <meta name="creator" content="ujen5173" />
+
       <meta property="og:type" content="website" />
       <meta property="og:url" content={url} />
       <meta property="og:title" content={formattedTitle} />

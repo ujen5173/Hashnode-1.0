@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useContext, type FC } from "react";
+import { useContext, useEffect, useMemo, useRef, type FC } from "react";
 import { ArticleLoading, TagLoading } from "~/component/loading";
 import { ManageData, Select } from "~/component/miniComponent";
 import {
@@ -8,6 +8,7 @@ import {
   FILTER_TIME_OPTIONS_LABEL,
   type FilterTimeOption,
 } from "~/hooks/useFilter";
+import useOnScreen from "~/hooks/useOnScreen";
 import { api } from "~/utils/api";
 import {
   C,
@@ -18,54 +19,84 @@ import ExploreMainComponentNavigation from "./ExploreMainComponentNavigation";
 
 const ExploreMainComponent = () => {
   const { slug } = useRouter().query;
-  const { data } = useSession();
+  const { data: userData } = useSession();
   const { timeFilter } = useContext(C)!;
 
-  const trendingTags = api.tags.getTrendingTags.useQuery(
+  const trendingTagsData = api.tags.getTrendingTags.useQuery(
     {
-      limit: 10,
+      limit: 4,
     },
     {
       refetchOnWindowFocus: false,
       enabled: !slug || slug[0] === "tags",
       retry: 0,
+      keepPreviousData: true,
     }
   );
 
-  const followingTags = api.tags.getFollowingTags.useQuery(
+  const followingTagsData = api.tags.getFollowingTags.useQuery(
     {
-      limit: 10,
+      limit: 4,
     },
     {
       refetchOnWindowFocus: false,
-      enabled: !!data && (!slug || slug[0] === "tags-following"),
+      enabled: !!userData && (!slug || slug[0] === "tags-following"),
       retry: 0,
+      keepPreviousData: true,
     }
   );
 
-  const followingArticles = api.posts.getFollowingArticles.useQuery(
+  const { data: followingData, isLoading: followingLoading, fetchNextPage: followingNextPage, isFetchingNextPage: followingIsFetchingNextPage, hasNextPage: followingHasNextPage } = api.posts.getFollowingArticles.useInfiniteQuery(
     {
-      limit: 10,
+      limit: 4,
       variant: timeFilter,
     },
     {
       refetchOnWindowFocus: false,
-      enabled: !!data && (!slug || slug[0] === "articles-following"),
+      enabled: !!userData && (!slug || slug[0] === "articles-following"),
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
       retry: 0,
+      keepPreviousData: true,
     }
   );
 
-  const trendingArticles = api.posts.trendingArticles.useQuery(
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.trendingArticles.useInfiniteQuery(
     {
-      limit: 10,
+      limit: 4,
       variant: timeFilter,
     },
     {
       refetchOnWindowFocus: false,
       enabled: !slug || slug[0] === "articles",
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
       retry: 0,
+      keepPreviousData: true,
     }
   );
+
+  const trendingArticles = useMemo(
+    () => data?.pages.flatMap((page) => page.posts),
+    [data]
+  );
+
+  const followingArticles = useMemo(
+    () => followingData?.pages.flatMap((page) => page.posts),
+    [followingData]
+  );
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const reachedBottom = useOnScreen(bottomRef);
+
+  useEffect(() => {
+    if (reachedBottom && hasNextPage) {
+      if (slug?.includes("articles-following")) {
+        void followingNextPage();
+        return;
+      }
+      void fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reachedBottom]);
 
   return (
     <section className="container-main my-4 min-h-[100dvh] w-full">
@@ -92,8 +123,8 @@ const ExploreMainComponent = () => {
                     title="Trending Tags"
                     type="TAG"
                     tagsData={{
-                      data: trendingTags.data ?? [],
-                      isLoading: trendingTags.isFetching,
+                      data: trendingTagsData.data,
+                      isLoading: trendingTagsData.isFetching,
                     }}
                   />
                 </div>
@@ -102,8 +133,8 @@ const ExploreMainComponent = () => {
                   title="Trending Articles"
                   type="ARTICLE"
                   articlesData={{
-                    data: trendingArticles?.data?.posts ?? [],
-                    isLoading: trendingArticles.isLoading,
+                    data: trendingArticles,
+                    isLoading: isLoading,
                   }}
                 />
               </>
@@ -113,8 +144,8 @@ const ExploreMainComponent = () => {
                 title="Tags You Follow"
                 type="TAG"
                 tagsData={{
-                  data: followingTags.data ?? [],
-                  isLoading: followingTags.isLoading,
+                  data: followingTagsData.data,
+                  isLoading: followingTagsData.isFetching,
                 }}
               />
             ),
@@ -123,8 +154,8 @@ const ExploreMainComponent = () => {
                 title="Articles You Follow"
                 type="ARTICLE"
                 articlesData={{
-                  data: followingArticles?.data?.posts ?? [],
-                  isLoading: followingArticles.isLoading,
+                  data: followingArticles,
+                  isLoading: followingLoading,
                 }}
               />
             ),
@@ -133,8 +164,8 @@ const ExploreMainComponent = () => {
                 title="Trending Articles"
                 type="ARTICLE"
                 articlesData={{
-                  data: trendingArticles?.data?.posts ?? [],
-                  isLoading: trendingArticles.isLoading,
+                  data: trendingArticles,
+                  isLoading: isLoading,
                 }}
                 showFilter={true}
               />
@@ -145,14 +176,27 @@ const ExploreMainComponent = () => {
                 subtitle="Tags with most number of articles"
                 type="TAG"
                 tagsData={{
-                  data: trendingTags.data ?? [],
-                  isLoading: trendingTags.isLoading,
+                  data: trendingTagsData.data,
+                  isLoading: trendingTagsData.isFetching,
                 }}
                 showFilter={true}
               />
             ),
           }[(slug ? slug[0]! : "default")]
         }
+        {
+          (isFetchingNextPage || followingIsFetchingNextPage) && (
+            <>
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+              <ArticleLoading />
+            </>
+          )
+        }
+        <div ref={bottomRef} />
       </div>
     </section>
   );

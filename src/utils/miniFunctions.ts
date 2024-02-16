@@ -24,7 +24,7 @@ export const limitTags = (
     slug: string;
     id?: string;
   }[],
-  limit: number
+  limit: number,
 ) => {
   const newTags = tags.slice(0, 3).map((tag) => {
     if (tag.name.length > limit) {

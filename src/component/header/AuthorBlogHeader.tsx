@@ -51,10 +51,6 @@ interface Props {
 }
 
 const AuthorBlogHeader: FC<Props> = ({ user: author }) => {
-  console.log({
-    social: author.handle.social,
-  })
-
   const { handleTheme, setSearchOpen } = useContext(C)!;
   const { mutate: followToggle } = api.users.followUser.useMutation();
 

@@ -194,7 +194,7 @@ export interface DataType {
   createdAt: Date;
   user: {
     image: string | null;
-    username: string;
+    username: string | null;
   };
 }
 

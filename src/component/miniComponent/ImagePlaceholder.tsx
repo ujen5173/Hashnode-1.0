@@ -3,7 +3,6 @@ import Image from "next/image";
 import React, { type FC } from "react";
 import LoadingSpinner from "~/svgs/LoadingSpinner";
 
-
 interface Props {
   title?: string;
   description?: string;

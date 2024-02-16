@@ -9,6 +9,7 @@ import { type DataType } from "~/types";
 export interface LayoutProps {
   data: DataType[] | undefined;
   isLoading: boolean;
+  isFetchingNextPage: boolean;
   author: {
     name: string;
     username: string;
@@ -20,7 +21,7 @@ export interface LayoutProps {
   };
 }
 
-const Stacked: FC<LayoutProps> = ({ data, isLoading, author }) => {
+const Stacked: FC<LayoutProps> = ({ data, isLoading, author, isFetchingNextPage }) => {
   const { data: user } = useSession();
   return (
     <div className="w-full bg-light-bg dark:bg-primary">
@@ -34,15 +35,24 @@ const Stacked: FC<LayoutProps> = ({ data, isLoading, author }) => {
             {data.map((e) => (
               <StackedArticleCard key={e.id} article={e} />
             ))}
+            {isLoading && (
+              <div className="w-full">
+                <StackedArticleLoading />
+                <StackedArticleLoading />
+                <StackedArticleLoading />
+                <StackedArticleLoading />
+                <StackedArticleLoading />
+              </div>
+            )}
             {
-              isLoading && (
-                <>
+              isFetchingNextPage && (
+                <div className="w-full">
                   <StackedArticleLoading />
                   <StackedArticleLoading />
                   <StackedArticleLoading />
                   <StackedArticleLoading />
-                  <StackedArticleLoading />
-                </>)
+                </div>
+              )
             }
           </div>
         </div>
@@ -51,6 +61,6 @@ const Stacked: FC<LayoutProps> = ({ data, isLoading, author }) => {
       )}
     </div>
   );
-}
+};
 
 export default Stacked;

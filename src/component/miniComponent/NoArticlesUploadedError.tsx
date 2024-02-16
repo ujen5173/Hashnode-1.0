@@ -20,6 +20,7 @@ interface Props {
 
 const NoArticlesUploadedError: FC<Props> = ({ user, author }) => {
   const { theme } = useContext(C)!;
+  console.log({ theme })
 
   return (
     <div className="w-full border-t border-border-light bg-light-bg px-4 py-8 dark:border-border dark:bg-primary">

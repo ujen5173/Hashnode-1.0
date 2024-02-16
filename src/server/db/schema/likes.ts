@@ -8,15 +8,16 @@ export const likesToComment = pgTable(
   "likes_to_comments",
   {
     userId: text("user_id")
-      .notNull()
-      .references(() => users.id),
+      .references(() => users.id)
+      .notNull(),
+
     commentId: text("comment_id")
       .notNull()
       .references(() => comments.id),
   },
   (t) => ({
     pk: primaryKey(t.userId, t.commentId),
-  })
+  }),
 );
 
 export const likesToCommentRelations = relations(likesToComment, ({ one }) => ({
@@ -42,7 +43,7 @@ export const likesToArticles = pgTable(
   },
   (t) => ({
     pk: primaryKey(t.userId, t.articleId),
-  })
+  }),
 );
 
 export const likesToArticlesRelations = relations(
@@ -56,5 +57,5 @@ export const likesToArticlesRelations = relations(
       fields: [likesToArticles.userId],
       references: [users.id],
     }),
-  })
+  }),
 );
