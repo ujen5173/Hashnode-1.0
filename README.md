@@ -43,10 +43,19 @@ Install the dependencies:
   yarn
 ```
 
+### Create account in the below services and get the API keys
+
+- [Google Cloud](https://console.cloud.google.com/)
+- [Uploadthing for image upload](https://uploadthing.com/)
+- [Neon for database](https://neon.tech/)
+- [Stripe for payment](https://stripe.com/)
+- [Google AI for text completion](https://ai.google.dev/)
+
 ### Setting up the development environment
 
 - Set up the required environment variables. Refer to the `.env.example` file for the necessary variables.
 - Create `.env` file in the root directory of the project and add the environment variables with reference to the `.env.example` file.
+- Create an account in neon.tech for pushing database to the cloud. Use the neon database URL in the `.env` file -> `DATABASE_URL`.
 - Push the database schema to your PostgreSQL database: `yarn prisma-dev`
 - Start the development server: `yarn dev`
 - Open your web browser and visit **http://localhost:3000**
