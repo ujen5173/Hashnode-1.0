@@ -56,7 +56,7 @@ Install the dependencies:
 - Set up the required environment variables. Refer to the `.env.example` file for the necessary variables.
 - Create `.env` file in the root directory of the project and add the environment variables with reference to the `.env.example` file.
 - Create an account in neon.tech for pushing database to the cloud. Use the neon database URL in the `.env` file -> `DATABASE_URL`.
-- Push the database schema to your PostgreSQL database: `yarn prisma-dev`
+- Push the database schema to your PostgreSQL database: `yarn db:`
 - Start the development server: `yarn dev`
 - Open your web browser and visit **http://localhost:3000**
 
