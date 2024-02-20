@@ -14,7 +14,7 @@ const SingleTag: NextPage<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
     <>
       <MetaTags
         title={`
-          ${tagDetails.name} - ${tagDetails.description}
+          ${tagDetails.name}${tagDetails.description ? " - " + tagDetails.description : ""}
         `}
         description={tagDetails.description}
       />

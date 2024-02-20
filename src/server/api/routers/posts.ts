@@ -1,3 +1,4 @@
+import { tagsToArticles } from "./../../db/schema/tags";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { TRPCError } from "@trpc/server";
 import {
@@ -12,6 +13,7 @@ import {
   lt,
   lte,
   or,
+  sql,
 } from "drizzle-orm";
 import { type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type { Session } from "next-auth";
@@ -38,7 +40,6 @@ import {
   readersToArticles,
   series,
   tags,
-  tagsToArticles,
   tagsToUsers,
   users,
 } from "~/server/db/schema";
@@ -214,10 +215,10 @@ export type ArticleForEdit = {
 export interface ArticleCard
   extends Omit<Article, "subtitle" | "comments" | "likes" | "content"> {
   subContent: string | null;
-  commonUsers: {
-    id: string;
-    image: string | null;
-  }[];
+  // commonUsers: {
+  //   id: string;
+  //   image: string | null;
+  // }[];
 }
 
 export type ArticleCardRemoveCommonUser = Omit<ArticleCard, "commonUsers">;
@@ -610,78 +611,103 @@ export const postsRouter = createTRPCRouter({
         limit: z.number().optional().default(6),
         skip: z.number().optional().default(0),
         cursor: z.string().nullable().optional().default(null),
-        type: z.enum(["hot", "new"]).optional().default("new"),
       }),
     )
     .query(async ({ ctx, input }) => {
-      // TODO: add the missing `skip` by changing the query method. inside the `with` there is no `offset` field.
       const { limit, skip, cursor } = input;
 
-      const res = await ctx.db.query.tags
-        .findFirst({
-          where: eq(tags.slug, input.name),
-          columns: {
-            id: true,
-          },
-          with: {
-            articles: {
-              where:
-                cursor !== null
-                  ? gte(tagsToArticles.articleId, cursor)
-                  : undefined,
-              orderBy: [asc(tagsToArticles.articleId)],
-              limit: limit + 1,
-              with: {
-                article: {
-                  ...selectArticleCard,
-                },
-              },
-            },
-          },
-        })
-        .then((res) => {
-          if (res) {
-            return res.articles
-              .map(({ article }) => ({
-                ...article,
-                tags: article.tags.map((e) => e.tag),
-              }))
-              .sort((a, b) => {
-                if (input.type === "hot") {
-                  return b.likesCount - a.likesCount;
-                } else {
-                  return (
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                  );
-                }
-              });
+      // Select the tag ID based on the tag name
+      const res = await ctx.db.execute(sql`
+        SELECT
+          json_build_object(
+            'id', articles.id,
+            'title', articles.title,
+            'slug', articles.slug,
+            'cover_image', articles.cover_image,
+            'disabledComments', articles.disabled_comments,
+            'readCount', articles.read_count,
+            'read_time', articles.read_time,
+            'subContent', articles.sub_content,
+            'likesCount', articles.likes_count,
+            'commentsCount', articles.comments_count,
+            'createdAt', articles.created_at,
+            'user', json_build_object(
+              'id', u.id,
+              'name', u.name,
+              'username', u.username,
+              'image', u.image,
+              'stripeSubscriptionStatus', u.stripe_subscription_status,
+              'handle', json_build_object(
+                'id', handles.id,
+                'handle', handles.handle,
+                'name', handles.name,
+                'about', handles.about
+              )
+            ),
+            'series', CASE 
+              WHEN series.id IS NOT NULL THEN
+                json_build_object(
+                  'id', series.id,
+                  'title', series.title,
+                  'slug', series.slug
+                )
+              ELSE
+                NULL
+            END,
+            'tags', json_agg(json_build_object(
+              'id', tags.id,
+              'name', tags.name,
+              'slug', tags.slug
+            ))
+          )
+        FROM articles
+        JOIN tags_to_articles ON articles.id = tags_to_articles.article_id
+        JOIN tags ON tags_to_articles.tag_id = tags.id
+        INNER JOIN ${users} AS u ON articles.user_id = u.id
+        INNER JOIN ${handles} AS handles ON handles.user_id = u.id
+        LEFT JOIN ${series} AS series ON articles.series_id = series.id
+        WHERE articles.id IN (
+          SELECT article_id
+          FROM tags_to_articles
+          JOIN tags ON tags_to_articles.tag_id = tags.id
+          WHERE tags.name = ${input.name}
+        )
+        AND articles.is_deleted = false
+        ${input.cursor != null ? sql`AND articles.id >= ${input.cursor}` : sql``}
+          ${
+            input.filter?.read_time === "OVER_5"
+              ? sql`AND articles.read_time > 5`
+              : input.filter?.read_time === "UNDER_5"
+                ? sql`AND articles.read_time < 5`
+                : input.filter?.read_time === "5"
+                  ? sql`AND articles.read_time = 5`
+                  : sql``
           }
-        });
+          GROUP BY articles.id, articles.title, articles.slug, articles.cover_image,
+          articles.disabled_comments, articles.read_count, articles.read_time,
+          articles.sub_content, articles.likes_count, articles.comments_count,
+          articles.created_at, u.id, u.name, u.username, u.image, u.stripe_subscription_status,
+          handles.id, handles.handle, handles.name, handles.about,
+          series.id, series.title, series.slug
+          ORDER BY articles.id, articles.likes_count DESC, articles.comments_count DESC, articles.read_count DESC
+          LIMIT ${limit + 1}
+          OFFSET ${skip}; 
+      `);
 
-      if (!res) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Tag not found",
-        });
-      }
+      const resData = (
+        (res.rows ?? []) as { json_build_object: ArticleCard }[]
+      ).map((e) => e.json_build_object);
+
       let nextCursor: typeof cursor | undefined = undefined;
-      if (res.length >= limit) {
-        const nextItem = res.pop(); // return the last item from the array
+      if (resData.length >= limit) {
+        const newResData = [...resData];
+        const nextItem = newResData.pop(); // return the last item from the array
         nextCursor = nextItem?.id;
       }
 
-      const formattedPosts = await getArticlesWithUserFollowingimages(
-        {
-          session: ctx.session,
-          db: ctx.db,
-        },
-        res,
-      );
-
       return {
-        posts: formattedPosts,
-        nextCursor,
+        posts: resData,
+        nextCursor: nextCursor,
       };
     }),
 
@@ -1997,7 +2023,7 @@ export const postsRouter = createTRPCRouter({
             createdAt: articles.createdAt,
             user: {
               image: sq.user.image,
-              username: sq.user.username, 
+              username: sq.user.username,
             },
           })
           .from(articles)

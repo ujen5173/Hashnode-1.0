@@ -58,10 +58,10 @@ export type ArticleForEdit = {
 export interface ArticleCard
   extends Omit<Article, "subtitle" | "comments" | "likes" | "content"> {
   subContent: string | null;
-  commonUsers: {
-    id: string;
-    image: string | null;
-  }[];
+  // commonUsers: {
+  //   id: string;
+  //   image: string | null;
+  // }[];
 }
 
 export type ArticleCardRemoveCommonUser = Omit<ArticleCard, "commonUsers">;

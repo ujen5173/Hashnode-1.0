@@ -1,22 +1,19 @@
 import { TRPCClientError } from "@trpc/client";
-import { Clock, Filter, Flame } from "lucide-react";
+import { Filter, Flame } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useContext, useEffect, useMemo, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
+import { ManageData } from "~/component";
 import { ArticleLoading } from "~/component/loading";
-import { ManageData } from "~/component/miniComponent";
 import useOnScreen from "~/hooks/useOnScreen";
-import type { DetailedTag } from "~/types";
+import type { ArticleCard, DetailedTag } from "~/types";
 import { api } from "~/utils/api";
 import { C } from "~/utils/context";
 import { TagPageHeader } from "../../header";
 import FilterSection from "./FilterSection";
 
 const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
-  const tab = useRouter().query.tab as string | undefined;
-
   const { filter, setFilter } = useContext(C)!;
 
   const [following, setFollowing] = useState<{
@@ -34,8 +31,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const { data: articlesData, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getArticlesUsingTag.useInfiniteQuery(
     {
       name: tagDetails.name,
-      type: (tab ?? "hot") as "hot" | "new",
-      limit: 2,
+      limit: 4,
       filter: {
         read_time: filter.data.read_time,
         tags: filter.data.tags,
@@ -119,33 +115,12 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
                 <button
                   aria-label="icon"
                   role="button"
-                  className={`${tab === undefined || tab === "hot"
-                    ? "btn-tab-active"
-                    : "btn-tab"
-                    }`}
+                  className={`btn-tab-active`}
                 >
                   <Flame
-                    className={`h-4 w-4  ${tab === undefined || tab === "hot"
-                      ? "fill-secondary"
-                      : "stroke-gray-700 dark:stroke-text-secondary"
-                      }`}
+                    className={`h-4 w-4 fill-secondary`}
                   />
                   <span className={`text-sm font-semibold`}>Hot</span>
-                </button>
-              </Link>
-              <Link href={`/tag/${tagDetails.slug}?tab=new`}>
-                <button
-                  aria-label="icon"
-                  role="button"
-                  className={`${tab === "new" ? "btn-tab-active" : "btn-tab"}`}
-                >
-                  <Clock
-                    className={`h-4 w-4 fill-none ${tab === "new"
-                      ? "stroke-secondary"
-                      : "stroke-gray-700 dark:stroke-text-primary"
-                      }`}
-                  />
-                  <span className={`text-sm font-semibold`}>New</span>
                 </button>
               </Link>
             </div>
@@ -197,7 +172,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
             type="ARTICLE"
             articleData={{
               isLoading: isLoading,
-              data: articles,
+              data: articles as ArticleCard[] | undefined
             }}
           />
         }

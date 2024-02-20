@@ -114,7 +114,7 @@ const SocialHandles = () => {
                 : item.name === "Github"
                   ? "github hover:bg-[#2c3646]"
                   : item.name === "Hashnode"
-                    ? "hover:bg-[#2c3646]"
+                    ? "hover:bg-secondary"
                     : ""
               }`}
             href={`${item.link}`}

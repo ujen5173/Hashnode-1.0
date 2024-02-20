@@ -71,7 +71,7 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
                 ·
               </span>
 
-              <span>{formatDate(card.createdAt)}</span>
+              <span>{formatDate(new Date(card.createdAt))}</span>
             </p>
           )}
         </div>
@@ -97,11 +97,10 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
 
             <Link href={`/u/@${card.user?.username}/${card.slug}`}>
               <p
-                className={`${
-                  card.cover_image
-                    ? "max-height-four"
-                    : "max-height-three mb-0 w-full md:mb-3"
-                } break-words text-sm text-gray-500 dark:text-text-primary`}
+                className={`${card.cover_image
+                  ? "max-height-four"
+                  : "max-height-three mb-0 w-full md:mb-3"
+                  } break-words text-sm text-gray-500 dark:text-text-primary`}
               >
                 {removeMd(card.subContent ?? "")}
               </p>
@@ -134,11 +133,10 @@ const ArticleCard: FC<{ card: ArticleCard }> = ({ card }) => {
               aria-label="icon"
               onClick={() => updateBookmark(card.id)}
               role="button"
-              className={`${
-                bookmarks.find((bookmark) => bookmark.id === card.id)
-                  ? "bg-secondary bg-opacity-20"
-                  : ""
-              } btn-icon-large flex w-max items-center justify-center`}
+              className={`${bookmarks.find((bookmark) => bookmark.id === card.id)
+                ? "bg-secondary bg-opacity-20"
+                : ""
+                } btn-icon-large flex w-max items-center justify-center`}
             >
               {bookmarks.find((bookmark) => bookmark.id === card.id) ? (
                 <BookmarkCheck className="h-5 w-5 stroke-gray-700 dark:stroke-text-primary" />

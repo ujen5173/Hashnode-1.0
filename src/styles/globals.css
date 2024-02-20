@@ -286,6 +286,7 @@ body.dark .input-secondary.input-with-opacity::-moz-placeholder {
 
 .github:hover svg,
 .github:hover path {
+  stroke: white !important;
   fill: none !important;
 }
 

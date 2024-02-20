@@ -29,7 +29,7 @@ const TagPageHeader: FC<Props> = ({ tagDetails, following, followTag }) => {
             className="h-16 w-16 rounded-md object-cover"
           />
         ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-200 dark:bg-primary-light">
+          <div className="flex h-12 w-12 items-center justify-center border border-slate-300 dark:border-slate-600 rounded-md bg-gray-200 dark:bg-primary-light">
             <Hash className="mx-auto my-3 h-6 w-6 fill-none stroke-gray-500" />
           </div>
         )}
