@@ -25,6 +25,7 @@ const Editor: FC<{
     const editor = useEditor({
       extensions: [
         ...TiptapExtensions,
+
         Placeholder.configure({
           placeholder: ({ node }) => {
             if (node.type.name === "heading") {
@@ -64,7 +65,7 @@ const Editor: FC<{
         onClick={() => {
           editor?.chain().focus().run();
         }}
-        className={`relative w-full max-w-screen-lg select-none bg-transparent ${minHeight}`}
+        className={`article_content relative w-full max-w-screen-lg select-none bg-transparent ${minHeight}`}
       >
         {editor && <EditorBubbleMenu editor={editor} />}
         <EditorContent editor={editor} />

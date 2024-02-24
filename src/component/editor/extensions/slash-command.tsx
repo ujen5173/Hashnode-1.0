@@ -1,7 +1,7 @@
 import { Editor, Extension, Range } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
 import Suggestion from "@tiptap/suggestion";
-import { Code2, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Text } from "lucide-react";
+import { Code2, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Sparkles, Text } from "lucide-react";
 import {
   ReactNode,
   useCallback,
@@ -10,7 +10,9 @@ import {
   useRef,
   useState
 } from "react";
+import { toast } from "react-toastify";
 import tippy from "tippy.js";
+import { model } from "~/utils/contentGenerator";
 
 interface CommandItemProps {
   title: string;
@@ -150,6 +152,66 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       icon: <Code2 />,
       command: ({ editor, range }: CommandProps) =>
         editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
+    },
+    {
+      title: "Rix: Generate Article Outline",
+      description: "Use Rix AI to create a general article outline.",
+      icon: <Sparkles />,
+      command: async ({ editor, range }: CommandProps) => {
+        const titleInput = document.querySelector(".article_title") as HTMLInputElement;
+
+        if (!titleInput) {
+          toast.error("Please add a title to the article before using this command.");
+          return;
+        }
+
+        const title = titleInput.value;
+
+        if (!title) {
+          toast.error("Please add a title to the article before using this command.");
+          return;
+        }
+
+        const prompt = "You are an AI writing assistant." +
+          "Create a general article outline for a given topic: '" + title + "'. " +
+          "Make your response interesting, fun, make sure to construct complete sentences. Don't add the title in the beginning of the response. Don't add quotation marks at the start and in the end of the response. " +
+          "Use markdown to format your response. Use proper markdown to make the response more appealing. " +
+          "Use the following markdown tags only: #, ##, ###, *, 1., >, ```. " +
+          "Avoid using the following markdown tags: [], ![], |, ---, ---, <br>. "
+
+        const result = await model.generateContent(prompt);
+        const response = result.response;
+        const rixResponse = response.text();
+
+        editor.chain().focus().deleteRange(range).insertContentAt(range.from, rixResponse).run();
+      },
+    },
+    {
+      title: "Rix: Sumarize Article",
+      description: "Use Rix AI to create a sumarize this article.",
+      icon: <Sparkles />,
+      command: async ({ editor, range }: CommandProps) => {
+        const content = editor.getText().slice(0, -1);
+
+        if (!content) {
+          toast.error("Please add a content to the article before using this command.");
+          return;
+        }
+
+        const prompt = "You are an AI writing assistant." +
+          "Summarize the following content in simple and fun terms. Analysize the content carefully and summarize the whole content: '''" + content + "'''. " +
+          "Make your response interesting, fun, make sure to construct complete sentences. Don't add the title in the beginnig of the response. Don't add quotation marks at the start and in the end of the response. " +
+          "Use markdown to format your response. Use proper markdown to make the response more appeling. " +
+          "Use the following markdown tags only: #, ##, ###, *, 1., >, ```. " +
+          "Avoid using the following markdown tags: [], ![], |, ---, ---, <br>. " +
+          "Add `# Conclusion of the article` at the beginning of the response. Don't over summarize the content. "
+
+        const result = await model.generateContent(prompt);
+        const response = result.response;
+        const rixResponse = response.text();
+
+        editor.chain().focus().deleteRange(range).insertContentAt(range.from, rixResponse).run();
+      },
     },
   ].filter((item) => {
     if (typeof query === "string" && query.length > 0) {

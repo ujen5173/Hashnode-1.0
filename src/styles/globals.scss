@@ -260,6 +260,10 @@ body.dark .input-secondary.input-with-opacity::-moz-placeholder {
   fill: none !important;
 }
 
+#tippy-1 {
+  z-index: 0 !important;
+}
+
 .btn-social-icon {
   @apply flex items-center justify-center rounded-md;
 }

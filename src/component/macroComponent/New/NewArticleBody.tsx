@@ -181,6 +181,7 @@ const NewArticleBody: FC<{
     },
   };
 
+
   return (
     <main className="relative min-h-[100dvh] w-full overflow-hidden border-b border-border-light bg-white dark:border-border dark:bg-primary">
       <div className="mx-auto w-full max-w-[1000px] px-4 py-6">
@@ -282,18 +283,18 @@ const NewArticleBody: FC<{
                 value={data.title}
                 onChange={(e) => {
                   const { name, value } = e.target;
-                  const newData = {
-                    ...data,
+                  setData(prev => ({
+                    ...prev,
                     [name]: value,
                     slug: slugify(value, slugSetting),
-                  };
-                  setData(newData);
+                  }));
                 }}
                 placeholder="Article Title"
                 input_type="text"
                 variant="TRANSPARENT"
                 name="title"
                 fontSize="3xl"
+                extraClass="article_title"
                 type="INPUT"
                 required={true}
                 autoFocus={true}
@@ -315,7 +316,7 @@ const NewArticleBody: FC<{
               <Input
                 value={data.subtitle}
                 onChange={(e) => {
-                  setData({ ...data, subtitle: e.target.value });
+                  setData(prev => ({ ...prev, subtitle: e.target.value }));
                 }}
                 placeholder="Article Subtitle (optional)"
                 input_type="text"

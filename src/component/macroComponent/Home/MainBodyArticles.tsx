@@ -95,7 +95,7 @@ const MainBodyArticles = () => {
       {
         !hasNextPage && !isFetchingNextPage && (
           <div className="flex justify-center items-center py-6">
-            <h3 className="text-lg text-center text-text-light dark:text-text-dark">
+            <h3 className="text-lg text-center text-slate-800 dark:text-slate-200">
               👋 You have reached the end 👋
             </h3>
           </div>

@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { env } from "~/env.mjs";
 
 const genAI = new GoogleGenerativeAI(env.NEXT_PUBLIC_GENERATIVE_AI_KEY);
-const model = genAI.getGenerativeModel({
+export const model = genAI.getGenerativeModel({
   model: "gemini-pro",
   generationConfig: {
     maxOutputTokens: 1234,

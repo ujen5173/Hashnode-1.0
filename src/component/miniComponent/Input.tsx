@@ -19,6 +19,7 @@ interface Props {
   opacity?: boolean;
   description?: string;
   fontSize?: "sm" | "xs" | "lg" | "xl" | "2xl" | "3xl";
+  extraClass?: string;
 }
 
 const Input: FC<Props> = ({
@@ -38,6 +39,7 @@ const Input: FC<Props> = ({
   description,
   fontSize = "sm",
   opacity = false,
+  extraClass = ""
 }) => {
   return (
     <div className="my-3">
@@ -60,21 +62,19 @@ const Input: FC<Props> = ({
         <input
           id={name}
           type={input_type}
-          className={`text-${fontSize} ${
-            fontSize === "xl" || fontSize === "2xl"
+          className={`${extraClass} text-${fontSize} ${fontSize === "xl" || fontSize === "2xl"
               ? "font-semibold"
               : fontSize === "3xl"
-              ? "font-bold"
-              : "font-normal"
-          } ${
-            variant === "FILLED"
+                ? "font-bold"
+                : "font-normal"
+            } ${variant === "FILLED"
               ? "input-filled"
               : variant === "ROUNDED"
-              ? "input-primary"
-              : variant === "TRANSPARENT"
-              ? " w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
-              : "input-outline"
-          } w-full ${opacity ? "input-with-opacity" : ""}`}
+                ? "input-primary"
+                : variant === "TRANSPARENT"
+                  ? " w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
+                  : "input-outline"
+            } w-full ${opacity ? "input-with-opacity" : ""}`}
           placeholder={placeholder}
           disabled={disabled}
           required={required}
@@ -89,21 +89,19 @@ const Input: FC<Props> = ({
       ) : type === "TEXTAREA" ? (
         <>
           <textarea
-            className={`text-${fontSize} ${
-              fontSize === "xl" || fontSize === "2xl"
+            className={`text-${fontSize} ${fontSize === "xl" || fontSize === "2xl"
                 ? "font-semibold"
                 : fontSize === "3xl"
-                ? "font-bold"
-                : "font-medium"
-            } ${
-              variant === "FILLED"
+                  ? "font-bold"
+                  : "font-medium"
+              } ${variant === "FILLED"
                 ? "input-filled"
                 : variant === "ROUNDED"
-                ? "input-primary"
-                : variant === "TRANSPARENT"
-                ? "mb-4 w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
-                : "input-outline"
-            } min-h-[15rem]`}
+                  ? "input-primary"
+                  : variant === "TRANSPARENT"
+                    ? "mb-4 w-full bg-transparent py-2 text-gray-700 outline-none dark:text-text-secondary"
+                    : "input-outline"
+              } min-h-[15rem]`}
             placeholder={placeholder}
             disabled={disabled}
             required={required}
