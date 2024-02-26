@@ -13,7 +13,7 @@ const generateContent = async ({
   type,
   subject,
 }: {
-  type: "TITLE" | "SUBTITLE" | "CONTENT";
+  type: "TITLE" | "SUBTITLE" | "CONTENT" | "SEO_TITLE" | "SEO_DESCRIPTION";
   subject?: string;
 }) => {
   let prompt = "";
@@ -21,6 +21,12 @@ const generateContent = async ({
     case "TITLE":
       prompt =
         "Write 1 short, simple and interesting title for a blog post on tech genre. Don't add quotation marks.";
+      break;
+    case "SEO_TITLE":
+      prompt = `Write 1 short, simple and interesting seo title for a blog post titled: '${subject}. Don't add quotation marks.`;
+      break;
+    case "SEO_DESCRIPTION":
+      prompt = `Write 1 short, simple and interesting seo description for a blog post titled: '${subject}. Don't add quotation marks.`;
       break;
     case "SUBTITLE":
       prompt = subject

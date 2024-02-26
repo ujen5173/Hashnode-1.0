@@ -1,5 +1,5 @@
 import { useClickOutside } from "@mantine/hooks";
-import { FileImage, Sparkles, X } from "lucide-react";
+import { FileImage, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState, type FC } from "react";
@@ -9,6 +9,7 @@ import Editor from "~/component/editor";
 import { ImagePlaceholder, Input } from "~/component/miniComponent";
 import NewArticleModal from "~/component/popup/NewArticleModal";
 import { LoadingSpinner } from "~/svgs";
+import HashnodePlus from "~/svgs/HashnodePlus";
 import { type ArticleForEdit, type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
 import { slugSetting } from "~/utils/constants";
@@ -84,6 +85,8 @@ const NewArticleBody: FC<{
     title: false,
     subtitle: false,
     content: false,
+    seo_title: false,
+    seo_description: false,
   });
 
   const [data, setData] = useState<ArticleData>(defaultArticleData);
@@ -267,17 +270,19 @@ const NewArticleBody: FC<{
         )}
 
         <section className="px-2">
-          <div className="flex items-center justify-between gap-4">
-            <button
-              onClick={() => void generateContents.title()}
-              className="rounded-md bg-blue-500 p-2"
-            >
-              {generatingContent.title ? (
-                <LoadingSpinner className="h-5 w-5 fill-none stroke-white" />
-              ) : (
-                <Sparkles className="h-5 w-5 stroke-slate-200" />
-              )}
-            </button>
+          <div className="rix_ai_input relative">
+            <div className="rix_ai_button" title="Generate Title using AI">
+              <button
+                onClick={() => void generateContents.title()}
+                className="rounded-full transition duration-150 absolute top-1/2 -translate-y-1/2 -left-12 bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2"
+              >
+                {generatingContent.title ? (
+                  <LoadingSpinner className="h-5 w-5 fill-none stroke-slate-800" />
+                ) : (
+                  <HashnodePlus className="h-5 w-5 stroke-slate-600 dark:stroke-slate-300" />
+                )}
+              </button>
+            </div>
             <div className="flex-1">
               <Input
                 value={data.title}
@@ -301,17 +306,20 @@ const NewArticleBody: FC<{
               />
             </div>
           </div>
-          <div className="flex items-center justify-between gap-4">
-            <button
-              onClick={() => void generateContents.subtitle()}
-              className="rounded-md bg-blue-500 p-2"
-            >
-              {generatingContent.subtitle ? (
-                <LoadingSpinner className="h-5 w-5 fill-none stroke-white" />
-              ) : (
-                <Sparkles className="h-5 w-5 stroke-slate-200" />
-              )}
-            </button>
+          <div className="rix_ai_input relative">
+            <div className="rix_ai_button" title="Generate Subtitle using AI">
+              <button
+                onClick={() => void generateContents.subtitle()}
+                className="rounded-full transition duration-150 absolute top-1/2 -translate-y-1/2 -left-12 bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2"
+              >
+                {generatingContent.subtitle ? (
+                  <LoadingSpinner className="h-5 w-5 fill-none stroke-slate-800" />
+                ) : (
+                  <HashnodePlus className="h-5 w-5 stroke-slate-600 dark:stroke-slate-300" />
+                )}
+              </button>
+            </div>
+
             <div className="flex-1">
               <Input
                 value={data.subtitle}
@@ -328,17 +336,20 @@ const NewArticleBody: FC<{
               />
             </div>
           </div>
-          <div className="relative flex items-center justify-between">
-            <button
-              onClick={() => void generateContents.content()}
-              className="absolute right-0 top-0 z-40 rounded-md bg-blue-500 p-2"
-            >
-              {generatingContent.content ? (
-                <LoadingSpinner className="h-5 w-5 fill-none stroke-white" />
-              ) : (
-                <Sparkles className="h-5 w-5 stroke-slate-200" />
-              )}
-            </button>
+          <div className="rix_ai_input relative">
+            <div className="rix_ai_button" title="Generate Content using AI">
+              <button
+                onClick={() => void generateContents.content()}
+                className="rounded-full transition duration-150 absolute top-2 -left-12 bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2"
+              >
+                {generatingContent.title ? (
+                  <LoadingSpinner className="h-5 w-5 fill-none stroke-slate-800" />
+                ) : (
+                  <HashnodePlus className="h-5 w-5 stroke-slate-600 dark:stroke-slate-300" />
+                )}
+              </button>
+            </div>
+
             <Editor
               contentRendered={contentRendered}
               data={data}
@@ -367,6 +378,8 @@ const NewArticleBody: FC<{
         requestedTags={requestedTags}
         setRequestedTags={setRequestedTags}
         prev_slug={prev_slug}
+        generatingContent={generatingContent}
+        setGeneratingContent={setGeneratingContent}
       />
     </main>
   );

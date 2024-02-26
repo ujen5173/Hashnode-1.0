@@ -1,4 +1,5 @@
 import { Search, Sparkles } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 
@@ -6,6 +7,7 @@ import { C } from "~/utils/context";
 
 const SearchArea: FC = () => {
   const { setSearchOpen } = useContext(C)!;
+  const { data: user } = useSession();
 
   return (
     <>
@@ -22,14 +24,17 @@ const SearchArea: FC = () => {
           </button>
         </Link>
 
-        <button
-          aria-label="Unlock the power of AI using RIX"
-          role="button"
-          className="btn-subtle flex items-center justify-center gap-1"
-        >
-          <span>Rix</span>
-          <Sparkles className="h-4 w-4" />
-        </button>
+        <Link href={user ? "/article/new" : "/onboard"}>
+          <button
+            aria-label="Unlock the power of AI using RIX"
+            role="button"
+            className="btn-subtle flex items-center justify-center gap-1"
+          >
+            <span>Rix</span>
+            <Sparkles className="h-4 w-4" />
+          </button>
+        </Link>
+
       </div>
 
       <div className="relative hidden flex-1 lg:block">
@@ -39,13 +44,13 @@ const SearchArea: FC = () => {
           </div>
 
           <div
-            className={`h-10 w-full rounded-full border border-border-light px-10 py-2 text-gray-700 dark:border-border dark:text-text-primary`}
+            className={`h-10 w-full rounded-full cursor-text border border-border-light px-10 py-2 text-gray-700 dark:border-border dark:text-text-primary`}
           >
             Search for Javascript...
           </div>
 
           <div className="absolute right-4 top-1/2 flex -translate-y-1/2 gap-2">
-            <span className="rounded-md border border-border-light bg-gray-200 px-2 py-1 text-xs text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary">
+            <span className="rounded-md cursor-default border border-border-light bg-gray-200 px-2 py-1 text-xs text-gray-700 dark:border-border dark:bg-primary-light dark:text-text-primary">
               CTRL + K
             </span>
           </div>

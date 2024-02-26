@@ -14,6 +14,15 @@
   scroll-behavior: smooth;
 }
 
+.rix_ai_button {
+  visibility: hidden;
+  transition: visibility 0.3s;
+}
+
+.rix_ai_input:hover > .rix_ai_button {
+  visibility: visible;
+}
+
 .feedback-container-style {
   height: 100vh;
   display: flex;
@@ -232,7 +241,7 @@ body.dark .input-outline.input-with-opacity::-moz-placeholder {
 }
 
 .input-secondary {
-  @apply w-full rounded-md border border-border-light bg-light-bg px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:bg-transparent dark:text-text-secondary hover:dark:border-border dark:focus:bg-border;
+  @apply w-full rounded-md border border-border-light px-4 py-2 text-lg text-gray-700 outline-none transition-[ring] duration-100 focus:ring-1 focus:ring-secondary dark:border-border dark:text-text-secondary hover:dark:border-border dark:focus:bg-border;
 }
 body.dark .input-secondary.input-with-opacity::-webkit-input-placeholder {
   opacity: 0.5;

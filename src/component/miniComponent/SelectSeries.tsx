@@ -74,7 +74,7 @@ const SelectSeries: FC<{
           autoComplete="off"
           autoCorrect="off"
           type="text"
-          className="input-secondary"
+          className="input-secondary bg-white dark:bg-slate-800"
           ref={input}
           placeholder="Series"
           id="series"

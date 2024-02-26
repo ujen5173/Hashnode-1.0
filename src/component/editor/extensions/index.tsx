@@ -1,5 +1,3 @@
-"use client";
-
 import Highlight from "@tiptap/extension-highlight";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import TiptapLink from "@tiptap/extension-link";
@@ -57,6 +55,7 @@ export const TiptapExtensions = [
     },
     gapcursor: false,
   }),
+
   // patch to fix horizontal rule bug: https://github.com/ueberdosis/tiptap/pull/3859#issuecomment-1536799740
   HorizontalRule.extend({
     addInputRules() {

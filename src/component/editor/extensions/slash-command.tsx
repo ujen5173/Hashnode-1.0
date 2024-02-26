@@ -171,7 +171,6 @@ const getSuggestionItems = ({ query }: { query: string }) => {
           toast.error("Please add a title to the article before using this command.");
           return;
         }
-
         const prompt = "You are an AI writing assistant." +
           "Create a general article outline for a given topic: '" + title + "'. " +
           "Make your response interesting, fun, make sure to construct complete sentences. Don't add the title in the beginning of the response. Don't add quotation marks at the start and in the end of the response. " +

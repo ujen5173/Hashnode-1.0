@@ -7,8 +7,11 @@ import slugify from "slugify";
 
 import { TRPCClientError } from "@trpc/client";
 import { X } from "lucide-react";
+import { LoadingSpinner } from "~/svgs";
+import HashnodePlus from "~/svgs/HashnodePlus";
 import { type ArticleCard, type DefaultEditorContent } from "~/types";
 import { api } from "~/utils/api";
+import generateContent from "~/utils/contentGenerator";
 import { formattedContent } from "~/utils/miniFunctions";
 import { type ArticleData } from "../macroComponent/New/NewArticleBody";
 import { SelectSeries, SelectTags } from "../miniComponent";
@@ -29,6 +32,22 @@ interface Props {
   requestedTags: string[];
   setRequestedTags: React.Dispatch<React.SetStateAction<string[]>>;
   prev_slug: string | null;
+
+  generatingContent: {
+    title: boolean;
+    subtitle: boolean;
+    content: boolean;
+    seo_title: boolean;
+    seo_description: boolean;
+  };
+
+  setGeneratingContent: React.Dispatch<React.SetStateAction<{
+    title: boolean;
+    subtitle: boolean;
+    content: boolean;
+    seo_title: boolean;
+    seo_description: boolean;
+  }>>
 }
 
 const NewArticleModal: FC<Props> = ({
@@ -43,6 +62,8 @@ const NewArticleModal: FC<Props> = ({
   requestedTags,
   setRequestedTags,
   prev_slug,
+  generatingContent,
+  setGeneratingContent,
 }) => {
   const { data: user } = useSession();
 
@@ -172,9 +193,8 @@ const NewArticleModal: FC<Props> = ({
 
   return (
     <section
-      className={`${
-        !publishModal ? "translate-x-full" : "translate-x-0"
-      } transition-ease scroll-area fixed right-0 top-0 z-50 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
+      className={`${!publishModal ? "translate-x-full" : "translate-x-0"
+        } transition-ease scroll-area fixed right-0 top-0 z-50 h-screen w-full min-w-0 max-w-[550px] overflow-auto border-l border-border-light bg-light-bg px-4 duration-300 dark:border-border dark:bg-primary-light lg:min-w-[350px]`}
     >
       <div className="h-max">
         <header className="sticky left-0 top-0 z-30 flex items-center justify-between border-b border-border-light bg-light-bg py-4 dark:border-border dark:bg-primary-light">
@@ -222,7 +242,7 @@ const NewArticleModal: FC<Props> = ({
                 Article Slug
               </label>
 
-              <div className="relative flex items-stretch gap-2 rounded-md border border-border-light dark:border-border md:px-4 ">
+              <div className="relative flex items-stretch bg-white dark:bg-slate-800 gap-2 rounded-md border border-border-light dark:border-border md:px-4 ">
                 <div className="hidden w-max max-w-32 select-none items-center border-r border-border-light pr-3 dark:border-border md:flex">
                   <span className="line-clamp-1 text-gray-500 dark:text-text-primary">
                     /@{user?.user.username}/
@@ -270,7 +290,6 @@ const NewArticleModal: FC<Props> = ({
                 data={data}
                 setQuery={setQuery}
               />
-
               <div className="mt-2 flex flex-wrap gap-2">
                 {data.tags.map((tag, index) => (
                   <div
@@ -296,7 +315,7 @@ const NewArticleModal: FC<Props> = ({
 
             <div className="mb-8">
               <label
-                htmlFor="tags"
+                htmlFor="series"
                 className="mb-2 block text-base font-semibold text-gray-700 dark:text-text-secondary"
               >
                 Select Article Series
@@ -342,25 +361,54 @@ const NewArticleModal: FC<Props> = ({
                 have the best click-through-rates.
               </p>
 
-              <input
-                autoComplete="off"
-                autoCorrect="off"
-                type="text"
-                className="input-secondary"
-                placeholder="Enter meta title"
-                id="seoTitle"
-                name="seoTitle"
-                value={data.seoTitle}
-                onChange={(e) => {
-                  const { name, value } = e.target;
-                  setData({ ...data, [name]: value });
-                }}
-              />
+              <div className="rix_ai_input relative">
+                <div className="rix_ai_button" title="Generate Seo title using AI">
+                  <button
+                    onClick={async () => {
+                      if (!data.title) {
+                        toast.error("Please fill up the title first");
+                        return;
+                      }
+                      setGeneratingContent(prev => ({ ...prev, seoTitle: true }));
+                      const res = await generateContent({
+                        type: "SEO_TITLE",
+                        subject: data.title,
+                      });
+
+                      setGeneratingContent(prev => ({ ...prev, seoTitle: false }));
+                      setData({ ...data, seoTitle: res });
+                    }}
+                    className="rounded-full transition duration-150 absolute top-1/2 -translate-y-1/2 right-2 bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 p-2"
+                  >
+                    {generatingContent.seo_title ? (
+                      <LoadingSpinner className="h-5 w-5 fill-none stroke-slate-800" />
+                    ) : (
+                      <HashnodePlus className="h-5 w-5 stroke-slate-600 dark:stroke-slate-300" />
+                    )}
+                  </button>
+                </div>
+                <div className="">
+                  <input
+                    autoComplete="off"
+                    autoCorrect="off"
+                    type="text"
+                    className="bg-white dark:bg-slate-800 input-secondary"
+                    placeholder="Enter meta title"
+                    id="seoTitle"
+                    name="seoTitle"
+                    value={data.seoTitle}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setData({ ...data, [name]: value });
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="mb-8">
               <label
-                htmlFor="tags"
+                htmlFor="seoDescription"
                 className="mb-2 block text-base font-semibold text-gray-700 dark:text-text-secondary"
               >
                 SEO DESCRIPTION (OPTIONAL)
@@ -373,19 +421,48 @@ const NewArticleModal: FC<Props> = ({
                 characters long.
               </p>
 
-              <textarea
-                className="input-secondary min-h-[12rem]"
-                placeholder="Enter meta description..."
-                id="seoDescription"
-                name="seoDescription"
-                value={data.seoDescription}
-                onChange={(e) => {
-                  const { name, value } = e.target;
-                  setData({ ...data, [name]: value });
-                }}
-              />
-            </div>
+              <div className="rix_ai_input relative">
+                <div className="rix_ai_button" title="Generate Seo Description using AI">
+                  <button
+                    onClick={async () => {
+                      if (!data.title) {
+                        toast.error("Please write article first");
+                        return;
+                      }
+                      setGeneratingContent(prev => ({ ...prev, seoDescription: true }));
+                      const res = await generateContent({
+                        type: "SEO_DESCRIPTION",
+                        subject: data.title,
+                      });
 
+                      setGeneratingContent(prev => ({ ...prev, seoDescription: false }));
+                      setData({ ...data, seoDescription: res });
+                    }}
+                    className="rounded-full transition duration-150 absolute top-2 right-2 bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 p-2"
+                  >
+                    {generatingContent.seo_description ? (
+                      <LoadingSpinner className="h-5 w-5 fill-none stroke-slate-800" />
+                    ) : (
+                      <HashnodePlus className="h-5 w-5 stroke-slate-600 dark:stroke-slate-300" />
+                    )}
+                  </button>
+                </div>
+                <div className="">
+                  <textarea
+                    className="bg-white dark:bg-slate-800  input-secondary min-h-[12rem]"
+                    placeholder="Enter meta description..."
+                    id="seoDescription"
+                    name="seoDescription"
+                    value={data.seoDescription}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setData({ ...data, [name]: value });
+                    }}
+                  />
+                </div>
+              </div>
+
+            </div>
             <div>
               <label
                 htmlFor="tags"

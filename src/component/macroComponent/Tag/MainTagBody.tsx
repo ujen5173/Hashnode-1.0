@@ -31,7 +31,7 @@ const MainTagBody: FC<{ tagDetails: DetailedTag }> = ({ tagDetails }) => {
   const { data: articlesData, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = api.posts.getArticlesUsingTag.useInfiniteQuery(
     {
       name: tagDetails.name,
-      limit: 4,
+      limit: 2,
       filter: {
         read_time: filter.data.read_time,
         tags: filter.data.tags,

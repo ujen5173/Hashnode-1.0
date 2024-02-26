@@ -673,7 +673,7 @@ export const postsRouter = createTRPCRouter({
           WHERE tags.name = ${input.name}
         )
         AND articles.is_deleted = false
-        ${input.cursor != null ? sql`AND articles.id >= ${input.cursor}` : sql``}
+        ${input.cursor != null ? sql`AND articles.id > ${input.cursor}` : sql``}
           ${
             input.filter?.read_time === "OVER_5"
               ? sql`AND articles.read_time > 5`

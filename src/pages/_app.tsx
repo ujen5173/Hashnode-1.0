@@ -19,6 +19,7 @@ import Feedback, { FeedbackForm } from "~/component/Feedback";
 import useKeyPress from "~/hooks/useKeyPress";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { useRouter } from "next/router";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -80,7 +81,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const [feedback, setFeedback] = useState(false);
   const [feedbackForm, setFeedbackForm] = useState(false);
 
+  const router = useRouter();
+
   useEffect(() => {
+    if (router.pathname === "/404") {
+      return;
+    }
+
     const tm = setTimeout(() => {
       setFeedback(true);
     }, 2500);
@@ -125,12 +132,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <Analytics />
       <SpeedInsights />
 
-      {/* Feedback popup */}
-      {feedback && (
-        <div className="feedback-div fixed bottom-5 right-5">
-          <Feedback close={close} setFeedbackForm={setFeedbackForm} />
-        </div>
-      )}
+
 
       {/* Feedback Icon */}
       {!feedback && (
@@ -152,7 +154,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
         </div>
       )}
 
+      {/* Feedback popup */}
+      {feedback && (
+        <div className="feedback-div fixed bottom-5 right-5">
+          <Feedback close={close} setFeedbackForm={setFeedbackForm} />
+        </div>
+      )}
       {/* Feedback Form */}
+
       {feedbackForm && (
         <FeedbackForm setFeedbackForm={setFeedbackForm} close={close} />
       )}

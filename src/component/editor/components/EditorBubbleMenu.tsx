@@ -39,7 +39,6 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
         const { from, to } = view.state.selection;
         const text = state.doc.textBetween(from, to, '');
 
-        console.log({ text })
         const prompt = "You are an AI writing assistant." +
           "Convert the content according to the follow command" +
           "'''Command: " + askAICommand + "'''" +
@@ -173,7 +172,6 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
     </BubbleMenu>
   );
 };
-
 
 const AskAIModal = ({ setAskAICommand, handleChange }: {
   setAskAICommand: React.Dispatch<React.SetStateAction<string | null>>;
