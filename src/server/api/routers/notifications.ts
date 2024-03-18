@@ -13,7 +13,7 @@ export const notificationRouter = createTRPCRouter({
       `,
     );
 
-    return (result.rows[0] as { count: string }) ?? { count: "0" };
+    return (result[0] as { count: string }) ?? { count: "0" };
   }),
 
   get: protectedProcedure

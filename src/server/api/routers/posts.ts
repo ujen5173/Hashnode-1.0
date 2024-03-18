@@ -15,7 +15,7 @@ import {
   or,
   sql,
 } from "drizzle-orm";
-import { type NeonHttpDatabase } from "drizzle-orm/neon-http";
+import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { Session } from "next-auth";
 import readingTime from "reading-time";
 import slugify from "slugify";
@@ -294,7 +294,7 @@ function displayUniqueObjects(
 const getArticlesWithUserFollowingimages = async (
   ctx: {
     session: Session | null;
-    db: NeonHttpDatabase<typeof schemaFile>;
+    db: PostgresJsDatabase<typeof schemaFile>;
   },
   articles: ArticleCardWithComments[],
 ) => {
@@ -695,7 +695,7 @@ export const postsRouter = createTRPCRouter({
       `);
 
       const resData = (
-        (res.rows ?? []) as { json_build_object: ArticleCard }[]
+        (res ?? []) as unknown as { json_build_object: ArticleCard }[]
       ).map((e) => e.json_build_object);
 
       let nextCursor: typeof cursor | undefined = undefined;
@@ -1060,8 +1060,11 @@ export const postsRouter = createTRPCRouter({
 
         const { edit, tags: _, ...rest } = input;
 
+        console.log("New article / edit article area.");
+
         if (edit && existingArticle) {
           delete rest.prev_slug;
+          console.log("Edit article");
           // editing an article
 
           if (existingArticle.userId !== ctx.session.user.id) {
@@ -1097,6 +1100,8 @@ export const postsRouter = createTRPCRouter({
               id: articles.id,
               slug: articles.slug,
             });
+
+          console.log({ updatedArticle });
 
           if (!updatedArticle) {
             throw new TRPCError({

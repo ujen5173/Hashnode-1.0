@@ -31,9 +31,8 @@ const RightArea: FC = () => {
   const { data, error } = api.notifications.getCount.useQuery(undefined, {
     refetchOnWindowFocus: false,
     enabled: !!user,
-    retry: 0
+    retry: 0,
   });
-
 
   useEffect(() => {
     if (opened) {
@@ -52,7 +51,13 @@ const RightArea: FC = () => {
     <>
       {!!user && (
         <>
-          <Link href={user.user.handle ? "/article/new" : `/onboard/blog/setup?redirect=/article/new`}>
+          <Link
+            href={
+              user.user.handle
+                ? "/article/new"
+                : `/onboard/blog/setup?redirect=/article/new`
+            }
+          >
             <button
               aria-label="Write"
               role="button"
@@ -64,7 +69,13 @@ const RightArea: FC = () => {
           </Link>
 
           <div className="block sm:hidden">
-            <Link href={user.user.handle ? "/article/new" : `/onboard/blog/setup?redirect=/article/new`}>
+            <Link
+              href={
+                user.user.handle
+                  ? "/article/new"
+                  : `/onboard/blog/setup?redirect=/article/new`
+              }
+            >
               <button
                 aria-label="icon"
                 role="button"
@@ -98,7 +109,9 @@ const RightArea: FC = () => {
         </button>
       </Tooltip>
 
-      <div className={`relative ${router.pathname === "/notifications" ? "hidden" : ""}`}>
+      <div
+        className={`relative ${router.pathname === "/notifications" ? "hidden" : ""}`}
+      >
         <Tooltip label="Notifications" position="bottom" withArrow>
           <div>
             <div
