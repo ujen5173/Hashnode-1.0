@@ -128,7 +128,7 @@ export const usersRouter = createTRPCRouter({
       }
     }),
 
-    followState: protectedProcedure
+  followState: protectedProcedure
     .input(
       z.object({
         username: z.string(),
