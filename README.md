@@ -50,16 +50,23 @@ Install the dependencies:
 
 - [Google Cloud](https://console.cloud.google.com/)
 - [Uploadthing for image upload](https://uploadthing.com/)
-- [Neon for database](https://neon.tech/)
+- [Railway for database](https://railway.app/)
 - [Stripe for payment](https://stripe.com/)
 - [Google AI for text completion](https://ai.google.dev/)
 
+### Setting up the datase
+- Create an account on [Railway](https://railway.app) to setup cloud postgresql database.
+- Navigate to the [railway new app](https://railway.app/new) and choose Provision PostgreSQL.
+- Access the Variables section within the newly created database.
+- Retrieve the DATABASE_URL and transfer it to the .env file under the same name.
+- Execute yarn db:dev to upload the schema to the Railway database.
+ 
 ### Setting up the development environment
 
 - Set up the required environment variables. Refer to the `.env.example` file for the necessary variables.
 - Create `.env` file in the root directory of the project and add the environment variables with reference to the `.env.example` file.
 - Create an account in neon.tech for pushing database to the cloud. Use the neon database URL in the `.env` file -> `DATABASE_URL`.
-- Push the database schema to your PostgreSQL database: `yarn db:dev`
+- Push the database schema to your PostgreSQL database: `yarn db:dev`. (OPTIONAL IF YOU HAVE ALREADY PUSH THE DATABASE)
 - Start the development server: `yarn dev`
 - Open your web browser and visit **http://localhost:3000**
 
