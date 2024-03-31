@@ -12,7 +12,7 @@ const Home: NextPage = () => {
 
       <Header />
       {session?.user.stripeSubscriptionStatus !== "active" && (
-        <div className="w-full bg-light-bg pt-4 dark:bg-black px-4 lg:hidden lg:pt-0">
+        <div className="w-full bg-light-bg px-4 pt-4 dark:bg-black lg:hidden lg:pt-0">
           <Anouncement />
         </div>
       )}

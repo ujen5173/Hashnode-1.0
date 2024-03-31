@@ -17,6 +17,7 @@
     "@auth/drizzle-adapter": "^0.5.0",
     "@emotion/react": "^11.11.3",
     "@google/generative-ai": "^0.2.0",
+    "@loglib/tracker": "^0.8.0",
     "@mantine/core": "^7.5.1",
     "@mantine/hooks": "^7.5.1",
     "@mantine/next": "^6.0.11",

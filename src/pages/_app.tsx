@@ -18,6 +18,7 @@ import { SearchBody } from "~/component";
 import Feedback, { FeedbackForm } from "~/component/Feedback";
 import useKeyPress from "~/hooks/useKeyPress";
 
+import Loglib from "@loglib/tracker/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { useRouter } from "next/router";
 
@@ -131,8 +132,16 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
       <Analytics />
       <SpeedInsights />
-
-
+      <Loglib
+        config={{
+          id: "hashnode-t3",
+        }}
+      />
+      <Loglib
+        config={{
+          id: "hashnode-t3_vercel",
+        }}
+      />
 
       {/* Feedback Icon */}
       {!feedback && (
