@@ -137,11 +137,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
           id: "hashnode-t3",
         }}
       />
-      <Loglib
-        config={{
-          id: "hashnode-t3_vercel",
-        }}
-      />
 
       {/* Feedback Icon */}
       {!feedback && (
