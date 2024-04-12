@@ -1,7 +1,7 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import MetaTags from "~/component/MetaTags";
+import MetaTags from "~/components/meta/MetaTags";
 import { Google, Logo } from "~/svgs";
 
 const Onboard = () => {

@@ -95,10 +95,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Comments",
       icon: (name: Type) => (
         <MessageCircle
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -108,10 +109,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Likes",
       icon: (name: Type) => (
         <Heart
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -121,10 +123,11 @@ export const notificationNavigation = (notificationType: Type) => {
       label: "Articles",
       icon: (name: Type) => (
         <Newspaper
-          className={`h-4 w-4 fill-none ${notificationType === name
-            ? "stroke-secondary"
-            : "stroke-gray-700 dark:stroke-text-secondary"
-            }`}
+          className={`h-4 w-4 fill-none ${
+            notificationType === name
+              ? "stroke-secondary"
+              : "stroke-gray-700 dark:stroke-text-secondary"
+          }`}
         />
       ),
     },
@@ -208,8 +211,9 @@ export const dashboardNavigations = [
     name: "General",
     icon: (state: boolean) => (
       <Settings
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/general",
@@ -219,8 +223,9 @@ export const dashboardNavigations = [
     name: "Appearance",
     icon: (state: boolean) => (
       <Palette
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/appearance",
@@ -230,8 +235,9 @@ export const dashboardNavigations = [
     name: "Navbar",
     icon: (state: boolean) => (
       <Table2
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/navbar",
@@ -241,8 +247,9 @@ export const dashboardNavigations = [
     name: "Articles",
     icon: (state: boolean) => (
       <Newspaper
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/articles",
@@ -252,8 +259,9 @@ export const dashboardNavigations = [
     name: "Series",
     icon: (state: boolean) => (
       <Book
-        className={`h-5 w-5 ${state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
-          }`}
+        className={`h-5 w-5 ${
+          state ? "stroke-white" : "stroke-gray-700 dark:stroke-text-secondary"
+        }`}
       />
     ),
     link: "/dashboard/series",
@@ -511,7 +519,7 @@ export const profileDropdownList = [
   },
 ];
 
-export const articleimageDropdownList = [
+export const articleProfileDropdownList = [
   {
     type: "divider",
   },

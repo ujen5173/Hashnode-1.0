@@ -1,8 +1,10 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { Header, ManageData, NotificationLoading } from "~/component";
-import MetaTags from "~/component/MetaTags";
+import ManageData from "~/components/ManageData";
+import Header from "~/components/header/Header";
+import NotificationLoading from "~/components/loading/notificaton";
+import MetaTags from "~/components/meta/MetaTags";
 import useOnScreen from "~/hooks/useOnScreen";
 import useWindowSize from "~/hooks/useWindow";
 import { api } from "~/utils/api";
@@ -28,7 +30,14 @@ const Notifications = () => {
   }, [session]);
 
   const [notificationType, setNotificationType] = useState<Type>(Type.all);
-  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } = api.notifications.get.useInfiniteQuery(
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = api.notifications.get.useInfiniteQuery(
     {
       limit: 6,
       type: notificationType.toLocaleUpperCase() as NotificationTypesEnum,
@@ -46,10 +55,9 @@ const Notifications = () => {
     }
   }, [isError]);
 
-
   const notifications = useMemo(
     () => data?.pages.flatMap((page) => page.notifications),
-    [data]
+    [data],
   );
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -72,8 +80,9 @@ const Notifications = () => {
         <div className="mx-auto max-w-[800px] rounded-lg border border-border-light bg-white px-4 dark:border-border dark:bg-primary">
           <div className="mb-4 flex items-center justify-between gap-2 border-b border-border-light p-4 dark:border-border">
             <h1
-              className={`text-xl font-semibold text-gray-800 dark:text-white ${width >= 500 ? "mx-0" : "mx-auto"
-                }`}
+              className={`text-xl font-semibold text-gray-800 dark:text-white ${
+                width >= 500 ? "mx-0" : "mx-auto"
+              }`}
             >
               Notifications
             </h1>
@@ -85,10 +94,11 @@ const Notifications = () => {
                 <button
                   key={type.id}
                   onClick={() => setNotificationType(type.name as Type)}
-                  className={`${notificationType === type.name
+                  className={`${
+                    notificationType === type.name
                       ? "btn-tab-active"
                       : "btn-tab-secondary"
-                    }`}
+                  }`}
                 >
                   {type.icon ? type.icon(type.name) : null}
                   {type.label}
@@ -99,9 +109,7 @@ const Notifications = () => {
 
           <section className="flex-1 text-center">
             <ManageData
-              loading={
-                <div className="loading h-24 w-full border-b border-border-light py-4 dark:border-border"></div>
-              }
+              loading={<NotificationLoading />}
               type="NOTIFICATION"
               notificationData={{
                 data: notifications,
@@ -109,26 +117,16 @@ const Notifications = () => {
                 type: notificationType as unknown as NotificationTypesEnum,
               }}
             />
-            {isLoading && (
-              <>
-                <NotificationLoading />
-                <NotificationLoading />
-                <NotificationLoading />
-                <NotificationLoading />
-                <NotificationLoading />
-                <NotificationLoading />
-              </>
-            )}
-            {
-              isFetchingNextPage && (
-                <>
-                  <NotificationLoading />
-                  <NotificationLoading />
-                  <NotificationLoading />
-                  <NotificationLoading />
-                </>
-              )
-            }
+
+            {isLoading &&
+              Array(6)
+                .fill("")
+                .map((_, i) => <NotificationLoading key={i} />)}
+
+            {isFetchingNextPage &&
+              Array(4)
+                .fill("")
+                .map((_, i) => <NotificationLoading key={i} />)}
             <div ref={bottomRef} />
           </section>
         </div>

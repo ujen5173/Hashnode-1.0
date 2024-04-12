@@ -7,8 +7,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
-import { Input } from "~/component";
-import MetaTags from "~/component/MetaTags";
+import Input from "~/components/inputs/Input";
+
+import MetaTags from "~/components/meta/MetaTags";
 import { authOptions } from "~/server/auth";
 import { Logo } from "~/svgs";
 import { api } from "~/utils/api";

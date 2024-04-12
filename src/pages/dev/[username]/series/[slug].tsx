@@ -2,17 +2,15 @@ import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import {
-  AuthorBlogHeader,
-  Footer,
-  SimpleArticleCard,
-  SimpleArticleCardLoading
-} from "~/component";
 import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
 
 import { Pencil } from "lucide-react";
-import MetaTags from "~/component/MetaTags";
+import SimpleArticleCard from "~/components/card/SimpleArticleCard";
+import Footer from "~/components/footer/Main";
+import AuthorBlogHeader from "~/components/header/AuthorBlogHeader";
+import SimpleArticleLoading from "~/components/loading/SimpleArticle";
+import MetaTags from "~/components/meta/MetaTags";
 import { api } from "~/utils/api";
 import { AuthorBlogNavigation, type BlogSocial, type CustomTabs } from "..";
 
@@ -120,16 +118,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-          username: string;
-          image: string;
-          handle: {
-            handle: string;
-            name: string;
-            social: BlogSocial;
-            customTabs: CustomTabs[];
-          };
-          followers: { id: string }[];
-        })
+            username: string;
+            image: string;
+            handle: {
+              handle: string;
+              name: string;
+              social: BlogSocial;
+              customTabs: CustomTabs[];
+            };
+            followers: { id: string }[];
+          })
         : null,
     },
   };
@@ -188,21 +186,13 @@ const SeriesContainer = () => {
         </div>
 
         <div className="flex flex-wrap gap-4 py-6">
-          {isLoading ? (
-            <>
-              <SimpleArticleCardLoading />
-              <SimpleArticleCardLoading />
-              <SimpleArticleCardLoading />
-              <SimpleArticleCardLoading />
-            </>
-          ) : (
-            data?.articles.map((article) => (
-              <SimpleArticleCard
-                key={article.id}
-                article={article}
-              />
-            ))
-          )}
+          {isLoading
+            ? Array(6)
+                .fill("")
+                .map((_, i) => <SimpleArticleLoading key={i} number={3} />)
+            : data?.articles.map((article) => (
+                <SimpleArticleCard key={article.id} article={article} />
+              ))}
         </div>
       </div>
     </div>

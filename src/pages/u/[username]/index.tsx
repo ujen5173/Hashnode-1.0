@@ -1,8 +1,10 @@
 import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession } from "next-auth";
-import { Header, UserProfileBody } from "~/component";
-import MetaTags from "~/component/MetaTags";
+import LeftAside from "~/components/asides/Left";
+import Header from "~/components/header/Header";
+import MetaTags from "~/components/meta/MetaTags";
+import UserProfile from "~/components/pages/profile";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 import { follow, users } from "~/server/db/schema";
@@ -19,7 +21,12 @@ const UserBlog: NextPage<{
         description={user.tagline}
       />
       <Header />
-      <UserProfileBody user={user} />
+      <main className="min-h-[100dvh] w-full bg-light-bg dark:bg-black">
+        <div className="container-body mx-auto max-w-[1550px] gap-4 px-2 sm:px-4">
+          <LeftAside />
+          <UserProfile user={user} />
+        </div>
+      </main>
     </>
   );
 };

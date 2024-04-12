@@ -1,8 +1,10 @@
 import { and, eq } from "drizzle-orm";
 import type { GetServerSideProps, NextPage } from "next";
 import React, { createContext } from "react";
-import { ArticleBody, ArticleHeader, Footer } from "~/component";
-import MetaTags from "~/component/MetaTags";
+import Footer from "~/components/footer/Main";
+import ArticleHeader from "~/components/header/ArticleHeader";
+import MetaTags from "~/components/meta/MetaTags";
+import ArticleBody from "~/components/pages/article/ArticleBody";
 import { db } from "~/server/db";
 import { articles } from "~/server/db/schema";
 import { type Article } from "~/types";
@@ -10,26 +12,26 @@ import { api } from "~/utils/api";
 
 interface Props {
   article: {
-    id: string,
-    title: string,
-    subtitle: string | null,
-    slug: string,
-    cover_image: string,
-    disabledComments: boolean,
-    readCount: number,
-    likesCount: number,
-    commentsCount: number,
-    createdAt: string,
-    content: string,
-    seriesId: string | null,
-    read_time: number
+    id: string;
+    title: string;
+    subtitle: string | null;
+    slug: string;
+    cover_image: string;
+    disabledComments: boolean;
+    readCount: number;
+    likesCount: number;
+    commentsCount: number;
+    createdAt: string;
+    content: string;
+    seriesId: string | null;
+    read_time: number;
     user: {
-      username: string,
-      bio: string | null,
+      username: string;
+      bio: string | null;
       id: string;
-      image: string,
-      name: string,
-    },
+      image: string;
+      name: string;
+    };
   };
 }
 
@@ -46,15 +48,16 @@ export const FollowContext = createContext<{
 const SingleArticle: NextPage<Props> = ({ article }) => {
   const [following, setFollowing] = React.useState(false);
 
-  const { data: tagsData, isLoading: isTagsLoading } = api.tags.getMultiple.useQuery(
-    {
-      article: article.id,
-    },
-    {
-      enabled: !!article.id,
-      refetchOnWindowFocus: false,
-    },
-  );
+  const { data: tagsData, isLoading: isTagsLoading } =
+    api.tags.getMultiple.useQuery(
+      {
+        article: article.id,
+      },
+      {
+        enabled: !!article.id,
+        refetchOnWindowFocus: false,
+      },
+    );
 
   return (
     <>
@@ -63,16 +66,10 @@ const SingleArticle: NextPage<Props> = ({ article }) => {
         description={article.subtitle ?? article.title}
       />
       <FollowContext.Provider value={{ following, setFollowing }}>
-        <ArticleHeader
-          user={
-            article.user
-          }
-        />
+        <ArticleHeader user={article.user} />
         <ArticleBody
           article={article}
-          user={
-            article.user
-          }
+          user={article.user}
           tagsData={tagsData}
           tagsLoading={isTagsLoading}
         />

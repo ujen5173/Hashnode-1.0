@@ -2,16 +2,14 @@ import { eq } from "drizzle-orm";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
-import {
-  Account,
-  EmailNotification,
-  Header,
-  ManageBlogs,
-  Subscription,
-  UserDetailsOptions,
-  UserProfile,
-} from "~/component";
-import MetaTags from "~/component/MetaTags";
+import Header from "~/components/header/Header";
+import MetaTags from "~/components/meta/MetaTags";
+import Account from "~/components/pages/settings/Account";
+import EmailNotification from "~/components/pages/settings/EmailNotification";
+import ManageBlogs from "~/components/pages/settings/ManageBlogs";
+import Settings from "~/components/pages/settings/Settings";
+import Subscription from "~/components/pages/settings/Subscription";
+import UserDetailsOptions from "~/components/pages/settings/UserDetailsOptions";
 import { authOptions } from "~/server/auth";
 import { db } from "~/server/db";
 import { users } from "~/server/db/schema";
@@ -30,6 +28,7 @@ const EditProfile: NextPage<{
         `}
         description={user.tagline}
       />
+
       <Header />
 
       <main className="min-h-[100dvh] w-full bg-light-bg dark:bg-black">
@@ -48,7 +47,7 @@ const EditProfile: NextPage<{
             <main className="my-4 min-h-[100dvh] flex-1 rounded-md border border-border-light bg-white px-4 py-6 dark:border-border dark:bg-primary sm:p-6 md:p-8 lg:my-0">
               {
                 {
-                  default: <UserProfile user={user} />,
+                  default: <Settings user={user} />,
                   account: <Account />,
                   "email-notification": <EmailNotification />,
                   "manage-blogs": <ManageBlogs />,

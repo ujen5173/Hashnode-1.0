@@ -5,8 +5,12 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState, type FC } from "react";
 import { toast } from "react-toastify";
-import { AuthorBlogHeader, Footer, Grid, Magazine, Stacked } from "~/component";
-import MetaTags from "~/component/MetaTags";
+import Footer from "~/components/footer/Main";
+import AuthorBlogHeader from "~/components/header/AuthorBlogHeader";
+import Grid from "~/components/layouts/Grid";
+import Magazine from "~/components/layouts/Magazine";
+import Stacked from "~/components/layouts/Stacked";
+import MetaTags from "~/components/meta/MetaTags";
 import useOnScreen from "~/hooks/useOnScreen";
 import { db } from "~/server/db";
 import { handles } from "~/server/db/schema";
@@ -55,8 +59,8 @@ const AuthorBlogs: NextPage<{
   const { data: session } = useSession();
   const [appearance, setAppearance] = useState<
     | {
-      layout: "MAGAZINE" | "STACKED" | "GRID";
-    }
+        layout: "MAGAZINE" | "STACKED" | "GRID";
+      }
     | undefined
   >(undefined);
 
@@ -68,22 +72,29 @@ const AuthorBlogs: NextPage<{
 
   const router = useRouter();
 
-  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage, hasNextPage } =
-    api.posts.getAuthorArticlesByHandle.useInfiniteQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = api.posts.getAuthorArticlesByHandle.useInfiniteQuery(
+    {
       handleDomain: router.query.username
         ? (router.query?.username.slice(
-          1,
-          router.query?.username.length,
-        ) as string) ?? ""
+            1,
+            router.query?.username.length,
+          ) as string) ?? ""
         : "",
     },
-      {
-        enabled: !!router.query.username,
-        refetchOnWindowFocus: false,
-        retry: 0,
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
-      },
-    );
+    {
+      enabled: !!router.query.username,
+      refetchOnWindowFocus: false,
+      retry: 0,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  );
 
   useEffect(() => {
     if (isError) {
@@ -100,7 +111,6 @@ const AuthorBlogs: NextPage<{
     data: [],
     isLoading: true,
   });
-
 
   useEffect(() => {
     if (reachedBottom && hasNextPage) {
@@ -278,16 +288,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: user
         ? (JSON.parse(JSON.stringify(user)) as {
-          username: string;
-          image: string;
-          handle: {
-            handle: string;
-            name: string;
-            social: BlogSocial;
-            customTabs: CustomTabs[];
-          };
-          followers: { id: string }[];
-        })
+            username: string;
+            image: string;
+            handle: {
+              handle: string;
+              name: string;
+              social: BlogSocial;
+              customTabs: CustomTabs[];
+            };
+            followers: { id: string }[];
+          })
         : null,
     },
   };

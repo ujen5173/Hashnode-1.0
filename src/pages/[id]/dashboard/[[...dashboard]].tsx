@@ -13,19 +13,17 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import {
-  Appearance,
-  Articles,
-  CreateNewSeries,
-  DashboardPageNotFound,
-  General,
-  Header,
-  Navbar,
-  Pages,
-  Series,
-} from "~/component";
-import MetaTags from "~/component/MetaTags";
-import { Navigation } from "~/component/macroComponent/Dashboard";
+import Header from "~/components/header/Header";
+import MetaTags from "~/components/meta/MetaTags";
+import Appearance from "~/components/pages/dashboard/Appearance";
+import Articles from "~/components/pages/dashboard/Articles";
+import CreateNewSeries from "~/components/pages/dashboard/CreateNewSeries";
+import DashboardPageNotFound from "~/components/pages/dashboard/DashboardPageNotFound";
+import General from "~/components/pages/dashboard/General";
+import Navbar from "~/components/pages/dashboard/Navbar";
+import Navigation from "~/components/pages/dashboard/Navigation";
+import Pages from "~/components/pages/dashboard/Pages";
+import Series from "~/components/pages/dashboard/Series";
 import { authOptions } from "~/server/auth";
 import { LogonoText } from "~/svgs";
 

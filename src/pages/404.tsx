@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import MetaTags from "~/component/MetaTags";
+import MetaTags from "~/components/meta/MetaTags";
 
 const PageNotFound = () => {
   return (
