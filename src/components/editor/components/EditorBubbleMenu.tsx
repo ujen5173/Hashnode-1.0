@@ -1,4 +1,4 @@
-import { BubbleMenu, BubbleMenuProps } from "@tiptap/react";
+import { BubbleMenu, type BubbleMenuProps } from "@tiptap/react";
 import {
   Bold,
   Code,
@@ -10,7 +10,7 @@ import {
   Sparkles,
   Strikethrough,
 } from "lucide-react";
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, type FC } from "react";
 import { model } from "~/utils/contentGenerator";
 import { LinkSelector } from "./link-selector";
 
@@ -33,26 +33,35 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
   const [askAICommand, setAskAICommand] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       if (askAICommand && props.editor) {
         const { view, state } = props.editor;
         const { from, to } = view.state.selection;
-        const text = state.doc.textBetween(from, to, '');
+        const text = state.doc.textBetween(from, to, "");
 
-        const prompt = "You are an AI writing assistant." +
+        const prompt =
+          "You are an AI writing assistant." +
           "Convert the content according to the follow command" +
-          "'''Command: " + askAICommand + "'''" +
-          "The content is: " + text;
+          "'''Command: " +
+          askAICommand +
+          "'''" +
+          "The content is: " +
+          text;
 
         const result = await model.generateContent(prompt);
         const response = result.response;
         const rixResponse = response.text();
 
-        props.editor?.chain().focus().deleteRange({ from, to }).insertContentAt(from, rixResponse).run();
+        props.editor
+          ?.chain()
+          .focus()
+          .deleteRange({ from, to })
+          .insertContentAt(from, rixResponse)
+          .run();
 
         setAskAICommand(null);
       }
-    })()
+    })();
   }, [askAICommand]);
 
   const items: BubbleMenuItem[] = [
@@ -173,7 +182,10 @@ export const EditorBubbleMenu: FC<EditorBubbleMenuProps> = (props) => {
   );
 };
 
-const AskAIModal = ({ setAskAICommand, handleChange }: {
+const AskAIModal = ({
+  setAskAICommand,
+  handleChange,
+}: {
   setAskAICommand: React.Dispatch<React.SetStateAction<string | null>>;
   handleChange: () => void;
 }) => {
@@ -182,40 +194,58 @@ const AskAIModal = ({ setAskAICommand, handleChange }: {
       <div className="flex flex-col gap-4">
         <ul>
           <h1 className="mb-4 text-xl font-semibold">Suggestions</h1>
-          <li onClick={() => {
-            handleChange();
-            setAskAICommand("Improve Writing");
-          }} className="px-4 py-3 cursor-pointer rounded-md text-lg font-medium hover:bg-slate-100">
+          <li
+            onClick={() => {
+              handleChange();
+              setAskAICommand("Improve Writing");
+            }}
+            className="cursor-pointer rounded-md px-4 py-3 text-lg font-medium hover:bg-slate-100"
+          >
             Improve Writing
           </li>
-          <li onClick={() => {
-            handleChange();
-            setAskAICommand("Rewrite as a single sentence");
-          }} className="px-4 py-3 cursor-pointer rounded-md text-lg font-medium hover:bg-slate-100">
+          <li
+            onClick={() => {
+              handleChange();
+              setAskAICommand("Rewrite as a single sentence");
+            }}
+            className="cursor-pointer rounded-md px-4 py-3 text-lg font-medium hover:bg-slate-100"
+          >
             Rewrite as a single sentence
           </li>
-          <li onClick={() => {
-            handleChange();
-            setAskAICommand("Simplify language");
-          }} className="px-4 py-3 cursor-pointer rounded-md text-lg font-medium hover:bg-slate-100">
+          <li
+            onClick={() => {
+              handleChange();
+              setAskAICommand("Simplify language");
+            }}
+            className="cursor-pointer rounded-md px-4 py-3 text-lg font-medium hover:bg-slate-100"
+          >
             Simplify language
           </li>
-          <li onClick={() => {
-            handleChange();
-            setAskAICommand("Write in friendy tone");
-          }} className="px-4 py-3 cursor-pointer rounded-md text-lg font-medium hover:bg-slate-100">
+          <li
+            onClick={() => {
+              handleChange();
+              setAskAICommand("Write in friendy tone");
+            }}
+            className="cursor-pointer rounded-md px-4 py-3 text-lg font-medium hover:bg-slate-100"
+          >
             Write in friendy tone
           </li>
-          <li onClick={() => {
-            handleChange();
-            setAskAICommand("Rewrite into a single paragraph");
-          }} className="px-4 py-3 cursor-pointer rounded-md text-lg font-medium hover:bg-slate-100">
+          <li
+            onClick={() => {
+              handleChange();
+              setAskAICommand("Rewrite into a single paragraph");
+            }}
+            className="cursor-pointer rounded-md px-4 py-3 text-lg font-medium hover:bg-slate-100"
+          >
             Rewrite into a single paragraph
           </li>
-          <li onClick={() => {
-            handleChange();
-            setAskAICommand("Fix spelling and grammar");
-          }} className="px-4 py-3 cursor-pointer rounded-md text-lg font-medium hover:bg-slate-100">
+          <li
+            onClick={() => {
+              handleChange();
+              setAskAICommand("Fix spelling and grammar");
+            }}
+            className="cursor-pointer rounded-md px-4 py-3 text-lg font-medium hover:bg-slate-100"
+          >
             Fix spelling and grammar
           </li>
         </ul>

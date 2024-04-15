@@ -1,5 +1,11 @@
-import { Editor } from "@tiptap/core";
-import { Dispatch, FC, SetStateAction, useEffect, useRef } from "react";
+import { type Editor } from "@tiptap/core";
+import {
+  useEffect,
+  useRef,
+  type Dispatch,
+  type FC,
+  type SetStateAction,
+} from "react";
 
 interface LinkSelectorProps {
   editor: Editor | undefined;
@@ -29,8 +35,9 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
       >
         <p className="text-base text-slate-900 dark:text-slate-200">↗</p>
         <p
-          className={`underline text-slate-900 dark:text-slate-200 underline-offset-4 ${editor?.isActive("link") ? "text-blue-500" : ""
-            }`}
+          className={`text-slate-900 underline underline-offset-4 dark:text-slate-200 ${
+            editor?.isActive("link") ? "text-blue-500" : ""
+          }`}
         >
           Link
         </p>
@@ -45,23 +52,28 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
             editor?.chain().focus().setLink({ href: input.value }).run();
             setIsOpen(false);
           }}
-          className="fixed top-full z-[99999] mt-1 flex min-w-60 overflow-hidden rounded border border-border-light dark:border-border bg-white dark:bg-slate-700 p-1 shadow-xl animate-in fade-in slide-in-from-top-1"
+          className="animate-in fade-in slide-in-from-top-1 fixed top-full z-[99999] mt-1 flex min-w-60 overflow-hidden rounded border border-border-light bg-white p-1 shadow-xl dark:border-border dark:bg-slate-700"
         >
           <input
             ref={inputRef}
             type="url"
             placeholder="Paste a link"
-            className="flex-1 bg-transparent p-1 text-slate-800 dark:text-slate-200 text-sm outline-none"
-            defaultValue={editor?.getAttributes("link").href || ""}
+            className="flex-1 bg-transparent p-1 text-sm text-slate-800 outline-none dark:text-slate-200"
+            defaultValue={
+              (editor?.getAttributes("link").href as string | undefined) ?? ""
+            }
           />
           {editor?.getAttributes("link").href ? (
-            <div className="flex gap-2 items-center">
-              <button className="px-3 py-1 rounded-md bg-blue-600 text-white outline-none font-semibold"
+            <div className="flex items-center gap-2">
+              <button
+                className="rounded-md bg-blue-600 px-3 py-1 font-semibold text-white outline-none"
                 type="submit"
               >
                 Update
               </button>
-              <button type="button" className="px-3 py-1 rounded-md bg-red text-white outline-none font-semibold"
+              <button
+                type="button"
+                className="rounded-md bg-red px-3 py-1 font-semibold text-white outline-none"
                 onClick={() => {
                   editor?.chain().focus().unsetLink().run();
                   setIsOpen(false);
@@ -71,13 +83,15 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
               </button>
             </div>
           ) : (
-            <button type="submit" className="px-3 py-1 rounded-md bg-blue-600 text-white outline-none font-semibold">
+            <button
+              type="submit"
+              className="rounded-md bg-blue-600 px-3 py-1 font-semibold text-white outline-none"
+            >
               Add
             </button>
           )}
         </form>
-      )
-      }
+      )}
     </div>
   );
 };
