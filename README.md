@@ -1,5 +1,5 @@
 > [!NOTE]
-> This project will no longer be updated. I am planning to create a new Hashnode clone using the latest technologies and a highly optimized build for improved performance.
+> This project is no longer maintained. Check out my profile for the latest things I’m building.
 
 # Hashnode Clone
 
