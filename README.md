@@ -1,5 +1,5 @@
 > [!NOTE]
-> This project is no longer maintained. Check out my profile for the latest things I’m building.
+> This project is no longer maintained. For the meanwhile check out my other projects while i build new version of Hashnode clone (flowlet) with the modern techstack and more efficient and structured codebase.
 
 # Hashnode Clone
 
